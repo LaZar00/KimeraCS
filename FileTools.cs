@@ -1,0 +1,476 @@
+﻿using System;
+using System.IO;
+using System.Collections;
+using System.Windows.Forms;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace KimeraCS
+{
+
+    using static UndoRedo;
+    using static UndoRedoPE;
+
+    public static class FileTools
+    {
+        private const string CFG_FILE_NAME = "Kimera.cfg";
+        private const string CHAR_LGP_FILTER_FILE_NAME = "ifalna.fil";
+
+        //public const string AERITH_BATTLE_SKELETON = "RVAA";
+        //public const string BARRET_BATTLE_SKELETON = "SEAA";
+        //public const string CAITSITH_BATTLE_SKELETON = "RYAA";
+        //public const string CID_BATTLE_SKELETON = "RZAA";
+        //public const string CLOUD_BATTLE_SKELETON = "RTAA";
+        //public const string RED_BATTLE_SKELETON = "RWAA";
+        //public const string TIFA_BATTLE_SKELETON = "RUAA";
+        //public const string YUFFIE_BATTLE_SKELETON = "RXAA";
+        //public const string VINCENT_BATTLE_SKELETON = "SGAA";
+
+        //public const string FROG_BATTLE_SKELETON = "rsaa";
+        //public const string CLOUD_BATTLE_SKELETON2 = "SIAA";
+        //public const string SEPHIROTH_BATTLE_SKELETON = "SAAA";
+
+        public struct stCharLGPRegister
+        {
+            public string fileName;
+            public List<string> lstNames;
+            public List<string> lstAnims;
+        }
+
+        public struct stLimitsRegister
+        {
+            public string strModelName;
+            public List<string> lstLimitsAnimations;
+        }
+
+        public static int numCharLGPRegisters;
+        public static bool bDBLoaded;
+        public static List<stCharLGPRegister> lstCharLGPRegisters;
+        public static List<stLimitsRegister> lstBattleLimitsAnimations;
+        public static Hashtable lstCFGKeys = new Hashtable();
+
+        public static int idefaultFieldInterpFrames = 1;
+        public static int idefaultBattleInterpFrames = 3;
+        
+        public static int isizeWindowWidth = 750;
+        public static int isizeWindowHeight = 688;
+        public static int iwindowPosX = 0;
+        public static int iwindowPosY = 0;
+
+        public static string strCharLGPPathSrc = "", strBattleLGPPathSrc = "", strMagicLGPPathSrc = "";
+        public static string strCharLGPPathDest = "", strBattleLGPPathDest = "", strMagicLGPPathDest = "";
+
+        public static string strGlobalPath = "";
+        public static string strGlobalPathPModelFolder = "", strGlobalPModelName = "";
+        public static string strGlobalPath3DSModelFolder = "", strGlobal3DSModelName = "";
+        public static string strGlobalPathFieldSkeletonFolder = "", strGlobalFieldSkeletonFileName = "", strGlobalFieldSkeletonName = "", 
+                             strGlobalPathFieldAnimationFolder = "", strGlobalFieldAnimationName = "";
+        public static string strGlobalPathBattleSkeletonFolder = "", strGlobalBattleSkeletonFileName = "", strGlobalBattleSkeletonName = "", 
+                             strGlobalPathBattleAnimationFolder = "", strGlobalBattleAnimationName = "";
+        public static string strGlobalPathMagicSkeletonFolder = "", strGlobalMagicSkeletonFileName = "", strGlobalMagicSkeletonName = "",
+                             strGlobalPathMagicAnimationFolder = "", strGlobalMagicAnimationName = "";
+        public static string strGlobalPathTextureFolder = "", strGlobalTextureName = "";
+        public static string strGlobalPathPartModelFolder = "", strGlobalPartModelName = "";
+        public static string strGlobalPathSaveSkeletonFolder = "", strGlobalPathSaveAnimationFolder = "", strGlobalPathSaveModelFolder = "";
+
+        // PEditor
+        public static int isizeWindowWidthPE = 736;
+        public static int isizeWindowHeightPE = 592;
+        public static int iwindowPosXPE = 0;
+        public static int iwindowPosYPE = 0;
+
+        public static string strGlobalPathPModelFolderPE = "", strGlobalPModelNamePE = "";
+        public static string strGlobalPathSaveModelFolderPE = "";
+
+
+        public static void PrepareCFGKeys()
+        {
+            lstCFGKeys.Add("DEFAULT_FIELD_INTERP_FRAMES", "");
+            lstCFGKeys.Add("DEFAULT_BATTLE_INTERP_FRAMES", "");
+
+            lstCFGKeys.Add("LGP_BATTLE_PATH", "");
+            lstCFGKeys.Add("LGP_BATTLE_PATH_DEST", "");
+            lstCFGKeys.Add("LGP_CHAR_PATH", "");
+            lstCFGKeys.Add("LGP_CHAR_PATH_DEST", "");
+            lstCFGKeys.Add("LGP_MAGIC_PATH", "");
+            lstCFGKeys.Add("LGP_MAGIC_PATH_DEST", "");
+
+            lstCFGKeys.Add("PATH_3DSMODEL_FOLDER", "");
+            lstCFGKeys.Add("PATH_BATTLESKELETON_FOLDER", "");
+            lstCFGKeys.Add("PATH_BATTLEANIMATION_FOLDER", "");
+            lstCFGKeys.Add("PATH_FIELDSKELETON_FOLDER", "");
+            lstCFGKeys.Add("PATH_FIELDANIMATION_FOLDER", "");
+            lstCFGKeys.Add("PATH_MAGICSKELETON_FOLDER", "");
+            lstCFGKeys.Add("PATH_MAGICANIMATION_FOLDER", "");
+            lstCFGKeys.Add("PATH_PARTMODEL_FOLDER", "");
+            lstCFGKeys.Add("PATH_PMODEL_FOLDER", "");
+            lstCFGKeys.Add("PATH_PMODEL_FOLDERPE", "");
+            lstCFGKeys.Add("PATH_SAVESKELETON_FOLDER", "");
+            lstCFGKeys.Add("PATH_SAVEANIMATION_FOLDER", "");
+            lstCFGKeys.Add("PATH_SAVEMODEL_FOLDER", "");
+            lstCFGKeys.Add("PATH_SAVEMODEL_FOLDERPE", "");
+            lstCFGKeys.Add("PATH_TEXTURE_FOLDER", "");
+
+            lstCFGKeys.Add("WINDOW_POSX", "");
+            lstCFGKeys.Add("WINDOW_POSY", "");
+            lstCFGKeys.Add("WINDOWSIZE_WIDTH", "");
+            lstCFGKeys.Add("WINDOWSIZE_HEIGHT", "");
+
+            lstCFGKeys.Add("WINDOW_POSXPE", "");
+            lstCFGKeys.Add("WINDOW_POSYPE", "");
+            lstCFGKeys.Add("WINDOWSIZE_WIDTHPE", "");
+            lstCFGKeys.Add("WINDOWSIZE_HEIGHTPE", "");
+
+            lstCFGKeys.Add("UNDO_BUFFER_CAPACITY", "");
+            lstCFGKeys.Add("UNDO_BUFFERPE_CAPACITY", "");
+        }
+
+
+
+        //  ---------------------------------------------------------------------------------------------------------
+        //  ----------------------------------- Kimera.cfg Functions ------------------------------------------------
+        //  ---------------------------------------------------------------------------------------------------------
+        public static void ReadCFGFile()
+        {
+            string strCFGFileName = strGlobalPath + "\\" + CFG_FILE_NAME;
+            string[] lines;
+
+            PrepareCFGKeys();
+            PrepareLimitsFilterFile();
+
+            // if Kimera.CFG exists, let's read the keys
+            if (File.Exists(strCFGFileName))
+            {
+                lines = File.ReadAllLines(strCFGFileName);
+
+                foreach (string strLine in lines)
+                {
+                    if (strLine.Length > 13)
+                    {
+                        string[] strLineSplit = strLine.Split('=');
+
+                        if (strLineSplit.Length > 1)
+                        {
+                            lstCFGKeys[strLineSplit[0]] = strLineSplit[1];
+                        }
+                    }
+                }
+
+                if (!Int32.TryParse(lstCFGKeys["DEFAULT_FIELD_INTERP_FRAMES"].ToString(), out idefaultFieldInterpFrames)) idefaultFieldInterpFrames = 1;
+                if (!Int32.TryParse(lstCFGKeys["DEFAULT_BATTLE_INTERP_FRAMES"].ToString(), out idefaultBattleInterpFrames)) idefaultBattleInterpFrames = 3;
+
+                strCharLGPPathSrc = lstCFGKeys["LGP_CHAR_PATH"].ToString();
+                strBattleLGPPathSrc = lstCFGKeys["LGP_BATTLE_PATH"].ToString();
+                strMagicLGPPathSrc = lstCFGKeys["LGP_MAGIC_PATH"].ToString();
+                strCharLGPPathDest = lstCFGKeys["LGP_CHAR_PATH_DEST"].ToString();
+                strBattleLGPPathDest = lstCFGKeys["LGP_BATTLE_PATH_DEST"].ToString();
+                strMagicLGPPathDest = lstCFGKeys["LGP_MAGIC_PATH_DEST"].ToString();
+
+                strGlobalPathFieldSkeletonFolder = lstCFGKeys["PATH_FIELDSKELETON_FOLDER"].ToString();
+                strGlobalPathFieldAnimationFolder = lstCFGKeys["PATH_FIELDANIMATION_FOLDER"].ToString();
+                strGlobalPathBattleSkeletonFolder = lstCFGKeys["PATH_BATTLESKELETON_FOLDER"].ToString();
+                strGlobalPathBattleAnimationFolder = lstCFGKeys["PATH_BATTLEANIMATION_FOLDER"].ToString();
+                strGlobalPathMagicSkeletonFolder = lstCFGKeys["PATH_MAGICSKELETON_FOLDER"].ToString();
+                strGlobalPathMagicAnimationFolder = lstCFGKeys["PATH_MAGICANIMATION_FOLDER"].ToString();
+                strGlobalPathPModelFolder = lstCFGKeys["PATH_PMODEL_FOLDER"].ToString();
+                strGlobalPathPModelFolderPE = lstCFGKeys["PATH_PMODEL_FOLDERPE"].ToString();
+                strGlobalPath3DSModelFolder = lstCFGKeys["PATH_3DSMODEL_FOLDER"].ToString();
+                strGlobalPathTextureFolder = lstCFGKeys["PATH_TEXTURE_FOLDER"].ToString();
+                strGlobalPathPartModelFolder = lstCFGKeys["PATH_PARTMODEL_FOLDER"].ToString();
+                strGlobalPathSaveSkeletonFolder = lstCFGKeys["PATH_SAVESKELETON_FOLDER"].ToString();
+                strGlobalPathSaveAnimationFolder = lstCFGKeys["PATH_SAVEANIMATION_FOLDER"].ToString();
+                strGlobalPathSaveModelFolder = lstCFGKeys["PATH_SAVEMODEL_FOLDER"].ToString();
+                strGlobalPathSaveModelFolderPE = lstCFGKeys["PATH_SAVEMODEL_FOLDERPE"].ToString();
+
+                if (!Int32.TryParse(lstCFGKeys["UNDO_BUFFER_CAPACITY"].ToString(), out iUndoBufferCapacity)) iUndoBufferCapacity = 10;
+                if (!Int32.TryParse(lstCFGKeys["UNDO_BUFFERPE_CAPACITY"].ToString(), out iUndoBufferPECapacity)) iUndoBufferPECapacity = 20;
+                if (iUndoBufferCapacity <= 0) iUndoBufferCapacity = 10;
+                if (iUndoBufferPECapacity <= 0) iUndoBufferPECapacity = 20;
+
+                if (!Int32.TryParse(lstCFGKeys["WINDOW_POSX"].ToString(), out iwindowPosX)) iwindowPosX = 0;
+                if (!Int32.TryParse(lstCFGKeys["WINDOW_POSY"].ToString(), out iwindowPosY)) iwindowPosY = 0;
+                if (!Int32.TryParse(lstCFGKeys["WINDOWSIZE_WIDTH"].ToString(), out isizeWindowWidth)) isizeWindowWidth = 750;
+                if (!Int32.TryParse(lstCFGKeys["WINDOWSIZE_HEIGHT"].ToString(), out isizeWindowHeight)) isizeWindowHeight = 688;
+
+                if (!Int32.TryParse(lstCFGKeys["WINDOW_POSXPE"].ToString(), out iwindowPosXPE)) iwindowPosXPE = 0;
+                if (!Int32.TryParse(lstCFGKeys["WINDOW_POSYPE"].ToString(), out iwindowPosYPE)) iwindowPosYPE = 0;
+                if (!Int32.TryParse(lstCFGKeys["WINDOWSIZE_WIDTHPE"].ToString(), out isizeWindowWidthPE)) isizeWindowWidthPE = 736;
+                if (!Int32.TryParse(lstCFGKeys["WINDOWSIZE_HEIGHTPE"].ToString(), out isizeWindowHeightPE)) isizeWindowHeightPE = 592;
+            }
+        }
+
+        public static void WriteCFGFile()
+        {
+            string strCFGFileName = strGlobalPath + "\\" + CFG_FILE_NAME;
+            StringBuilder sbCFGLines = new StringBuilder();
+
+            // Write Kimera.CFG
+            lstCFGKeys["DEFAULT_FIELD_INTERP_FRAMES"] = idefaultFieldInterpFrames;
+            lstCFGKeys["DEFAULT_BATTLE_INTERP_FRAMES"] = idefaultBattleInterpFrames;
+
+            lstCFGKeys["LGP_CHAR_PATH"] = strCharLGPPathSrc;
+            lstCFGKeys["LGP_BATTLE_PATH"] = strBattleLGPPathSrc;
+            lstCFGKeys["LGP_MAGIC_PATH"] = strMagicLGPPathSrc;
+            lstCFGKeys["LGP_CHAR_PATH_DEST"] = strCharLGPPathDest;
+            lstCFGKeys["LGP_BATTLE_PATH_DEST"] = strBattleLGPPathDest;
+            lstCFGKeys["LGP_MAGIC_PATH_DEST"] = strMagicLGPPathDest;
+
+            lstCFGKeys["PATH_FIELDSKELETON_FOLDER"] = strGlobalPathFieldSkeletonFolder;
+            lstCFGKeys["PATH_FIELDANIMATION_FOLDER"] = strGlobalPathFieldAnimationFolder;
+            lstCFGKeys["PATH_BATTLESKELETON_FOLDER"] = strGlobalPathBattleSkeletonFolder;
+            lstCFGKeys["PATH_BATTLEANIMATION_FOLDER"] = strGlobalPathBattleAnimationFolder;
+            lstCFGKeys["PATH_MAGICSKELETON_FOLDER"] = strGlobalPathMagicSkeletonFolder;
+            lstCFGKeys["PATH_MAGICANIMATION_FOLDER"] = strGlobalPathMagicAnimationFolder;
+            lstCFGKeys["PATH_PMODEL_FOLDER"] = strGlobalPathPModelFolder;
+            lstCFGKeys["PATH_PMODEL_FOLDERPE"] = strGlobalPathPModelFolderPE;
+            lstCFGKeys["PATH_3DSMODEL_FOLDER"] = strGlobalPath3DSModelFolder;
+            lstCFGKeys["PATH_TEXTURE_FOLDER"] = strGlobalPathTextureFolder;
+            lstCFGKeys["PATH_PARTMODEL_FOLDER"] = strGlobalPathPartModelFolder;
+            lstCFGKeys["PATH_SAVESKELETON_FOLDER"] = strGlobalPathSaveSkeletonFolder;
+            lstCFGKeys["PATH_SAVEANIMATION_FOLDER"] = strGlobalPathSaveAnimationFolder;
+            lstCFGKeys["PATH_SAVEMODEL_FOLDER"] = strGlobalPathSaveModelFolder;
+            lstCFGKeys["PATH_SAVEMODEL_FOLDERPE"] = strGlobalPathSaveModelFolderPE;
+            lstCFGKeys["UNDO_BUFFER_CAPACITY"] = iUndoBufferCapacity;
+            lstCFGKeys["UNDO_BUFFERPE_CAPACITY"] = iUndoBufferPECapacity;
+
+            lstCFGKeys["WINDOW_POSX"] = iwindowPosX.ToString();
+            lstCFGKeys["WINDOW_POSY"] = iwindowPosY.ToString();
+            lstCFGKeys["WINDOWSIZE_WIDTH"] = isizeWindowWidth.ToString();
+            lstCFGKeys["WINDOWSIZE_HEIGHT"] = isizeWindowHeight.ToString();
+
+            lstCFGKeys["WINDOW_POSXPE"] = iwindowPosXPE.ToString();
+            lstCFGKeys["WINDOW_POSYPE"] = iwindowPosYPE.ToString();
+            lstCFGKeys["WINDOWSIZE_WIDTHPE"] = isizeWindowWidthPE.ToString();
+            lstCFGKeys["WINDOWSIZE_HEIGHTPE"] = isizeWindowHeightPE.ToString();
+
+            // Write Kimera.cfg
+            var orderedCFGKeys = lstCFGKeys.Keys.Cast<string>().OrderBy(c => c);
+
+            foreach (string strCFGKey in orderedCFGKeys)
+            {
+                sbCFGLines.AppendLine(strCFGKey + "=" + lstCFGKeys[strCFGKey]);
+            }
+
+            File.WriteAllText(strCFGFileName, sbCFGLines.ToString());
+        }
+
+
+
+        //  ---------------------------------------------------------------------------------------------------------
+        //  -------------------------------------- ilfana Functions -------------------------------------------------
+        //  ---------------------------------------------------------------------------------------------------------
+        public static int ReadCharFilterFile()
+        {
+            int iResult = 1;
+            string strFileName, strLastFileName;
+            string strKey;
+            string[] strLinesFilterFile;
+            stCharLGPRegister stcLGPReg;
+
+            try
+            {
+                strFileName = strGlobalPath + "\\" + CHAR_LGP_FILTER_FILE_NAME;                
+
+                if (File.Exists(strFileName))
+                {
+
+                    lstCharLGPRegisters = new List<stCharLGPRegister>();
+                    stcLGPReg = new stCharLGPRegister();
+
+                    strLinesFilterFile = File.ReadAllLines(strFileName);
+                    strLastFileName = "";
+
+                    foreach (string strLineFilter in strLinesFilterFile)
+                    {
+                        if (strLineFilter.Length > 0)
+                        {
+                            strFileName = strLineFilter.Substring(0, 4);
+
+                            if (strLastFileName != strFileName)
+                            {
+                                if (numCharLGPRegisters > 0)
+                                {
+                                    if (stcLGPReg.lstAnims != null) stcLGPReg.lstAnims.Sort();
+                                    lstCharLGPRegisters.Add(stcLGPReg);
+                                    stcLGPReg = new stCharLGPRegister();
+                                }
+
+                                numCharLGPRegisters += 1;
+
+                                stcLGPReg.fileName = strFileName;
+                            }
+
+                            strKey = strLineFilter.Substring(4, 5);
+
+                            if (strKey == "Names")
+                            {
+                                if (stcLGPReg.lstNames == null) stcLGPReg.lstNames = strLineFilter.Split('=')[1].Split(',').ToList();
+                                else stcLGPReg.lstNames.AddRange(strLineFilter.Split('=')[1].Split(',').ToList());
+                                
+                                stcLGPReg.lstNames.RemoveAt(stcLGPReg.lstNames.Count - 1);
+                            }
+                            else if (strKey == "Anims")
+                            {
+                                if (stcLGPReg.lstAnims == null) stcLGPReg.lstAnims = strLineFilter.Split('=')[1].Split(',').ToList();
+                                else stcLGPReg.lstAnims.AddRange(strLineFilter.Split('=')[1].Split(',').ToList());
+                                
+                                stcLGPReg.lstAnims.RemoveAt(stcLGPReg.lstAnims.Count - 1);
+                            }
+
+                            strLastFileName = strFileName;
+                        }
+                    }
+
+                    lstCharLGPRegisters.Add(stcLGPReg);
+                    lstCharLGPRegisters.Sort((fN1, fN2) => fN1.fileName.CompareTo(fN2.fileName));
+                }
+                else
+                {
+                    iResult = 0;
+                }
+            }
+            catch
+            {
+
+                iResult = -1;
+            }
+
+            return iResult;
+        }
+
+
+
+        //  ---------------------------------------------------------------------------------------------------------
+        //  --------------------------- Battle Limits Animations relationship ---------------------------------------
+        //  ---------------------------------------------------------------------------------------------------------
+        public static void PrepareLimitsFilterFile()
+        {
+            stLimitsRegister stcLimitsRegister;
+
+            lstBattleLimitsAnimations = new List<stLimitsRegister>();
+
+
+            // AERITH
+            stcLimitsRegister = new stLimitsRegister();
+            stcLimitsRegister.strModelName = "RVAA";
+
+            stcLimitsRegister.lstLimitsAnimations = new List<string>();
+            stcLimitsRegister.lstLimitsAnimations.Add("LIMEA2.A00");
+            stcLimitsRegister.lstLimitsAnimations.Add("LIMEA3.A00");
+            stcLimitsRegister.lstLimitsAnimations.Add("LIMEA4.A00");
+            stcLimitsRegister.lstLimitsAnimations.Add("LIMEA5.A00");
+            stcLimitsRegister.lstLimitsAnimations.Add("LIMEA6.A00");
+            stcLimitsRegister.lstLimitsAnimations.Add("LIMEA7.A00");
+            stcLimitsRegister.lstLimitsAnimations.Add("IYASH.A00");
+            stcLimitsRegister.lstLimitsAnimations.Add("KODO.A00");
+
+            lstBattleLimitsAnimations.Add(stcLimitsRegister);
+
+
+            // BARRET
+            stcLimitsRegister = new stLimitsRegister();
+            stcLimitsRegister.strModelName = "SEAA";
+
+            stcLimitsRegister.lstLimitsAnimations = new List<string>();
+            stcLimitsRegister.lstLimitsAnimations.Add("LIMBR2.A00");
+            stcLimitsRegister.lstLimitsAnimations.Add("LIMBR3.A00");
+            stcLimitsRegister.lstLimitsAnimations.Add("LIMBR4.A00");
+            stcLimitsRegister.lstLimitsAnimations.Add("LIMBR5.A00");
+            stcLimitsRegister.lstLimitsAnimations.Add("LIMBR6.A00");
+            stcLimitsRegister.lstLimitsAnimations.Add("LIMBR7.A00");
+            stcLimitsRegister.lstLimitsAnimations.Add("HVSHOT.A00");
+
+            lstBattleLimitsAnimations.Add(stcLimitsRegister);
+
+
+            // CAIT SITH
+            stcLimitsRegister = new stLimitsRegister();
+            stcLimitsRegister.strModelName = "RYAA";
+
+            stcLimitsRegister.lstLimitsAnimations = new List<string>();
+            stcLimitsRegister.lstLimitsAnimations.Add("DICE.A00");
+
+            lstBattleLimitsAnimations.Add(stcLimitsRegister);
+
+
+            // CID
+            stcLimitsRegister = new stLimitsRegister();
+            stcLimitsRegister.strModelName = "RZAA";
+
+            stcLimitsRegister.lstLimitsAnimations = new List<string>();
+            stcLimitsRegister.lstLimitsAnimations.Add("LIMCD2.A00");
+            stcLimitsRegister.lstLimitsAnimations.Add("LIMCD3.A00");
+            stcLimitsRegister.lstLimitsAnimations.Add("LIMCD4.A00");
+            stcLimitsRegister.lstLimitsAnimations.Add("LIMCD5.A00");
+            stcLimitsRegister.lstLimitsAnimations.Add("LIMCD6.A00");
+
+            lstBattleLimitsAnimations.Add(stcLimitsRegister);
+
+
+            // CLOUD
+            stcLimitsRegister = new stLimitsRegister();
+            stcLimitsRegister.strModelName = "RTAA";
+
+            stcLimitsRegister.lstLimitsAnimations = new List<string>();
+            stcLimitsRegister.lstLimitsAnimations.Add("LIMCL2.A00");
+            stcLimitsRegister.lstLimitsAnimations.Add("LIMCL3.A00");
+            stcLimitsRegister.lstLimitsAnimations.Add("LIMCL4.A00");
+            stcLimitsRegister.lstLimitsAnimations.Add("LIMCL6.A00");
+            stcLimitsRegister.lstLimitsAnimations.Add("LIMCL7.A00");
+            stcLimitsRegister.lstLimitsAnimations.Add("BLAVER.A00");
+            stcLimitsRegister.lstLimitsAnimations.Add("KYOU.A00");
+
+            lstBattleLimitsAnimations.Add(stcLimitsRegister);
+
+
+            // RED XIII
+            stcLimitsRegister = new stLimitsRegister();
+            stcLimitsRegister.strModelName = "RWAA";
+
+            stcLimitsRegister.lstLimitsAnimations = new List<string>();
+            stcLimitsRegister.lstLimitsAnimations.Add("LIMRD3.A00");
+            stcLimitsRegister.lstLimitsAnimations.Add("LIMRD4.A00");
+            stcLimitsRegister.lstLimitsAnimations.Add("LIMRD5.A00");
+            stcLimitsRegister.lstLimitsAnimations.Add("LIMRD6.A00");
+            stcLimitsRegister.lstLimitsAnimations.Add("LIMRD7.A00");
+            stcLimitsRegister.lstLimitsAnimations.Add("LIMSLED.A00");
+
+            lstBattleLimitsAnimations.Add(stcLimitsRegister);
+
+
+            // TIFA
+            stcLimitsRegister = new stLimitsRegister();
+            stcLimitsRegister.strModelName = "RUAA";
+
+            stcLimitsRegister.lstLimitsAnimations = new List<string>();
+            stcLimitsRegister.lstLimitsAnimations.Add("LIMFAST.A00");
+
+            lstBattleLimitsAnimations.Add(stcLimitsRegister);
+
+
+            // YUFFIE
+            stcLimitsRegister = new stLimitsRegister();
+            stcLimitsRegister.strModelName = "RXAA";
+
+            stcLimitsRegister.lstLimitsAnimations = new List<string>();
+            stcLimitsRegister.lstLimitsAnimations.Add("LIMYF1.A00");
+            stcLimitsRegister.lstLimitsAnimations.Add("LIMYF2.A00");
+            stcLimitsRegister.lstLimitsAnimations.Add("LIMYF3.A00");
+            stcLimitsRegister.lstLimitsAnimations.Add("LIMYF4.A00");
+            stcLimitsRegister.lstLimitsAnimations.Add("LIMYF5.A00");
+            stcLimitsRegister.lstLimitsAnimations.Add("LIMYF6.A00");
+            stcLimitsRegister.lstLimitsAnimations.Add("LIMYF7.A00");
+
+            lstBattleLimitsAnimations.Add(stcLimitsRegister);
+        }
+
+        public static bool CanHaveLimitBreak(string strModelName)
+        {
+            return lstBattleLimitsAnimations.Exists(x => x.strModelName == strModelName);
+        }
+
+
+    }
+}
