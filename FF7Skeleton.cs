@@ -99,7 +99,9 @@ namespace KimeraCS
 
                             // We try to find some compatible Field Animation for the Field Skeleton.
                             // If there is no compatible field animation we have this var:   strGlobalFieldAnimationName = ""
-                            iloadSkeletonResult = SearchFirstCompatibleFieldAnimationFileName(fSkeleton, ref strAnimationName);
+                            iloadSkeletonResult = SearchFirstCompatibleFieldAnimationFileName(fSkeleton, 
+                                                                                              Path.GetDirectoryName(strFileName), 
+                                                                                              ref strAnimationName);
 
                             if (iloadSkeletonResult == 1)
                                 fAnimation = new FieldAnimation(fSkeleton,
