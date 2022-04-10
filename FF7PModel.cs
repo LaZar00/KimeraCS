@@ -3197,7 +3197,7 @@ namespace KimeraCS
                     if (Math.Abs(fLambdaMultPlane) > 0.0000001f && kPlane != 0)
                     {
                         alphaPlane = kPlane / fLambdaMultPlane;
-                        intersectionPoint = GetPointInLine(Model.Verts[p1Idx], Model.Verts[p2Idx], alphaPE);
+                        intersectionPoint = GetPointInLine(Model.Verts[p1Idx], Model.Verts[p2Idx], alphaPlane);
 
                         if (Model.Groups[iGroupIdx].texFlag == 1)
                             intersectionTexCoord = GetPointInLine2D(Model.TexCoords[t1Idx], Model.TexCoords[t2Idx], alphaPlane);
