@@ -1511,23 +1511,26 @@ namespace KimeraCS
 
             for (gi = 0; gi < Model.Header.numGroups; gi++)
             {
-                for (pi = Model.Groups[gi].offsetPoly; pi < Model.Groups[gi].offsetPoly + Model.Groups[gi].numPoly; pi++)
+                if (!Model.Groups[gi].HiddenQ)
                 {
-                    glColor4f(Model.Pcolors[pi].R / 255.0f, Model.Pcolors[pi].G / 255.0f, Model.Pcolors[pi].B / 255.0f, Model.Pcolors[pi].A / 255.0f);
-                    glColorMaterial(glFace.GL_FRONT_AND_BACK, glMaterialParameter.GL_AMBIENT_AND_DIFFUSE);
-
-                    glBegin(glDrawMode.GL_TRIANGLES);
-                    for (vi = 0; vi < 3; vi++)
+                    for (pi = Model.Groups[gi].offsetPoly; pi < Model.Groups[gi].offsetPoly + Model.Groups[gi].numPoly; pi++)
                     {
-                        glNormal3f(Model.Normals[Model.Polys[pi].Normals[vi]].x,
-                                   Model.Normals[Model.Polys[pi].Normals[vi]].y,
-                                   Model.Normals[Model.Polys[pi].Normals[vi]].z);
+                        glColor4f(Model.Pcolors[pi].R / 255.0f, Model.Pcolors[pi].G / 255.0f, Model.Pcolors[pi].B / 255.0f, Model.Pcolors[pi].A / 255.0f);
+                        glColorMaterial(glFace.GL_FRONT_AND_BACK, glMaterialParameter.GL_AMBIENT_AND_DIFFUSE);
 
-                        glVertex3f(Model.Verts[Model.Polys[pi].Verts[vi] + Model.Groups[gi].offsetVert].x,
-                                   Model.Verts[Model.Polys[pi].Verts[vi] + Model.Groups[gi].offsetVert].y,
-                                   Model.Verts[Model.Polys[pi].Verts[vi] + Model.Groups[gi].offsetVert].z);
+                        glBegin(glDrawMode.GL_TRIANGLES);
+                        for (vi = 0; vi < 3; vi++)
+                        {
+                            glNormal3f(Model.Normals[Model.Polys[pi].Normals[vi]].x,
+                                       Model.Normals[Model.Polys[pi].Normals[vi]].y,
+                                       Model.Normals[Model.Polys[pi].Normals[vi]].z);
+
+                            glVertex3f(Model.Verts[Model.Polys[pi].Verts[vi] + Model.Groups[gi].offsetVert].x,
+                                       Model.Verts[Model.Polys[pi].Verts[vi] + Model.Groups[gi].offsetVert].y,
+                                       Model.Verts[Model.Polys[pi].Verts[vi] + Model.Groups[gi].offsetVert].z);
+                        }
+                        glEnd();
                     }
-                    glEnd();
                 }
             }
 
@@ -1555,16 +1558,20 @@ namespace KimeraCS
 
             for (gi = 0; gi < Model.Header.numGroups; gi++)
             {
-                for (pi = Model.Groups[gi].offsetPoly; pi < Model.Groups[gi].offsetPoly + Model.Groups[gi].numPoly; pi++)
+
+                if (!Model.Groups[gi].HiddenQ)
                 {
-                    glBegin(glDrawMode.GL_TRIANGLES);
-                    for (vi = 0; vi < 3; vi++)
+                    for (pi = Model.Groups[gi].offsetPoly; pi < Model.Groups[gi].offsetPoly + Model.Groups[gi].numPoly; pi++)
                     {
-                        glVertex3f(Model.Verts[Model.Polys[pi].Verts[vi] + Model.Groups[gi].offsetVert].x,
-                                   Model.Verts[Model.Polys[pi].Verts[vi] + Model.Groups[gi].offsetVert].y,
-                                   Model.Verts[Model.Polys[pi].Verts[vi] + Model.Groups[gi].offsetVert].z);
+                        glBegin(glDrawMode.GL_TRIANGLES);
+                        for (vi = 0; vi < 3; vi++)
+                        {
+                            glVertex3f(Model.Verts[Model.Polys[pi].Verts[vi] + Model.Groups[gi].offsetVert].x,
+                                       Model.Verts[Model.Polys[pi].Verts[vi] + Model.Groups[gi].offsetVert].y,
+                                       Model.Verts[Model.Polys[pi].Verts[vi] + Model.Groups[gi].offsetVert].z);
+                        }
+                        glEnd();
                     }
-                    glEnd();
                 }
             }
 
