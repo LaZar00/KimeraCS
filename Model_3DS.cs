@@ -376,7 +376,7 @@ namespace KimeraCS
                 switch(id)
                 {
                     case 0x4100:
-                        // Errr... don't know. Do nothing.
+                        // Object mesh. Do nothing.
                         break;
 
                     case 0x4110:
@@ -512,8 +512,8 @@ namespace KimeraCS
             {
                 if (meshesV != null)
                 {
-                    meshIndex = meshesV.Length + 1;
-                    Array.Resize(ref meshesV, meshIndex);
+                    meshIndex = meshesV.Length;
+                    Array.Resize(ref meshesV, meshIndex + 1);
                     meshesV[meshIndex] = new mesh_object_node();
                 }
                 else
@@ -892,7 +892,7 @@ namespace KimeraCS
             }
         }
 
-        private static void ConvertMesh3DSToPModel(ref mesh_object_node mesh, mat_list_node[] materialsV, out PModel Model)
+        private static void ConvertMesh3DSToPModel(ref mesh_object_node mesh, mat_list_node[] materialsV, ref PModel Model)
         {
             Point3D[] vertsV;
             PPolygon[] facesV;
@@ -906,7 +906,6 @@ namespace KimeraCS
             GetVColors(ref mesh, materialsV, out vcolorsV);
             GetPColors(ref mesh, materialsV, out pcolorsV);
 
-            Model = new PModel();
             AddGroup(ref Model, ref vertsV, ref facesV, ref texcoordsV, ref vcolorsV, ref pcolorsV);
         }
 
@@ -918,7 +917,7 @@ namespace KimeraCS
 
             for (mi = 0; mi < numMeshes; mi++)
             {
-                ConvertMesh3DSToPModel(ref Model.meshesV[mi], Model.materialsV, out outModel);
+                ConvertMesh3DSToPModel(ref Model.meshesV[mi], Model.materialsV, ref outModel);
             }
         }
 
