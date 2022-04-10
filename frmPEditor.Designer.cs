@@ -30,6 +30,7 @@ namespace KimeraCS
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmPEditor));
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -1627,6 +1628,7 @@ namespace KimeraCS
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.menuStrip1);
             this.DoubleBuffered = true;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
             this.MainMenuStrip = this.menuStrip1;
             this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);

@@ -29,6 +29,7 @@ namespace KimeraCS
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmFieldDB));
             this.lblModel = new System.Windows.Forms.Label();
             this.cbModel = new System.Windows.Forms.ComboBox();
             this.gbModelNames = new System.Windows.Forms.GroupBox();
@@ -49,20 +50,19 @@ namespace KimeraCS
             // 
             this.lblModel.AutoSize = true;
             this.lblModel.ForeColor = System.Drawing.SystemColors.Control;
-            this.lblModel.Location = new System.Drawing.Point(16, 15);
-            this.lblModel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblModel.Location = new System.Drawing.Point(21, 18);
             this.lblModel.Name = "lblModel";
-            this.lblModel.Size = new System.Drawing.Size(36, 13);
+            this.lblModel.Size = new System.Drawing.Size(46, 17);
             this.lblModel.TabIndex = 0;
             this.lblModel.Text = "Model";
             // 
             // cbModel
             // 
             this.cbModel.FormattingEnabled = true;
-            this.cbModel.Location = new System.Drawing.Point(19, 31);
-            this.cbModel.Margin = new System.Windows.Forms.Padding(2);
+            this.cbModel.Location = new System.Drawing.Point(25, 38);
+            this.cbModel.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.cbModel.Name = "cbModel";
-            this.cbModel.Size = new System.Drawing.Size(131, 21);
+            this.cbModel.Size = new System.Drawing.Size(173, 24);
             this.cbModel.TabIndex = 1;
             this.cbModel.SelectedValueChanged += new System.EventHandler(this.cbModel_SelectedValueChanged);
             // 
@@ -70,11 +70,11 @@ namespace KimeraCS
             // 
             this.gbModelNames.Controls.Add(this.lblModelNames);
             this.gbModelNames.ForeColor = System.Drawing.SystemColors.Control;
-            this.gbModelNames.Location = new System.Drawing.Point(164, 15);
-            this.gbModelNames.Margin = new System.Windows.Forms.Padding(2);
+            this.gbModelNames.Location = new System.Drawing.Point(219, 18);
+            this.gbModelNames.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.gbModelNames.Name = "gbModelNames";
-            this.gbModelNames.Padding = new System.Windows.Forms.Padding(2);
-            this.gbModelNames.Size = new System.Drawing.Size(232, 163);
+            this.gbModelNames.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.gbModelNames.Size = new System.Drawing.Size(309, 201);
             this.gbModelNames.TabIndex = 2;
             this.gbModelNames.TabStop = false;
             this.gbModelNames.Text = "Model names";
@@ -82,19 +82,18 @@ namespace KimeraCS
             // lblModelNames
             // 
             this.lblModelNames.ForeColor = System.Drawing.SystemColors.Control;
-            this.lblModelNames.Location = new System.Drawing.Point(11, 22);
-            this.lblModelNames.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblModelNames.Location = new System.Drawing.Point(15, 27);
             this.lblModelNames.Name = "lblModelNames";
-            this.lblModelNames.Size = new System.Drawing.Size(209, 128);
+            this.lblModelNames.Size = new System.Drawing.Size(279, 158);
             this.lblModelNames.TabIndex = 0;
             this.lblModelNames.Text = "label1";
             // 
             // btnLoadModelAnimation
             // 
-            this.btnLoadModelAnimation.Location = new System.Drawing.Point(164, 194);
-            this.btnLoadModelAnimation.Margin = new System.Windows.Forms.Padding(2);
+            this.btnLoadModelAnimation.Location = new System.Drawing.Point(219, 239);
+            this.btnLoadModelAnimation.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnLoadModelAnimation.Name = "btnLoadModelAnimation";
-            this.btnLoadModelAnimation.Size = new System.Drawing.Size(232, 39);
+            this.btnLoadModelAnimation.Size = new System.Drawing.Size(309, 48);
             this.btnLoadModelAnimation.TabIndex = 3;
             this.btnLoadModelAnimation.Text = "Load Model and Animation";
             this.btnLoadModelAnimation.UseVisualStyleBackColor = true;
@@ -104,47 +103,46 @@ namespace KimeraCS
             // 
             this.lblAnimations.AutoSize = true;
             this.lblAnimations.ForeColor = System.Drawing.SystemColors.Control;
-            this.lblAnimations.Location = new System.Drawing.Point(16, 68);
-            this.lblAnimations.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblAnimations.Location = new System.Drawing.Point(21, 84);
             this.lblAnimations.Name = "lblAnimations";
-            this.lblAnimations.Size = new System.Drawing.Size(58, 13);
+            this.lblAnimations.Size = new System.Drawing.Size(77, 17);
             this.lblAnimations.TabIndex = 4;
             this.lblAnimations.Text = "Animations";
             // 
             // lbAnimation
             // 
             this.lbAnimation.FormattingEnabled = true;
-            this.lbAnimation.Location = new System.Drawing.Point(19, 86);
-            this.lbAnimation.Margin = new System.Windows.Forms.Padding(2);
+            this.lbAnimation.ItemHeight = 16;
+            this.lbAnimation.Location = new System.Drawing.Point(25, 106);
+            this.lbAnimation.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.lbAnimation.Name = "lbAnimation";
-            this.lbAnimation.Size = new System.Drawing.Size(131, 147);
+            this.lbAnimation.Size = new System.Drawing.Size(173, 180);
             this.lbAnimation.TabIndex = 5;
             // 
             // lblFieldDataDir
             // 
             this.lblFieldDataDir.AutoSize = true;
             this.lblFieldDataDir.ForeColor = System.Drawing.SystemColors.Control;
-            this.lblFieldDataDir.Location = new System.Drawing.Point(16, 260);
-            this.lblFieldDataDir.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblFieldDataDir.Location = new System.Drawing.Point(21, 320);
             this.lblFieldDataDir.Name = "lblFieldDataDir";
-            this.lblFieldDataDir.Size = new System.Drawing.Size(103, 13);
+            this.lblFieldDataDir.Size = new System.Drawing.Size(137, 17);
             this.lblFieldDataDir.TabIndex = 6;
             this.lblFieldDataDir.Text = "Field Data Directory:";
             // 
             // txtFieldDataDir
             // 
-            this.txtFieldDataDir.Location = new System.Drawing.Point(19, 276);
-            this.txtFieldDataDir.Margin = new System.Windows.Forms.Padding(2);
+            this.txtFieldDataDir.Location = new System.Drawing.Point(25, 340);
+            this.txtFieldDataDir.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.txtFieldDataDir.Name = "txtFieldDataDir";
-            this.txtFieldDataDir.Size = new System.Drawing.Size(343, 20);
+            this.txtFieldDataDir.Size = new System.Drawing.Size(456, 22);
             this.txtFieldDataDir.TabIndex = 7;
             // 
             // btnSelectDirBrowser
             // 
-            this.btnSelectDirBrowser.Location = new System.Drawing.Point(366, 276);
-            this.btnSelectDirBrowser.Margin = new System.Windows.Forms.Padding(2);
+            this.btnSelectDirBrowser.Location = new System.Drawing.Point(488, 340);
+            this.btnSelectDirBrowser.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnSelectDirBrowser.Name = "btnSelectDirBrowser";
-            this.btnSelectDirBrowser.Size = new System.Drawing.Size(30, 20);
+            this.btnSelectDirBrowser.Size = new System.Drawing.Size(40, 25);
             this.btnSelectDirBrowser.TabIndex = 8;
             this.btnSelectDirBrowser.Text = "...";
             this.btnSelectDirBrowser.UseVisualStyleBackColor = true;
@@ -152,10 +150,10 @@ namespace KimeraCS
             // 
             // btnSaveFieldDataDir
             // 
-            this.btnSaveFieldDataDir.Location = new System.Drawing.Point(19, 306);
-            this.btnSaveFieldDataDir.Margin = new System.Windows.Forms.Padding(2);
+            this.btnSaveFieldDataDir.Location = new System.Drawing.Point(25, 377);
+            this.btnSaveFieldDataDir.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnSaveFieldDataDir.Name = "btnSaveFieldDataDir";
-            this.btnSaveFieldDataDir.Size = new System.Drawing.Size(188, 34);
+            this.btnSaveFieldDataDir.Size = new System.Drawing.Size(251, 42);
             this.btnSaveFieldDataDir.TabIndex = 9;
             this.btnSaveFieldDataDir.Text = "Save Field Data Directory";
             this.btnSaveFieldDataDir.UseVisualStyleBackColor = true;
@@ -164,17 +162,19 @@ namespace KimeraCS
             // lblLine
             // 
             this.lblLine.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.lblLine.Location = new System.Drawing.Point(19, 246);
+            this.lblLine.Location = new System.Drawing.Point(25, 303);
+            this.lblLine.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblLine.Name = "lblLine";
-            this.lblLine.Size = new System.Drawing.Size(377, 2);
+            this.lblLine.Size = new System.Drawing.Size(503, 2);
             this.lblLine.TabIndex = 10;
             // 
             // btnClose
             // 
             this.btnClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnClose.Location = new System.Drawing.Point(208, 306);
+            this.btnClose.Location = new System.Drawing.Point(277, 377);
+            this.btnClose.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.btnClose.Name = "btnClose";
-            this.btnClose.Size = new System.Drawing.Size(188, 34);
+            this.btnClose.Size = new System.Drawing.Size(251, 42);
             this.btnClose.TabIndex = 11;
             this.btnClose.Text = "Close";
             this.btnClose.UseVisualStyleBackColor = true;
@@ -183,11 +183,11 @@ namespace KimeraCS
             // frmFieldDB
             // 
             this.AcceptButton = this.btnLoadModelAnimation;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.CancelButton = this.btnClose;
-            this.ClientSize = new System.Drawing.Size(414, 353);
+            this.ClientSize = new System.Drawing.Size(552, 434);
             this.Controls.Add(this.btnClose);
             this.Controls.Add(this.lblLine);
             this.Controls.Add(this.btnSaveFieldDataDir);
@@ -202,7 +202,8 @@ namespace KimeraCS
             this.Controls.Add(this.lblModel);
             this.DoubleBuffered = true;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-            this.Margin = new System.Windows.Forms.Padding(2);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "frmFieldDB";

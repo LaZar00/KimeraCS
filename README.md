@@ -9,3 +9,5 @@ This version of Kimera has the same features as the Borde's one plus some new (l
 You can report any issue you find if you wish and I will try to solve. I'm not open to new feature requests or pull requests tough.
 
 Enjoy this tool.
+
+![imagen](https://user-images.githubusercontent.com/46090031/162592748-35039977-8113-4198-bf41-fce8afa24f1b.png)

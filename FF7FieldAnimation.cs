@@ -485,7 +485,7 @@ namespace KimeraCS
         }
 
 
-        public static int SearchFirstCompatibleFieldAnimationFileName(FieldSkeleton fieldSkeleton, ref string strAnimationName)
+        public static int SearchFirstCompatibleFieldAnimationFileName(FieldSkeleton fieldSkeleton, string strFileFullPath, ref string strAnimationName)
         {
             int iResult = 1, iCounter = 0;
             bool bFound = false;
@@ -493,15 +493,13 @@ namespace KimeraCS
 
             try
             {
-                strGlobalFieldAnimationName = "";
-
+                strGlobalPathFieldAnimationFolder = strFileFullPath;
 
                 if (strGlobalPathFieldAnimationFolder == "")
                 {
-                    strGlobalPathFieldAnimationFolder = strGlobalPath;
-
-                    if (strGlobalPathFieldSkeletonFolder != "") 
+                    if (strGlobalPathFieldSkeletonFolder != "")
                         strGlobalPathFieldAnimationFolder = strGlobalPathFieldSkeletonFolder;
+                    else strGlobalPathFieldAnimationFolder = strGlobalPath;
                 }
 
                 lstFieldAnimsFiles = Directory.GetFiles(strGlobalPathFieldAnimationFolder, "*.A", SearchOption.TopDirectoryOnly);
