@@ -29,6 +29,7 @@ namespace KimeraCS
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmInterpolateAll));
             this.lblExtractedCharLGP = new System.Windows.Forms.Label();
             this.lblExtractedBattleLGP = new System.Windows.Forms.Label();
             this.lblExtractedMagicLGP = new System.Windows.Forms.Label();
@@ -562,6 +563,7 @@ namespace KimeraCS
             this.Controls.Add(this.gbSettings);
             this.DoubleBuffered = true;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.MaximizeBox = false;
             this.Name = "frmInterpolateAll";
