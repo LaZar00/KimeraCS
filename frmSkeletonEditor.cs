@@ -41,6 +41,7 @@ namespace KimeraCS
     using static InputBoxCS;
 
     using static Lighting;
+    using static Model_3DS;
 
     using static UndoRedo;
     using static Utils;
@@ -52,7 +53,7 @@ namespace KimeraCS
     public partial class frmSkeletonEditor : Form
     {
 
-        public const string STR_APPNAME = "KimeraCS 1.0a";
+        public const string STR_APPNAME = "KimeraCS 1.0b";
 
         public static int modelWidth;
         public static int modelHeight;
@@ -1514,8 +1515,6 @@ namespace KimeraCS
         {
             PModel tmpPModel = new PModel();
 
-            if (SelectedBone == -1) return;
-
             if (loaded)
             {
                 EditedBone = SelectedBone;
@@ -1953,11 +1952,11 @@ namespace KimeraCS
                         strGlobal3DSModelName = Path.GetFileName(openFile.FileName).ToUpper();
 
                         // We load the 3DS model into memory.
-                        Model_3DS.Model3DS[] model3DS;
+                        Model3DS[] model3DS;
                         fPModel = new PModel();
 
-                        Model_3DS.Load3DS(openFile.FileName, out model3DS);
-                        Model_3DS.ConvertModels3DSToPModel(model3DS, ref fPModel);
+                        Load3DS(openFile.FileName, out model3DS);
+                        ConvertModels3DSToPModel(model3DS, ref fPModel);
 
                         if (fPModel.Header.numVerts > 0)
                         {
