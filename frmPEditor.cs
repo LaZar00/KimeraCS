@@ -995,6 +995,7 @@ namespace KimeraCS
 
                 FillGroupsList();
                 panelEditorPModel_Paint(null, null);
+                chkPalettized_CheckedChanged(null, null);
             }
             else
             {
@@ -1034,6 +1035,7 @@ namespace KimeraCS
 
                 lbGroups.SelectedIndex = iSelIdx;
                 panelEditorPModel_Paint(null, null);
+                chkPalettized_CheckedChanged(null, null);
             }
         }
 

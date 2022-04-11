@@ -1457,10 +1457,13 @@ namespace KimeraCS
             {
                 cColor = colorTable[translationTableVertex[vi].I];
 
-                Model.Vcolors[vi] = Color.FromArgb(255,
-                                                   cColor.R,
-                                                   cColor.G,
-                                                   cColor.B);
+                if (!Model.Groups[GetVertexGroup(Model.Groups, vi)].HiddenQ)
+                {
+                    Model.Vcolors[vi] = Color.FromArgb(255,
+                                                       cColor.R,
+                                                       cColor.G,
+                                                       cColor.B);
+                }
             }
 
             // -- This is not in KimeraVB6
@@ -1468,10 +1471,13 @@ namespace KimeraCS
             {
                 cColor = colorTable[translationTablePolys[pi].I];
 
-                Model.Pcolors[pi] = Color.FromArgb(255,
-                                                   cColor.R,
-                                                   cColor.G,
-                                                   cColor.B);
+                if (!Model.Groups[GetPolygonGroup(Model.Groups, pi)].HiddenQ)
+                {
+                    Model.Pcolors[pi] = Color.FromArgb(255,
+                                                       cColor.R,
+                                                       cColor.G,
+                                                       cColor.B);
+                }
             }
         }
 
