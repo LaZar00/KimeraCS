@@ -46,10 +46,9 @@ namespace KimeraCS
             switch (modelType)
             {
                 case K_P_FIELD_MODEL:
-                    ComputePModelBoundingBox(fPModel, ref p_min, ref p_max);
-                    break;
-
                 case K_P_BATTLE_MODEL:
+                case K_P_MAGIC_MODEL:
+                case K_3DS_MODEL:
                     ComputePModelBoundingBox(fPModel, ref p_min, ref p_max);
                     break;
 
