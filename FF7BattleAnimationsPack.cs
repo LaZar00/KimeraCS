@@ -84,13 +84,16 @@ namespace KimeraCS
                     {
                         case K_AA_SKELETON:
                             if (Path.GetExtension(strFileName).Length == 4)
-                            {
                                 strBattleAnimPackFileName = Path.GetFileName(strFileName).ToUpper();
-                            }
                             else
                             {
-                                strBattleAnimPackFileName = Path.GetFileNameWithoutExtension(strFileName).Substring(0, 2).ToUpper() + "DA";
+                                // Let's check if we are opening all the model or only loading an animation
+                                if (Path.GetFileName(strFileName).ToUpper().EndsWith("AA"))
+                                    strBattleAnimPackFileName = Path.GetFileNameWithoutExtension(strFileName).Substring(0, 2).ToUpper() + "DA";
+                                else
+                                    strBattleAnimPackFileName = Path.GetFileNameWithoutExtension(strFileName).ToUpper();
                             }
+
 
                             strGlobalBattleAnimationName = strBattleAnimPackFileName;
                             break;
@@ -271,7 +274,7 @@ namespace KimeraCS
         public static int WriteBattleAnimationsPack(ref BattleAnimationsPack bAnimationsPack, string strFileName)
         {
             int ai;
-            byte[] fileBuffer = new byte[MAX_BATTLEANIMATION_SIZE];  // We DON'T know the size of the Battle Animation if there are new frames.
+            byte[] fileBuffer = new byte[MAX_BATTLEANIMATION_SIZE * bAnimationsPack.nAnimations];  // We DON'T know the size of the Battle Animation if there are new frames.
                                                                      // This value is estimate.
             int ifileBufferSize = 0;
             bool bBlockOverSize = false;

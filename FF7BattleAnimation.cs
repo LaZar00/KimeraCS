@@ -427,7 +427,7 @@ namespace KimeraCS
             //  Remove sign to prevent bad rounding on shift
             iValueOut = iValue & (int)(Math.Pow(2, 12 - key) - 1);
 
-                if (iValueOut == 0)
+            if (iValueOut == 0)
             {
                 PutBitBlockV(ref bAnimationBuffer, 1, ref offsetBit, 0);
             }
@@ -541,15 +541,29 @@ namespace KimeraCS
 
             byte[] bAnimationBuffer;          
             int offsetBit, fi, iPadding4Bytes;
-            bool bBlockOverSize;
+            bool bBlockOverSize, bWriteUnknownData;
             BattleAnimation tmpbAnimation;
 
             tmpbAnimation = bAnimation;
+            iPadding4Bytes = 0;
             bBlockOverSize = false;
+            bWriteUnknownData = false;
+
+            if (tmpbAnimation.blockSize - tmpbAnimation.blockSizeShort > 5)
+            {
+                iPadding4Bytes = tmpbAnimation.blockSize - tmpbAnimation.blockSizeShort - 5;
+                bWriteUnknownData = true;
+            }
+            else
+            {
+                if (bAnimation.padding4bytes != null)
+                    iPadding4Bytes = bAnimation.padding4bytes.Length;
+            }
+
 
             // Begin creating the temporal Battle Animation
-            memWriter.Write(tmpbAnimation.nBones);
-            memWriter.Write(tmpbAnimation.numFrames);
+            memWriter.Write(tmpbAnimation.nBones);          // num bones
+            memWriter.Write(tmpbAnimation.numFrames);       // num frames (this time should be equal to numFramesShort)
             ifileBufferSize += 8;
 
             if (tmpbAnimation.blockSize < 11 || tmpbAnimation.numFramesShort == 0)
@@ -600,9 +614,23 @@ namespace KimeraCS
                     tmpbAnimation.blockSizeShort = (ushort)bAnimationBuffer.Length;
                     tmpbAnimation.blockSize = bAnimationBuffer.Length + 5;
 
-                    iPadding4Bytes = (4 - (tmpbAnimation.blockSize % 4)) % 4;
-                    tmpbAnimation.blockSize += iPadding4Bytes;   // padding 4bytes
-                    tmpbAnimation.padding4bytes = new byte[iPadding4Bytes];
+                    if (bWriteUnknownData)
+                    {
+                        tmpbAnimation.blockSize += iPadding4Bytes + 5;   // this the the unknown data case
+                        tmpbAnimation.padding4bytes = new byte[iPadding4Bytes];
+                    }
+                    else
+                    {
+                        //iPadding4Bytes = (4 - (tmpbAnimation.blockSize % 4)) % 4;
+                        //tmpbAnimation.blockSize += iPadding4Bytes;   // padding 4bytes
+                        //tmpbAnimation.padding4bytes = new byte[iPadding4Bytes];
+                        iPadding4Bytes = tmpbAnimation.padding4bytes.Length;
+                        tmpbAnimation.blockSize += iPadding4Bytes;   // padding 4bytes
+                    }
+
+                    //iPadding4Bytes = (4 - (tmpbAnimation.blockSize % 4)) % 4;
+                    //tmpbAnimation.blockSize += iPadding4Bytes;   // padding 4bytes
+                    //tmpbAnimation.padding4bytes = new byte[iPadding4Bytes];
 
 
                     //  Write frames data to fileBuffer.
@@ -611,8 +639,21 @@ namespace KimeraCS
                     memWriter.Write(tmpbAnimation.blockSizeShort);
                     memWriter.Write(tmpbAnimation.key);
                     memWriter.Write(tmpbAnimation.framesRawData);
-                    memWriter.Write(tmpbAnimation.padding4bytes);
+
+                    if (tmpbAnimation.padding4bytes.Length > 0)
+                        memWriter.Write(tmpbAnimation.padding4bytes);
+
                     ifileBufferSize += 9 + tmpbAnimation.framesRawData.Length + iPadding4Bytes;
+
+
+                    // Latest UnknownData (like RTAA/RTDA Battle Animation with the first animation odd data at the end)
+                    if (bWriteUnknownData)
+                    {
+                        memWriter.Write(tmpbAnimation.nBones);
+                        memWriter.Write((byte)tmpbAnimation.numFrames);
+                        ifileBufferSize += 5;
+                    }
+
 
                 }
             }
@@ -920,9 +961,12 @@ namespace KimeraCS
 
             alpha_inv = 1 - alpha;
 
-            bFrameOut.startX = (int)(bFrameA.startX * alpha_inv + bFrameB.startX * alpha);
-            bFrameOut.startY = (int)(bFrameA.startY * alpha_inv + bFrameB.startY * alpha);
-            bFrameOut.startZ = (int)(bFrameA.startZ * alpha_inv + bFrameB.startZ * alpha);
+            bFrameOut.startX = (int)Math.Round(bFrameA.startX * alpha_inv + bFrameB.startX * alpha);
+            bFrameOut.startY = (int)Math.Round(bFrameA.startY * alpha_inv + bFrameB.startY * alpha);
+            bFrameOut.startZ = (int)Math.Round(bFrameA.startZ * alpha_inv + bFrameB.startZ * alpha);
+            //bFrameOut.startX = (int)(bFrameA.startX * alpha_inv + bFrameB.startX * alpha);
+            //bFrameOut.startY = (int)(bFrameA.startY * alpha_inv + bFrameB.startY * alpha);
+            //bFrameOut.startZ = (int)(bFrameA.startZ * alpha_inv + bFrameB.startZ * alpha);
             bFrameOut.bones  = new List<BattleFrameBone>();
 
             quat_a = GetQuaternionFromEulerYXZr(bFrameA.bones[0].alpha, bFrameA.bones[0].beta, bFrameA.bones[0].gamma);
@@ -975,9 +1019,12 @@ namespace KimeraCS
             else
             {
                 alpha_inv = 1 - alpha;
-                bFrameOut.startX = (int)(bFrameA.startX * alpha_inv + bFrameB.startX * alpha);
-                bFrameOut.startY = (int)(bFrameA.startY * alpha_inv + bFrameB.startY * alpha);
-                bFrameOut.startZ = (int)(bFrameA.startZ * alpha_inv + bFrameB.startZ * alpha);
+                bFrameOut.startX = (int)Math.Round(bFrameA.startX * alpha_inv + bFrameB.startX * alpha);
+                bFrameOut.startY = (int)Math.Round(bFrameA.startY * alpha_inv + bFrameB.startY * alpha);
+                bFrameOut.startZ = (int)Math.Round(bFrameA.startZ * alpha_inv + bFrameB.startZ * alpha);
+                //bFrameOut.startX = (int)(bFrameA.startX * alpha_inv + bFrameB.startX * alpha);
+                //bFrameOut.startY = (int)(bFrameA.startY * alpha_inv + bFrameB.startY * alpha);
+                //bFrameOut.startZ = (int)(bFrameA.startZ * alpha_inv + bFrameB.startZ * alpha);
 
                 bFrameOut.bones = new List<BattleFrameBone>();
 
@@ -1065,7 +1112,7 @@ namespace KimeraCS
 
             //  Create new frames
             bAnimation.numFramesShort = (ushort)(bAnimation.numFramesShort * (numInterpolatedFrames + 1) - frameOffset);
-            bAnimation.numFrames = (int)(bAnimation.numFrames * primarySecondaryCountersCoef);
+            bAnimation.numFrames = (int)(bAnimation.numFramesShort * primarySecondaryCountersCoef);
 
 
             nFrames = bAnimation.numFramesShort - bAnimation.frames.Count;
