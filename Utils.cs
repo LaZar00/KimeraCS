@@ -1175,7 +1175,7 @@ namespace KimeraCS
             float fVal = fValue;
             fVal = fVal / 360;
             //fVal = fVal * 4096;
-            fVal = fVal * (float)Math.Pow(2, 12- key);
+            fVal = fVal * (float)Math.Pow(2, 12 - key);
             int iVal = (int)Math.Round(fVal);
             return iVal;
             //return (int)(fValue / 360f) * 4096;
