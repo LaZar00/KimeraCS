@@ -53,7 +53,7 @@ namespace KimeraCS
     public partial class frmSkeletonEditor : Form
     {
 
-        public const string STR_APPNAME = "KimeraCS 1.0c";
+        public const string STR_APPNAME = "KimeraCS 1.0d";
 
         public static int modelWidth;
         public static int modelHeight;
@@ -2292,15 +2292,20 @@ namespace KimeraCS
             }
 
             openFile.FilterIndex = 1;
-            openFile.FileName = null;
 
             // Check Initial Directory
             if (strGlobalPathBattleAnimationFolder != null)
             {
                 if (modelType == K_AA_SKELETON)
+                {
                     openFile.InitialDirectory = strGlobalPathBattleAnimationFolder;
+                    openFile.FileName = strGlobalBattleAnimationName;
+                }
                 else
+                {
                     openFile.InitialDirectory = strGlobalPathMagicAnimationFolder;
+                    openFile.FileName = strGlobalMagicAnimationName;
+                }
             }
             else
             {
