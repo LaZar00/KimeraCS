@@ -405,6 +405,7 @@ namespace KimeraCS
                 //  Declare some vars
                 FieldSkeleton fSkeleton;
                 FieldAnimation fAnimation;
+                bool bJumpLoadSkeleton;
                 string oldSkeletonName;
 
                 rtbLog.AppendText("===== PROCESSING CHAR.LGP ANIMATIONS =====\n");
@@ -429,35 +430,59 @@ namespace KimeraCS
                 {
                     // Check if cancel has been pressed
                     if (bCancelPressed) break;
+                    bJumpLoadSkeleton = true;
 
                     //  Read Skeleton (we need to check if we have to load a new skeleton
                     if (oldSkeletonName != itmSkAnim.strSkeleton)
-                        fSkeleton = new FieldSkeleton(txtExtractedCharLGPSrc.Text + "\\" + itmSkAnim.strSkeleton, false);
-
-                    //  Read Animation and fix it (Kimera VB6 have the fix processing here too)
-                    fAnimation = new FieldAnimation(fSkeleton,
-                                                    txtExtractedCharLGPSrc.Text + "\\" + itmSkAnim.strAnimation,
-                                                    true);
-
-                    //  Interpolate Animation
-                    if (fAnimation.nBones == fSkeleton.nBones || fAnimation.nBones == 0)
                     {
-                        await Task.Run(() => InterpolateFieldAnimation(ref fSkeleton, ref fAnimation, (int)nudInterpFrameField.Value, false));
-                        Task.WaitAll();
-                        await Task.Run(() => WriteFieldAnimation(fAnimation, strCharLGPPathDest + "\\" + itmSkAnim.strAnimation));
-                        Task.WaitAll();
-
-                        if (!chkShowOnlyNoProcessed.Checked)
-                            rtbLog.AppendText("DONE. Skeleton: " + itmSkAnim.strSkeleton + 
-                                              ", Animation: " + itmSkAnim.strAnimation + 
+                        if (File.Exists(txtExtractedCharLGPSrc.Text + "\\" + itmSkAnim.strSkeleton))
+                        {
+                            fSkeleton = new FieldSkeleton(txtExtractedCharLGPSrc.Text + "\\" + itmSkAnim.strSkeleton, false);
+                            bJumpLoadSkeleton = false;
+                        }
+                        else
+                        {
+                            rtbLog.AppendText("NOT PROCESSED. Skeleton: " + itmSkAnim.strSkeleton +
+                                              ", Animation: " + itmSkAnim.strAnimation +
                                               ", Entry: " + iCounter.ToString("0000") + ".\n");
+                        }
+                    }
+
+
+                    if (File.Exists(txtExtractedCharLGPSrc.Text + "\\" + itmSkAnim.strAnimation))
+                    {
+                        //  Read Animation and fix it (Kimera VB6 have the fix processing here too)
+                        fAnimation = new FieldAnimation(fSkeleton,
+                                                        txtExtractedCharLGPSrc.Text + "\\" + itmSkAnim.strAnimation,
+                                                        true);
+
+                        //  Interpolate Animation
+                        if (fAnimation.nBones == fSkeleton.nBones || fAnimation.nBones == 0)
+                        {
+                            await Task.Run(() => InterpolateFieldAnimation(ref fSkeleton, ref fAnimation, (int)nudInterpFrameField.Value, false));
+                            Task.WaitAll();
+                            await Task.Run(() => WriteFieldAnimation(fAnimation, strCharLGPPathDest + "\\" + itmSkAnim.strAnimation));
+                            Task.WaitAll();
+
+                            if (!chkShowOnlyNoProcessed.Checked)
+                                rtbLog.AppendText("DONE. Skeleton: " + itmSkAnim.strSkeleton +
+                                                  ", Animation: " + itmSkAnim.strAnimation +
+                                                  ", Entry: " + iCounter.ToString("0000") + ".\n");
+                        }
+                        else
+                        {
+                            rtbLog.AppendText("NOT PROCESSED. Skeleton: " + itmSkAnim.strSkeleton +
+                                              ", Animation: " + itmSkAnim.strAnimation +
+                                              ", Entry: " + iCounter.ToString("0000") + ".\n");
+                        }
                     }
                     else
                     {
-                        rtbLog.AppendText("NOT PROCESSED. Skeleton: " + itmSkAnim.strSkeleton + 
-                                          ", Animation: " + itmSkAnim.strAnimation + 
+                        rtbLog.AppendText("NOT PROCESSED. Skeleton: " + itmSkAnim.strSkeleton +
+                                          ", Animation: " + itmSkAnim.strAnimation +
                                           ", Entry: " + iCounter.ToString("0000") + ".\n");
                     }
+
 
                     //  Last vars. Increase progress bar, save last animation name...
                     progBarIntAllAnim.PerformStep();
