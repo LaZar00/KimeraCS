@@ -34,7 +34,10 @@ namespace KimeraCS
             {
                 int ti, ti_pool;
                 bool tex_foundQ;
+                DialogResult drPModelError;
+
                 TEX itmTextureTEX;
+                Model = new PModel();
 
                 string[] rsdString;
                 string rsdFileName = strFolderName + "\\" + in_res_file + ".RSD";
@@ -62,8 +65,31 @@ namespace KimeraCS
 
                 // Let's read the P model
                 polyFileName = (rsdString[rsdNTEXpos].Split('=')[1]).Substring(0, (rsdString[rsdNTEXpos].Split('=')[1]).IndexOf('.')) + ".P";
-                Model = new PModel();
-                LoadPModel(ref Model, strFolderName, polyFileName);
+
+                // Let's read the P model into memory.
+                // First check if exists
+                if (!File.Exists(strFolderName + "\\" + polyFileName))
+                {
+                    // We maybe want to load the rest of the model.
+                    // Here we give the choice to load it o cancel loading the model.
+                    drPModelError = MessageBox.Show("The .P Model file '" + polyFileName + "' does not exists. " +
+                                                    "Do you want to continue loading the other parts of the model?",
+                                                    "Information", MessageBoxButtons.YesNo);
+
+                    if (drPModelError == DialogResult.No)
+                    {
+                        // throw new FileNotFoundException("Error opening P file '" + polyFileName + ".P'.");
+                        throw new FileNotFoundException();
+                    }
+
+                    // We can fill the name of the .P model. This will help to saving.
+                    Model.fileName = polyFileName;
+                }
+                else
+                {
+                    LoadPModel(ref Model, strFolderName, polyFileName);
+                }
+
 
                 // Let's read NTEX
                 while (rsdString[rsdNTEXpos][0] != 'N') rsdNTEXpos++;

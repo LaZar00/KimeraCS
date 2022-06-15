@@ -1813,6 +1813,8 @@ namespace KimeraCS
             PModel modelOut;
             int iCounter;
 
+            if (modelIn.Polys == null) return modelIn;
+
             modelOut = new PModel();
 
             modelOut.fileName = modelIn.fileName;

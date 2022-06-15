@@ -799,7 +799,9 @@ namespace KimeraCS
                     strRSDList = strRSDList + " " + tmpRSDResource.res_file;
 
                     WriteRSDResource(tmpRSDResource, strGlobalPathSaveSkeletonFolder + "\\" + fBone.fRSDResources[ri].res_file + ".RSD");
-                    WriteGlobalPModel(ref tmpRSDResource.Model, strGlobalPathSaveSkeletonFolder + "\\" + fBone.fRSDResources[ri].Model.fileName);
+
+                    if (tmpRSDResource.Model.Polys != null)
+                        WriteGlobalPModel(ref tmpRSDResource.Model, strGlobalPathSaveSkeletonFolder + "\\" + fBone.fRSDResources[ri].Model.fileName);
 
                     fBone.fRSDResources[ri] = tmpRSDResource;
                 }
