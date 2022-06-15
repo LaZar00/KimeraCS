@@ -92,26 +92,37 @@ namespace KimeraCS
 
                 strFieldAnimationFile = "";
 
-                // Now we populate animation. We will check if the animation has been found for the model or not.
-                if (bDirectProcessing)                   
+                try
                 {
-                    // Case were we have found a compatible animation for the opened model.
-                    strFieldAnimationFile = Path.GetFileName(strFullFileName);
-                    strGlobalFieldAnimationName = strFieldAnimationFile;
-                    
-                    ReadFieldAnimation(strFullFileName);
-                    FixFieldAnimation(fSkeleton, this);
+                    // Now we populate animation. We will check if the animation has been found for the model or not.
+                    if (bDirectProcessing)
+                    {
+                        // Case were we have found a compatible animation for the opened model.
+                        strFieldAnimationFile = Path.GetFileName(strFullFileName);
+                        strGlobalFieldAnimationName = strFieldAnimationFile;
+
+                        ReadFieldAnimation(strFullFileName);
+                        FixFieldAnimation(fSkeleton, this);
+                    }
+                    else
+                    {
+                        // Case were we didn't found a compatible animation for the opened model.
+                        strFieldAnimationFile = "DUMMY.A";
+                        strGlobalFieldAnimationName = strFieldAnimationFile;
+
+                        if (Path.GetFileName(strFullFileName) == strFieldAnimationFile)
+                            MessageBox.Show("There is no animation file that fits the model in the same folder.", "Info");
+
+                        CreateCompatibleFieldAnimation();
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    // Case were we didn't found a compatible animation for the opened model.
-                    strFieldAnimationFile = "DUMMY.A";
-                    strGlobalFieldAnimationName = strFieldAnimationFile;
-
-                    if (Path.GetFileName(strFullFileName) == strFieldAnimationFile)
-                        MessageBox.Show("There is no animation file that fits the model in the same folder.", "Info");
-
-                    CreateCompatibleFieldAnimation();
+                    // Ok. If loading the animation we have problems,
+                    // we will create a compatible animation.
+                    MessageBox.Show("Error exception reading Field Animation: " + strFieldAnimationFile.ToUpper() + ".\n" +
+                                    "Exception message: " + ex.Message + ".",
+                                    "Error", MessageBoxButtons.OK);
                 }
             }
 
