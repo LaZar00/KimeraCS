@@ -994,7 +994,11 @@ namespace KimeraCS
 
         public static bool SameFieldAnimNumBones(string strFileFieldAnimation, FieldSkeleton fSkeleton)
         {
-            if (fSkeleton.nBones == GetNumFieldBones(strFileFieldAnimation)) return true;
+            int numFieldAnimBones = GetNumFieldBones(strFileFieldAnimation);
+
+            //if (fSkeleton.nBones == ) return true;
+            if ((fSkeleton.nBones == 1 && numFieldAnimBones == 0) || 
+                (fSkeleton.nBones == GetNumFieldBones(strFileFieldAnimation))) return true;
             else return false;
         }
 
