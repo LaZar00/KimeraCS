@@ -697,8 +697,8 @@ namespace KimeraCS
                 glPushMatrix();
 
                 SetCameraModelViewQuat(fBone.fRSDResources[ri].Model.repositionX, fBone.fRSDResources[ri].Model.repositionY, fBone.fRSDResources[ri].Model.repositionZ,
-                                             fBone.fRSDResources[ri].Model.rotationQuaternion,
-                                             fBone.fRSDResources[ri].Model.resizeX, fBone.fRSDResources[ri].Model.resizeY, fBone.fRSDResources[ri].Model.resizeZ);
+                                       fBone.fRSDResources[ri].Model.rotationQuaternion,
+                                       fBone.fRSDResources[ri].Model.resizeX, fBone.fRSDResources[ri].Model.resizeY, fBone.fRSDResources[ri].Model.resizeZ);
 
                 glScalef(fBone.resizeX, fBone.resizeY, fBone.resizeZ);
 
