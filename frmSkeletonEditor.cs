@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Windows.Forms;
+using System.Windows.Forms.Design;
 using System.Collections.Generic;
 using System.Timers;
 using System.ComponentModel;
@@ -14,6 +15,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
+
 
 using HDC = System.IntPtr;
 
@@ -53,7 +55,7 @@ namespace KimeraCS
     public partial class frmSkeletonEditor : Form
     {
 
-        public const string STR_APPNAME = "KimeraCS 1.0e";
+        public const string STR_APPNAME = "KimeraCS 1.0k";
 
         public static int modelWidth;
         public static int modelHeight;
@@ -2241,7 +2243,7 @@ namespace KimeraCS
 
                         SetFrameEditorFields();
 
-                        Text = STR_APPNAME + " - Model: " + strGlobalFieldSkeletonName + ".HRC" +
+                        Text = STR_APPNAME + " - Model: " + strGlobalFieldSkeletonName +
                                              " / Anim: " + strGlobalFieldAnimationName;
                         WriteCFGFile();
                     }
@@ -5708,6 +5710,61 @@ namespace KimeraCS
             //}
         }
 
+        public void tsUIOpacity100_Click(object sender, EventArgs e)
+        {
+            this.Opacity = 1.00F;
+
+            tsUIOpacity100.Checked = true;
+            tsUIOpacity90.Checked = false;
+            tsUIOpacity75.Checked = false;
+            tsUIOpacity50.Checked = false;
+            tsUIOpacity25.Checked = false;
+        }
+
+        public void tsUIOpacity90_Click(object sender, EventArgs e)
+        {
+            this.Opacity = 0.90F;
+
+            tsUIOpacity100.Checked = false;
+            tsUIOpacity90.Checked = true;
+            tsUIOpacity75.Checked = false;
+            tsUIOpacity50.Checked = false;
+            tsUIOpacity25.Checked = false;
+        }
+
+        public void tsUIOpacity75_Click(object sender, EventArgs e)
+        {
+            this.Opacity = 0.75F;
+
+            tsUIOpacity100.Checked = false;
+            tsUIOpacity90.Checked = false;
+            tsUIOpacity75.Checked = true;
+            tsUIOpacity50.Checked = false;
+            tsUIOpacity25.Checked = false;
+        }
+
+        public void tsUIOpacity50_Click(object sender, EventArgs e)
+        {
+            this.Opacity = 0.50F;
+
+            tsUIOpacity100.Checked = false;
+            tsUIOpacity90.Checked = false;
+            tsUIOpacity75.Checked = false;
+            tsUIOpacity50.Checked = true;
+            tsUIOpacity25.Checked = false;
+        }
+
+        public void tsUIOpacity25_Click(object sender, EventArgs e)
+        {
+            this.Opacity = 0.25F;
+
+            tsUIOpacity100.Checked = false;
+            tsUIOpacity90.Checked = false;
+            tsUIOpacity75.Checked = false;
+            tsUIOpacity50.Checked = false;
+            tsUIOpacity25.Checked = true;
+        }
+
         private void tbCurrentFrameScroll_Scroll(object sender, EventArgs e)
         {
             iCurrentFrameScroll = tbCurrentFrameScroll.Value;
@@ -5913,5 +5970,8 @@ namespace KimeraCS
 
 
     }
+
+   
+
 }
 

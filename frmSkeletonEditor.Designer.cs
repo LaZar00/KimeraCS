@@ -156,6 +156,11 @@ namespace KimeraCS
             this.redoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
             this.resetCameraToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
+            this.uIOpacityToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tsUIOpacity100 = new System.Windows.Forms.ToolStripMenuItem();
+            this.tsUIOpacity90 = new System.Windows.Forms.ToolStripMenuItem();
+            this.tsUIOpacity75 = new System.Windows.Forms.ToolStripMenuItem();
             this.animationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadFieldAnimationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadBattleMagicLimitsAnimationStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -173,6 +178,8 @@ namespace KimeraCS
             this.showCharlgpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveFile = new System.Windows.Forms.SaveFileDialog();
             this.panelModel = new System.Windows.Forms.PictureBox();
+            this.tsUIOpacity50 = new System.Windows.Forms.ToolStripMenuItem();
+            this.tsUIOpacity25 = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1.SuspendLayout();
             this.gbTexturesFrame.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUDMoveTextureUpDown)).BeginInit();
@@ -1672,7 +1679,9 @@ namespace KimeraCS
             this.undoToolStripMenuItem,
             this.redoToolStripMenuItem,
             this.toolStripSeparator6,
-            this.resetCameraToolStripMenuItem});
+            this.resetCameraToolStripMenuItem,
+            this.toolStripSeparator7,
+            this.uIOpacityToolStripMenuItem});
             this.editToolStripMenuItem2.Name = "editToolStripMenuItem2";
             this.editToolStripMenuItem2.Size = new System.Drawing.Size(49, 24);
             this.editToolStripMenuItem2.Text = "Edit";
@@ -1682,7 +1691,7 @@ namespace KimeraCS
             this.undoToolStripMenuItem.Enabled = false;
             this.undoToolStripMenuItem.Name = "undoToolStripMenuItem";
             this.undoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.U)));
-            this.undoToolStripMenuItem.Size = new System.Drawing.Size(181, 26);
+            this.undoToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.undoToolStripMenuItem.Text = "Undo";
             this.undoToolStripMenuItem.Click += new System.EventHandler(this.undoToolStripMenuItem_Click);
             // 
@@ -1691,21 +1700,61 @@ namespace KimeraCS
             this.redoToolStripMenuItem.Enabled = false;
             this.redoToolStripMenuItem.Name = "redoToolStripMenuItem";
             this.redoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R)));
-            this.redoToolStripMenuItem.Size = new System.Drawing.Size(181, 26);
+            this.redoToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.redoToolStripMenuItem.Text = "Redo";
             this.redoToolStripMenuItem.Click += new System.EventHandler(this.redoToolStripMenuItem_Click);
             // 
             // toolStripSeparator6
             // 
             this.toolStripSeparator6.Name = "toolStripSeparator6";
-            this.toolStripSeparator6.Size = new System.Drawing.Size(178, 6);
+            this.toolStripSeparator6.Size = new System.Drawing.Size(221, 6);
             // 
             // resetCameraToolStripMenuItem
             // 
             this.resetCameraToolStripMenuItem.Name = "resetCameraToolStripMenuItem";
-            this.resetCameraToolStripMenuItem.Size = new System.Drawing.Size(181, 26);
+            this.resetCameraToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.resetCameraToolStripMenuItem.Text = "Reset camera";
             this.resetCameraToolStripMenuItem.Click += new System.EventHandler(this.resetCameraToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator7
+            // 
+            this.toolStripSeparator7.Name = "toolStripSeparator7";
+            this.toolStripSeparator7.Size = new System.Drawing.Size(221, 6);
+            // 
+            // uIOpacityToolStripMenuItem
+            // 
+            this.uIOpacityToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tsUIOpacity100,
+            this.tsUIOpacity90,
+            this.tsUIOpacity75,
+            this.tsUIOpacity50,
+            this.tsUIOpacity25});
+            this.uIOpacityToolStripMenuItem.Name = "uIOpacityToolStripMenuItem";
+            this.uIOpacityToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.uIOpacityToolStripMenuItem.Text = "UI Opacity";
+            // 
+            // tsUIOpacity100
+            // 
+            this.tsUIOpacity100.Checked = true;
+            this.tsUIOpacity100.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.tsUIOpacity100.Name = "tsUIOpacity100";
+            this.tsUIOpacity100.Size = new System.Drawing.Size(224, 26);
+            this.tsUIOpacity100.Text = "100%";
+            this.tsUIOpacity100.Click += new System.EventHandler(this.tsUIOpacity100_Click);
+            // 
+            // tsUIOpacity90
+            // 
+            this.tsUIOpacity90.Name = "tsUIOpacity90";
+            this.tsUIOpacity90.Size = new System.Drawing.Size(224, 26);
+            this.tsUIOpacity90.Text = "90%";
+            this.tsUIOpacity90.Click += new System.EventHandler(this.tsUIOpacity90_Click);
+            // 
+            // tsUIOpacity75
+            // 
+            this.tsUIOpacity75.Name = "tsUIOpacity75";
+            this.tsUIOpacity75.Size = new System.Drawing.Size(224, 26);
+            this.tsUIOpacity75.Text = "75%";
+            this.tsUIOpacity75.Click += new System.EventHandler(this.tsUIOpacity75_Click);
             // 
             // animationToolStripMenuItem
             // 
@@ -1844,6 +1893,20 @@ namespace KimeraCS
             this.panelModel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.panelModel_MouseDown);
             this.panelModel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.panelModel_MouseMove);
             this.panelModel.MouseUp += new System.Windows.Forms.MouseEventHandler(this.panelModel_MouseUp);
+            // 
+            // tsUIOpacity50
+            // 
+            this.tsUIOpacity50.Name = "tsUIOpacity50";
+            this.tsUIOpacity50.Size = new System.Drawing.Size(224, 26);
+            this.tsUIOpacity50.Text = "50%";
+            this.tsUIOpacity50.Click += new System.EventHandler(this.tsUIOpacity50_Click);
+            // 
+            // tsUIOpacity25
+            // 
+            this.tsUIOpacity25.Name = "tsUIOpacity25";
+            this.tsUIOpacity25.Size = new System.Drawing.Size(224, 26);
+            this.tsUIOpacity25.Text = "25%";
+            this.tsUIOpacity25.Click += new System.EventHandler(this.tsUIOpacity25_Click);
             // 
             // frmSkeletonEditor
             // 
@@ -2057,6 +2120,13 @@ namespace KimeraCS
         private System.Windows.Forms.ToolStripMenuItem resetCameraToolStripMenuItem;
         public System.Windows.Forms.ToolStripMenuItem undoToolStripMenuItem;
         public System.Windows.Forms.ToolStripMenuItem redoToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator7;
+        private System.Windows.Forms.ToolStripMenuItem uIOpacityToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem tsUIOpacity100;
+        private System.Windows.Forms.ToolStripMenuItem tsUIOpacity90;
+        private System.Windows.Forms.ToolStripMenuItem tsUIOpacity75;
+        private System.Windows.Forms.ToolStripMenuItem tsUIOpacity50;
+        private System.Windows.Forms.ToolStripMenuItem tsUIOpacity25;
     }
 }
 
