@@ -15,11 +15,16 @@ namespace KimeraCS
     public partial class frmGroupProperties : Form
     {
 
+        private frmPEditor frmPEdit;
+
         public int SelectedGroup;
 
-        public frmGroupProperties(int iGroupIdx)
+        public frmGroupProperties(frmPEditor frmPEdit, int iGroupIdx)
         {
             InitializeComponent();
+
+            this.frmPEdit = frmPEdit;
+            Owner = frmPEdit;
 
             SelectedGroup = iGroupIdx;
             SetSelectedGroup();
@@ -192,6 +197,9 @@ namespace KimeraCS
             
             EditedPModel.Hundrets[SelectedGroup].field_8 = changeRenderStateValues;
             EditedPModel.Hundrets[SelectedGroup].field_C = renderStateValues;
+
+            // We have to Refresh Group List (in case we changed some TexID)
+            frmPEdit.FillGroupsList();
 
             Close();
 
