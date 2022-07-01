@@ -995,6 +995,7 @@ namespace KimeraCS
 
                 FillGroupsList();
                 panelEditorPModel_Paint(null, null);
+                CopyModelColors2VP(EditedPModel, ref vcolorsOriginal, ref pcolorsOriginal);
                 chkPalettized_CheckedChanged(null, null);
             }
             else
@@ -1008,7 +1009,7 @@ namespace KimeraCS
             if (lbGroups.SelectedIndex > -1)
             {
                 // Instantiate other forms
-                frmGroupProp = new frmGroupProperties(lbGroups.SelectedIndex);
+                frmGroupProp = new frmGroupProperties(this, lbGroups.SelectedIndex);
                 frmGroupProp.ShowDialog();
             }
         }
@@ -1022,7 +1023,7 @@ namespace KimeraCS
         {
             int iSelIdx;
 
-            if (lbGroups.Items.Count > 1 && lbGroups.SelectedIndex > -1)
+            if (lbGroups.Items.Count > 0 && lbGroups.SelectedIndex > -1)
             {
                 iSelIdx = lbGroups.SelectedIndex;
 
@@ -1112,6 +1113,8 @@ namespace KimeraCS
         private void btnClose_Click(object sender, EventArgs e)
         {
             Close();
+            frmSkelEdit.Focus();
+            frmSkelEdit.panelModel_Paint(null, null);
         }
 
         private void hsbLightZ_ValueChanged(object sender, EventArgs e)
