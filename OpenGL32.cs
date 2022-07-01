@@ -2560,7 +2560,7 @@ namespace KimeraCS
             return GetProjectedCoords(pUP3D).z;
         }
 
-        public static Point3D GetEyeSpaceCoords(ref Point3D p)
+        public static Point3D GetEyeSpaceCoords(Point3D p)
         {
             double[] mm = new double[16];
 

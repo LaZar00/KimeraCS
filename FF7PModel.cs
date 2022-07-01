@@ -1281,7 +1281,7 @@ namespace KimeraCS
 
             p_temp = new Point3D(Model.BoundingBox.max_x, Model.BoundingBox.max_y, Model.BoundingBox.max_z);
 
-            p_temp = GetEyeSpaceCoords(ref p_temp);
+            p_temp = GetEyeSpaceCoords(p_temp);
             Model.BoundingBox.max_x = p_temp.x;
             Model.BoundingBox.max_y = p_temp.y;
             Model.BoundingBox.max_z = p_temp.z;
@@ -1290,7 +1290,7 @@ namespace KimeraCS
             p_temp.y = Model.BoundingBox.min_y;
             p_temp.z = Model.BoundingBox.min_z;
 
-            p_temp = GetEyeSpaceCoords(ref p_temp);
+            p_temp = GetEyeSpaceCoords(p_temp);
             Model.BoundingBox.min_x = p_temp.x;
             Model.BoundingBox.min_y = p_temp.y;
             Model.BoundingBox.min_z = p_temp.z;
@@ -1529,7 +1529,7 @@ namespace KimeraCS
 
             for (vi = 0; vi < Model.Header.numVerts; vi++)
             {
-                Model.Verts[vi] = GetEyeSpaceCoords(ref Model.Verts[vi]);
+                Model.Verts[vi] = GetEyeSpaceCoords(Model.Verts[vi]);
             }
         }
 
@@ -2100,7 +2100,7 @@ namespace KimeraCS
                 }
             }
 
-            Array.Resize(ref Model.Groups, Model.Groups.Length - 1);
+            Array.Resize(ref Model.Groups, Model.Header.numGroups);
 
             ComputeNormals(ref Model);
         }
