@@ -55,7 +55,7 @@ namespace KimeraCS
     public partial class frmSkeletonEditor : Form
     {
 
-        public const string STR_APPNAME = "KimeraCS 1.0k";
+        public const string STR_APPNAME = "KimeraCS 1.0l";
 
         public static int modelWidth;
         public static int modelHeight;
@@ -2009,18 +2009,21 @@ namespace KimeraCS
                             modelTypeStr = "Field Skeleton";
 
                             saveFileName = strGlobalPathFieldSkeletonFolder + "\\" + strGlobalFieldSkeletonFileName.ToUpper();
+                            strGlobalPathSaveSkeletonFolder = strGlobalPathFieldSkeletonFolder;
                             break;
 
                         case K_AA_SKELETON:
                             modelTypeStr = "Battle Skeleton";
 
                             saveFileName = strGlobalPathBattleSkeletonFolder + "\\" + strGlobalBattleSkeletonFileName.ToUpper();
+                            strGlobalPathSaveSkeletonFolder = strGlobalPathBattleSkeletonFolder;
                             break;
 
                         case K_MAGIC_SKELETON:
                             modelTypeStr = "Magic Skeleton";
 
                             saveFileName = strGlobalPathMagicSkeletonFolder + "\\" + strGlobalMagicSkeletonFileName.ToUpper();
+                            strGlobalPathSaveSkeletonFolder = strGlobalPathMagicSkeletonFolder;
                             break;
                     }
 
@@ -2031,8 +2034,6 @@ namespace KimeraCS
                     {
                         MessageBox.Show(modelTypeStr + " " + Path.GetFileName(saveFileName).ToUpper() + " saved.",
                                         "Information");
-
-                        strGlobalPathSaveSkeletonFolder = Path.GetDirectoryName(saveFile.FileName);
 
                         WriteCFGFile();
                     }
