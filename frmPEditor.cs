@@ -898,6 +898,7 @@ namespace KimeraCS
         {
             int iGroupIdx, i;
             PGroup[] tmpGroups;
+            PHundret[] tmpHundret;
 
             //  Get the group selected in p model
             iGroupIdx = lbGroups.SelectedIndex;
@@ -906,24 +907,37 @@ namespace KimeraCS
             {
                 // Prepare the new .P Model
                 tmpGroups = new PGroup[EditedPModel.Groups.Length];
+                tmpHundret = new PHundret[EditedPModel.Groups.Length];
 
-                //  Here we will reorder the groups of the .P Model
+                //  Here we will reorder the groups/hundrets of the .P Model
                 for (i = 0; i < lbGroups.Items.Count; i++)
                 {
                     if (i == iGroupIdx - 1)
                     {
-                        tmpGroups[i] = EditedPModel.Groups[iGroupIdx];                    }
+                        tmpGroups[i] = EditedPModel.Groups[iGroupIdx];
+                        tmpHundret[i] = EditedPModel.Hundrets[iGroupIdx];
+                    }
                     else
                     {
                         if (i == iGroupIdx)
+                        {
                             tmpGroups[i] = EditedPModel.Groups[i - 1];
-                        else 
+                            tmpHundret[i] = EditedPModel.Hundrets[i - 1];
+                        }
+                        else
+                        {
                             tmpGroups[i] = EditedPModel.Groups[i];
+                            tmpHundret[i] = EditedPModel.Hundrets[i];
+                        }
                     }
                 }
 
-                //  Now we need to reassign the ordered groups to the edited P Model
+                //  We need to reorder the groups internal verts/polys/edges/pcolors/vcolors/textCoords
+                //  to have them clean?
+
+                //  Finally we need to reassign the ordered groups/hundrets to the edited P Model
                 EditedPModel.Groups = tmpGroups;
+                EditedPModel.Hundrets = tmpHundret;
 
                 //  Refresh Groups List
                 FillGroupsList();
@@ -939,6 +953,7 @@ namespace KimeraCS
         {
             int iGroupIdx, i;
             PGroup[] tmpGroups;
+            PHundret[] tmpHundret;
 
             //  Get the group selected in p model
             iGroupIdx = lbGroups.SelectedIndex;
@@ -947,6 +962,7 @@ namespace KimeraCS
             {
                 // Prepare the new .P Model
                 tmpGroups = new PGroup[EditedPModel.Groups.Length];
+                tmpHundret = new PHundret[EditedPModel.Groups.Length];
 
                 //  Here we will reorder the groups of the .P Model
                 for (i = 0; i < lbGroups.Items.Count; i++)
@@ -954,18 +970,26 @@ namespace KimeraCS
                     if (i == iGroupIdx + 1)
                     {
                         tmpGroups[i] = EditedPModel.Groups[iGroupIdx];
+                        tmpHundret[i] = EditedPModel.Hundrets[iGroupIdx];
                     }
                     else
                     {
                         if (i == iGroupIdx)
+                        {
                             tmpGroups[i] = EditedPModel.Groups[i + 1];
+                            tmpHundret[i] = EditedPModel.Hundrets[i + 1];
+                        }
                         else
+                        {
                             tmpGroups[i] = EditedPModel.Groups[i];
+                            tmpHundret[i] = EditedPModel.Hundrets[i];
+                        }
                     }
                 }
 
                 //  Now we need to reassign the ordered groups to the edited P Model
                 EditedPModel.Groups = tmpGroups;
+                EditedPModel.Hundrets = tmpHundret;
 
                 //  Refresh Groups List
                 FillGroupsList();
@@ -1113,7 +1137,7 @@ namespace KimeraCS
         private void btnClose_Click(object sender, EventArgs e)
         {
             Close();
-            frmSkelEdit.Focus();
+            frmSkelEdit.Activate();
             frmSkelEdit.panelModel_Paint(null, null);
         }
 
