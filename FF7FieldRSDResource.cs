@@ -162,7 +162,7 @@ namespace KimeraCS
             fRSDResourceOut.numTextures += fRSDResourceIn.numTextures;
         }
 
-        public static void WriteRSDResource(FieldRSDResource Resource, string fileName)
+        public static void WriteRSDResource(FieldRSDResource fRSDResource, string fileName)
         {
             int ti;
             string nameP;
@@ -170,20 +170,20 @@ namespace KimeraCS
 
             try
             {
-                strRSDContent.AppendLine(Resource.ID);
-                nameP = Resource.Model.fileName.Substring(0, Resource.Model.fileName.Length - 2);
+                strRSDContent.AppendLine(fRSDResource.ID);
+                nameP = fRSDResource.Model.fileName.Substring(0, fRSDResource.Model.fileName.Length - 2);
 
                 strRSDContent.AppendLine("PLY=" + nameP + ".PLY");
                 strRSDContent.AppendLine("MAT=" + nameP + ".MAT");
                 strRSDContent.AppendLine("GRP=" + nameP + ".GRP");
 
-                strRSDContent.AppendLine("NTEX=" + Resource.numTextures);
+                strRSDContent.AppendLine("NTEX=" + fRSDResource.numTextures);
 
-                for (ti =  0; ti < Resource.numTextures; ti++)
+                for (ti =  0; ti < fRSDResource.numTextures; ti++)
                 {
-                    strRSDContent.AppendLine("TEX[" + ti.ToString() + "]=" + 
-                                             Resource.textures[ti].TEXfileName.Substring(0, Resource.textures[ti].TEXfileName.Length - 4) + ".TIM");
-                    WriteTEXTexture(Resource.textures[ti], strGlobalPathSaveSkeletonFolder + "\\" + Resource.textures[ti].TEXfileName);
+                    strRSDContent.AppendLine("TEX[" + ti.ToString() + "]=" +
+                                             fRSDResource.textures[ti].TEXfileName.Substring(0, fRSDResource.textures[ti].TEXfileName.Length - 4) + ".TIM");
+                    WriteTEXTexture(fRSDResource.textures[ti], strGlobalPathSaveSkeletonFolder + "\\" + fRSDResource.textures[ti].TEXfileName);
                 }
 
                 File.WriteAllText(fileName, strRSDContent.ToString());
