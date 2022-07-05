@@ -1137,8 +1137,6 @@ namespace KimeraCS
         private void btnClose_Click(object sender, EventArgs e)
         {
             Close();
-            frmSkelEdit.Activate();
-            frmSkelEdit.panelModel_Paint(null, null);
         }
 
         private void hsbLightZ_ValueChanged(object sender, EventArgs e)
@@ -2107,6 +2105,9 @@ namespace KimeraCS
             DisableOpenGL(OGLContextPEditor);
             if (frmGroupProp != null) frmGroupProp.Dispose();
             this.Dispose();
+
+            frmSkelEdit.Activate();
+            frmSkelEdit.panelModel_Paint(null, null);
         }
 
         private void slimToolStripMenuItem_Click(object sender, EventArgs e)
