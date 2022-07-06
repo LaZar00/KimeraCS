@@ -564,6 +564,18 @@ namespace KimeraCS
             panelEditorPModel_Paint(null, null);
         }
 
+        private void hsbLightY_ValueChanged(object sender, EventArgs e)
+        {
+            iLightY = hsbLightY.Value;
+            panelEditorPModel_Paint(null, null);
+        }
+
+        private void hsbLightZ_ValueChanged(object sender, EventArgs e)
+        {
+            iLightZ = hsbLightZ.Value;
+            panelEditorPModel_Paint(null, null);
+        }
+
         private void hsbResizeX_ValueChanged(object sender, EventArgs e)
         {
             if (loadingModifiersQ) return;
@@ -888,12 +900,6 @@ namespace KimeraCS
             hsbRotateGamma.Value = iRotateGamma;
         }
 
-        private void hsbLightY_ValueChanged(object sender, EventArgs e)
-        {
-            iLightY = hsbLightX.Value;
-            panelEditorPModel_Paint(null, null);
-        }
-
         private void btnUpGroup_Click(object sender, EventArgs e)
         {
             int iGroupIdx, i;
@@ -1137,12 +1143,6 @@ namespace KimeraCS
         private void btnClose_Click(object sender, EventArgs e)
         {
             Close();
-        }
-
-        private void hsbLightZ_ValueChanged(object sender, EventArgs e)
-        {
-            iLightZ = hsbLightX.Value;
-            panelEditorPModel_Paint(null, null);
         }
 
         private void rbPaintPolygon_MouseDown(object sender, MouseEventArgs e)
