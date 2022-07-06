@@ -55,7 +55,7 @@ namespace KimeraCS
     public partial class frmSkeletonEditor : Form
     {
 
-        public const string STR_APPNAME = "KimeraCS 1.0n";
+        public const string STR_APPNAME = "KimeraCS 1.0p";
 
         public static int modelWidth;
         public static int modelHeight;
