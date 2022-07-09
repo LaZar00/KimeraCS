@@ -405,7 +405,6 @@ namespace KimeraCS
                 //  Declare some vars
                 FieldSkeleton fSkeleton;
                 FieldAnimation fAnimation;
-                bool bJumpLoadSkeleton;
                 string oldSkeletonName;
 
                 rtbLog.AppendText("===== PROCESSING CHAR.LGP ANIMATIONS =====\n");
@@ -430,7 +429,6 @@ namespace KimeraCS
                 {
                     // Check if cancel has been pressed
                     if (bCancelPressed) break;
-                    bJumpLoadSkeleton = true;
 
                     //  Read Skeleton (we need to check if we have to load a new skeleton
                     if (oldSkeletonName != itmSkAnim.strSkeleton)
@@ -438,7 +436,6 @@ namespace KimeraCS
                         if (File.Exists(txtExtractedCharLGPSrc.Text + "\\" + itmSkAnim.strSkeleton))
                         {
                             fSkeleton = new FieldSkeleton(txtExtractedCharLGPSrc.Text + "\\" + itmSkAnim.strSkeleton, false);
-                            bJumpLoadSkeleton = false;
                         }
                         else
                         {
