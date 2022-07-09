@@ -112,6 +112,7 @@ namespace KimeraCS
         stIntVector[] lstAdjacentAdjacentPolys;
 
         public static bool loadedPModel;
+        private bool pbMouseIsDownPE;
 
         public bool loadingModifiersQ;
         public bool loadingColorModifiersQ;
@@ -303,7 +304,7 @@ namespace KimeraCS
         {
             if (loadedPModel)
             {
-                //SetOGLEditorSettings();
+                pbMouseIsDownPE = true;
 
                 if (chkEnableLighting.Checked) glEnable(glCapability.GL_LIGHTING);
 
@@ -343,45 +344,50 @@ namespace KimeraCS
 
         private void panelEditorPModel_MouseMove(object sender, MouseEventArgs e)
         {
-            if (loadedPModel && e.Button != MouseButtons.None)
+            if (pbMouseIsDownPE)
             {
-
-                glClearColor(0.4f, 0.4f, 0.65f, 0);
-                glViewport(0, 0, panelEditorPModel.ClientRectangle.Width, panelEditorPModel.ClientRectangle.Height);
-                glClear(glBufferMask.GL_COLOR_BUFFER_BIT | glBufferMask.GL_DEPTH_BUFFER_BIT);
-
-                SetCameraPModel(EditedPModel, panXPE, panYPE, panZPE + DISTPE,
-                                alphaPE, betaPE, gammaPE, 1, 1, 1);
-
-                ConcatenateCameraModelView(repXPE, repYPE, repZPE,
-                                           hsbRotateAlpha.Value, hsbRotateBeta.Value, hsbRotateGamma.Value,
-                                           rszXPE, rszYPE, rszZPE);
-
-                switch (e.Button)
+                if (loadedPModel && e.Button != MouseButtons.None)
                 {
-                    case MouseButtons.Left:
-                        DoFunction(primaryFunc, K_MOVE, e.X, e.Y);
-                        break;
 
-                    case MouseButtons.Right:
-                        DoFunction(secondaryFunc, K_MOVE, e.X, e.Y);
-                        break;
+                    glClearColor(0.4f, 0.4f, 0.65f, 0);
+                    glViewport(0, 0, panelEditorPModel.ClientRectangle.Width, panelEditorPModel.ClientRectangle.Height);
+                    glClear(glBufferMask.GL_COLOR_BUFFER_BIT | glBufferMask.GL_DEPTH_BUFFER_BIT);
 
-                    case MouseButtons.Middle:
-                        DoFunction(ternaryFunc, K_MOVE, e.X, e.Y);
-                        break;
+                    SetCameraPModel(EditedPModel, panXPE, panYPE, panZPE + DISTPE,
+                                    alphaPE, betaPE, gammaPE, 1, 1, 1);
 
+                    ConcatenateCameraModelView(repXPE, repYPE, repZPE,
+                                               hsbRotateAlpha.Value, hsbRotateBeta.Value, hsbRotateGamma.Value,
+                                               rszXPE, rszYPE, rszZPE);
+
+                    switch (e.Button)
+                    {
+                        case MouseButtons.Left:
+                            DoFunction(primaryFunc, K_MOVE, e.X, e.Y);
+                            break;
+
+                        case MouseButtons.Right:
+                            DoFunction(secondaryFunc, K_MOVE, e.X, e.Y);
+                            break;
+
+                        case MouseButtons.Middle:
+                            DoFunction(ternaryFunc, K_MOVE, e.X, e.Y);
+                            break;
+
+                    }
+
+                    x_lastPE = e.X;
+                    y_lastPE = e.Y;
+
+                    panelEditorPModel_Paint(null, null);
                 }
-
-                x_lastPE = e.X;
-                y_lastPE = e.Y;
-
-                panelEditorPModel_Paint(null, null);
             }
         }
 
         private void panelEditorPModel_MouseUp(object sender, MouseEventArgs e)
         {
+            pbMouseIsDownPE = false;
+
             if (e.Button == MouseButtons.Left)
             {
                 if (primaryFunc == K_MOVE_VERTEX) 
@@ -449,7 +455,8 @@ namespace KimeraCS
 
                 SetOGLEditorSettings();
 
-                glViewport(0, 0, panelEditorPModel.ClientRectangle.Width, panelEditorPModel.ClientRectangle.Height);
+                glViewport(0, 0, panelEditorPModel.ClientRectangle.Width, 
+                                 panelEditorPModel.ClientRectangle.Height);
                 ClearPanel();
                 SetDefaultOGLRenderState();
 
@@ -463,6 +470,13 @@ namespace KimeraCS
 
                 glFlush();
                 SwapBuffers(panelEditorPModelDC);
+
+                if (frmSkelEdit.pbIsMinimized)
+                {
+                    frmSkelEdit.panelModel_Paint(null, null);
+
+                    frmSkelEdit.pbIsMinimized = false;
+                }
             }
         }
 
@@ -1034,6 +1048,26 @@ namespace KimeraCS
             }
         }
 
+        private void btnDuplicateGroup_Click(object sender, EventArgs e)
+        {
+            if (lbGroups.SelectedIndex == -1)
+            {
+                MessageBox.Show("There is not selected any .P Model group.", "Information", MessageBoxButtons.OK);
+                return;
+            }
+
+            AddStateToBufferPE(this);
+
+            VCountNewPoly = 0;
+            DuplicateGroup(ref EditedPModel, lbGroups.SelectedIndex);
+            CheckModelConsistency(ref EditedPModel);
+
+            FillGroupsList();
+            panelEditorPModel_Paint(null, null);
+            CopyModelColors2VP(EditedPModel, ref vcolorsOriginal, ref pcolorsOriginal);
+            chkPalettized_CheckedChanged(null, null);
+        }
+
         private void btnGroupProperties_Click(object sender, EventArgs e)
         {
             if (lbGroups.SelectedIndex > -1)
@@ -1381,6 +1415,87 @@ namespace KimeraCS
             }
         }
 
+        private void loadModelAsNewGroupToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            PModel GroupModel;
+            // Set filter options and filter index.
+            openFile.Title = "Open Model as new Group (PEditor)";
+            openFile.Filter = "FF7 Field Model|*.P|FF7 Battle Model (*.*)|*.*|FF7 Magic Model|*.P??|FF7 3DS Model|*.3DS|All files|*.*";
+
+            switch (modelType)
+            {
+                case K_HRC_SKELETON:
+                    openFile.FilterIndex = 1;
+                    break;
+
+                case K_AA_SKELETON:
+                    openFile.FilterIndex = 2;
+                    break;
+
+                case K_MAGIC_SKELETON:
+                    openFile.FilterIndex = 3;
+                    break;
+            }
+
+            openFile.FileName = null;
+
+            // Check Initial Directory
+            if (strGlobalPathPModelFolderPE != null)
+            {
+                openFile.InitialDirectory = strGlobalPathPModelFolderPE;
+            }
+            else
+            {
+                openFile.InitialDirectory = strGlobalPath;
+            }
+
+            try
+            {
+                // Process input if the user clicked OK.
+                if (openFile.ShowDialog() == DialogResult.OK)
+                {
+                    if (File.Exists(openFile.FileName))
+                    {
+                        // Set Global Paths and save them
+                        strGlobalPathPModelFolderPE = Path.GetDirectoryName(openFile.FileName);
+                        strGlobalPModelNamePE = Path.GetFileName(openFile.FileName).ToUpper();
+                        WriteCFGFile();
+
+                        // Load the Model
+                        GroupModel = new PModel();
+                        LoadPModel(ref GroupModel, strGlobalPathPModelFolderPE,
+                                   Path.GetFileName(strGlobalPModelNamePE));
+
+                        if (GroupModel.Header.numVerts > 0)
+                        {
+                            AddStateToBufferPE(this);
+
+                            VCountNewPoly = 0;
+                            AddGroup(ref EditedPModel, GroupModel.Verts, GroupModel.Polys, 
+                                     GroupModel.TexCoords, GroupModel.Vcolors, GroupModel.Pcolors);
+
+                            DestroyPModelResources(ref GroupModel);
+
+                            CheckModelConsistency(ref EditedPModel);
+                            ComputeNormals(ref EditedPModel);
+                            ComputeEdges(ref EditedPModel);
+
+                            FillGroupsList();
+                            panelEditorPModel_Paint(null, null);
+                            CopyModelColors2VP(EditedPModel, ref vcolorsOriginal, ref pcolorsOriginal);
+                            chkPalettized_CheckedChanged(null, null);
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                MessageBox.Show("Error opening Model file " + openFile.FileName.ToUpper() + " as new Group in the P Editor.",
+                                "Error");
+                return;
+            }
+        }
+
         private void saveModelAsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Set filter options and filter index.
@@ -1491,6 +1606,7 @@ namespace KimeraCS
 
                 if (chkEnableLighting.Checked) ComputeNormals(ref EditedPModel);
 
+                CopyModelColors2VP(EditedPModel, ref vcolorsOriginal, ref pcolorsOriginal);
                 panelEditorPModel_Paint(null, null);
             }
         }
@@ -2213,7 +2329,6 @@ namespace KimeraCS
             panelEditorPModel_Paint(null, null);
             tmrRenderPModel.Stop();
         }
-
 
 
 
@@ -3041,7 +3156,7 @@ namespace KimeraCS
                                 if (iEvent == K_CLICK_SHIFT)
                                 {
                                     iSelectedColor = translationTableVertex[EditedPModel.Polys[pi].Verts[0] +
-                                                                            EditedPModel.Groups[GetPolygonGroup(EditedPModel.Groups, pi)].offsetVert].I;
+                                                                            EditedPModel.Groups[GetPolygonGroup(EditedPModel, pi)].offsetVert].I;
 
                                     hsbSelectedColorR.Value = colorTable[iSelectedColor].R;
                                     hsbSelectedColorG.Value = colorTable[iSelectedColor].G;
@@ -3099,7 +3214,7 @@ namespace KimeraCS
 
                             vi1 = EditedPModel.Polys[pi].Verts[ei];
                             vi2 = EditedPModel.Polys[pi].Verts[(ei + 1) % 3];
-                            iGroupIdx = GetPolygonGroup(EditedPModel.Groups, pi);
+                            iGroupIdx = GetPolygonGroup(EditedPModel, pi);
                             p1 = EditedPModel.Verts[EditedPModel.Groups[iGroupIdx].offsetVert + vi1];
                             p2 = EditedPModel.Verts[EditedPModel.Groups[iGroupIdx].offsetVert + vi2];
 
@@ -3117,7 +3232,7 @@ namespace KimeraCS
                             while (FindNextAdjacentPolyEdge(EditedPModel, p1, p2, ref pi, ref ei))
                             {
                                 //  If crossed group boundaries, recompute intersection_tex_coord
-                                tmpGroupIdx = GetPolygonGroup(EditedPModel.Groups, pi);
+                                tmpGroupIdx = GetPolygonGroup(EditedPModel, pi);
 
                                 if (tmpGroupIdx != iGroupIdx)
                                 {
