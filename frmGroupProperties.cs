@@ -109,6 +109,9 @@ namespace KimeraCS
 
         private void chkV_TEXTURE_CheckedChanged(object sender, EventArgs e)
         {
+            if (chkV_TEXTURE.Checked) nudTextureID.Enabled = true;
+            else nudTextureID.Enabled = false;
+
             SetRSValuesEnabled();
         }
 
@@ -162,11 +165,28 @@ namespace KimeraCS
             if (rbUnknown.Checked) EditedPModel.Hundrets[SelectedGroup].blend_mode = 3;
             if (rbNone.Checked) EditedPModel.Hundrets[SelectedGroup].blend_mode = 4;
 
-            if (EditedPModel.Groups[SelectedGroup].texFlag ==  1)
+            if (chkV_TEXTURE.Checked)
             {
+                EditedPModel.Groups[SelectedGroup].texFlag = 1;
+                EditedPModel.Groups[SelectedGroup].polyType = 2;    // We will suppose it has always normals.
                 EditedPModel.Groups[SelectedGroup].texID = (int)nudTextureID.Value;
                 EditedPModel.Hundrets[SelectedGroup].texID = (int)nudTextureID.Value;
+
             }
+            else
+            {
+                EditedPModel.Groups[SelectedGroup].texFlag = 0;
+                EditedPModel.Groups[SelectedGroup].polyType = 1;    // We will suppose it has never normals.
+                EditedPModel.Groups[SelectedGroup].texID = 0;
+                EditedPModel.Hundrets[SelectedGroup].texID = 0;
+            }
+
+            // Changed from KimeraVB with previous code.
+            //if (EditedPModel.Groups[SelectedGroup].texFlag ==  1)
+            //{
+            //    EditedPModel.Groups[SelectedGroup].texID = (int)nudTextureID.Value;
+            //    EditedPModel.Hundrets[SelectedGroup].texID = (int)nudTextureID.Value;
+            //}
 
             changeRenderStateValues = EditedPModel.Hundrets[SelectedGroup].field_8;
             renderStateValues = EditedPModel.Hundrets[SelectedGroup].field_C;
