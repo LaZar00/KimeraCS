@@ -55,7 +55,7 @@ namespace KimeraCS
     public partial class frmSkeletonEditor : Form
     {
 
-        public const string STR_APPNAME = "KimeraCS 1.0p";
+        public const string STR_APPNAME = "KimeraCS 1.2a";
 
         public static int modelWidth;
         public static int modelHeight;
@@ -117,6 +117,7 @@ namespace KimeraCS
 
         // Mouse PanelModel
         private bool pbMouseIsDown;
+        public bool pbIsMinimized;
 
         // Undo/Redo feature
         public static bool DoNotAddStateQ;
@@ -160,9 +161,11 @@ namespace KimeraCS
             glEnable(glCapability.GL_CULL_FACE);
         }
 
-        public static void InitOpenGLContext()
+        public void InitOpenGLContext()
         {
-            DisableOpenGL(OGLContext);
+
+            //DisableOpenGL(OGLContext);
+            panelModelDC = GetDC(panelModel.Handle);
             OGLContext = CreateOGLContext(panelModelDC);
 
             glEnable(glCapability.GL_DEPTH_TEST);
@@ -255,8 +258,7 @@ namespace KimeraCS
             hsbLightPosY.Minimum = -Lighting.LIGHT_STEPS;
             hsbLightPosZ.Maximum = Lighting.LIGHT_STEPS;
             hsbLightPosZ.Minimum = -Lighting.LIGHT_STEPS;
-
-            panelModelDC = GetDC(panelModel.Handle);
+            
             textureViewerDC = GetDC(pbTextureViewer.Handle);
 
             loaded = false;
@@ -783,7 +785,7 @@ namespace KimeraCS
                 glFlush();
                 SwapBuffers(panelModelDC);
 
-                if (Application.OpenForms.Count > 1)
+                if (Application.OpenForms.Count > 1 && !pbIsMinimized)
                 {
                     // Render also PEditor. It seems is opened
                     frmPEdit.panelEditorPModel_Paint(null, null);
@@ -1218,13 +1220,11 @@ namespace KimeraCS
 
             BattleFrame wpFrame;
 
+            pbMouseIsDown = true;
+
             if (loaded)
             {               
-                pbMouseIsDown = true;
 
-                //SetOGLSettings();
-
-                //glClearColor(0.20f, 0.20f, 0.28f, 0);
                 glClearColor(0.4f, 0.4f, 0.65f, 0);
                 glViewport(0, 0, panelModel.ClientRectangle.Width, panelModel.ClientRectangle.Height);
                 glClear(glBufferMask.GL_COLOR_BUFFER_BIT | glBufferMask.GL_DEPTH_BUFFER_BIT);
@@ -5703,14 +5703,6 @@ namespace KimeraCS
             //    }
         }
 
-        private void frmSkeletonEditor_EnabledChanged(object sender, EventArgs e)
-        {
-            //if (this.Enabled)
-            //{
-            //    panelModel_Paint(null, null);
-            //}
-        }
-
         public void tsUIOpacity100_Click(object sender, EventArgs e)
         {
             this.Opacity = 1.00F;
@@ -5969,6 +5961,34 @@ namespace KimeraCS
 
 
 
+        /// <summary>
+        /// This two procedures are for fix Minimize issue that does not updates picturebox of
+        /// skeleton window. This uses a Timer: tmrMinimizeRedrawPanel.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void frmSkeletonEditor_SizeChanged(object sender, EventArgs e)
+        {
+            if (Application.OpenForms.Count > 1)
+                if (Application.OpenForms[0].WindowState == FormWindowState.Minimized)
+                {
+                    tmrMinimizeRedrawPanel.Start();
+                    pbIsMinimized = true;
+                }
+                else
+                    pbIsMinimized = false;
+
+        }
+
+        private void tmrMinimizeRedrawPanel_Tick(object sender, EventArgs e)
+        {
+            if (!pbIsMinimized) 
+            {
+                tmrMinimizeRedrawPanel.Stop();
+
+                panelModel_Paint(null, null);
+            }
+        }
 
     }
 

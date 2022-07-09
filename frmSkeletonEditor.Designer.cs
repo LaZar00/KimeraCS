@@ -31,6 +31,7 @@ namespace KimeraCS
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmSkeletonEditor));
             this.openFile = new System.Windows.Forms.OpenFileDialog();
             this.panel1 = new System.Windows.Forms.Panel();
@@ -180,6 +181,7 @@ namespace KimeraCS
             this.showCharlgpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveFile = new System.Windows.Forms.SaveFileDialog();
             this.panelModel = new System.Windows.Forms.PictureBox();
+            this.tmrMinimizeRedrawPanel = new System.Windows.Forms.Timer(this.components);
             this.panel1.SuspendLayout();
             this.gbTexturesFrame.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUDMoveTextureUpDown)).BeginInit();
@@ -216,10 +218,10 @@ namespace KimeraCS
             this.panel1.Controls.Add(this.lblBoneSelector);
             this.panel1.Controls.Add(this.cbBoneSelector);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel1.Location = new System.Drawing.Point(766, 28);
+            this.panel1.Location = new System.Drawing.Point(766, 30);
             this.panel1.Margin = new System.Windows.Forms.Padding(4);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(213, 771);
+            this.panel1.Size = new System.Drawing.Size(213, 769);
             this.panel1.TabIndex = 6;
             // 
             // gbTexturesFrame
@@ -787,10 +789,10 @@ namespace KimeraCS
             this.panel2.Controls.Add(this.gbSelectedPieceFrame);
             this.panel2.Controls.Add(this.chkDListEnable);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Left;
-            this.panel2.Location = new System.Drawing.Point(0, 28);
+            this.panel2.Location = new System.Drawing.Point(0, 30);
             this.panel2.Margin = new System.Windows.Forms.Padding(4);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(211, 771);
+            this.panel2.Size = new System.Drawing.Size(211, 769);
             this.panel2.TabIndex = 7;
             // 
             // groupBox1
@@ -1591,7 +1593,7 @@ namespace KimeraCS
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(5, 2, 0, 2);
-            this.menuStrip1.Size = new System.Drawing.Size(979, 28);
+            this.menuStrip1.Size = new System.Drawing.Size(979, 30);
             this.menuStrip1.TabIndex = 10;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -1608,7 +1610,7 @@ namespace KimeraCS
             this.toolStripSeparator2,
             this.extiToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(46, 24);
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(46, 26);
             this.fileToolStripMenuItem.Text = "&File";
             // 
             // loadFieldSkeletonToolStripMenuItem
@@ -1683,7 +1685,7 @@ namespace KimeraCS
             this.toolStripSeparator7,
             this.uIOpacityToolStripMenuItem});
             this.editToolStripMenuItem2.Name = "editToolStripMenuItem2";
-            this.editToolStripMenuItem2.Size = new System.Drawing.Size(49, 24);
+            this.editToolStripMenuItem2.Size = new System.Drawing.Size(49, 26);
             this.editToolStripMenuItem2.Text = "Edit";
             // 
             // undoToolStripMenuItem
@@ -1783,7 +1785,7 @@ namespace KimeraCS
             this.toolStripSeparator5,
             this.interpolateAllAnimationsToolStripMenuItem});
             this.animationToolStripMenuItem.Name = "animationToolStripMenuItem";
-            this.animationToolStripMenuItem.Size = new System.Drawing.Size(92, 24);
+            this.animationToolStripMenuItem.Size = new System.Drawing.Size(92, 26);
             this.animationToolStripMenuItem.Text = "&Animation";
             // 
             // loadFieldAnimationToolStripMenuItem
@@ -1879,7 +1881,7 @@ namespace KimeraCS
             this.databaseToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.showCharlgpToolStripMenuItem});
             this.databaseToolStripMenuItem.Name = "databaseToolStripMenuItem";
-            this.databaseToolStripMenuItem.Size = new System.Drawing.Size(86, 24);
+            this.databaseToolStripMenuItem.Size = new System.Drawing.Size(86, 26);
             this.databaseToolStripMenuItem.Text = "&Database";
             // 
             // showCharlgpToolStripMenuItem
@@ -1908,10 +1910,15 @@ namespace KimeraCS
             this.panelModel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.panelModel_MouseMove);
             this.panelModel.MouseUp += new System.Windows.Forms.MouseEventHandler(this.panelModel_MouseUp);
             // 
+            // tmrMinimizeRedrawPanel
+            // 
+            this.tmrMinimizeRedrawPanel.Tick += new System.EventHandler(this.tmrMinimizeRedrawPanel_Tick);
+            // 
             // frmSkeletonEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoValidate = System.Windows.Forms.AutoValidate.EnablePreventFocusChange;
             this.ClientSize = new System.Drawing.Size(979, 799);
             this.Controls.Add(this.panelModel);
             this.Controls.Add(this.panel3);
@@ -1930,8 +1937,7 @@ namespace KimeraCS
             this.Activated += new System.EventHandler(this.frmSkeletonEditor_Activated);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.frmSkeletonEditor_FormClosed);
             this.Load += new System.EventHandler(this.frmSkeletonEditor_Load);
-            this.EnabledChanged += new System.EventHandler(this.frmSkeletonEditor_EnabledChanged);
-            this.Enter += new System.EventHandler(this.frmSkeletonEditor_Enter);
+            this.SizeChanged += new System.EventHandler(this.frmSkeletonEditor_SizeChanged);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.frmSkeletonEditor_KeyDown);
             this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.frmSkeletonEditor_KeyUp);
             this.Move += new System.EventHandler(this.frmSkeletonEditor_Move);
@@ -2127,6 +2133,7 @@ namespace KimeraCS
         private System.Windows.Forms.ToolStripMenuItem tsUIOpacity75;
         private System.Windows.Forms.ToolStripMenuItem tsUIOpacity50;
         private System.Windows.Forms.ToolStripMenuItem tsUIOpacity25;
+        private System.Windows.Forms.Timer tmrMinimizeRedrawPanel;
     }
 }
 
