@@ -354,17 +354,43 @@ namespace KimeraCS
 
         public static void GetHeaderBitmapInfo(IntPtr hDC, IntPtr hBMP, ref BitmapInfo bmpInfo)
         {
+            byte[] lpvBits = null;
+
             bmpInfo.bmiHeader.biSize = 40;
 
-            GetDIBits(hDC, hBMP, 0, 0, null, ref bmpInfo, DIBColorTable.DIB_RGB_COLORS);
+            GetDIBits(hDC, hBMP, 0, 0, lpvBits, ref bmpInfo, DIBColorTable.DIB_RGB_COLORS);
         }
 
+        ////  Uses the 3-call method to GetDIBits for retriving the bitmap data (including original pallete)
+        //public static void GetAllBitmapData(IntPtr hDC, IntPtr hBMP, ref byte[] bmpData, ref BitmapInfo bmpInfo)
+        //{
+        //    GetHeaderBitmapInfo(hDC, hBMP, ref bmpInfo);
+
+        //    if (bmpInfo.bmiHeader.biBitCount == BitCount.BitPerPixel1BPP || 
+        //        bmpInfo.bmiHeader.biBitCount == BitCount.BitPerPixel4BPP ||
+        //        bmpInfo.bmiHeader.biBitCount == BitCount.BitPerPixel8BPP)
+        //    {
+        //        uint oldUsed = bmpInfo.bmiHeader.biClrUsed;  //Read bitmap palette
+
+        //        GetDIBits(hDC, hBMP, 0, 0, null, ref bmpInfo, 0);
+        //        bmpInfo.bmiHeader.biClrUsed = oldUsed;
+        //    }
+
+        //    // bmpData = new byte[((((((bmpInfo.bmiHeader.biWidth * (int)bmpInfo.bmiHeader.biBitCount) + 31) & 0xFFFFFFE0) / 0x20) * bmpInfo.bmiHeader.biHeight) * 4 - 1)];
+        //    bmpData = new byte[((((((bmpInfo.bmiHeader.biWidth * (int)bmpInfo.bmiHeader.biBitCount) + 31) & 0xFFFFFFE0) / 0x20) * bmpInfo.bmiHeader.biHeight) * 4)];
+
+        //    //  Read Image data
+        //    //GetDIBits(hDC, hBMP, 0, (uint)bmpInfo.bmiHeader.biHeight, bmpData, ref bmpInfo, 0);
+
+        //}
+
         //  Uses the 3-call method to GetDIBits for retriving the bitmap data (including original pallete)
-        public static void GetAllBitmapData(IntPtr hDC, IntPtr hBMP, byte[] bmpData, ref BitmapInfo bmpInfo)
+        public static void GetAllBitmapData(IntPtr hDC, IntPtr hBMP,
+                                            Bitmap bmpTexture, ref BitmapInfo bmpInfo, out byte[] pictureData)
         {
             GetHeaderBitmapInfo(hDC, hBMP, ref bmpInfo);
 
-            if (bmpInfo.bmiHeader.biBitCount == BitCount.BitPerPixel1BPP || 
+            if (bmpInfo.bmiHeader.biBitCount == BitCount.BitPerPixel1BPP ||
                 bmpInfo.bmiHeader.biBitCount == BitCount.BitPerPixel4BPP ||
                 bmpInfo.bmiHeader.biBitCount == BitCount.BitPerPixel8BPP)
             {
@@ -374,11 +400,26 @@ namespace KimeraCS
                 bmpInfo.bmiHeader.biClrUsed = oldUsed;
             }
 
-            bmpData = new byte[((((((bmpInfo.bmiHeader.biWidth * (int)bmpInfo.bmiHeader.biBitCount) + 31) & 0xFFFFFFE0) / 0x20) * bmpInfo.bmiHeader.biHeight) * 4 - 1)];
+            // Lock the bitmap's bits.  
+            Rectangle rect = new Rectangle(0, 0, bmpTexture.Width, bmpTexture.Height);
+            System.Drawing.Imaging.BitmapData bmpData =
+                bmpTexture.LockBits(rect, System.Drawing.Imaging.ImageLockMode.ReadWrite,
+                bmpTexture.PixelFormat);
 
-            //  Read Image data
-            GetDIBits(hDC, hBMP, 0, (uint)bmpInfo.bmiHeader.biHeight, bmpData, ref bmpInfo, 0);
+            // Get the address of the first line.
+            IntPtr ptr = bmpData.Scan0;
+
+            // Declare an array to hold the bytes of the bitmap.
+            int bytes = Math.Abs(bmpData.Stride) * bmpTexture.Height;
+            pictureData = new byte[bytes];
+
+            // Copy the RGB values into the array.
+            Marshal.Copy(ptr, pictureData, 0, bytes);
+
+            // Unlock the bits.
+            bmpTexture.UnlockBits(bmpData);
         }
+
 
         //  This function fits a bitmap to a picturebox scaling/shrinking it if necessary with NearestNeighbor interpolate option
         public static Bitmap FitBitmapToPictureBox(PictureBox pbIn, int iImgWidth, int iImgHeight, IntPtr hBMP)
