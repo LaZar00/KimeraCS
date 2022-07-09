@@ -156,6 +156,8 @@ namespace KimeraCS
             this.saveFile = new System.Windows.Forms.SaveFileDialog();
             this.panelEditorPModel = new System.Windows.Forms.PictureBox();
             this.tmrRenderPModel = new System.Windows.Forms.Timer(this.components);
+            this.btnDuplicateGroup = new System.Windows.Forms.Button();
+            this.loadModelAsNewGroupToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
             this.gbColorEditor.SuspendLayout();
@@ -198,6 +200,7 @@ namespace KimeraCS
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.loadModelToolStripMenuItem,
+            this.loadModelAsNewGroupToolStripMenuItem,
             this.saveModelAsToolStripMenuItem,
             this.toolStripSeparator1,
             this.exitToolStripMenuItem});
@@ -208,26 +211,26 @@ namespace KimeraCS
             // loadModelToolStripMenuItem
             // 
             this.loadModelToolStripMenuItem.Name = "loadModelToolStripMenuItem";
-            this.loadModelToolStripMenuItem.Size = new System.Drawing.Size(199, 26);
+            this.loadModelToolStripMenuItem.Size = new System.Drawing.Size(266, 26);
             this.loadModelToolStripMenuItem.Text = "Load Model";
             this.loadModelToolStripMenuItem.Click += new System.EventHandler(this.loadModelToolStripMenuItem_Click);
             // 
             // saveModelAsToolStripMenuItem
             // 
             this.saveModelAsToolStripMenuItem.Name = "saveModelAsToolStripMenuItem";
-            this.saveModelAsToolStripMenuItem.Size = new System.Drawing.Size(199, 26);
+            this.saveModelAsToolStripMenuItem.Size = new System.Drawing.Size(266, 26);
             this.saveModelAsToolStripMenuItem.Text = "Save Model As...";
             this.saveModelAsToolStripMenuItem.Click += new System.EventHandler(this.saveModelAsToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(196, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(263, 6);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(199, 26);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(266, 26);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -245,7 +248,7 @@ namespace KimeraCS
             this.undoToolStripMenuItem.Enabled = false;
             this.undoToolStripMenuItem.Name = "undoToolStripMenuItem";
             this.undoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.U)));
-            this.undoToolStripMenuItem.Size = new System.Drawing.Size(180, 26);
+            this.undoToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.undoToolStripMenuItem.Text = "Undo";
             this.undoToolStripMenuItem.Click += new System.EventHandler(this.undoToolStripMenuItem_Click);
             // 
@@ -254,7 +257,7 @@ namespace KimeraCS
             this.redoToolStripMenuItem.Enabled = false;
             this.redoToolStripMenuItem.Name = "redoToolStripMenuItem";
             this.redoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R)));
-            this.redoToolStripMenuItem.Size = new System.Drawing.Size(180, 26);
+            this.redoToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.redoToolStripMenuItem.Text = "Redo";
             this.redoToolStripMenuItem.Click += new System.EventHandler(this.redoToolStripMenuItem_Click);
             // 
@@ -1407,6 +1410,7 @@ namespace KimeraCS
             // 
             // gbGroups
             // 
+            this.gbGroups.Controls.Add(this.btnDuplicateGroup);
             this.gbGroups.Controls.Add(this.btnRemoveGroup);
             this.gbGroups.Controls.Add(this.btnGroupProperties);
             this.gbGroups.Controls.Add(this.btnHideShowGroup);
@@ -1426,7 +1430,7 @@ namespace KimeraCS
             // btnRemoveGroup
             // 
             this.btnRemoveGroup.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnRemoveGroup.Location = new System.Drawing.Point(237, 20);
+            this.btnRemoveGroup.Location = new System.Drawing.Point(237, 15);
             this.btnRemoveGroup.Margin = new System.Windows.Forms.Padding(4);
             this.btnRemoveGroup.Name = "btnRemoveGroup";
             this.btnRemoveGroup.Size = new System.Drawing.Size(132, 28);
@@ -1438,10 +1442,10 @@ namespace KimeraCS
             // btnGroupProperties
             // 
             this.btnGroupProperties.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnGroupProperties.Location = new System.Drawing.Point(237, 47);
+            this.btnGroupProperties.Location = new System.Drawing.Point(237, 69);
             this.btnGroupProperties.Margin = new System.Windows.Forms.Padding(4);
             this.btnGroupProperties.Name = "btnGroupProperties";
-            this.btnGroupProperties.Size = new System.Drawing.Size(132, 50);
+            this.btnGroupProperties.Size = new System.Drawing.Size(132, 28);
             this.btnGroupProperties.TabIndex = 4;
             this.btnGroupProperties.Text = "Group properties";
             this.btnGroupProperties.UseVisualStyleBackColor = true;
@@ -1614,6 +1618,25 @@ namespace KimeraCS
             // 
             this.tmrRenderPModel.Interval = 500;
             this.tmrRenderPModel.Tick += new System.EventHandler(this.tmrRenderPModel_Tick);
+            // 
+            // btnDuplicateGroup
+            // 
+            this.btnDuplicateGroup.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.btnDuplicateGroup.Location = new System.Drawing.Point(237, 42);
+            this.btnDuplicateGroup.Margin = new System.Windows.Forms.Padding(4);
+            this.btnDuplicateGroup.Name = "btnDuplicateGroup";
+            this.btnDuplicateGroup.Size = new System.Drawing.Size(132, 28);
+            this.btnDuplicateGroup.TabIndex = 6;
+            this.btnDuplicateGroup.Text = "Duplicate group";
+            this.btnDuplicateGroup.UseVisualStyleBackColor = true;
+            this.btnDuplicateGroup.Click += new System.EventHandler(this.btnDuplicateGroup_Click);
+            // 
+            // loadModelAsNewGroupToolStripMenuItem
+            // 
+            this.loadModelAsNewGroupToolStripMenuItem.Name = "loadModelAsNewGroupToolStripMenuItem";
+            this.loadModelAsNewGroupToolStripMenuItem.Size = new System.Drawing.Size(266, 26);
+            this.loadModelAsNewGroupToolStripMenuItem.Text = "Load Model as new Group";
+            this.loadModelAsNewGroupToolStripMenuItem.Click += new System.EventHandler(this.loadModelAsNewGroupToolStripMenuItem_Click);
             // 
             // frmPEditor
             // 
@@ -1804,5 +1827,7 @@ namespace KimeraCS
         public System.Windows.Forms.ToolStripMenuItem redoToolStripMenuItem;
         private System.Windows.Forms.PictureBox pbPaletteColor;
         public System.Windows.Forms.Timer tmrRenderPModel;
+        private System.Windows.Forms.Button btnDuplicateGroup;
+        private System.Windows.Forms.ToolStripMenuItem loadModelAsNewGroupToolStripMenuItem;
     }
 }
