@@ -160,7 +160,10 @@ namespace KimeraCS
 
         public struct PGroup
         {
-            public int polyType;
+            public int polyType;    //  Specifies the Polygon Type for this Group:
+                                    //  1 - nontextured Polygons
+                                    //  2 - textured Polygons with normals
+                                    //  3 - textured Polygons without normals
             public int offsetPoly;
             public int numPoly;
             public int offsetVert;
@@ -979,7 +982,7 @@ namespace KimeraCS
 
         public static void KillUnusedVertices(ref PModel Model)
         {
-            long gi, gi2, pi, vi, vi2, vit, tci, tciGlobal;
+            int gi, pi, vi, vi2, vit, tci, tciGlobal, iNextGroup;
             int[] vertsUsage = new int[Model.Header.numVerts];
 
             for (vi = 0; vi < Model.Header.numVerts; vi++) vertsUsage[vi] = 0;
@@ -1037,14 +1040,25 @@ namespace KimeraCS
 
                         if (gi < Model.Header.numGroups - 1)
                         {
-                            for (gi2 = gi + 1; gi2 < Model.Header.numGroups; gi2++)
+                            iNextGroup = GetNextGroup(Model, gi);
+
+                            while (iNextGroup != -1)
                             {
-                                Model.Groups[gi2].offsetVert--;
+                                Model.Groups[iNextGroup].offsetVert--;
 
-                                if (Model.Groups[gi].texFlag == 1 && Model.Groups[gi2].offsetTex > 0)
-                                    Model.Groups[gi2].offsetTex--;
+                                if (Model.Groups[gi].texFlag == 1 && Model.Groups[iNextGroup].offsetTex > 0)
+                                    Model.Groups[iNextGroup].offsetTex--;
 
+                                iNextGroup = GetNextGroup(Model, iNextGroup);
                             }
+                            //for (gi2 = gi + 1; gi2 < Model.Header.numGroups; gi2++)
+                            //{
+                            //    Model.Groups[gi2].offsetVert--;
+
+                            //    if (Model.Groups[gi].texFlag == 1 && Model.Groups[gi2].offsetTex > 0)
+                            //        Model.Groups[gi2].offsetTex--;
+
+                            //}
                         }
 
                         Model.Groups[gi].numVert--;
@@ -1167,8 +1181,8 @@ namespace KimeraCS
         //  ---------------------------------------------------------------------------------------------------------
         //  --------------------------------------------------SETTERS------------------------------------------------
         //  ---------------------------------------------------------------------------------------------------------
-        public static void AddGroup(ref PModel Model, ref Point3D[] vertsV, ref PPolygon[] facesV, ref Point2D[] texCoordsV,
-                                    ref Color[] vcolorsV, ref Color[] pcolorsV)
+        public static void AddGroup(ref PModel Model, Point3D[] vertsV, PPolygon[] facesV, Point2D[] texCoordsV,
+                                    Color[] vcolorsV, Color[] pcolorsV)
         {
             //  ------------------- Warning! Causes the Normals to be inconsistent.------------------------------
             //  --------------------------------Must call ComputeNormals ----------------------------------------
@@ -1281,6 +1295,9 @@ namespace KimeraCS
             Model.Header.mirex_h += 1;
             Array.Resize(ref Model.Hundrets, (int)Model.Header.mirex_h);
             FillHundrestsDefaultValues(ref Model.Hundrets[Model.Header.mirex_h - 1]);
+
+            // Put realGID
+            Model.Groups[groupIndex].realGID = Model.Groups.Length - 1;
         }
 
         public static void ApplyCurrentVColors(ref PModel Model)
@@ -1496,7 +1513,7 @@ namespace KimeraCS
 
         public static void UpdateNormal(ref PModel Model, List<int> lstVerts, int[] lstAdjacentPolysIdxs)
         {
-            int pi, vi, nPolys, iGroupIdx, offsetVert;
+            int pi, nPolys, iGroupIdx, offsetVert;
 
             Point3D currentNormal = new Point3D();
             Point3D totalNormal = new Point3D();
@@ -1505,7 +1522,7 @@ namespace KimeraCS
 
             for (pi = 0; pi < nPolys; pi++)
             {
-                iGroupIdx = GetPolygonGroup(Model.Groups, lstAdjacentPolysIdxs[pi]);
+                iGroupIdx = GetPolygonGroup(Model, lstAdjacentPolysIdxs[pi]);
                 offsetVert = Model.Groups[iGroupIdx].offsetVert;
 
                 currentNormal = CalculateNormal(ref Model.Verts[Model.Polys[lstAdjacentPolysIdxs[pi]].Verts[2] + offsetVert],
@@ -1988,28 +2005,37 @@ namespace KimeraCS
         //  -------------------------------------------------------------------------------------------------
         //  ====================================== REMOVE PMODEL GROUP ======================================
         //  -------------------------------------------------------------------------------------------------
+        // If iGroupIdx == -1, the we return the group that has realGID = 0
         public static int GetNextGroup(PModel Model, int iGroupIdx)
         {
             int iMinGID, iMaxGID, iNextGroup = -1;
             int iGroupCounter = 0;
             bool bFoundNextGroup = false;
 
-            iMinGID = Model.Groups[iGroupIdx].realGID;
-            iMaxGID = 9999;
-
-            foreach (PGroup itmGroup in Model.Groups)
+            if (iGroupIdx == -1)
             {
-                if (itmGroup.realGID < iMaxGID && itmGroup.realGID > iMinGID)
+                iNextGroup = 0;
+                while (Model.Groups[iNextGroup].offsetPoly != 0) iNextGroup++;
+            }
+            else
+            {
+                iMinGID = Model.Groups[iGroupIdx].realGID;
+                iMaxGID = 9999;
+
+                foreach (PGroup itmGroup in Model.Groups)
                 {
-                    iMaxGID = itmGroup.realGID;
-                    iNextGroup = iGroupCounter;
-                    bFoundNextGroup = true;
+                    if (itmGroup.realGID < iMaxGID && itmGroup.realGID > iMinGID)
+                    {
+                        iMaxGID = itmGroup.realGID;
+                        iNextGroup = iGroupCounter;
+                        bFoundNextGroup = true;
+                    }
+
+                    iGroupCounter++;
                 }
 
-                iGroupCounter++;
+                if (!bFoundNextGroup) iNextGroup = -1;
             }
-
-            if (!bFoundNextGroup) iNextGroup = -1;
 
             return iNextGroup;
         }
@@ -2392,7 +2418,7 @@ namespace KimeraCS
         public static void RemoveGroup(ref PModel Model, int iGroupIdx)
         {
             //int gi, gi2, giActualGroup, giPrevGroup, giMinOffPoly, giMaxOffPoly;
-            int gi, gi2, iActualGroup, iNextGroup;
+            int iActualGroup, iNextGroup;
             bool bGroupHasOffsetPolyZero;
 
             bGroupHasOffsetPolyZero = Model.Groups[iGroupIdx].offsetPoly == 0 ? true : false;
@@ -2441,7 +2467,7 @@ namespace KimeraCS
                 {
                     // Else we need to find the group with polys 0.
                     iGroupIdx = 0;
-                    while (Model.Groups[iGroupIdx].offsetPoly != 0) iGroupIdx++;
+                    iGroupIdx = GetNextGroup(Model, -1);
                 }
 
                 // While there are groups to recalculate:
@@ -2570,7 +2596,7 @@ namespace KimeraCS
 
             if (pi > -1)
             {
-                gi = GetPolygonGroup(Model.Groups, pi);
+                gi = GetPolygonGroup(Model, pi);
 
                 pUP3D.y = height - py;
                 for (vi = 0; vi < 3; vi++)
@@ -2713,20 +2739,37 @@ namespace KimeraCS
             return iGetClosestPolygonResult;
         }
 
-        public static int GetPolygonGroup(PGroup[] Groups, int pi)
+        //public static int GetPolygonGroup(PGroup[] Groups, int pi)
+        public static int GetPolygonGroup(PModel Model, int pi)
         {
-            int baseP = 0, iGetPolygonGroupResult = 0;
+            //int baseP = 0, iGetPolygonGroupResult = 0;
 
-            baseP += Groups[0].numPoly;
+            //baseP += Groups[0].numPoly;
 
+            //while (baseP <= pi)
+            //{
+            //    iGetPolygonGroupResult++;
+            //    baseP += Groups[iGetPolygonGroupResult].numPoly;
+            //}
+
+            //return iGetPolygonGroupResult;
+            int baseP = 0, iNextGroup;
+
+            // Get first 0 group
+            iNextGroup = GetNextGroup(Model, -1);
+            baseP += Model.Groups[iNextGroup].numPoly;
+
+            // Get other groups
             while (baseP <= pi)
             {
-                iGetPolygonGroupResult++;
-                baseP += Groups[iGetPolygonGroupResult].numPoly;
+                iNextGroup = GetNextGroup(Model, iNextGroup);
+
+                baseP += Model.Groups[iNextGroup].numPoly;
             }
 
-            return iGetPolygonGroupResult;
+            return iNextGroup;
         }
+
 
         //  -------------------------------WARNINGS!------------------------------
         //  -------*Causes the Normals to be inconsistent (call ComputeNormals).--
@@ -2734,9 +2777,9 @@ namespace KimeraCS
         //  -------*Can cause unused vertices (call KillUnusedVertices).----------
         public static void RemovePolygon(ref PModel Model, int indexP)
         {
-            int gi, pi, iGroupIdx;
+            int pi, iGroupIdx, iNextGroup;
 
-            iGroupIdx = GetPolygonGroup(Model.Groups, indexP);
+            iGroupIdx = GetPolygonGroup(Model, indexP);
 
             // -- Commented in KimeraVB6
             //  if (Model.Header.numPolys == 1)
@@ -2753,13 +2796,20 @@ namespace KimeraCS
                 Model.Pcolors[pi] = Model.Pcolors[pi + 1];
             }
 
-            if (iGroupIdx < Model.Header.numGroups - 1)
+            iNextGroup = GetNextGroup(Model, iGroupIdx);
+            while (iNextGroup != -1)
             {
-                for (gi = iGroupIdx + 1; gi < Model.Header.numGroups; gi++)
-                {
-                    Model.Groups[gi].offsetPoly--;
-                }
+                Model.Groups[iNextGroup].offsetPoly--;
+
+                iNextGroup = GetNextGroup(Model, iNextGroup);
             }
+            //if (iGroupIdx < Model.Header.numGroups - 1)
+            //{
+            //    for (gi = iGroupIdx + 1; gi < Model.Header.numGroups; gi++)
+            //    {
+            //        Model.Groups[gi].offsetPoly--;
+            //    }
+            //}
             Model.Groups[iGroupIdx].numPoly--;
 
             //  This is technically wrong. The vector shold be emptied if Model.Header.numPolys droped to 0,
@@ -2798,7 +2848,7 @@ namespace KimeraCS
             tmpUP3D.y = height - py;
             tmpUP3D.z = 0;
 
-            offsetVerts = Model.Groups[GetPolygonGroup(Model.Groups, pIndex)].offsetVert;
+            offsetVerts = Model.Groups[GetPolygonGroup(Model, pIndex)].offsetVert;
 
             // -- Commented in KimeraVB6
             //glMatrixMode(glMatrixModeList.GL_MODELVIEW);
@@ -2955,7 +3005,7 @@ namespace KimeraCS
                     Array.Copy(Model.TexCoords, Model.Groups[iGroupIdx].offsetTex, vTexCoords, 0, vTexCoords.Length);
                 }                           
                 
-                AddGroup(ref Model, ref vVerts, ref vFaces, ref vTexCoords, ref vVcolors, ref vPcolors);
+                AddGroup(ref Model, vVerts, vFaces, vTexCoords, vVcolors, vPcolors);
 
                 Model.Groups[Model.Header.numGroups - 1].texID = Model.Groups[iGroupIdx].texID;
 
@@ -3008,7 +3058,8 @@ namespace KimeraCS
             int iAddVertexResult = -1;
             //  -------- Warning! Causes the Normals to be inconsistent if lights are disabled.------------------
             //  --------------------------------Must call ComputeNormals ----------------------------------------
-            int gi, vi, ni, tci, baseVerts, baseNormals, baseTexCoords;
+            int vi, ni, tci, baseVerts, baseNormals, baseTexCoords;
+            int iNextGroup;
 
             Model.Header.numVerts++;
             Array.Resize(ref Model.Verts, Model.Header.numVerts);
@@ -3029,9 +3080,12 @@ namespace KimeraCS
                 Model.NormalIndex[Model.Header.numNormIdx - 1] = Model.Header.numNormIdx - 1;
             }
 
-            if (iGroupIdx < Model.Header.numGroups - 1)
+            iNextGroup = GetNextGroup(Model, iGroupIdx);
+            //if (iGroupIdx < Model.Header.numGroups - 1)
+            if (iNextGroup != -1)
             {
-                baseVerts = Model.Groups[iGroupIdx + 1].offsetVert;
+                //baseVerts = Model.Groups[iGroupIdx + 1].offsetVert;
+                baseVerts = Model.Groups[iNextGroup].offsetVert;
 
                 for (vi = Model.Header.numVerts - 1; vi >= baseVerts; vi--)
                 {
@@ -3053,7 +3107,8 @@ namespace KimeraCS
                 {
                     if (Model.Groups[iGroupIdx].texFlag == 1)
                     {
-                        baseNormals = Model.Groups[iGroupIdx + 1].offsetVert;
+                        //baseNormals = Model.Groups[iGroupIdx + 1].offsetVert;
+                        baseNormals = Model.Groups[iNextGroup].offsetVert;
 
                         for (ni = Model.Header.numNormals - 1; ni >= baseNormals; ni--)
                         {
@@ -3062,16 +3117,27 @@ namespace KimeraCS
                     }
                 }
 
-                for (gi = iGroupIdx + 1; gi < Model.Header.numGroups; gi++)
+                while (iNextGroup != -1)
                 {
-                    Model.Groups[gi].offsetVert++;
+                    Model.Groups[iNextGroup].offsetVert++;
 
-                    if (Model.Groups[iGroupIdx].texFlag == 1 && Model.Groups[gi].texFlag == 1)
+                    if (Model.Groups[iGroupIdx].texFlag == 1 && Model.Groups[iNextGroup].texFlag == 1)
                     {
-                        Model.Groups[gi].offsetTex++;
+                        Model.Groups[iNextGroup].offsetTex++;
                     }
 
+                    iNextGroup = GetNextGroup(Model, iNextGroup);
                 }
+                //for (gi = iGroupIdx + 1; gi < Model.Header.numGroups; gi++)
+                //{
+                //    Model.Groups[gi].offsetVert++;
+
+                //    if (Model.Groups[iGroupIdx].texFlag == 1 && Model.Groups[gi].texFlag == 1)
+                //    {
+                //        Model.Groups[gi].offsetTex++;
+                //    }
+
+                //}
             }
 
             if (iGroupIdx < Model.Header.numGroups)
@@ -3096,20 +3162,36 @@ namespace KimeraCS
             Model.Verts[iVertIdx].z = tmpUP3D.z;
         }
 
-        public static int GetVertexGroup(PGroup[] pGroups, int iVertIdx)
+        //public static int GetVertexGroup(PGroup[] pGroups, int iVertIdx)
+        public static int GetVertexGroup(PModel Model, int iVertIdx)
         {
-            int iGetVertexGroupResult = 0;
-            int vBase = 0;
+            //int iGetVertexGroupResult = 0;
+            //int vBase = 0;
 
-            vBase += pGroups[0].numVert;
+            //vBase += pGroups[0].numVert;
 
+            //while (vBase <= iVertIdx)
+            //{
+            //    iGetVertexGroupResult++;
+            //    vBase += pGroups[iGetVertexGroupResult].numVert;
+            //}
+
+            //return iGetVertexGroupResult;
+            int vBase = 0, iNextGroup;
+
+            // Get first 0 group
+            iNextGroup = GetNextGroup(Model, -1);
+            vBase += Model.Groups[iNextGroup].numVert;
+
+            // Get other groups
             while (vBase <= iVertIdx)
             {
-                iGetVertexGroupResult++;
-                vBase += pGroups[iGetVertexGroupResult].numVert;
+                iNextGroup = GetNextGroup(Model, iNextGroup);
+
+                vBase += Model.Groups[iNextGroup].numVert;
             }
 
-            return iGetVertexGroupResult;
+            return iNextGroup;
         }
 
         public static int AddPolygon(ref PModel Model, ref int[] vertsIndexBuff)
@@ -3117,23 +3199,28 @@ namespace KimeraCS
             int iAddPolygonResult = -1;
             //  -------- Warning! Can cause the Normals to be inconsistent if lights are disabled.-----
             //  ---------------------------------Must call ComputeNormals -----------------------------
-            int gi, pi, vi, iGroupIdx, basePolys, tmpR = 0, tmpG = 0, tmpB = 0;
+            int pi, vi, iGroupIdx, iNextGroup,  basePolys, tmpR = 0, tmpG = 0, tmpB = 0;
             Point3D tmpVPoint3D = new Point3D();
             Color tmpColor = new Color();
 
             if (vertsIndexBuff[0] != vertsIndexBuff[1] &&
                 vertsIndexBuff[0] != vertsIndexBuff[2])
             {
-                iGroupIdx = GetVertexGroup(Model.Groups, vertsIndexBuff[0]);
+                iGroupIdx = GetVertexGroup(Model, vertsIndexBuff[0]);
 
                 Model.Header.numPolys++;
                 Array.Resize(ref Model.Polys, Model.Header.numPolys);
                 Model.Polys[Model.Header.numPolys - 1] = new PPolygon(0);
                 Array.Resize(ref Model.Pcolors, Model.Header.numPolys);
 
-                if (iGroupIdx < Model.Header.numGroups - 1)
+                iNextGroup = GetNextGroup(Model, iGroupIdx);
+
+                //if (iGroupIdx < Model.Header.numGroups - 1)
+                if (iNextGroup != -1)
                 {
-                    basePolys = Model.Groups[iGroupIdx + 1].offsetPoly;
+
+                    //basePolys = Model.Groups[iGroupIdx + 1].offsetPoly;
+                    basePolys = Model.Groups[iNextGroup].offsetPoly;
 
                     for (pi = Model.Header.numPolys - 1; pi >= basePolys; pi--)
                     {
@@ -3141,10 +3228,15 @@ namespace KimeraCS
                         Model.Pcolors[pi] = Model.Pcolors[pi];
                     }
 
-                    for (gi = iGroupIdx + 1; gi < Model.Header.numGroups; gi++)
+                    while (iNextGroup != -1)
                     {
-                        Model.Groups[gi].offsetPoly++;
+                        Model.Groups[iNextGroup].offsetPoly++;
+                        iNextGroup = GetNextGroup(Model, iNextGroup);
                     }
+                    //for (gi = iGroupIdx + 1; gi < Model.Header.numGroups; gi++)
+                    //{
+                    //    Model.Groups[gi].offsetPoly++;
+                    //}
                 }
 
                 if (iGroupIdx < Model.Header.numGroups)
@@ -3280,7 +3372,7 @@ namespace KimeraCS
             int[] vBuff2 = new int[3];
             Color tmpColor = new Color();
 
-            iGroupIdx = GetPolygonGroup(Model.Groups, iPolyIdx);
+            iGroupIdx = GetPolygonGroup(Model, iPolyIdx);
 
             vi1 = Model.Polys[iPolyIdx].Verts[0] + Model.Groups[iGroupIdx].offsetVert;
             vi2 = Model.Polys[iPolyIdx].Verts[1] + Model.Groups[iGroupIdx].offsetVert;
@@ -3648,7 +3740,7 @@ namespace KimeraCS
                         {
                             cutQ = CutEdgeAtPoint(ref Model, iPolyIdx, ei, intersectionPoint, intersectionTexCoord);
                             CheckModelConsistency(ref Model);
-                            iGroupIdx = GetPolygonGroup(Model.Groups, iPolyIdx);
+                            iGroupIdx = GetPolygonGroup(Model, iPolyIdx);
 
                             while (FindNextAdjacentPolyEdgeForward(EditedPModel, Model.Verts[p1Idx], Model.Verts[p2Idx],
                                                                    ref iGroupIdx, ref iPolyIdx, ref ei))
@@ -3920,14 +4012,14 @@ namespace KimeraCS
 
         public static int GetAdjacentPolygonsVertices(PModel Model, List<int> lstVerts, ref int[] lstPolysBuffer)
         {
-            int iGroupIdx, pi, vi, pvi, nPolys;
+            int iGroupIdx, pi, pvi, nPolys;
 
             nPolys = 0;
             lstPolysBuffer = new int[0];
 
             foreach (int itmVert in lstVerts)
             {
-                iGroupIdx = GetVertexGroup(Model.Groups, itmVert);
+                iGroupIdx = GetVertexGroup(Model, itmVert);
 
                 for (pi = Model.Groups[iGroupIdx].offsetPoly; pi < Model.Groups[iGroupIdx].offsetPoly + Model.Groups[iGroupIdx].numPoly; pi++)
                 {
@@ -3965,7 +4057,7 @@ namespace KimeraCS
             
             for (pi = 0; pi < lstVertexPolys.Count; pi++)
             {
-                iGroupIdx = GetPolygonGroup(Model.Groups, lstVertexPolys[pi]);
+                iGroupIdx = GetPolygonGroup(Model, lstVertexPolys[pi]);
                 offsetVert = Model.Groups[iGroupIdx].offsetVert;
 
                 for (pvi = 0; pvi < 3; pvi++)
