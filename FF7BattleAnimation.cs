@@ -91,7 +91,7 @@ namespace KimeraCS
             public BattleAnimation(BinaryReader memReader, byte[] fileBuffer, int nsSkeletonBones)
             {
                 BattleFrame tmpbFrame;
-                int offsetBit = 0, fi;
+                int offsetBit, fi;
 
                 //  ANIM HEADER
                 nBones = memReader.ReadInt32();
@@ -694,8 +694,8 @@ namespace KimeraCS
             tmpbFrame.startX = 0;
             tmpbFrame.startY = 0;
             tmpbFrame.startZ = 0;
-
             tmpbFrame.bones = new List<BattleFrameBone>();
+
             for (bi = 0; bi < nBones; bi++)
                 tmpbFrame.bones.Add(tmpbFrameBone);
             
