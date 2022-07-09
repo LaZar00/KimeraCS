@@ -906,7 +906,7 @@ namespace KimeraCS
             GetVColors(ref mesh, materialsV, out vcolorsV);
             GetPColors(ref mesh, materialsV, out pcolorsV);
 
-            AddGroup(ref Model, ref vertsV, ref facesV, ref texcoordsV, ref vcolorsV, ref pcolorsV);
+            AddGroup(ref Model, vertsV, facesV, texcoordsV, vcolorsV, pcolorsV);
         }
 
         public static void ConvertModel3DSToPModel(ref Model3DS Model, ref PModel outModel)

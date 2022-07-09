@@ -1743,7 +1743,7 @@ namespace KimeraCS
             Point3D tmpUP3DVert;
 
             tmpUP3DVert = Model.Verts[iVertIdx];
-            iGroupIdx = GetVertexGroup(Model.Groups, iVertIdx);
+            iGroupIdx = GetVertexGroup(Model, iVertIdx);
 
             for (vi = Model.Groups[iGroupIdx].offsetVert; vi < Model.Groups[iGroupIdx].offsetVert + Model.Groups[iGroupIdx].numVert; vi++)
             {
@@ -1825,7 +1825,7 @@ namespace KimeraCS
         {
             int iGroupIdx, vi;
 
-            iGroupIdx = GetPolygonGroup(Model.Groups, pIndex);
+            iGroupIdx = GetPolygonGroup(Model, pIndex);
 
             for (vi = 0; vi < 3; vi++)
             {
@@ -1842,7 +1842,7 @@ namespace KimeraCS
             int vi, iGroupIdx;
             int tmpA = 0, tmpR = 0, tmpG = 0, tmpB = 0;
 
-            iGroupIdx = GetPolygonGroup(Model.Groups, iPolyIdx);
+            iGroupIdx = GetPolygonGroup(Model, iPolyIdx);
 
             for (vi = 0; vi < 3; vi++)
             {

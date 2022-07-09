@@ -1457,7 +1457,7 @@ namespace KimeraCS
             {
                 cColor = colorTable[translationTableVertex[vi].I];
 
-                if (!Model.Groups[GetVertexGroup(Model.Groups, vi)].HiddenQ)
+                if (!Model.Groups[GetVertexGroup(Model, vi)].HiddenQ)
                 {
                     Model.Vcolors[vi] = Color.FromArgb(255,
                                                        cColor.R,
@@ -1471,7 +1471,7 @@ namespace KimeraCS
             {
                 cColor = colorTable[translationTablePolys[pi].I];
 
-                if (!Model.Groups[GetPolygonGroup(Model.Groups, pi)].HiddenQ)
+                if (!Model.Groups[GetPolygonGroup(Model, pi)].HiddenQ)
                 {
                     Model.Pcolors[pi] = Color.FromArgb(255,
                                                        cColor.R,
@@ -1540,7 +1540,7 @@ namespace KimeraCS
 
             iDiff = Model.Header.numVerts - 1 - (translationTableVertex.Length - 1);
 
-            iGroupIdx = GetPolygonGroup(Model.Groups, pIndex);
+            iGroupIdx = GetPolygonGroup(Model, pIndex);
             baseVert = Model.Groups[iGroupIdx].offsetVert + Model.Groups[iGroupIdx].numVert - 1 - iDiff;
 
             Array.Resize(ref translationTableVertex, Model.Header.numVerts);
