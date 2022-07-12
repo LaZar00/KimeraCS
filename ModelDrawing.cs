@@ -1757,7 +1757,8 @@ namespace KimeraCS
             return lstVerts.Count;
         }
 
-        public static int PaintVertex(ref PModel Model, int iGroupIdx, int iVertIdx, byte bR, byte bG, byte bB, bool bTextured)
+        public static int PaintVertex(ref PModel Model, int iGroupIdx, int iVertIdx, 
+                                      byte bR, byte bG, byte bB, bool bTextured)
         {
             List<int> lstVerts = new List<int>();
             int iPaintVertexResult = -1;
@@ -1829,7 +1830,8 @@ namespace KimeraCS
 
             for (vi = 0; vi < 3; vi++)
             {
-                Model.Polys[pIndex].Verts[vi] = (short)PaintVertex(ref Model, iGroupIdx, Model.Polys[pIndex].Verts[vi], bR, bG, bB, 
+                Model.Polys[pIndex].Verts[vi] = (short)PaintVertex(ref Model, iGroupIdx, Model.Polys[pIndex].Verts[vi], 
+                                                                   bR, bG, bB, 
                                                                    Model.Groups[iGroupIdx].texFlag != 0);
                 //  'Debug.Print "Vert(:", .Verts(vi), ",", Group, ")", obj.Verts(.Verts(vi) + obj.Groups(Group).offVert).x, obj.Verts(.Verts(vi) + obj.Groups(Group).offVert).y, obj.Verts(.Verts(vi) + obj.Groups(Group).offVert).z
 
