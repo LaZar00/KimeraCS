@@ -1281,8 +1281,8 @@ namespace KimeraCS
                 Array.Resize(ref Model.TexCoords, Model.Header.numTexCs);
                 for (i = 0; i < numTexCoords; i++)
                 {
-                    Model.TexCoords[Model.Groups[groupIndex].offsetTex + i].x = texCoordsV[i].x;
-                    Model.TexCoords[Model.Groups[groupIndex].offsetTex + i].y = texCoordsV[i].y;
+                    Model.TexCoords[numDiff + i].x = texCoordsV[i].x;
+                    Model.TexCoords[numDiff + i].y = texCoordsV[i].y;
                 }
             }
 
@@ -1293,7 +1293,7 @@ namespace KimeraCS
 
             // Increase Hundrets
             Model.Header.mirex_h += 1;
-            Array.Resize(ref Model.Hundrets, (int)Model.Header.mirex_h);
+            Array.Resize(ref Model.Hundrets, Model.Header.mirex_h);
             FillHundrestsDefaultValues(ref Model.Hundrets[Model.Header.mirex_h - 1]);
 
             // Put realGID
@@ -2005,7 +2005,7 @@ namespace KimeraCS
         //  -------------------------------------------------------------------------------------------------
         //  ====================================== REMOVE PMODEL GROUP ======================================
         //  -------------------------------------------------------------------------------------------------
-        // If iGroupIdx == -1, the we return the group that has realGID = 0
+        // If iGroupIdx == -1, the we return the group that has the lower realGID
         public static int GetNextGroup(PModel Model, int iGroupIdx)
         {
             int iMinGID, iMaxGID, iNextGroup = -1;
@@ -2014,8 +2014,19 @@ namespace KimeraCS
 
             if (iGroupIdx == -1)
             {
+                iMinGID = 9999;
+
                 iNextGroup = 0;
-                while (Model.Groups[iNextGroup].offsetPoly != 0) iNextGroup++;
+                iGroupCounter = 0;
+                foreach (PGroup itmGroup in Model.Groups)
+                {
+                    if (iMinGID > itmGroup.realGID)
+                    {
+                        iNextGroup = iGroupCounter;
+                        iMinGID = itmGroup.realGID;
+                    }
+                    iGroupCounter++;
+                }
             }
             else
             {
@@ -2418,7 +2429,7 @@ namespace KimeraCS
         public static void RemoveGroup(ref PModel Model, int iGroupIdx)
         {
             //int gi, gi2, giActualGroup, giPrevGroup, giMinOffPoly, giMaxOffPoly;
-            int iActualGroup, iNextGroup;
+            int iActualGroup, iNextGroup, iNumTexCoords;
             bool bGroupHasOffsetPolyZero;
 
             bGroupHasOffsetPolyZero = Model.Groups[iGroupIdx].offsetPoly == 0 ? true : false;
@@ -2457,6 +2468,9 @@ namespace KimeraCS
                 // Check if we want to remove a group of offset zero or not.
                 if (bGroupHasOffsetPolyZero)
                 {
+                    // Now need to find the group with the lower offsetpoly.
+                    iGroupIdx = GetNextGroup(Model, -1);
+
                     // We have the group with polys 0. Update offsets directly.
                     Model.Groups[iGroupIdx].offsetVert = 0;
                     Model.Groups[iGroupIdx].offsetPoly = 0;
@@ -2466,13 +2480,13 @@ namespace KimeraCS
                 else
                 {
                     // Else we need to find the group with polys 0.
-                    iGroupIdx = 0;
                     iGroupIdx = GetNextGroup(Model, -1);
                 }
 
                 // While there are groups to recalculate:
                 iActualGroup = iGroupIdx;
                 iNextGroup = GetNextGroup(Model, iGroupIdx);
+                iNumTexCoords = Model.Groups[iActualGroup].offsetTex;
 
                 while (iNextGroup != - 1)
                 {
@@ -2484,57 +2498,35 @@ namespace KimeraCS
                     Model.Groups[iNextGroup].offsetEdge =
                         Model.Groups[iActualGroup].offsetEdge + Model.Groups[iActualGroup].numEdge;
 
-                    if (Model.Groups[iNextGroup].texFlag == 1)
-                        Model.Groups[iNextGroup].offsetTex =
-                            Model.Groups[iActualGroup].offsetTex + Model.Groups[iActualGroup].numVert;
-                    else
-                        Model.Groups[iNextGroup].offsetTex = Model.Groups[iActualGroup].offsetTex;
+                    // Let's do TexCoords
+                    //if (Model.Groups[iActualGroup].texFlag == 1 ||
+                    //    Model.Groups[iActualGroup].offsetTex > 0)       // Can be some poly with texture set to 0 but with UV.
+                    if (Model.Groups[iActualGroup].texFlag == 1 ||
+                        Model.Groups[iActualGroup].offsetTex > 0)
+                    {
+                        Model.Groups[iActualGroup].offsetTex = iNumTexCoords;
+                        iNumTexCoords += Model.Groups[iActualGroup].numVert;
+                    }
+                    else Model.Groups[iActualGroup].offsetTex = 0;
 
+                    //if (Model.Groups[iActualGroup].texFlag == 1)
+                    //{
+                    //    if (Model.Groups[iNextGroup].texFlag == 1)
+                    //        Model.Groups[iNextGroup].offsetTex =
+                    //            Model.Groups[iActualGroup].offsetTex + Model.Groups[iActualGroup].numVert;
+                    //    else
+                    //        Model.Groups[iNextGroup].offsetTex = Model.Groups[iNextGroup].offsetTex;
+                    //}
 
                     iActualGroup = iNextGroup;
                     iNextGroup = GetNextGroup(Model, iActualGroup);
                 }
 
-                //giPrevGroup = Model.Groups.Length - 1;
+                // Let's assign latest TexCoords if needed.
+                if (Model.Groups[iActualGroup].texFlag == 1 || Model.Groups[iActualGroup].offsetTex > 0)
+                    Model.Groups[iActualGroup].offsetTex = iNumTexCoords;
+           }
 
-                //gi = 0;
-                //while (gi < Model.Header.numGroups - 1 &&
-                //      (giActualGroup != 0 && giPrevGroup != 0))
-                //{
-                //    giPrevGroup = giActualGroup;
-
-                //    giMinOffPoly = Model.Groups[giActualGroup].offsetPoly;
-                //    giMaxOffPoly = 9999999;
-
-                //    // Search the Next Group with the minimum offsetPoly value.
-                //    for (gi2 = 0; gi2 < Model.Header.numGroups; gi2++)
-                //    {
-                //        if (Model.Groups[gi2].offsetPoly < giMaxOffPoly &&
-                //            Model.Groups[gi2].offsetPoly > giMinOffPoly)
-                //        {
-                //            giMaxOffPoly = Model.Groups[gi2].offsetPoly;
-                //            giActualGroup = gi2;
-                //        }
-                //    }
-
-                //    // Assign new offsets to the next group found
-                //    Model.Groups[giActualGroup].offsetVert =
-                //        Model.Groups[giPrevGroup].offsetVert + Model.Groups[giPrevGroup].numVert;
-                //    Model.Groups[giActualGroup].offsetPoly =
-                //        Model.Groups[giPrevGroup].offsetPoly + Model.Groups[giPrevGroup].numPoly;
-                //    Model.Groups[giActualGroup].offsetEdge =
-                //        Model.Groups[giPrevGroup].offsetEdge + Model.Groups[giPrevGroup].numEdge;
-
-                //    if (Model.Groups[giActualGroup].texFlag == 1)
-                //        Model.Groups[giActualGroup].offsetTex =
-                //            Model.Groups[giPrevGroup].offsetTex + Model.Groups[giPrevGroup].numVert;
-                //    else
-                //        Model.Groups[giActualGroup].offsetTex = Model.Groups[giPrevGroup].offsetTex;
-
-                //    gi++;
-                //}
-
-            }
 
             // THIS HAVE TO BE MODIFIED. IF WE HAVE MOVED THE GROUP (LET'S SAY THE LAST GROUP TO THE TOP)
             // WE WILL ENCOUNTER PROBLEMS LATER BECAUSE GROUP 0 IS NOT TREATED WHEN REMOVING GROUP
@@ -2979,6 +2971,7 @@ namespace KimeraCS
         public static bool DuplicateGroup(ref PModel Model, int iGroupIdx)
         {
             bool iDuplicateGroupResult = false;
+            int i;
 
             Point3D[] vVerts;
             PPolygon[] vFaces;
@@ -2991,18 +2984,32 @@ namespace KimeraCS
             {
                 vVerts = new Point3D[Model.Groups[iGroupIdx].numVert];
                 vVcolors = new Color[Model.Groups[iGroupIdx].numVert];
-                Array.Copy(Model.Verts, Model.Groups[iGroupIdx].offsetVert, vVerts, 0, vVerts.Length);
-                Array.Copy(Model.Vcolors, Model.Groups[iGroupIdx].offsetVert, vVcolors, 0, vVcolors.Length);
+                for (i = 0; i < Model.Groups[iGroupIdx].numVert; i++)
+                {
+                    vVerts[i] = Model.Verts[Model.Groups[iGroupIdx].offsetVert + i];
+                    vVcolors[i] = Model.Vcolors[Model.Groups[iGroupIdx].offsetVert + i];
+                }
+                //Array.Copy(Model.Verts, Model.Groups[iGroupIdx].offsetVert, vVerts, 0, vVerts.Length);
+                //Array.Copy(Model.Vcolors, Model.Groups[iGroupIdx].offsetVert, vVcolors, 0, vVcolors.Length);
 
                 vFaces = new PPolygon[Model.Groups[iGroupIdx].numPoly];
                 vPcolors = new Color[Model.Groups[iGroupIdx].numPoly];
-                Array.Copy(Model.Polys, Model.Groups[iGroupIdx].offsetPoly, vFaces, 0, vFaces.Length);
-                Array.Copy(Model.Pcolors, Model.Groups[iGroupIdx].offsetPoly, vPcolors, 0, vPcolors.Length);
+                for (i = 0; i < Model.Groups[iGroupIdx].numPoly; i++)
+                {
+                    vFaces[i] = new PPolygon(Model.Polys[Model.Groups[iGroupIdx].offsetPoly + i]);
+                    vPcolors[i] = Model.Pcolors[Model.Groups[iGroupIdx].offsetPoly + i];
+                }
+                //Array.Copy(Model.Polys, Model.Groups[iGroupIdx].offsetPoly, vFaces, 0, vFaces.Length);
+                //Array.Copy(Model.Pcolors, Model.Groups[iGroupIdx].offsetPoly, vPcolors, 0, vPcolors.Length);
 
                 if (Model.Groups[iGroupIdx].texFlag == 1)
                 {
                     vTexCoords = new Point2D[Model.Groups[iGroupIdx].numVert];
-                    Array.Copy(Model.TexCoords, Model.Groups[iGroupIdx].offsetTex, vTexCoords, 0, vTexCoords.Length);
+                    for (i = 0; i < Model.Groups[iGroupIdx].numVert; i++)
+                    {
+                        vTexCoords[i] = Model.TexCoords[Model.Groups[iGroupIdx].offsetTex + i];
+                    }
+                    //Array.Copy(Model.TexCoords, Model.Groups[iGroupIdx].offsetTex, vTexCoords, 0, vTexCoords.Length);
                 }                           
                 
                 AddGroup(ref Model, vVerts, vFaces, vTexCoords, vVcolors, vPcolors);
