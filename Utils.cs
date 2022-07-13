@@ -440,7 +440,7 @@ namespace KimeraCS
             return GetQuaternionFromEulerUniversal(DegToRad(x), DegToRad(y), DegToRad(z), 2, 0, 1, 2, 0, 0, 1);
         }
 
-        public static Point3D GetEulerFormMatrixUniversal(double[] mat, int i, int j, int k, int h, int n, int s, int f)
+        public static Point3D GetEulerFormMatrixUniversal(double[] mat, int i, int j, int k, int n, int s, int f)
         {
             double sy, cy, t;
             Point3D up3DGetEulerFormMatrixUniversalResult = new Point3D();
@@ -501,12 +501,12 @@ namespace KimeraCS
 
         public static Point3D GetEulerXYZrFromMatrix(double[] mat)
         {
-            return GetEulerFormMatrixUniversal(mat, 2, 1, 0, 2, 1, 0, 1);
+            return GetEulerFormMatrixUniversal(mat, 2, 1, 0, 1, 0, 1);
         }
 
         public static Point3D GetEulerYXZrFromMatrix(double[] mat)
         {
-            return GetEulerFormMatrixUniversal(mat, 2, 0, 1, 2, 0, 0, 1);
+            return GetEulerFormMatrixUniversal(mat, 2, 0, 1, 0, 0, 1);
         }
 
         public static Quaternion GetQuaternionConjugate(ref Quaternion quat)
@@ -1198,7 +1198,7 @@ namespace KimeraCS
 
         public static int InvertBitInteger(int iValue, int iBitIndex)
         {
-            int iInvertBitIntegerResult = 0;
+            int iInvertBitIntegerResult;
 
             if (GetBitInteger(iValue, iBitIndex) == 1) iInvertBitIntegerResult = SetBitInteger(iValue, iBitIndex, 0);
             else iInvertBitIntegerResult = SetBitInteger(iValue, iBitIndex, 1);

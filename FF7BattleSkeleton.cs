@@ -559,11 +559,11 @@ namespace KimeraCS
                     {
                         while (!(bSkeleton.bones[bi].parentBone == joint_stack[jsp]) && jsp > 0)
                         {
-                            currentPath = currentPath + bSkeleton.bones[joint_stack[jsp]].len;
+                            currentPath += bSkeleton.bones[joint_stack[jsp]].len;
                             jsp--;
                         }
 
-                        currentPath = currentPath - bSkeleton.bones[bi].len;
+                        currentPath -= bSkeleton.bones[bi].len;
                         if (currentPath > maxPath) maxPath = currentPath;
                         jsp++;
                         joint_stack[jsp] = bi;
@@ -597,10 +597,10 @@ namespace KimeraCS
         }
 
         public static int GetClosestBattleBoneModel(BattleSkeleton bSkeleton, BattleFrame bFrame, int boneIndex,
-                                                    int px, int py, float DIST)
+                                                    int px, int py)
         {
 
-            int i, mi, nModels, jsp, width, height, iGetClosestBattleboneModelResult;
+            int i, mi, nModels, jsp, height, iGetClosestBattleboneModelResult;
             uint[] texIDS = new uint[1];
             int[] vp = new int[4];
             float min_z;
@@ -620,7 +620,6 @@ namespace KimeraCS
             glLoadIdentity();
 
             glGetIntegerv((uint)glCapability.GL_VIEWPORT, vp);
-            width = vp[2];
             height = vp[3];
 
             gluPickMatrix(px - 1, height - py + 1, 3, 3, vp);
@@ -677,12 +676,11 @@ namespace KimeraCS
         }
 
         public static int GetClosestBattleBone(BattleSkeleton bSkeleton, BattleFrame bFrame, BattleFrame wpFrame, int weaponIndex,
-                                               int px, int py, float DIST)
+                                               int px, int py)
         {
-            int bi, nBones, width, height, jsp, itmpbones, iGetClosestBattleBoneResult;
+            int bi, nBones, height, jsp, itmpbones, iGetClosestBattleBoneResult;
             int[] vp = new int[4];
             int[] joint_stack = new int[bSkeleton.nBones * 4];
-            int[] textures = new int[1];
             float min_z;
             double[] P_matrix = new double[16];
             double[] rot_mat = new double[16];
@@ -707,7 +705,6 @@ namespace KimeraCS
             glLoadIdentity();
 
             glGetIntegerv((uint)glCapability.GL_VIEWPORT, vp);
-            width = vp[2];
             height = vp[3];
 
             gluPickMatrix(px - 1, height - py + 1, 3, 3, vp);
@@ -787,7 +784,7 @@ namespace KimeraCS
                 glScalef(bSkeleton.wpModels[weaponIndex].resizeX, bSkeleton.wpModels[weaponIndex].resizeY, bSkeleton.wpModels[weaponIndex].resizeZ);
 
                 glPushName((uint)bSkeleton.nBones);
-                tmpwpModel = new PModel();
+                
                 tmpwpModel = bSkeleton.wpModels[weaponIndex];
                 DrawPModel(ref tmpwpModel, ref bSkeleton.TexIDS, false);
                 bSkeleton.wpModels[weaponIndex] = tmpwpModel;
@@ -871,7 +868,7 @@ namespace KimeraCS
             }
         }
 
-        public static void ApplyBattleBoneChanges(ref BattleBone bBone, float diameter) {
+        public static void ApplyBattleBoneChanges(ref BattleBone bBone) {
             int mi;
             PModel tmpModel;
 
@@ -969,7 +966,7 @@ namespace KimeraCS
                 if (bSkeleton.bones[bi].hasModel == 1)
                 {
                     tmpbBone = bSkeleton.bones[bi];
-                    ApplyBattleBoneChanges(ref tmpbBone, 0);
+                    ApplyBattleBoneChanges(ref tmpbBone);
                     bSkeleton.bones[bi] = tmpbBone;
                 }
 

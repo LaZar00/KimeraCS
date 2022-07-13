@@ -32,14 +32,14 @@ namespace KimeraCS
         //public const string CLOUD_BATTLE_SKELETON2 = "SIAA";
         //public const string SEPHIROTH_BATTLE_SKELETON = "SAAA";
 
-        public struct stCharLGPRegister
+        public struct STCharLGPRegister
         {
             public string fileName;
             public List<string> lstNames;
             public List<string> lstAnims;
         }
 
-        public struct stLimitsRegister
+        public struct STLimitsRegister
         {
             public string strModelName;
             public List<string> lstLimitsAnimations;
@@ -47,8 +47,8 @@ namespace KimeraCS
 
         public static int numCharLGPRegisters;
         public static bool bDBLoaded;
-        public static List<stCharLGPRegister> lstCharLGPRegisters;
-        public static List<stLimitsRegister> lstBattleLimitsAnimations;
+        public static List<STCharLGPRegister> lstCharLGPRegisters;
+        public static List<STLimitsRegister> lstBattleLimitsAnimations;
         public static Hashtable lstCFGKeys = new Hashtable();
 
         public static int idefaultFieldInterpFrames = 1;
@@ -267,7 +267,7 @@ namespace KimeraCS
             string strFileName, strLastFileName;
             string strKey;
             string[] strLinesFilterFile;
-            stCharLGPRegister stcLGPReg;
+            STCharLGPRegister stcLGPReg;
 
             try
             {
@@ -276,8 +276,8 @@ namespace KimeraCS
                 if (File.Exists(strFileName))
                 {
 
-                    lstCharLGPRegisters = new List<stCharLGPRegister>();
-                    stcLGPReg = new stCharLGPRegister();
+                    lstCharLGPRegisters = new List<STCharLGPRegister>();
+                    stcLGPReg = new STCharLGPRegister();
 
                     strLinesFilterFile = File.ReadAllLines(strFileName);
                     strLastFileName = "";
@@ -294,7 +294,7 @@ namespace KimeraCS
                                 {
                                     if (stcLGPReg.lstAnims != null) stcLGPReg.lstAnims.Sort();
                                     lstCharLGPRegisters.Add(stcLGPReg);
-                                    stcLGPReg = new stCharLGPRegister();
+                                    stcLGPReg = new STCharLGPRegister();
                                 }
 
                                 numCharLGPRegisters += 1;
@@ -347,13 +347,13 @@ namespace KimeraCS
         //  ---------------------------------------------------------------------------------------------------------
         public static void PrepareLimitsFilterFile()
         {
-            stLimitsRegister stcLimitsRegister;
+            STLimitsRegister stcLimitsRegister;
 
-            lstBattleLimitsAnimations = new List<stLimitsRegister>();
+            lstBattleLimitsAnimations = new List<STLimitsRegister>();
 
 
             // AERITH
-            stcLimitsRegister = new stLimitsRegister();
+            stcLimitsRegister = new STLimitsRegister();
             stcLimitsRegister.strModelName = "RVAA";
 
             stcLimitsRegister.lstLimitsAnimations = new List<string>();
@@ -370,7 +370,7 @@ namespace KimeraCS
 
 
             // BARRET
-            stcLimitsRegister = new stLimitsRegister();
+            stcLimitsRegister = new STLimitsRegister();
             stcLimitsRegister.strModelName = "SEAA";
 
             stcLimitsRegister.lstLimitsAnimations = new List<string>();
@@ -386,7 +386,7 @@ namespace KimeraCS
 
 
             // CAIT SITH
-            stcLimitsRegister = new stLimitsRegister();
+            stcLimitsRegister = new STLimitsRegister();
             stcLimitsRegister.strModelName = "RYAA";
 
             stcLimitsRegister.lstLimitsAnimations = new List<string>();
@@ -396,7 +396,7 @@ namespace KimeraCS
 
 
             // CID
-            stcLimitsRegister = new stLimitsRegister();
+            stcLimitsRegister = new STLimitsRegister();
             stcLimitsRegister.strModelName = "RZAA";
 
             stcLimitsRegister.lstLimitsAnimations = new List<string>();
@@ -410,7 +410,7 @@ namespace KimeraCS
 
 
             // CLOUD
-            stcLimitsRegister = new stLimitsRegister();
+            stcLimitsRegister = new STLimitsRegister();
             stcLimitsRegister.strModelName = "RTAA";
 
             stcLimitsRegister.lstLimitsAnimations = new List<string>();
@@ -426,7 +426,7 @@ namespace KimeraCS
 
 
             // RED XIII
-            stcLimitsRegister = new stLimitsRegister();
+            stcLimitsRegister = new STLimitsRegister();
             stcLimitsRegister.strModelName = "RWAA";
 
             stcLimitsRegister.lstLimitsAnimations = new List<string>();
@@ -441,7 +441,7 @@ namespace KimeraCS
 
 
             // TIFA
-            stcLimitsRegister = new stLimitsRegister();
+            stcLimitsRegister = new STLimitsRegister();
             stcLimitsRegister.strModelName = "RUAA";
 
             stcLimitsRegister.lstLimitsAnimations = new List<string>();
@@ -451,7 +451,7 @@ namespace KimeraCS
 
 
             // YUFFIE
-            stcLimitsRegister = new stLimitsRegister();
+            stcLimitsRegister = new STLimitsRegister();
             stcLimitsRegister.strModelName = "RXAA";
 
             stcLimitsRegister.lstLimitsAnimations = new List<string>();

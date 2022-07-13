@@ -156,7 +156,7 @@ namespace KimeraCS
                             //iVectorBones = 1;
                             //if (nBones > 1) iVectorBones = nBones + 1;
                             //bAnimationsPack.SkeletonAnimations.Add(new BattleAnimation(memReader, fileBuffer, iVectorBones));
-                            bAnimationsPack.SkeletonAnimations.Add(new BattleAnimation(memReader, fileBuffer, nsSkeletonBones));
+                            bAnimationsPack.SkeletonAnimations.Add(new BattleAnimation(memReader, nsSkeletonBones));
                         }
 
                         for (ai = 0; ai < nsWeaponsAnims; ai++)
@@ -166,7 +166,7 @@ namespace KimeraCS
                             //iVectorBones = 1;
                             //if (nBones > 1) iVectorBones = nBones + 1;
                             //bAnimationsPack.WeaponAnimations.Add(new BattleAnimation(memReader, fileBuffer, 1));
-                            bAnimationsPack.WeaponAnimations.Add(new BattleAnimation(memReader, fileBuffer, 1));
+                            bAnimationsPack.WeaponAnimations.Add(new BattleAnimation(memReader, 1));
                         }
                     }
                 }
@@ -302,7 +302,7 @@ namespace KimeraCS
                     while (ai < bAnimationsPack.nbSkeletonAnims && !bBlockOverSize)
                     {
                         bBlockOverSize = 
-                            WriteBattleAnimation(memWriter, fileBuffer, bAnimationsPack.SkeletonAnimations[ai], ref ifileBufferSize);
+                            WriteBattleAnimation(memWriter, bAnimationsPack.SkeletonAnimations[ai], ref ifileBufferSize);
 
                         ai++;
                     }
@@ -314,7 +314,7 @@ namespace KimeraCS
                         {
                             //  Debug.Print "Weapon Animation "; Str$(ai)
                             bBlockOverSize =
-                                WriteBattleAnimation(memWriter, fileBuffer, bAnimationsPack.WeaponAnimations[ai], ref ifileBufferSize);
+                                WriteBattleAnimation(memWriter, bAnimationsPack.WeaponAnimations[ai], ref ifileBufferSize);
 
                             ai++;
                         }
@@ -363,7 +363,7 @@ namespace KimeraCS
                     if (ai < bAnimationsPack.nbWeaponAnims && bSkeleton.nWeapons > 0)
                     {
                         tmpbAnimation = bAnimationsPack.WeaponAnimations[ai];
-                        InterpolateBattleWeaponAnimation(ref bSkeleton, ref tmpbAnimation, numInterpolatedFrames, bisLoopQ,
+                        InterpolateBattleWeaponAnimation(ref tmpbAnimation, numInterpolatedFrames, bisLoopQ,
                                                          bAnimationsPack.SkeletonAnimations[ai].numFrames, 
                                                          bAnimationsPack.SkeletonAnimations[ai].numFramesShort);
                         bAnimationsPack.WeaponAnimations[ai] = tmpbAnimation;
@@ -449,7 +449,7 @@ namespace KimeraCS
 
         public static bool IsLimitAnimation (string strbAnimationFileName)
         {
-            foreach (stLimitsRegister itmLimit in lstBattleLimitsAnimations)
+            foreach (STLimitsRegister itmLimit in lstBattleLimitsAnimations)
                 if (itmLimit.lstLimitsAnimations.Contains(strbAnimationFileName.ToUpper()))
                     return true;
 

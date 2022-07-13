@@ -355,7 +355,7 @@ namespace KimeraCS
 
             // Let's create a HashSet list (no duplicated animations) to help create the
             // Animation/Skeleton list to avoid interpolate duplicate animations.
-            foreach (stCharLGPRegister itmRegister in lstCharLGPRegisters)
+            foreach (STCharLGPRegister itmRegister in lstCharLGPRegisters)
             {
                 foreach (string itmAnim in itmRegister.lstAnims)
                 {

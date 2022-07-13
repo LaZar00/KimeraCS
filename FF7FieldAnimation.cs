@@ -131,7 +131,6 @@ namespace KimeraCS
                 int fi, bi;
                 float alpha, beta, gamma, rotationAlpha, rotationBeta, rotationGamma, translationX, translationY, translationZ;
                 List<FieldRotation> fieldRotations;
-                string strFileName = Path.GetFileName(strFullFileName).ToUpper();
 
                 byte[] fileBuffer = File.ReadAllBytes(strFullFileName);
 
@@ -241,12 +240,12 @@ namespace KimeraCS
                 fframe.rootTranslationZ = 0;
 
                 // Add List of frame rotations
-                fframe.rotations = new List<FieldRotation>();
-                fframe.rotations.Add(frotation);
+                fframe.rotations = new List<FieldRotation> { frotation };
+                //fframe.rotations.Add(frotation);
 
                 // Add List of frame animations
-                frames = new List<FieldFrame>();
-                frames.Add(fframe);
+                frames = new List<FieldFrame> { fframe };
+                //frames.Add(fframe);
 
                 // Add rotationOrder
                 rotationOrder = new byte[3];
@@ -630,13 +629,12 @@ namespace KimeraCS
 
         public static void FixFieldAnimation(FieldSkeleton fSkeleton, FieldAnimation fAnimation)
         {
-            int fi, base_fi, numBrokenFrames;
+            int fi, numBrokenFrames;
 
             fi = 0;
 
             while (fi < fAnimation.nFrames)
             {
-                base_fi = fi;
                 numBrokenFrames = 0;
 
                 while (IsFrameBrokenFieldAnimation(ref fAnimation, fi))
@@ -651,7 +649,7 @@ namespace KimeraCS
                     else
                     {
                         InterpolateFramesFieldAnimation(ref fSkeleton, ref fAnimation, fi - 1, numBrokenFrames);
-                        fi = fi + numBrokenFrames;
+                        fi += numBrokenFrames;
                     }
                 }
                 else fi++;
@@ -725,7 +723,7 @@ namespace KimeraCS
             Quaternion quat_b;
             Quaternion quat_acum_a = new Quaternion();
             Quaternion quat_acum_b = new Quaternion();
-            Quaternion quat_acum_inverse = new Quaternion();
+            Quaternion quat_acum_inverse;
             Quaternion quat_interp;
             Quaternion quat_interp_final = new Quaternion();
 
@@ -809,7 +807,7 @@ namespace KimeraCS
             FieldFrame tmpFrame = new FieldFrame();
 
             // Create new frames
-            fAnimation.nFrames = fAnimation.nFrames + numInterpolatedFrames;
+            fAnimation.nFrames += numInterpolatedFrames;
             for (fi = 0; fi < numInterpolatedFrames; fi++) fAnimation.frames.Add(new FieldFrame());
 
             // Move the original frames into their new positions

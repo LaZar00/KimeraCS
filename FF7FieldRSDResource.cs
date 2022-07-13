@@ -42,7 +42,7 @@ namespace KimeraCS
                 string[] rsdString;
                 string rsdFileName = strFolderName + "\\" + in_res_file + ".RSD";
 
-                string polyFileName = "";
+                string polyFileName;
                 int rsdNTEXpos = 0;
 
                 // Let's read RSD file into memory.
@@ -171,7 +171,7 @@ namespace KimeraCS
             try
             {
                 strRSDContent.AppendLine(fRSDResource.ID);
-                nameP = fRSDResource.Model.fileName.Substring(0, fRSDResource.Model.fileName.Length - 2);
+                nameP = fRSDResource.Model.fileName.Substring(0, fRSDResource.Model.fileName.Length - 2).ToUpper();
 
                 strRSDContent.AppendLine("PLY=" + nameP + ".PLY");
                 strRSDContent.AppendLine("MAT=" + nameP + ".MAT");
@@ -182,8 +182,8 @@ namespace KimeraCS
                 for (ti =  0; ti < fRSDResource.numTextures; ti++)
                 {
                     strRSDContent.AppendLine("TEX[" + ti.ToString() + "]=" +
-                                             fRSDResource.textures[ti].TEXfileName.Substring(0, fRSDResource.textures[ti].TEXfileName.Length - 4) + ".TIM");
-                    WriteTEXTexture(fRSDResource.textures[ti], strGlobalPathSaveSkeletonFolder + "\\" + fRSDResource.textures[ti].TEXfileName);
+                                             fRSDResource.textures[ti].TEXfileName.Substring(0, fRSDResource.textures[ti].TEXfileName.Length - 4).ToUpper() + ".TIM");
+                    WriteTEXTexture(fRSDResource.textures[ti], strGlobalPathSaveSkeletonFolder + "\\" + fRSDResource.textures[ti].TEXfileName.ToUpper());
                 }
 
                 File.WriteAllText(fileName, strRSDContent.ToString());

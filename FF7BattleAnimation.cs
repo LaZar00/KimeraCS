@@ -57,14 +57,14 @@ namespace KimeraCS
             public int startZ;
             public List<BattleFrameBone> bones;
 
-            public BattleFrame(byte[] framesRawData, byte key, int blockSizeShort, int nBones, ref ushort numFramesShort)
-            {
-                startX = 0;
-                startY = 0;
-                startZ = 0;
+            //public BattleFrame(byte[] framesRawData, byte key, int blockSizeShort, int nBones, ref ushort numFramesShort)
+            //{
+            //    startX = 0;
+            //    startY = 0;
+            //    startZ = 0;
 
-                bones = new List<BattleFrameBone>();
-            }
+            //    bones = new List<BattleFrameBone>();
+            //}
         }
 
         public struct BattleAnimation
@@ -88,7 +88,7 @@ namespace KimeraCS
             //public byte[] unknownData;
 
             //public BattleAnimation(BinaryReader memReader, byte[] fileBuffer, int iVectorBonesLen)
-            public BattleAnimation(BinaryReader memReader, byte[] fileBuffer, int nsSkeletonBones)
+            public BattleAnimation(BinaryReader memReader, int nsSkeletonBones)
             {
                 BattleFrame tmpbFrame;
                 int offsetBit, fi;
@@ -202,13 +202,13 @@ namespace KimeraCS
                         //  Invert the value of the last bit
                         itmpSignVal = (int)Math.Pow(2, dLen - 1);
 
-                        if (iVal < 0) iVal = iVal - itmpSignVal;
-                        else iVal = iVal + itmpSignVal;
+                        if (iVal < 0) iVal -= itmpSignVal;
+                        else iVal += itmpSignVal;
                         break;
                 }
 
                 //  Convert to 12-bits value
-                iVal = iVal * (int)Math.Pow(2, key);
+                iVal *= (int)Math.Pow(2, key);
                 iProcessBattleFrameBoneRotationDeltaResult = iVal;
             }
 
@@ -234,7 +234,7 @@ namespace KimeraCS
         public static bool ProcessBattleFrame(byte[] framesRawData, ref int offsetBit, byte key, int nBones, ref BattleFrame bFrame, BattleFrame lastbFrame)
         {
             int bi, oi, offsetLen = 0;
-            bool bProcessBattleFrameResult = false;
+            bool bProcessBattleFrameResult;
             BattleFrameBone tmpbFrameBone;
 
             try
@@ -310,7 +310,7 @@ namespace KimeraCS
             iVal = (short)GetBitBlockV(framesRawData, 12 - key, ref offsetBit);
 
             //  Convert to 12-bit value
-            iVal = iVal * (short)Math.Pow(2, key);
+            iVal *= (short)Math.Pow(2, key);
 
             return (short)iVal;
         }
@@ -536,7 +536,7 @@ namespace KimeraCS
             }
         }
 
-        public static bool WriteBattleAnimation(BinaryWriter memWriter, byte[] fileBuffer, BattleAnimation bAnimation, ref int ifileBufferSize)
+        public static bool WriteBattleAnimation(BinaryWriter memWriter, BattleAnimation bAnimation, ref int ifileBufferSize)
         {
 
             byte[] bAnimationBuffer;          
@@ -699,8 +699,8 @@ namespace KimeraCS
             for (bi = 0; bi < nBones; bi++)
                 tmpbFrame.bones.Add(tmpbFrameBone);
             
-            bAnimation.frames = new List<BattleFrame>();           
-            bAnimation.frames.Add(tmpbFrame);
+            bAnimation.frames = new List<BattleFrame>() { tmpbFrame };           
+            //bAnimation.frames.Add(tmpbFrame);
         }
 
 
@@ -946,7 +946,7 @@ namespace KimeraCS
         //  ---------------------------------------------------------------------------------------------------
         //  ========================================== INTERPOLATION ==========================================
         //  ---------------------------------------------------------------------------------------------------
-        public static void GetTwoBattleFramesWeaponInterpolation(BattleSkeleton bSkeleton, BattleFrame bFrameA, BattleFrame bFrameB,
+        public static void GetTwoBattleFramesWeaponInterpolation(BattleFrame bFrameA, BattleFrame bFrameB,
                                                                  float alpha, ref BattleFrame bFrameOut)
         {
             //BattleFrameBone tmpbFrameBone;
@@ -998,7 +998,7 @@ namespace KimeraCS
             Quaternion quat_b;
             Quaternion quat_acum_a = new Quaternion();
             Quaternion quat_acum_b = new Quaternion();
-            Quaternion quat_acum_inverse = new Quaternion();
+            Quaternion quat_acum_inverse;
             Quaternion quat_interp;
             Quaternion quat_interp_final = new Quaternion();
 
@@ -1014,7 +1014,7 @@ namespace KimeraCS
 
             if (numBones == 1)
             {
-                GetTwoBattleFramesWeaponInterpolation(bSkeleton, bFrameA, bFrameB, alpha, ref bFrameOut);
+                GetTwoBattleFramesWeaponInterpolation(bFrameA, bFrameB, alpha, ref bFrameOut);
             }
             else
             {
@@ -1138,7 +1138,7 @@ namespace KimeraCS
                     else
                     {
                         tmpbFrame = bAnimation.frames[fi + ifi];
-                        GetTwoBattleFramesWeaponInterpolation(bSkeleton, bAnimation.frames[fi], bAnimation.frames[fi + numInterpolatedFrames + 1],
+                        GetTwoBattleFramesWeaponInterpolation(bAnimation.frames[fi], bAnimation.frames[fi + numInterpolatedFrames + 1],
                                                         alpha, ref tmpbFrame);
                         bAnimation.frames[fi + ifi] = tmpbFrame;
                     }
@@ -1160,7 +1160,7 @@ namespace KimeraCS
                     else
                     {
                         tmpbFrame = bAnimation.frames[baseFinalFrame + ifi];
-                        GetTwoBattleFramesWeaponInterpolation(bSkeleton, bAnimation.frames[baseFinalFrame], bAnimation.frames[0], alpha, ref tmpbFrame);
+                        GetTwoBattleFramesWeaponInterpolation(bAnimation.frames[baseFinalFrame], bAnimation.frames[0], alpha, ref tmpbFrame);
                         bAnimation.frames[baseFinalFrame + ifi] = tmpbFrame;
                     }
                 }
@@ -1170,7 +1170,7 @@ namespace KimeraCS
             //  NormalizeBattleAnimation(ref bAnimation)
         }
 
-        public static void InterpolateBattleWeaponAnimation(ref BattleSkeleton bSkeleton, ref BattleAnimation bAnimation,
+        public static void InterpolateBattleWeaponAnimation(ref BattleAnimation bAnimation,
                                                             int numInterpolatedFrames, bool bisLoopQ,
                                                             int numFramesSkeleton, ushort numFramesShortSkeleton)
         {
@@ -1201,7 +1201,7 @@ namespace KimeraCS
                     alpha = (float)ifi / (numInterpolatedFrames + 1);
 
                     tmpbFrame = bAnimation.frames[fi + ifi];
-                    GetTwoBattleFramesWeaponInterpolation(bSkeleton, bAnimation.frames[fi], bAnimation.frames[fi + nextElemDiff],
+                    GetTwoBattleFramesWeaponInterpolation(bAnimation.frames[fi], bAnimation.frames[fi + nextElemDiff],
                                                             alpha, ref tmpbFrame);
                     bAnimation.frames[fi + ifi] = tmpbFrame;
                 }
@@ -1215,8 +1215,8 @@ namespace KimeraCS
                         alpha = (float)ifi / (numInterpolatedFrames + 1);
 
                         tmpbFrame = bAnimation.frames[baseFinalFrame + ifi];
-                        GetTwoBattleFramesWeaponInterpolation(bSkeleton, bAnimation.frames[baseFinalFrame], bAnimation.frames[0],
-                                                                alpha, ref tmpbFrame);
+                        GetTwoBattleFramesWeaponInterpolation(bAnimation.frames[baseFinalFrame], bAnimation.frames[0],
+                                                              alpha, ref tmpbFrame);
                         bAnimation.frames[baseFinalFrame + ifi] = tmpbFrame;
                     }
                 }

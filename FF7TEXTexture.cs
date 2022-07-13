@@ -455,7 +455,7 @@ namespace KimeraCS
                             if (parts_left > -1) si = -1;
                             else si = 0;
 
-                            ti = ti + linePadBytes;
+                            ti += linePadBytes;
                         }
                     }
                 }
@@ -472,12 +472,10 @@ namespace KimeraCS
                         }
                     }
                 }
-
-                IntPtr ppvBits;
-    
+   
                 IntPtr mDC = GetDC(IntPtr.Zero);
                 inTEXTexture.HDC = CreateCompatibleDC(mDC);
-                inTEXTexture.HBMP = CreateDIBSection(inTEXTexture.HDC, ref pictureInfo, DIBColorTable.DIB_RGB_COLORS, out ppvBits, IntPtr.Zero, 0);
+                inTEXTexture.HBMP = CreateDIBSection(inTEXTexture.HDC, ref pictureInfo, DIBColorTable.DIB_RGB_COLORS, out IntPtr ppvBits, IntPtr.Zero, 0);
 
                 SelectObject(inTEXTexture.HDC, inTEXTexture.HBMP);
                 SetDIBits(inTEXTexture.HDC, inTEXTexture.HBMP, 0, (uint)pictureInfo.bmiHeader.biHeight, pictureData, ref pictureInfo, DIBColorTable.DIB_RGB_COLORS);
@@ -548,7 +546,6 @@ namespace KimeraCS
             long lineLength, lineLengthBytes, linePad, linePadUseful, linePadBytes, line_end;
             short shift, mask, parts, parts_left, bits;
             byte aux_val;
-            byte[] pictureData;
             bool bHasAlpha;
 
             IntPtr mDC = GetDC(IntPtr.Zero);
@@ -561,7 +558,7 @@ namespace KimeraCS
                 BitmapInfo pictureInfo = new BitmapInfo();
 
                 GetHeaderBitmapInfo(tmphDC, tmphBMP, ref pictureInfo);
-                GetAllBitmapData(tmphDC, tmphBMP, bmpTexture, ref pictureInfo, out pictureData);
+                GetAllBitmapData(tmphDC, tmphBMP, bmpTexture, ref pictureInfo, out byte[] pictureData);
 
                 ReleaseDC(IntPtr.Zero, mDC);
 
