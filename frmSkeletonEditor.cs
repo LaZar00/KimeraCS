@@ -55,7 +55,7 @@ namespace KimeraCS
     public partial class frmSkeletonEditor : Form
     {
 
-        public const string STR_APPNAME = "KimeraCS 1.2b";
+        public const string STR_APPNAME = "KimeraCS 1.2c";
 
         public static int modelWidth;
         public static int modelHeight;
@@ -310,7 +310,7 @@ namespace KimeraCS
             if (e.KeyCode == Keys.Escape) selectBoneForWeaponAttachmentQ = false;
 
             if (e.KeyCode == Keys.Delete && SelectedBone > -1)
-                btnRemovePiece_Click(null, null);
+                btnRemovePiece.PerformClick();
 
             if (controlPressedQ && e.KeyCode == Keys.Up) alpha++;
             if (controlPressedQ && e.KeyCode == Keys.Down) alpha--;
@@ -1239,7 +1239,7 @@ namespace KimeraCS
                                              (float)alpha, (float)beta, (float)gamma, 1, 1, 1);
 
                         bi = GetClosestFieldBone(fSkeleton, fAnimation.frames[tbCurrentFrameScroll.Value],
-                                                 e.X, e.Y, DIST);
+                                                 e.X, e.Y);
 
                         SelectedBone = bi;
                         cbBoneSelector.SelectedIndex = bi;
@@ -1247,7 +1247,7 @@ namespace KimeraCS
                         if (bi > -1)
                         {
                             pi = GetClosestFieldBonePiece(fSkeleton, fAnimation.frames[tbCurrentFrameScroll.Value],
-                                                          bi, e.X, e.Y, (float)DIST);
+                                                          bi, e.X, e.Y);
 
                             SelectedBonePiece = pi;
                             if (pi > -1)
@@ -1285,7 +1285,7 @@ namespace KimeraCS
                             wpFrame = bAnimationsPack.WeaponAnimations[ianimIndex].frames[tbCurrentFrameScroll.Value];
 
                         bi = GetClosestBattleBone(bSkeleton, bAnimationsPack.SkeletonAnimations[ianimIndex].frames[tbCurrentFrameScroll.Value],
-                                                  wpFrame, ianimWeaponIndex, e.X, e.Y, (float)DIST);
+                                                  wpFrame, ianimWeaponIndex, e.X, e.Y);
 
                         SelectedBone = bi;
 
@@ -1296,7 +1296,7 @@ namespace KimeraCS
                             if (selectBoneForWeaponAttachmentQ) SetWeaponAnimationAttachedToBone(e.Button == MouseButtons.Right, this);
 
                             pi = GetClosestBattleBoneModel(bSkeleton, bAnimationsPack.SkeletonAnimations[ianimIndex].frames[tbCurrentFrameScroll.Value],
-                                                           bi, e.X, e.Y, (float)DIST);
+                                                           bi, e.X, e.Y);
 
                             SelectedBonePiece = pi;
                             SetBoneModifiers();
@@ -1559,10 +1559,6 @@ namespace KimeraCS
                     frmPEdit.Show();
                     frmPEdit.tmrRenderPModel.Interval = 100;
                     frmPEdit.tmrRenderPModel.Start();
-                    //frmPEdit.InitializeLoadPEditor();
-                    //frmPEdit.Show();
-                    //if (frmPEdit.WindowState == FormWindowState.Minimized) frmPEdit.WindowState = FormWindowState.Normal;
-                    //frmPEdit.Focus();
                 }
 
             }
@@ -1865,7 +1861,7 @@ namespace KimeraCS
                         // Load the Model
                         fPModel = new PModel();
                         LoadPModel(ref fPModel, strGlobalPathPModelFolder,
-                                             Path.GetFileName(strGlobalPModelName));
+                                   Path.GetFileName(strGlobalPModelName));
 
                         if (fPModel.Header.numVerts > 0)
                         {
@@ -2280,7 +2276,7 @@ namespace KimeraCS
                     {
                         openFile.Filter = openFile.Filter + "|Limit Animation|";
 
-                        stLimitsRegister lstLimits = lstBattleLimitsAnimations.Find(x => x.strModelName == strGlobalBattleSkeletonName);
+                        STLimitsRegister lstLimits = lstBattleLimitsAnimations.Find(x => x.strModelName == strGlobalBattleSkeletonName);
 
                         foreach (string itmLimitBrk in lstLimits.lstLimitsAnimations)
                             openFile.Filter = openFile.Filter + itmLimitBrk.ToString() + ";";
@@ -2994,7 +2990,7 @@ namespace KimeraCS
 
         private void hsbResizePieceX_ValueChanged(object sender, EventArgs e)
         {
-            if (loadingBonePieceModifiersQ) return;
+            if (loadingBonePieceModifiersQ || SelectedBonePiece == -1) return;
 
             if (!DoNotAddStateQ) AddStateToBuffer(this);
             DoNotAddStateQ = true;
@@ -3047,7 +3043,7 @@ namespace KimeraCS
 
         private void hsbResizePieceY_ValueChanged(object sender, EventArgs e)
         {
-            if (loadingBonePieceModifiersQ) return;
+            if (loadingBonePieceModifiersQ || SelectedBonePiece == -1) return;
 
             if (!DoNotAddStateQ) AddStateToBuffer(this);
             DoNotAddStateQ = true;
@@ -3098,7 +3094,7 @@ namespace KimeraCS
 
         private void hsbResizePieceZ_ValueChanged(object sender, EventArgs e)
         {
-            if (loadingBonePieceModifiersQ) return;
+            if (loadingBonePieceModifiersQ || SelectedBonePiece == -1) return;
 
             if (!DoNotAddStateQ) AddStateToBuffer(this);
             DoNotAddStateQ = true;
@@ -3376,7 +3372,7 @@ namespace KimeraCS
 
         private void txtResizePieceX_TextChanged(object sender, EventArgs e)
         {
-            if (loadingBonePieceModifiersQ) return;
+            if (loadingBonePieceModifiersQ || SelectedBonePiece == -1) return;
 
             int iResizePieceX;
 
@@ -3388,12 +3384,12 @@ namespace KimeraCS
                     txtResizePieceX.Text = "100";
             }
             else
-                txtResizePieceX.Text = "0";
+                txtResizePieceX.Text = "100";
         }
 
         private void txtResizePieceY_TextChanged(object sender, EventArgs e)
         {
-            if (loadingBonePieceModifiersQ) return;
+            if (loadingBonePieceModifiersQ || SelectedBonePiece == -1) return;
 
             int iResizePieceY;
 
@@ -3405,12 +3401,12 @@ namespace KimeraCS
                     txtResizePieceY.Text = "100";
             }
             else
-                txtResizePieceY.Text = "0";
+                txtResizePieceY.Text = "100";
         }
 
         private void txtResizePieceZ_TextChanged(object sender, EventArgs e)
         {
-            if (loadingBonePieceModifiersQ) return;
+            if (loadingBonePieceModifiersQ || SelectedBonePiece == -1) return;
 
             int iResizePieceZ;
 
@@ -3422,12 +3418,12 @@ namespace KimeraCS
                     txtResizePieceZ.Text = "100";
             }
             else
-                txtResizePieceZ.Text = "0";
+                txtResizePieceZ.Text = "100";
         }
 
         private void txtRepositionX_TextChanged(object sender, EventArgs e)
         {
-            if (loadingBonePieceModifiersQ) return;
+            if (loadingBonePieceModifiersQ || SelectedBonePiece == -1) return;
 
             int iRepositionX;
 
@@ -3443,7 +3439,7 @@ namespace KimeraCS
 
         private void txtRepositionY_TextChanged(object sender, EventArgs e)
         {
-            if (loadingBonePieceModifiersQ) return;
+            if (loadingBonePieceModifiersQ || SelectedBonePiece == -1) return;
 
             int iRepositionY;
 
@@ -3459,7 +3455,7 @@ namespace KimeraCS
 
         private void txtRepositionZ_TextChanged(object sender, EventArgs e)
         {
-            if (loadingBonePieceModifiersQ) return;
+            if (loadingBonePieceModifiersQ || SelectedBonePiece == -1) return;
 
             int iRepositionZ;
 
@@ -3475,7 +3471,7 @@ namespace KimeraCS
 
         private void txtRotateAlpha_TextChanged(object sender, EventArgs e)
         {
-            if (loadingBonePieceModifiersQ) return;
+            if (loadingBonePieceModifiersQ || SelectedBonePiece == -1) return;
 
             int iRotateAlpha;
 
@@ -3491,7 +3487,7 @@ namespace KimeraCS
 
         private void txtRotateBeta_TextChanged(object sender, EventArgs e)
         {
-            if (loadingBonePieceModifiersQ) return;
+            if (loadingBonePieceModifiersQ || SelectedBonePiece == -1) return;
 
             int iRotateBeta;
 
@@ -3507,7 +3503,7 @@ namespace KimeraCS
 
         private void txtRotateGamma_TextChanged(object sender, EventArgs e)
         {
-            if (loadingBonePieceModifiersQ) return;
+            if (loadingBonePieceModifiersQ || SelectedBonePiece == -1) return;
 
             int iRotateGamma;
 
@@ -3695,7 +3691,7 @@ namespace KimeraCS
 
         private void btnAddPiece_Click(object sender, EventArgs e)
         {
-            Model_3DS.Model3DS[] models3DS_auxV;
+            Model3DS[] models3DS_auxV;
             PModel AdditionalP;
             int iResult;
 
@@ -3751,10 +3747,10 @@ namespace KimeraCS
 
                         if (Path.GetExtension(openFile.FileName).ToUpper() == ".3DS")
                         {
-                            iResult = Model_3DS.Load3DS(openFile.FileName, out models3DS_auxV);
+                            iResult = Load3DS(openFile.FileName, out models3DS_auxV);
 
                             if (iResult == 1)
-                                Model_3DS.ConvertModels3DSToPModel(models3DS_auxV, ref AdditionalP);
+                                ConvertModels3DSToPModel(models3DS_auxV, ref AdditionalP);
                         }
                         else
                         {
@@ -5021,7 +5017,7 @@ namespace KimeraCS
                         {
                             alpha = (float)fi / (numInterpolatedFrames + 1);
 
-                            GetTwoBattleFramesWeaponInterpolation(bSkeleton, tmpbAnimation.frames[currentFrame], tmpbAnimation.frames[nextFrame],
+                            GetTwoBattleFramesWeaponInterpolation(tmpbAnimation.frames[currentFrame], tmpbAnimation.frames[nextFrame],
                                                                   alpha, ref tmpbFrame);
                             tmpbAnimation.frames[currentFrame + fi] = tmpbFrame;
                         }
@@ -5155,7 +5151,7 @@ namespace KimeraCS
                     if (ianimIndex < bAnimationsPack.nbWeaponAnims && bSkeleton.nWeapons > 0)
                     {
                         tmpbAnimation = bAnimationsPack.WeaponAnimations[ianimIndex];
-                        InterpolateBattleWeaponAnimation(ref bSkeleton, ref tmpbAnimation, numInterpolatedFrames, bisLoopQ,
+                        InterpolateBattleWeaponAnimation(ref tmpbAnimation, numInterpolatedFrames, bisLoopQ,
                                                          bAnimationsPack.SkeletonAnimations[ianimIndex].numFrames,
                                                          bAnimationsPack.SkeletonAnimations[ianimIndex].numFramesShort);
                         bAnimationsPack.WeaponAnimations[ianimIndex] = tmpbAnimation;
