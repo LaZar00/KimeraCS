@@ -220,6 +220,7 @@ namespace KimeraCS
             public float repositionX, repositionY, repositionZ;
             public float diameter;
             public int DListNum;
+
         }
 
         // In this procedure we will check the realGID assigned when loading
@@ -268,23 +269,6 @@ namespace KimeraCS
 
             }
 
-            //iMinGID = Model.Groups[iGroupIdx].realGID;
-            //iMaxGID = 9999;
-
-            //foreach (PGroup itmGroup in Model.Groups)
-            //{
-            //    if (itmGroup.realGID < iMaxGID && itmGroup.realGID > iMinGID)
-            //    {
-            //        iMaxGID = itmGroup.realGID;
-            //        iNextGroup = iGroupCounter;
-            //        bFoundNextGroup = true;
-            //    }
-
-            //    iGroupCounter++;
-            //}
-
-            //if (!bFoundNextGroup) iNextGroup = -1;
-
         }
 
 
@@ -322,7 +306,7 @@ namespace KimeraCS
 
             // Verts
             Model.Verts = new Point3D[Model.Header.numVerts];
-            ReadPVerts(fileBuffer, ref fileBufferPos, Model.Header.numVerts, ref Model.Verts, strPFullFileName);
+            ReadPVerts(fileBuffer, ref fileBufferPos, Model.Header.numVerts, ref Model.Verts);
 
             // Normals
             Model.Normals = new Point3D[Model.Header.numNormals];
@@ -439,7 +423,7 @@ namespace KimeraCS
             return 1;
         }
 
-        public static void ReadPVerts(byte[] fileBuffer, ref long pos, long numVerts, ref Point3D[] Verts, string fileName)
+        public static void ReadPVerts(byte[] fileBuffer, ref long pos, long numVerts, ref Point3D[] Verts)
         {
             using (var fileMemory = new MemoryStream(fileBuffer))
             {
@@ -1051,14 +1035,6 @@ namespace KimeraCS
 
                                 iNextGroup = GetNextGroup(Model, iNextGroup);
                             }
-                            //for (gi2 = gi + 1; gi2 < Model.Header.numGroups; gi2++)
-                            //{
-                            //    Model.Groups[gi2].offsetVert--;
-
-                            //    if (Model.Groups[gi].texFlag == 1 && Model.Groups[gi2].offsetTex > 0)
-                            //        Model.Groups[gi2].offsetTex--;
-
-                            //}
                         }
 
                         Model.Groups[gi].numVert--;
@@ -1187,7 +1163,7 @@ namespace KimeraCS
             //  ------------------- Warning! Causes the Normals to be inconsistent.------------------------------
             //  --------------------------------Must call ComputeNormals ----------------------------------------
 
-            int i, gi, groupIndex, numVerts, numPolys, numTexCoords;
+            int i, groupIndex, numVerts, numPolys, numTexCoords;
 
             numVerts = vertsV.Length;
             numPolys = facesV.Length;
@@ -1224,19 +1200,24 @@ namespace KimeraCS
             Model.Groups[groupIndex].off24 = 0;
             Model.Groups[groupIndex].off28 = 0;
 
-            if (Model.TexCoords != null) Model.Groups[groupIndex].offsetTex = Model.TexCoords.Length;
-            else Model.Groups[groupIndex].offsetTex = 0;
 
+            // Texture Coordinates (UVs)
             Model.Groups[groupIndex].texFlag = (numTexCoords > 0) ? 1 : 0;
             Model.Groups[groupIndex].texID = 0;
 
-            for (gi = 0; gi < groupIndex; gi++)
-            {
-                if (Model.Groups[groupIndex].texID <= Model.Groups[gi].texID)
-                {
-                    Model.Groups[groupIndex].texID = Model.Groups[gi].texID + 1;
-                }
-            }
+            if (Model.TexCoords != null)
+                if (Model.Groups[groupIndex].texFlag == 1)
+                    Model.Groups[groupIndex].offsetTex = Model.TexCoords.Length;
+                else 
+                    Model.Groups[groupIndex].offsetTex = 0;
+
+            //for (gi = 0; gi < groupIndex; gi++)
+            //{
+            //    if (Model.Groups[groupIndex].texID <= Model.Groups[gi].texID)
+            //    {
+            //        Model.Groups[groupIndex].texID = Model.Groups[gi].texID + 1;
+            //    }
+            //}
 
             Model.Groups[groupIndex].HiddenQ = false;
 
@@ -1303,7 +1284,6 @@ namespace KimeraCS
         public static void ApplyCurrentVColors(ref PModel Model)
         {
             int gi, vi;
-            int[] vp = new int[4];
 
             glDisable(glCapability.GL_BLEND);
 
@@ -1387,7 +1367,7 @@ namespace KimeraCS
         {
             int gi, pi, vi, vi2;
 
-            Point3D tempNorm = new Point3D();
+            Point3D tempNorm;
 
             Model.Normals = new Point3D[Model.Header.numVerts];
             Model.NormalIndex = new int[Model.Header.numVerts];
@@ -1515,7 +1495,7 @@ namespace KimeraCS
         {
             int pi, nPolys, iGroupIdx, offsetVert;
 
-            Point3D currentNormal = new Point3D();
+            Point3D currentNormal;
             Point3D totalNormal = new Point3D();
 
             nPolys = lstAdjacentPolysIdxs.Length;
@@ -2432,7 +2412,7 @@ namespace KimeraCS
             int iActualGroup, iNextGroup, iNumTexCoords;
             bool bGroupHasOffsetPolyZero;
 
-            bGroupHasOffsetPolyZero = Model.Groups[iGroupIdx].offsetPoly == 0 ? true : false;
+            bGroupHasOffsetPolyZero = Model.Groups[iGroupIdx].offsetPoly == 0;
 
             if (Model.Groups[iGroupIdx].numVert > 0)
             {
@@ -2441,7 +2421,9 @@ namespace KimeraCS
                 RemoveGroupPColors(ref Model, iGroupIdx);
                 RemoveGroupPolys(ref Model, iGroupIdx);
                 RemoveGroupEdges(ref Model, iGroupIdx);
-                RemoveGroupTexCoords(ref Model, iGroupIdx);
+
+                if (Model.Groups[iGroupIdx].texFlag == 1 || Model.Groups[iGroupIdx].offsetTex > 0)
+                        RemoveGroupTexCoords(ref Model, iGroupIdx);
             }
             else
             {
@@ -2569,8 +2551,8 @@ namespace KimeraCS
             int iGetClosestVertexResult = -1;
 
             Point3D pUP3D = new Point3D();
-            Point3D vpUP3D = new Point3D();
-            int gi, pi, vi, vi2, width, height;
+            Point3D vpUP3D;
+            int gi, pi, vi, vi2, height;
             int[] vp = new int[4];
 
             float[] DIST = new float[3];
@@ -2581,7 +2563,6 @@ namespace KimeraCS
             pUP3D.z = 0;
 
             glGetIntegerv((uint)glCapability.GL_VIEWPORT, vp);
-            width = vp[2];
             height = vp[3];
 
             pi = GetClosestPolygon(Model, px, py, DIST0, panelEditorPModel);
@@ -2616,11 +2597,11 @@ namespace KimeraCS
 
         public static int GetClosestPolygon(PModel Model, int px, int py, float DIST, PictureBox panelEditorPModel)
         {
-            int iGetClosestPolygonResult = 0;
+            int iGetClosestPolygonResult;
             Point3D p_min = new Point3D();
             Point3D p_max = new Point3D();
 
-            int gi, pi, vi, nPolys, width, height;
+            int gi, pi, vi, nPolys, height;
             float minZ;
             double[] rot_mat = new double[16];
             int[] vp = new int[4];
@@ -2666,7 +2647,6 @@ namespace KimeraCS
             glEnable(glCapability.GL_COLOR_MATERIAL);
 
             glGetIntegerv((uint)glCapability.GL_VIEWPORT, vp);
-            width = vp[2];
             height = vp[3];
 
             glRenderMode(glRenderingMode.GL_SELECT);
@@ -2816,24 +2796,18 @@ namespace KimeraCS
 
         public static int GetClosestEdge(PModel Model, int pIndex, int px, int py, ref float alpha)
         {
-            int iGetClosestEdgeReturn = -1;
+            int iGetClosestEdgeReturn;
 
             Point3D tmpUP3D = new Point3D();
-            Point3D p1Proj = new Point3D();
-            Point3D p2Proj = new Point3D();
-            Point3D p3Proj = new Point3D();
-
-            Point3D p1 = new Point3D();
-            Point3D p2 = new Point3D();
-            Point3D p3 = new Point3D();
+            Point3D p1Proj, p2Proj, p3Proj;
+            Point3D p1, p2, p3;
 
             float d1, d2, d3;
 
-            int width, height, offsetVerts;
+            int height, offsetVerts;
             int[] vp = new int[4];
 
             glGetIntegerv((uint)glCapability.GL_VIEWPORT, vp);
-            width = vp[2];
             height = vp[3];
 
             tmpUP3D.x = px;
@@ -2937,7 +2911,7 @@ namespace KimeraCS
         public static void MirrorGroupRelativeToPlane(ref PModel Model, int iGroupIdx, float pA, float pB, float pC, float pD)
         {
             int vi, pi, iTmp;
-            Point3D tmpP3D = new Point3D();
+            Point3D tmpP3D;
 
             for (vi = Model.Groups[iGroupIdx].offsetVert; vi < Model.Groups[iGroupIdx].offsetVert + Model.Groups[iGroupIdx].numVert; vi++)
             {
@@ -3207,8 +3181,8 @@ namespace KimeraCS
             //  -------- Warning! Can cause the Normals to be inconsistent if lights are disabled.-----
             //  ---------------------------------Must call ComputeNormals -----------------------------
             int pi, vi, iGroupIdx, iNextGroup,  basePolys, tmpR = 0, tmpG = 0, tmpB = 0;
-            Point3D tmpVPoint3D = new Point3D();
-            Color tmpColor = new Color();
+            Point3D tmpVPoint3D;
+            Color tmpColor;
 
             if (vertsIndexBuff[0] != vertsIndexBuff[1] &&
                 vertsIndexBuff[0] != vertsIndexBuff[2])
@@ -3314,9 +3288,7 @@ namespace KimeraCS
 
         public static void OrderVertices(PModel Model, ref int[] vertBuff)
         {
-            Point3D v1 = new Point3D();
-            Point3D v2 = new Point3D();
-            Point3D v3 = new Point3D();
+            Point3D v1, v2, v3;
             int tmpInt;
 
             // -- Commented in KimeraVB6
@@ -3588,7 +3560,7 @@ namespace KimeraCS
         public static int GetEqualVertices(PModel Model, int iVertIdx, ref List<int> lstVerts)
         {
             int vi, gi;
-            Point3D tmpVPoint3D = new Point3D();
+            Point3D tmpVPoint3D;
             HashSet<int> lstVertsUnique = new HashSet<int>();
 
             tmpVPoint3D = Model.Verts[iVertIdx];
@@ -3623,7 +3595,7 @@ namespace KimeraCS
             float fEquality, fPolyD;
             float fLambdaMultPlane, kPlane, alphaPlane;
             int p1Idx, p2Idx, t1Idx, t2Idx, iOldGroupIdx;
-            Point3D intersectionPoint = new Point3D();
+            Point3D intersectionPoint;
             Point2D intersectionTexCoord = new Point2D();
             int vIndexRectify;
             List<int> vEqualVIndices = new List<int>();
@@ -3699,7 +3671,6 @@ namespace KimeraCS
                          up3DPolyNormal.z * Model.Verts[Model.Polys[iPolyIdx].Verts[0] + offsetVert].z;
 
                 ei = 0;
-                kPlane = 0;
                 cutQ = false;
 
                 do
@@ -3851,7 +3822,7 @@ namespace KimeraCS
         {
             Point3D orthogonalProjectionP3D;
             Point3D vectP3D;
-            Point3D vectNormP3D = new Point3D();
+            Point3D vectNormP3D;
 
             orthogonalProjectionP3D = GetPoint3DOrthogonalProjection(uPoint3D, pA, pB, pC, pD);
 
@@ -3871,7 +3842,7 @@ namespace KimeraCS
         {
             Point3D orthogonalProjectionP3D;
             Point3D vectP3D;
-            Point3D vectNormP3D = new Point3D();
+            Point3D vectNormP3D;
 
             orthogonalProjectionP3D = GetPoint3DOrthogonalProjection(uPoint3D, pA, pB, pC, pD);
 
