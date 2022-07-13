@@ -360,8 +360,8 @@ namespace KimeraCS
 
         public static float ComputeFieldDiameter(FieldSkeleton Skeleton)
         {
-            int bi = 0;
-            float aux_diam = 0;
+            int bi;
+            float aux_diam;
             float fcomputeFieldDiameterResult = 0;
 
             //for (bi = 0; bi < Skeleton.nBones; bi++)
@@ -369,7 +369,7 @@ namespace KimeraCS
             {
                 aux_diam = ComputeFieldBoneDiameter(Skeleton.bones[bi]);
 
-                fcomputeFieldDiameterResult = fcomputeFieldDiameterResult + aux_diam;
+                fcomputeFieldDiameterResult += aux_diam;
             }
 
             return fcomputeFieldDiameterResult;
@@ -405,11 +405,11 @@ namespace KimeraCS
         }
 
         public static int GetClosestFieldBone(FieldSkeleton fSkeleton, FieldFrame fFrame,
-                                              int px, int py, double DIST)
+                                              int px, int py)
         {
-            int iGetClosestFieldBoneResult = 0;
+            int iGetClosestFieldBoneResult;
 
-            int bi, nBones, width, height, jsp;
+            int bi, nBones, height, jsp;
             float min_z;
 
             int[] vp = new int[4];
@@ -437,7 +437,6 @@ namespace KimeraCS
             glLoadIdentity();
 
             glGetIntegerv((uint)glCapability.GL_VIEWPORT, vp);
-            width = vp[2];
             height = vp[3];
 
             gluPickMatrix(px - 1, height - py + 1, 3, 3, vp);
@@ -510,9 +509,9 @@ namespace KimeraCS
         }
 
         public static int GetClosestFieldBonePiece(FieldSkeleton fSkeleton, FieldFrame fFrame,
-                                                   int b_index, int px, int py, double DIST)
+                                                   int b_index, int px, int py)
         {
-            int iGetClosestFieldBonePieceResult = 0;
+            int iGetClosestFieldBonePieceResult;
 
             int bi, pi, nPieces, width, height, jsp;
             float min_z;
@@ -538,7 +537,6 @@ namespace KimeraCS
             glLoadIdentity();
 
             glGetIntegerv((uint)glCapability.GL_VIEWPORT, vp);
-            width = vp[2];
             height = vp[3];
 
             gluPickMatrix(px - 1, height - py + 1, 3, 3, vp);
@@ -634,17 +632,25 @@ namespace KimeraCS
 
             if (fBone.nResources > 0)
             {
-                tmpRSDResource.Model.fileName = fBone.fRSDResources[0].Model.fileName.Substring(0, fBone.fRSDResources[0].Model.fileName.Length - 2) +
-                                                (fBone.nResources).ToString() +
+                tmpRSDResource.Model.fileName = fBone.fRSDResources[0].Model.fileName.Substring(0, 4).ToUpper() + 
+                                                fBone.nResources.ToString() +
                                                 ".P";
 
-                tmpRSDResource.res_file = fBone.fRSDResources[0].res_file + (fBone.nResources).ToString();
+                tmpRSDResource.res_file = fBone.fRSDResources[0].res_file.ToUpper() + fBone.nResources.ToString();
             }
             else
             {
                 tmpRSDResource.numTextures = 0;
 
-                tmpRSDResource.res_file = Model.fileName.Substring(0, 4);
+                if (tmpRSDResource.res_file == null)
+                {
+                    tmpRSDResource.res_file = Model.fileName.Substring(0, 4).ToUpper();
+                }
+                else
+                {
+                    tmpRSDResource.res_file = tmpRSDResource.res_file.Substring(0, 4).ToUpper();
+                }
+                
             }
 
             fBone.fRSDResources.Add(tmpRSDResource);
@@ -653,10 +659,38 @@ namespace KimeraCS
 
         public static void RemoveFieldBone(ref FieldBone fBone, ref int b_index)
         {
+            FieldRSDResource tmpfRSDResource;
+
+            string tmpRSDResourceName, tmpModelName;
+            int iRSDCounter;
+
+            tmpModelName = fBone.fRSDResources[0].Model.fileName.Substring(0, 4).ToUpper();
+            tmpRSDResourceName = fBone.fRSDResources[0].res_file.Substring(0, 4).ToUpper();
+
             if (b_index < fBone.nResources)
             {
                 fBone.fRSDResources.RemoveAt(b_index);
                 fBone.nResources--;
+            }
+
+
+            // Let's assign the correct names.
+            for (iRSDCounter = 0; iRSDCounter < fBone.nResources; iRSDCounter++)
+            {
+                tmpfRSDResource = fBone.fRSDResources[iRSDCounter];
+
+                tmpfRSDResource.Model.fileName = tmpModelName;
+                tmpfRSDResource.res_file = tmpRSDResourceName;
+
+                if (iRSDCounter > 0)
+                {
+                    tmpfRSDResource.Model.fileName += iRSDCounter.ToString();
+                    tmpfRSDResource.res_file += iRSDCounter.ToString();
+                }
+
+                tmpfRSDResource.Model.fileName += ".P";
+
+                fBone.fRSDResources[iRSDCounter] = tmpfRSDResource;
             }
         }
 
@@ -678,7 +712,7 @@ namespace KimeraCS
             }
         }
 
-        public static void ApplyFieldBoneChanges(ref FieldBone fBone, float diameter, bool merge)
+        public static void ApplyFieldBoneChanges(ref FieldBone fBone, bool merge)
         {
             int ri;
             FieldRSDResource tmpRSDResource;
@@ -755,7 +789,7 @@ namespace KimeraCS
 
                 //  Debug.Print bi, obj.Bones(bi).joint_f, obj.Bones(bi).NumResources
                 tmpfBone = fSkeleton.bones[bi];
-                ApplyFieldBoneChanges(ref tmpfBone, ComputeFieldDiameter(fSkeleton) * 2, merge);
+                ApplyFieldBoneChanges(ref tmpfBone, merge);
                 fSkeleton.bones[bi] = tmpfBone;
 
                 glTranslated(0, 0, -fSkeleton.bones[bi].len);
@@ -774,7 +808,7 @@ namespace KimeraCS
         public static void WriteFieldBone(ref StringBuilder strHRCContent, ref FieldBone fBone)
         {
             int ri;
-            string strRSDList, baseRSDName, basePName;
+            string strRSDList;
 
             FieldRSDResource tmpRSDResource;
 
@@ -787,26 +821,23 @@ namespace KimeraCS
 
             if (fBone.nResources > 0)
             {
-                baseRSDName = fBone.fRSDResources[0].res_file.Substring(0, 4);
-                basePName = fBone.fRSDResources[0].Model.fileName.Substring(0, 4);
-
                 // Write resources (if there is number involved it begins with 1, if we use "0" as first number there are issues).
                 //                  first resource has no number.
                 for (ri = 0; ri < fBone.nResources; ri++)
                 {
                     tmpRSDResource = fBone.fRSDResources[ri];
 
-                    strRSDList = strRSDList + " " + tmpRSDResource.res_file;
+                    strRSDList = strRSDList + " " + tmpRSDResource.res_file.ToUpper();
 
-                    WriteRSDResource(tmpRSDResource, strGlobalPathSaveSkeletonFolder + "\\" + fBone.fRSDResources[ri].res_file + ".RSD");
+                    WriteRSDResource(tmpRSDResource, strGlobalPathSaveSkeletonFolder + "\\" + fBone.fRSDResources[ri].res_file.ToUpper() + ".RSD");
 
                     if (tmpRSDResource.Model.Polys != null)
-                        WriteGlobalPModel(ref tmpRSDResource.Model, strGlobalPathSaveSkeletonFolder + "\\" + fBone.fRSDResources[ri].Model.fileName);
+                        WriteGlobalPModel(ref tmpRSDResource.Model, strGlobalPathSaveSkeletonFolder + "\\" + fBone.fRSDResources[ri].Model.fileName.ToUpper());
 
                     fBone.fRSDResources[ri] = tmpRSDResource;
                 }
             }
-            else strRSDList = strRSDList + " ";
+            else strRSDList += " ";
 
             strHRCContent.AppendLine(strRSDList);
         }
