@@ -1350,6 +1350,7 @@ namespace KimeraCS
 
         private void loadModelToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            string tmpFileName;
 
             // Set filter options and filter index.
             openFile.Title = "Open Model (PEditor)";
@@ -1395,14 +1396,20 @@ namespace KimeraCS
                         WriteCFGFile();
 
                         // Load the Model
+                        tmpFileName = EditedPModel.fileName;
                         EditedPModel = new PModel();
+
                         LoadPModel(ref EditedPModel, strGlobalPathPModelFolderPE,
-                                             Path.GetFileName(strGlobalPModelNamePE));
+                                   Path.GetFileName(strGlobalPModelNamePE));
+
+                        // Assign old filename to the PModel
+                        EditedPModel.fileName = tmpFileName.ToUpper();
 
                         if (EditedPModel.Header.numVerts > 0)
                         {
                             // Initialize environment and model
                             InitializeLoadPEditor();
+                            panelEditorPModel_Paint(null, null);
                         }
                     }
                 }
