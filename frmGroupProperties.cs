@@ -221,6 +221,8 @@ namespace KimeraCS
             // We have to Refresh Group List (in case we changed some TexID)
             frmPEdit.FillGroupsList();
 
+            frmPEdit.ChangeGroupEnable(false);
+
             Close();
 
 

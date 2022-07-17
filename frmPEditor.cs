@@ -1104,6 +1104,7 @@ namespace KimeraCS
             CopyModelColors2VP(EditedPModel, ref vcolorsOriginal, ref pcolorsOriginal);
             chkPalettized_CheckedChanged(null, null);
 
+            ChangeGroupEnable(false);
             ChangeGroupStatus(false);
         }
 
@@ -1126,6 +1127,7 @@ namespace KimeraCS
             CopyModelColors2VP(EditedPModel, ref vcolorsOriginal, ref pcolorsOriginal);
             chkPalettized_CheckedChanged(null, null);
 
+            ChangeGroupEnable(false);
             ChangeGroupStatus(false);
         }
 
@@ -1141,6 +1143,12 @@ namespace KimeraCS
 
         public void ChangeGroupEnable(bool bEnabled)
         {
+            if (!bEnabled)
+            {
+                lbGroups.SelectedIndex = -1;
+                SelectedGroup = -1;
+            }
+
             btnUpGroup.Enabled = bEnabled;
             btnDownGroup.Enabled = bEnabled;
 
