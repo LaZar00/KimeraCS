@@ -178,12 +178,16 @@ namespace KimeraCS
             public int texFlag;
             public int texID;
             // added attributes
+            public float repGroupX, repGroupY, repGroupZ;
+            public float rszGroupX, rszGroupY, rszGroupZ;
+            public float rotGroupAlpha, rotGroupBeta, rotGroupGamma;
+            public Quaternion rotationQuaternionGroup;
             public int DListNum;
             public bool HiddenQ;           // Hidden groups aren't rendered and can't be changed _
                                            // save for the basic geometrical transformations(rotation, scaling and panning),
                                            // palletizzed opeartions and group deletion
             public int realGID;            // We will use this as maintain the real Group position number of the list for
-                                           // Remove Group feature.
+                                           // Remove/Duplicate/Add features. This is the Border DListNum?
         }
 
         public struct PBoundingBox
@@ -214,10 +218,10 @@ namespace KimeraCS
             public PBoundingBox BoundingBox;
             public int[] NormalIndex;
             // added attributes
+            public float repositionX, repositionY, repositionZ;
             public float resizeX, resizeY, resizeZ;
             public float rotateAlpha, rotateBeta, rotateGamma;
             public Quaternion rotationQuaternion;
-            public float repositionX, repositionY, repositionZ;
             public float diameter;
             public int DListNum;
 
@@ -636,6 +640,18 @@ namespace KimeraCS
                         Groups[i].texFlag = memReader.ReadInt32();
                         Groups[i].texID = memReader.ReadInt32();
                         // added attributes
+                        Groups[i].rszGroupX = 1;
+                        Groups[i].rszGroupY = 1;
+                        Groups[i].rszGroupZ = 1;
+                        Groups[i].repGroupX = 0;
+                        Groups[i].repGroupY = 0;
+                        Groups[i].repGroupZ = 0;
+                        Groups[i].rotGroupAlpha = 0;
+                        Groups[i].rotGroupBeta = 0;
+                        Groups[i].rotGroupGamma = 0;
+
+                        Groups[i].rotationQuaternionGroup = new Quaternion() { x = 0, y = 0, z = 0, w = 1 };
+
                         Groups[i].DListNum = -1;
                         Groups[i].HiddenQ = false;
                         Groups[i].realGID = i;
@@ -977,8 +993,7 @@ namespace KimeraCS
                 {
                     for (vi = 0; vi < 3; vi++)
                     {
-                        vertsUsage[Model.Polys[pi].Verts[vi] + Model.Groups[gi].offsetVert] =
-                                1 + vertsUsage[Model.Polys[pi].Verts[vi] + Model.Groups[gi].offsetVert];
+                        vertsUsage[Model.Polys[pi].Verts[vi] + Model.Groups[gi].offsetVert] += 1;
                     }
                 }
             }
@@ -987,7 +1002,8 @@ namespace KimeraCS
             vit = 0;
             tciGlobal = 0;
 
-            for (gi = 0; gi < Model.Header.numGroups; gi++)
+            gi = GetNextGroup(Model, -1);
+            while (gi != -1)
             {
                 while (vi < Model.Groups[gi].offsetVert + Model.Groups[gi].numVert)
                 {
@@ -1000,7 +1016,7 @@ namespace KimeraCS
                             Model.Vcolors[vi2] = Model.Vcolors[vi2 + 1];
                         }
 
-                        if (Model.Groups[gi].texFlag == 1)
+                        if (Model.Groups[gi].texFlag == 1 || Model.Groups[gi].offsetTex > 0 || Model.Hundrets[gi].shademode == 2)
                         {
                             for (tci = tciGlobal; tci < Model.Header.numTexCs - 1; tci++)
                                 Model.TexCoords[tci] = Model.TexCoords[tci + 1];
@@ -1018,23 +1034,21 @@ namespace KimeraCS
                             for (vi2 = 0; vi2 < 3; vi2++)
                             {
                                 if (Model.Polys[pi].Verts[vi2] > vi - Model.Groups[gi].offsetVert)
-                                    Model.Polys[pi].Verts[vi2] = (short)(Model.Polys[pi].Verts[vi2] - 1);
+                                    Model.Polys[pi].Verts[vi2] -= 1;
                             }
                         }
 
-                        if (gi < Model.Header.numGroups - 1)
+                        iNextGroup = GetNextGroup(Model, gi);
+
+                        while (iNextGroup != -1)
                         {
-                            iNextGroup = GetNextGroup(Model, gi);
+                            Model.Groups[iNextGroup].offsetVert--;
 
-                            while (iNextGroup != -1)
-                            {
-                                Model.Groups[iNextGroup].offsetVert--;
+                            if ((Model.Groups[gi].texFlag == 1 || Model.Groups[gi].offsetTex > 0 || Model.Hundrets[gi].shademode == 2) &&
+                                Model.Groups[iNextGroup].offsetTex > 0)
+                                Model.Groups[iNextGroup].offsetTex--;
 
-                                if (Model.Groups[gi].texFlag == 1 && Model.Groups[iNextGroup].offsetTex > 0)
-                                    Model.Groups[iNextGroup].offsetTex--;
-
-                                iNextGroup = GetNextGroup(Model, iNextGroup);
-                            }
+                            iNextGroup = GetNextGroup(Model, iNextGroup);
                         }
 
                         Model.Groups[gi].numVert--;
@@ -1042,12 +1056,15 @@ namespace KimeraCS
                     else
                     {
                         vi++;
-                        if (Model.Groups[gi].texFlag == 1) tciGlobal++;
+                        if (Model.Groups[gi].texFlag == 1 || Model.Groups[gi].offsetTex > 0 || Model.Hundrets[gi].shademode == 2) tciGlobal++;
                     }
 
                     vit++;
                 }
+
+                gi = GetNextGroup(Model, gi);
             }
+
         }
 
         public static void KillEmptyGroups(ref PModel Model)
@@ -1091,6 +1108,37 @@ namespace KimeraCS
                 CreateDListFromPGroup(ref Model.Groups[gi], ref Model.Polys, ref Model.Verts, ref Model.Vcolors, ref Model.Normals,
                                       ref Model.TexCoords, ref Model.Hundrets[gi]);
             }
+        }
+
+        public static void RotatePModelGroupModifiers(ref PGroup Group, float alpha, float beta, float gamma)
+        {
+
+            float diff_alpha, diff_beta, diff_gamma;
+            Quaternion aux_quat = new Quaternion();
+            Quaternion res_quat = new Quaternion();
+
+            if (alpha == 0 || beta == 0 || gamma == 0)
+            {
+                //  This works if there are at most 2 active axes
+                BuildQuaternionFromEuler(alpha, beta, gamma, ref Group.rotationQuaternionGroup);
+            }
+            else
+            {
+                //  Else add up the quaternion difference
+                diff_alpha = alpha - Group.rotGroupAlpha;
+                diff_beta = beta - Group.rotGroupBeta;
+                diff_gamma = gamma - Group.rotGroupGamma;
+
+                BuildQuaternionFromEuler(diff_alpha, diff_beta, diff_gamma, ref aux_quat);
+
+                MultiplyQuaternions(Group.rotationQuaternionGroup, aux_quat, ref res_quat);
+
+                Group.rotationQuaternionGroup = res_quat;
+            }
+
+            Group.rotGroupAlpha = alpha;
+            Group.rotGroupBeta = beta;
+            Group.rotGroupGamma = gamma;
         }
 
         public static void RotatePModelModifiers(ref PModel Model, float alpha, float beta, float gamma)
@@ -1211,14 +1259,6 @@ namespace KimeraCS
                 else 
                     Model.Groups[groupIndex].offsetTex = 0;
 
-            //for (gi = 0; gi < groupIndex; gi++)
-            //{
-            //    if (Model.Groups[groupIndex].texID <= Model.Groups[gi].texID)
-            //    {
-            //        Model.Groups[groupIndex].texID = Model.Groups[gi].texID + 1;
-            //    }
-            //}
-
             Model.Groups[groupIndex].HiddenQ = false;
 
             // Add new Verts to the Group
@@ -1276,9 +1316,22 @@ namespace KimeraCS
             Model.Header.mirex_h += 1;
             Array.Resize(ref Model.Hundrets, Model.Header.mirex_h);
             FillHundrestsDefaultValues(ref Model.Hundrets[Model.Header.mirex_h - 1]);
+            Model.Hundrets[Model.Header.mirex_h - 1].texID = Model.Hundrets[Model.Header.mirex_h - 2].texID;
 
-            // Put realGID
+            // Assign other non-group vars as realGID or Reposition/Resize/Rotate.
             Model.Groups[groupIndex].realGID = Model.Groups.Length - 1;
+
+            Model.Groups[groupIndex].rszGroupX = 1;
+            Model.Groups[groupIndex].rszGroupY = 1;
+            Model.Groups[groupIndex].rszGroupZ = 1;
+            Model.Groups[groupIndex].repGroupX = 0;
+            Model.Groups[groupIndex].repGroupY = 0;
+            Model.Groups[groupIndex].repGroupZ = 0;
+            Model.Groups[groupIndex].rotGroupAlpha = 0;
+            Model.Groups[groupIndex].rotGroupBeta = 0;
+            Model.Groups[groupIndex].rotGroupGamma = 0;
+
+            Model.Groups[groupIndex].rotationQuaternionGroup = new Quaternion() { x = 0, y = 0, z = 0, w = 1 };
         }
 
         public static void ApplyCurrentVColors(ref PModel Model)
@@ -1592,12 +1645,35 @@ namespace KimeraCS
 
         public static void ApplyCurrentVCoords(ref PModel Model)
         {
-            int vi;
+            int vi,gi;
+            double[] rot_mat = new double[16];
 
-            for (vi = 0; vi < Model.Header.numVerts; vi++)
+            SetCameraModelViewQuat(repXPE, repYPE, repZPE,
+                                   EditedPModel.rotationQuaternion,
+                                   rszXPE, rszYPE, rszZPE);
+
+            for (gi = 0; gi < Model.Header.numGroups; gi++)
             {
-                Model.Verts[vi] = GetEyeSpaceCoords(Model.Verts[vi]);
-            }
+                glMatrixMode(glMatrixModeList.GL_MODELVIEW);
+                glPushMatrix();
+
+                glTranslatef(Model.Groups[gi].repGroupX, Model.Groups[gi].repGroupY, Model.Groups[gi].repGroupZ);
+
+                BuildRotationMatrixWithQuaternionsXYZ(Model.Groups[gi].rotGroupAlpha,
+                                                      Model.Groups[gi].rotGroupBeta,
+                                                      Model.Groups[gi].rotGroupGamma,
+                                                      ref rot_mat);
+                glMultMatrixd(rot_mat);
+
+                glScalef(Model.Groups[gi].rszGroupX, Model.Groups[gi].rszGroupY, Model.Groups[gi].rszGroupZ);
+
+                for (vi = Model.Groups[gi].offsetTex; vi < Model.Groups[gi].offsetTex + Model.Groups[gi].numVert; vi++)
+                {
+                    Model.Verts[vi] = GetEyeSpaceCoords(Model.Verts[vi]);
+                }
+
+                glPopMatrix();
+            }            
         }
 
         public static void ComputePColors(ref PModel Model)
@@ -1638,7 +1714,9 @@ namespace KimeraCS
             try
             {
                 KillUnusedVertices(ref Model);
+
                 ApplyCurrentVCoords(ref Model);
+
                 ComputePColors(ref Model);
                 ComputeEdges(ref Model);
 
@@ -1647,12 +1725,12 @@ namespace KimeraCS
 
                 ComputeBoundingBox(ref Model);
 
-                Model.resizeX = 1;
-                Model.resizeY = 1;
-                Model.resizeZ = 1;
                 Model.repositionX = 0;
                 Model.repositionY = 0;
                 Model.repositionZ = 0;
+                Model.resizeX = 1;
+                Model.resizeY = 1;
+                Model.resizeZ = 1;
                 Model.rotateAlpha = 0;
                 Model.rotateBeta = 0;
                 Model.rotateGamma = 0;
@@ -1660,6 +1738,23 @@ namespace KimeraCS
                 Model.rotationQuaternion.y = 0;
                 Model.rotationQuaternion.z = 0;
                 Model.rotationQuaternion.w = 1;
+
+                for (int iGroupIdx = 0; iGroupIdx < Model.Header.numGroups; iGroupIdx++)
+                {
+                    Model.Groups[iGroupIdx].repGroupX = 0;
+                    Model.Groups[iGroupIdx].repGroupY = 0;
+                    Model.Groups[iGroupIdx].repGroupZ = 0;
+                    Model.Groups[iGroupIdx].rszGroupX = 1;
+                    Model.Groups[iGroupIdx].rszGroupY = 1;
+                    Model.Groups[iGroupIdx].rszGroupZ = 1;
+                    Model.Groups[iGroupIdx].rotGroupAlpha = 0;
+                    Model.Groups[iGroupIdx].rotGroupBeta = 0;
+                    Model.Groups[iGroupIdx].rotGroupGamma = 0;
+                    Model.Groups[iGroupIdx].rotationQuaternionGroup.x = 0;
+                    Model.Groups[iGroupIdx].rotationQuaternionGroup.y = 0;
+                    Model.Groups[iGroupIdx].rotationQuaternionGroup.z = 0;
+                    Model.Groups[iGroupIdx].rotationQuaternionGroup.w = 1;
+                }
             }
             catch
             {
@@ -2304,55 +2399,11 @@ namespace KimeraCS
         public static void RemoveGroupTexCoords(ref PModel Model, int iGroupIdx)
         {
             int ti, ti2, iNextGroup;
-            //int iNextGroup, iActualGroup, iNumTexCsDelete;
-
-            //iActualGroup = iGroupIdx;
-            //iNumTexCsDelete = Model.Groups[iActualGroup].numVert;
-            //iNextGroup = GetNextGroup(Model, iActualGroup);
-
-            //while (iNextGroup != -1)
-            //{
-            //    if (Model.Groups[iActualGroup].texFlag == 1)
-            //    {
-            //        ti2 = Model.Groups[iActualGroup].offsetTex;
-
-            //        for (ti = Model.Groups[iNextGroup].offsetTex; ti < Model.Groups[iNextGroup].offsetTex + Model.Groups[iNextGroup].numVert; ti++)
-            //        {
-            //            Model.TexCoords[ti2] = Model.TexCoords[ti];
-            //            ti2++;
-            //        }
-
-            //        iActualGroup = iNextGroup;
-            //        iNextGroup = GetNextGroup(Model, iActualGroup);
-            //    }
-            //}
-
-            //if (Model.Groups[iActualGroup].texFlag == 1)
-            //    Array.Resize(ref Model.TexCoords, Model.Header.numTexCs - iNumTexCsDelete);
-
-            //if (GetNextGroup(Model, iGroupIdx) != -1)
-            //{
-            //    if (Model.Groups[iGroupIdx].texFlag == 1)
-            //    {
-            //        if (iGroupIdx < Model.Header.numGroups - 1)
-            //        {
-            //            ti2 = Model.Groups[iGroupIdx].offsetTex;
-
-            //            for (ti = Model.Groups[iGroupIdx + 1].offsetTex; ti < Model.Header.numTexCs; ti++)
-            //            {
-            //                Model.TexCoords[ti2] = Model.TexCoords[ti];
-            //                ti2++;
-            //            }
-            //        }
-
-            //        Array.Resize(ref Model.TexCoords, Model.Header.numTexCs - Model.Groups[iGroupIdx].numVert);
-            //    }
-            //}
 
             iNextGroup = GetNextGroup(Model, iGroupIdx);
             if (iNextGroup != -1)
             {
-                if (Model.Groups[iGroupIdx].texFlag == 1)
+                if (Model.Groups[iGroupIdx].texFlag == 1 || Model.Groups[iGroupIdx].offsetTex > 0 || Model.Hundrets[iGroupIdx].shademode == 2)
                 {
                     ti2 = Model.Groups[iGroupIdx].offsetTex;
 
@@ -2398,10 +2449,11 @@ namespace KimeraCS
             Model.Header.numPolys -= Model.Groups[iGroupIdx].numPoly;
             Model.Header.numEdges -= Model.Groups[iGroupIdx].numEdge;
             Model.Header.numVerts -= Model.Groups[iGroupIdx].numVert;
-            Model.Header.mirex_h--;
 
-            if (Model.Groups[iGroupIdx].texFlag == 1)
+            if (Model.Groups[iGroupIdx].texFlag == 1 || Model.Groups[iGroupIdx].offsetTex > 0 || Model.Hundrets[iGroupIdx].shademode == 2)
                 Model.Header.numTexCs -= Model.Groups[iGroupIdx].numVert;
+
+            Model.Header.mirex_h--;
 
             Model.Header.numGroups--;
         }
@@ -2422,7 +2474,7 @@ namespace KimeraCS
                 RemoveGroupPolys(ref Model, iGroupIdx);
                 RemoveGroupEdges(ref Model, iGroupIdx);
 
-                if (Model.Groups[iGroupIdx].texFlag == 1 || Model.Groups[iGroupIdx].offsetTex > 0)
+                if (Model.Groups[iGroupIdx].texFlag == 1 || Model.Groups[iGroupIdx].offsetTex > 0 || Model.Hundrets[iGroupIdx].shademode == 2)
                         RemoveGroupTexCoords(ref Model, iGroupIdx);
             }
             else
@@ -2484,7 +2536,8 @@ namespace KimeraCS
                     //if (Model.Groups[iActualGroup].texFlag == 1 ||
                     //    Model.Groups[iActualGroup].offsetTex > 0)       // Can be some poly with texture set to 0 but with UV.
                     if (Model.Groups[iActualGroup].texFlag == 1 ||
-                        Model.Groups[iActualGroup].offsetTex > 0)
+                        Model.Groups[iActualGroup].offsetTex > 0 ||
+                        Model.Hundrets[iActualGroup].shademode == 2)
                     {
                         Model.Groups[iActualGroup].offsetTex = iNumTexCoords;
                         iNumTexCoords += Model.Groups[iActualGroup].numVert;
@@ -2505,7 +2558,7 @@ namespace KimeraCS
                 }
 
                 // Let's assign latest TexCoords if needed.
-                if (Model.Groups[iActualGroup].texFlag == 1 || Model.Groups[iActualGroup].offsetTex > 0)
+                if (Model.Groups[iActualGroup].texFlag == 1 || Model.Groups[iActualGroup].offsetTex > 0 || Model.Hundrets[iActualGroup].shademode == 2)
                     Model.Groups[iActualGroup].offsetTex = iNumTexCoords;
            }
 
@@ -2775,13 +2828,6 @@ namespace KimeraCS
 
                 iNextGroup = GetNextGroup(Model, iNextGroup);
             }
-            //if (iGroupIdx < Model.Header.numGroups - 1)
-            //{
-            //    for (gi = iGroupIdx + 1; gi < Model.Header.numGroups; gi++)
-            //    {
-            //        Model.Groups[gi].offsetPoly--;
-            //    }
-            //}
             Model.Groups[iGroupIdx].numPoly--;
 
             //  This is technically wrong. The vector shold be emptied if Model.Header.numPolys droped to 0,
@@ -3046,7 +3092,7 @@ namespace KimeraCS
             Array.Resize(ref Model.Verts, Model.Header.numVerts);
             Array.Resize(ref Model.Vcolors, Model.Header.numVerts);
 
-            if (Model.Groups[iGroupIdx].texFlag == 1)
+            if (Model.Groups[iGroupIdx].texFlag == 1 || Model.Groups[iGroupIdx].offsetTex > 0 || Model.Hundrets[iGroupIdx].shademode == 2)
             {
                 Model.Header.numTexCs++;
                 Array.Resize(ref Model.TexCoords, Model.Header.numTexCs);
@@ -3074,7 +3120,7 @@ namespace KimeraCS
                     Model.Vcolors[vi] = Model.Vcolors[vi - 1];
                 }
 
-                if (Model.Groups[iGroupIdx].texFlag == 1)
+                if (Model.Groups[iGroupIdx].texFlag == 1 || Model.Groups[iGroupIdx].offsetTex > 0 || Model.Hundrets[iGroupIdx].shademode == 2)
                 {
                     baseTexCoords = Model.Groups[iGroupIdx].offsetTex + Model.Groups[iGroupIdx].numVert;
 
@@ -3086,7 +3132,7 @@ namespace KimeraCS
 
                 if (glIsEnabled(glCapability.GL_LIGHTING))
                 {
-                    if (Model.Groups[iGroupIdx].texFlag == 1)
+                    if (Model.Groups[iGroupIdx].texFlag == 1 || Model.Groups[iGroupIdx].offsetTex > 0 || Model.Hundrets[iGroupIdx].shademode == 2)
                     {
                         //baseNormals = Model.Groups[iGroupIdx + 1].offsetVert;
                         baseNormals = Model.Groups[iNextGroup].offsetVert;
@@ -3102,7 +3148,8 @@ namespace KimeraCS
                 {
                     Model.Groups[iNextGroup].offsetVert++;
 
-                    if (Model.Groups[iGroupIdx].texFlag == 1 && Model.Groups[iNextGroup].texFlag == 1)
+                    if ((Model.Groups[iGroupIdx].texFlag == 1 || Model.Groups[iGroupIdx].offsetTex > 0 || Model.Hundrets[iGroupIdx].shademode == 2) &&
+                        (Model.Groups[iNextGroup].texFlag == 1 || Model.Groups[iNextGroup].offsetTex > 0 || Model.Hundrets[iGroupIdx].shademode == 2))
                     {
                         Model.Groups[iNextGroup].offsetTex++;
                     }
