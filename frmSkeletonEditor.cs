@@ -55,7 +55,7 @@ namespace KimeraCS
     public partial class frmSkeletonEditor : Form
     {
 
-        public const string STR_APPNAME = "KimeraCS 1.2d";
+        public const string STR_APPNAME = "KimeraCS 1.3";
 
         public static int modelWidth;
         public static int modelHeight;
@@ -297,10 +297,6 @@ namespace KimeraCS
 
             DisableOpenGL(OGLContext);
             btnPlayStopAnim.Checked = false;
-
-            //DeleteDC(frmPEdit.hPalDC);
-            //DeleteDC(frmPEdit.hFullPalDC);
-            //DeleteDC(frmPEdit.pbPaletteDC);            
         }
 
         private void frmSkeletonEditor_KeyDown(object sender, KeyEventArgs e)
@@ -317,6 +313,7 @@ namespace KimeraCS
             if (controlPressedQ && e.KeyCode == Keys.Left) beta--;
             if (controlPressedQ && e.KeyCode == Keys.Right) beta++;
 
+            panelModel.Update();
             panelModel_Paint(null, null);
             textureViewer_Paint(null, null);
         }
@@ -329,10 +326,12 @@ namespace KimeraCS
         private void frmSkeletonEditor_Resize(object sender, EventArgs e)
         {
             // Check first if minimized.
-            if (Application.OpenForms.Count > 0) {
+            if (Application.OpenForms.Count > 0)
+            {
                 if (Application.OpenForms[0].WindowState == FormWindowState.Minimized) return;
 
                 // We can redraw the model in panel
+                panelModel.Update();
                 panelModel_Paint(null, null);
 
                 // We can redraw the texture in picturebox
@@ -413,6 +412,7 @@ namespace KimeraCS
 
             lblBoneSelector.Visible = false;
             cbBoneSelector.Visible = false;
+            cbBoneSelector.SelectedIndex = -1;
             cbBoneSelector.Items.Clear();
 
             gbSelectedBoneFrame.Visible = false;
@@ -789,45 +789,8 @@ namespace KimeraCS
                 {
                     // Render also PEditor. It seems is opened
                     frmPEdit.panelEditorPModel_Paint(null, null);
-
-                    //if (loadedPModel)
-                    //{
-                    //    SetOGLContext(panelEditorPModelDC, OGLContextPEditor);
-
-                    //    frmPEdit.SetOGLEditorSettings();
-
-                    //    glViewport(0, 0, frmPEdit.panelEditorPModel.ClientRectangle.Width, 
-                    //                     frmPEdit.panelEditorPModel.ClientRectangle.Height);
-                    //    ClearPanel();
-                    //    SetDefaultOGLRenderState();
-
-                    //    DrawPModelEditor(frmPEdit);
-
-                    //    if (frmPEdit.chkShowPlane.Checked) DrawPlane(ref planeTransformation, ref planeOriginalPoint1,
-                    //                                                                          ref planeOriginalPoint2,
-                    //                                                                          ref planeOriginalPoint3,
-                    //                                                                          ref planeOriginalPoint4);
-                    //    if (frmPEdit.chkShowAxes.Checked) DrawAxes(frmPEdit.panelEditorPModel);
-
-                    //    glFlush();
-                    //    SwapBuffers(panelEditorPModelDC);
-                    //}
                 }
 
-
-                //if (selectBoneForWeaponAttachmentQ)
-                //{
-                //    using (Graphics g = Graphics.FromImage(panelModel.Image))
-                //    {
-                //        g.DrawString("Please choose a bone to attach the weapon to...", this.Font, Brushes.Black, new Point(0, 0));
-                //    }
-                //}
-                // Original in VB6
-                //If SelectBoneForWeaponAttachmentQ Then
-                //    Picture1.CurrentX = 0
-                //    Picture1.CurrentY = 0
-                //    Picture1.Print "Please choose a bone to attach the weapon to"
-                //End If
             }
         }
 
@@ -896,7 +859,7 @@ namespace KimeraCS
             panelModel_Paint(null, null);
         }
 
-        public void ChangeBoneSelected()
+        private void cbBoneSelector_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (loaded)
             {
@@ -913,18 +876,10 @@ namespace KimeraCS
                     gbSelectedBoneFrame.Enabled = false;
 
                 SetTextureEditorFields();
-                panelModel_Paint(null, null);
+
+                if (!pbMouseIsDown)
+                    panelModel_Paint(null, null);
             }
-        }
-
-        private void cbBoneSelector_Click(object sender, EventArgs e)
-        {
-            ChangeBoneSelected();
-        }
-
-        private void cbBoneSelector_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            ChangeBoneSelected();
         }
 
         public static void FillBoneSelector(ComboBox cbIn)
@@ -5661,6 +5616,8 @@ namespace KimeraCS
 
         private void frmSkeletonEditor_Move(object sender, EventArgs e)
         {
+            if (this.WindowState == FormWindowState.Minimized) return;
+
             if (this.Visible)
             {
                 iwindowPosX = this.Location.X;
@@ -5685,18 +5642,14 @@ namespace KimeraCS
 
         private void frmSkeletonEditor_Activated(object sender, EventArgs e)
         {
+            //if (GetOGLContext() != OGLContext)
+            //    SetOGLContext(panelModelDC, OGLContext);
+
             //if (ActiveForm != this) return;
 
-            //panelModel_Paint(null, null);
-        }
+            //MessageBox.Show("frmSkeletonEditor", "Test", MessageBoxButtons.OK);
 
-        private void frmSkeletonEditor_Enter(object sender, EventArgs e)
-        {
-            //    if (loaded)
-            //    {
-            //        SetOGLContext(panelModelDC, OGLContext);
-            //        panelModel_Paint(null, null);
-            //    }
+            //panelModel_Paint(null, null);
         }
 
         public void tsUIOpacity100_Click(object sender, EventArgs e)
@@ -5957,34 +5910,7 @@ namespace KimeraCS
 
 
 
-        /// <summary>
-        /// This two procedures are for fix Minimize issue that does not updates picturebox of
-        /// skeleton window. This uses a Timer: tmrMinimizeRedrawPanel.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void frmSkeletonEditor_SizeChanged(object sender, EventArgs e)
-        {
-            if (Application.OpenForms.Count > 1)
-                if (Application.OpenForms[0].WindowState == FormWindowState.Minimized)
-                {
-                    tmrMinimizeRedrawPanel.Start();
-                    pbIsMinimized = true;
-                }
-                else
-                    pbIsMinimized = false;
 
-        }
-
-        private void tmrMinimizeRedrawPanel_Tick(object sender, EventArgs e)
-        {
-            if (!pbIsMinimized) 
-            {
-                tmrMinimizeRedrawPanel.Stop();
-
-                panelModel_Paint(null, null);
-            }
-        }
 
     }
 
