@@ -263,11 +263,32 @@ namespace KimeraCS
                     }
                 }
 
+                // Use Group Reposition/Resize/Rotate changes.
+                double[] rot_mat = new double[16];
+
+                glMatrixMode(glMatrixModeList.GL_MODELVIEW);
+                glPushMatrix();
+
+                glTranslatef(Model.Groups[gi].repGroupX,
+                             Model.Groups[gi].repGroupY,
+                             Model.Groups[gi].repGroupZ);
+
+                BuildRotationMatrixWithQuaternionsXYZ(Model.Groups[gi].rotGroupAlpha,
+                                                      Model.Groups[gi].rotGroupBeta,
+                                                      Model.Groups[gi].rotGroupGamma,
+                                                      ref rot_mat);
+
+                glMultMatrixd(rot_mat);
+                glScalef(Model.Groups[gi].rszGroupX,
+                         Model.Groups[gi].rszGroupY,
+                         Model.Groups[gi].rszGroupZ);
+
                 DrawGroup(ref Model.Groups[gi], ref Model.Polys, ref Model.Verts, ref Model.Vcolors,
                           ref Model.Normals, ref Model.TexCoords, ref Model.Hundrets[gi], HideHiddenGroupsQ);
                 glDisable(glCapability.GL_TEXTURE_2D);
+
+                glPopMatrix();
             }
-            //  glPopMatrix();
         }
 
         public static void DrawGroupDList(ref PGroup Group)
@@ -583,7 +604,7 @@ namespace KimeraCS
 
             glScalef(fRSDResource.Model.resizeX, fRSDResource.Model.resizeY, fRSDResource.Model.resizeZ);
 
-            if (!UseDLists) DrawPModel(ref fRSDResource.Model, ref tex_ids, false); 
+            if (!UseDLists) DrawPModel(ref fRSDResource.Model, ref tex_ids, false);
             else DrawPModelDLists(ref fRSDResource.Model, ref tex_ids);
 
             glPopMatrix();
@@ -930,6 +951,7 @@ namespace KimeraCS
                 {
                     for (mi = 0; mi < bBone.nModels; mi++)
                     {
+                        double[] rot_mat = new double[16];
                         glPushMatrix();
                         glTranslatef(bBone.Models[mi].repositionX, bBone.Models[mi].repositionY, bBone.Models[mi].repositionZ);
 
@@ -1514,6 +1536,27 @@ namespace KimeraCS
             {
                 if (!Model.Groups[gi].HiddenQ)
                 {
+
+                    // We will apply Group update values for Reposition/Resize/Rotate.
+                    double[] rot_mat = new double[16];
+
+                    glMatrixMode(glMatrixModeList.GL_MODELVIEW);
+                    glPushMatrix();
+
+                    glTranslatef(Model.Groups[gi].repGroupX,
+                                 Model.Groups[gi].repGroupY,
+                                 Model.Groups[gi].repGroupZ);
+
+                    BuildRotationMatrixWithQuaternionsXYZ(Model.Groups[gi].rotGroupAlpha,
+                                                          Model.Groups[gi].rotGroupBeta,
+                                                          Model.Groups[gi].rotGroupGamma,
+                                                          ref rot_mat);
+
+                    glMultMatrixd(rot_mat);
+                    glScalef(Model.Groups[gi].rszGroupX,
+                             Model.Groups[gi].rszGroupY,
+                             Model.Groups[gi].rszGroupZ);
+
                     for (pi = Model.Groups[gi].offsetPoly; pi < Model.Groups[gi].offsetPoly + Model.Groups[gi].numPoly; pi++)
                     {
                         glColor4f(Model.Pcolors[pi].R / 255.0f, Model.Pcolors[pi].G / 255.0f, Model.Pcolors[pi].B / 255.0f, Model.Pcolors[pi].A / 255.0f);
@@ -1532,6 +1575,8 @@ namespace KimeraCS
                         }
                         glEnd();
                     }
+
+                    glPopMatrix();
                 }
             }
 
@@ -1562,6 +1607,27 @@ namespace KimeraCS
 
                 if (!Model.Groups[gi].HiddenQ)
                 {
+
+                    // We will apply Group update values for Reposition/Resize/Rotate.
+                    double[] rot_mat = new double[16];
+
+                    glMatrixMode(glMatrixModeList.GL_MODELVIEW);
+                    glPushMatrix();
+
+                    glTranslatef(Model.Groups[gi].repGroupX,
+                                 Model.Groups[gi].repGroupY,
+                                 Model.Groups[gi].repGroupZ);
+
+                    BuildRotationMatrixWithQuaternionsXYZ(Model.Groups[gi].rotGroupAlpha,
+                                                          Model.Groups[gi].rotGroupBeta,
+                                                          Model.Groups[gi].rotGroupGamma,
+                                                          ref rot_mat);
+
+                    glMultMatrixd(rot_mat);
+                    glScalef(Model.Groups[gi].rszGroupX,
+                             Model.Groups[gi].rszGroupY,
+                             Model.Groups[gi].rszGroupZ);
+
                     for (pi = Model.Groups[gi].offsetPoly; pi < Model.Groups[gi].offsetPoly + Model.Groups[gi].numPoly; pi++)
                     {
                         glBegin(glDrawMode.GL_TRIANGLES);
@@ -1573,6 +1639,8 @@ namespace KimeraCS
                         }
                         glEnd();
                     }
+
+                    glPopMatrix();
                 }
             }
 
@@ -1833,7 +1901,7 @@ namespace KimeraCS
             {
                 Model.Polys[pIndex].Verts[vi] = (short)PaintVertex(ref Model, iGroupIdx, Model.Polys[pIndex].Verts[vi], 
                                                                    bR, bG, bB, 
-                                                                   Model.Groups[iGroupIdx].texFlag == 1 || Model.Groups[iGroupIdx].offsetTex > 0);
+                                                                   Model.Groups[iGroupIdx].texFlag == 1 || Model.Groups[iGroupIdx].offsetTex > 0 || Model.Hundrets[iGroupIdx].shademode == 2);
                 //  'Debug.Print "Vert(:", .Verts(vi), ",", Group, ")", obj.Verts(.Verts(vi) + obj.Groups(Group).offVert).x, obj.Verts(.Verts(vi) + obj.Groups(Group).offVert).y, obj.Verts(.Verts(vi) + obj.Groups(Group).offVert).z
 
                 Model.Pcolors[pIndex] = Color.FromArgb(255, bR, bG, bB);
