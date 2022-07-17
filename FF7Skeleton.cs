@@ -369,8 +369,8 @@ namespace KimeraCS
                         glPushMatrix();
 
                         SetCameraModelViewQuat(fPModel.repositionX, fPModel.repositionY, fPModel.repositionZ,
-                                                     fPModel.rotationQuaternion,
-                                                     fPModel.resizeX, fPModel.resizeY, fPModel.resizeZ);
+                                               fPModel.rotationQuaternion,
+                                               fPModel.resizeX, fPModel.resizeY, fPModel.resizeZ);
 
                         ApplyPChanges(ref fPModel, Path.GetExtension(strFileName).ToUpper() != ".P");
 
