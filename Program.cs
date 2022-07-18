@@ -15,7 +15,6 @@ namespace KimeraCS
         static void Main()
         {
             Application.EnableVisualStyles();
-            Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.SetCompatibleTextRenderingDefault(false);
             //Application.AddMessageFilter(new MenuFilter()); // Add a message filter for avoid Menu key.
             Application.Run(new frmSkeletonEditor());
