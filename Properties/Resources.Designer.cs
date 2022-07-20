@@ -173,6 +173,26 @@ namespace KimeraCS.Properties {
         /// <summary>
         ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap flipUV_horizontally {
+            get {
+                object obj = ResourceManager.GetObject("flipUV_horizontally", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap flipUV_vertically {
+            get {
+                object obj = ResourceManager.GetObject("flipUV_vertically", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap lightbulb_off16 {
             get {
                 object obj = ResourceManager.GetObject("lightbulb_off16", resourceCulture);
@@ -296,6 +316,16 @@ namespace KimeraCS.Properties {
         internal static System.Drawing.Bitmap refresh {
             get {
                 object obj = ResourceManager.GetObject("refresh", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap rotateUV_right {
+            get {
+                object obj = ResourceManager.GetObject("rotateUV_right", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

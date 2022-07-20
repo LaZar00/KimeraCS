@@ -123,6 +123,12 @@
     <Compile Include="frmPEditor.Designer.cs">
       <DependentUpon>frmPEditor.cs</DependentUpon>
     </Compile>
+    <Compile Include="frmTextureViewer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmTextureViewer.Designer.cs">
+      <DependentUpon>frmTextureViewer.cs</DependentUpon>
+    </Compile>
     <Compile Include="InputBoxCS.cs" />
     <Compile Include="Model_3DS.cs" />
     <Compile Include="FF7FieldAnimation.cs" />
@@ -169,6 +175,9 @@
     <EmbeddedResource Include="frmSkeletonEditor.resx">
       <DependentUpon>frmSkeletonEditor.cs</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmTextureViewer.resx">
+      <DependentUpon>frmTextureViewer.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -286,6 +295,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="KimeraCS.ico" />
+    <None Include="resources\rotateUV_right.png" />
+    <None Include="resources\flipUV_vertically.png" />
+    <None Include="resources\flipUV_horizontally.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
