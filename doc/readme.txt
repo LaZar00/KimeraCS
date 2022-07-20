@@ -23,11 +23,14 @@ CTRL+Home		->	Reset Camera
 CTRL+Up/Down	->	Rotate alpha with keyboard
 CTRL+Left/Right	->	Rotate beta with keyboard
 DELETE			->	Remove selected bone/piece
+Double-click	->	Open Texture Coordinates (UVs) Viewer
+(Texture View)
 
 
 == PEditor only
 +/-			->	More/Less Brightness of the colors
 R 			->	Reset Brightness of the colors
+H 			->	Show/Hide selected group
 CTRL+Home	->	Reset Plane
 SHIFT+Left Mouse Click	->	Gets polygon color and sets in palette
 (this only works in "Paint Polygon" feature)
