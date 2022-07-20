@@ -220,6 +220,22 @@ namespace KimeraCS
 
 
 
+        //  --------------------------------------------------------------------------------------------------
+        //  ============================================= UTILS ==============================================
+        //  --------------------------------------------------------------------------------------------------
+        public static FieldRSDResource CopyRSDResource(FieldRSDResource fRSDResourceIn)
+        {
+            FieldRSDResource tmpFieldRSDResource = new FieldRSDResource();
+
+            tmpFieldRSDResource.ID = fRSDResourceIn.ID;
+            tmpFieldRSDResource.numTextures = fRSDResourceIn.numTextures;
+            tmpFieldRSDResource.res_file = fRSDResourceIn.res_file;
+            tmpFieldRSDResource.textures = fRSDResourceIn.textures;
+            tmpFieldRSDResource.Model = CopyPModel(fRSDResourceIn.Model);
+
+            return tmpFieldRSDResource;
+        }
+
 
 
     }
