@@ -56,7 +56,7 @@ namespace KimeraCS
     public partial class frmSkeletonEditor : Form
     {
 
-        public const string STR_APPNAME = "KimeraCS 1.4";
+        public const string STR_APPNAME = "KimeraCS 1.4b";
 
         public static int modelWidth;
         public static int modelHeight;
@@ -136,7 +136,10 @@ namespace KimeraCS
 
         // PEditor vars
         public frmPEditor frmPEdit;
+
+        // Texture Viewer vars
         public frmTextureViewer frmTexViewer;
+        public bool bPaintGreen;
 
 
         public frmSkeletonEditor()
@@ -288,6 +291,9 @@ namespace KimeraCS
 
             // Activate MouseWheel events for panelModel PictureBox;
             panelModel.MouseWheel += panelModel_MouseWheel;
+
+            // Init other forms vars
+            bPaintGreen = false;
 
             // Initialize OpenGL Context;
             InitOpenGLContext();
@@ -1285,6 +1291,10 @@ namespace KimeraCS
                                 gbSelectedBoneFrame.Enabled = true;
                                 SetBonePieceModifiers();
                                 gbSelectedPieceFrame.Enabled = true;
+
+                                // Select the weapon texture
+                                if (bSkeleton.wpModels[cbWeapon.SelectedIndex].Groups[0].texFlag == 1)
+                                    cbTextureSelect.SelectedIndex = bSkeleton.wpModels[cbWeapon.SelectedIndex].Groups[0].texID;
                             }
                             else
                             {
@@ -1294,7 +1304,6 @@ namespace KimeraCS
                             }
                         }
 
-                        //SetTextureEditorFields();
                         break;
                 }
 
@@ -5930,6 +5939,17 @@ namespace KimeraCS
                         break;
 
                     case K_AA_SKELETON:
+                        if (bSkeleton.wpModels.Count > 0 && SelectedBone == bSkeleton.nBones)
+                        {
+                            frmTexViewer = new frmTextureViewer(this, bSkeleton.wpModels[cbWeapon.SelectedIndex]);
+                            
+                        }
+                        else
+                        {
+                            frmTexViewer = new frmTextureViewer(this, bSkeleton.bones[SelectedBone].Models[SelectedBonePiece]);
+                        }
+                        break;
+
                     case K_MAGIC_SKELETON:
                         frmTexViewer = new frmTextureViewer(this, bSkeleton.bones[SelectedBone].Models[SelectedBonePiece]);
                         break;
