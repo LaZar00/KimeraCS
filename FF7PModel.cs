@@ -1655,7 +1655,8 @@ namespace KimeraCS
             for (gi = 0; gi < Model.Header.numGroups; gi++)
             {
                 glMatrixMode(glMatrixModeList.GL_MODELVIEW);
-                glPushMatrix();
+                glLoadIdentity();
+                //glPushMatrix();
 
                 glTranslatef(Model.Groups[gi].repGroupX, Model.Groups[gi].repGroupY, Model.Groups[gi].repGroupZ);
 
@@ -1672,7 +1673,7 @@ namespace KimeraCS
                     Model.Verts[vi] = GetEyeSpaceCoords(Model.Verts[vi]);
                 }
 
-                glPopMatrix();
+                //glPopMatrix();
             }            
         }
 
