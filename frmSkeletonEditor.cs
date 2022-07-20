@@ -26,6 +26,7 @@ namespace KimeraCS
     using Defines;
 
     using static frmPEditor;
+    using static frmTextureViewer;
 
     using static FF7Skeleton;
     using static FF7FieldSkeleton;
@@ -55,7 +56,7 @@ namespace KimeraCS
     public partial class frmSkeletonEditor : Form
     {
 
-        public const string STR_APPNAME = "KimeraCS 1.3";
+        public const string STR_APPNAME = "KimeraCS 1.4";
 
         public static int modelWidth;
         public static int modelHeight;
@@ -135,6 +136,7 @@ namespace KimeraCS
 
         // PEditor vars
         public frmPEditor frmPEdit;
+        public frmTextureViewer frmTexViewer;
 
 
         public frmSkeletonEditor()
@@ -766,6 +768,16 @@ namespace KimeraCS
             }
         }
 
+        public bool bPEditorOpened()
+        {
+            foreach (Form itmFrm in Application.OpenForms)
+            {
+                if (itmFrm.Name == "frmPEditor") return true;
+            }
+
+            return false;
+        }
+
         public void panelModel_Paint(object sender, PaintEventArgs e)
         {
             if (loaded)
@@ -785,7 +797,7 @@ namespace KimeraCS
                 glFlush();
                 SwapBuffers(panelModelDC);
 
-                if (Application.OpenForms.Count > 1 && !pbIsMinimized)
+                if (Application.OpenForms.Count > 1 && bPEditorOpened() && !pbIsMinimized)
                 {
                     // Render also PEditor. It seems is opened
                     frmPEdit.panelEditorPModel_Paint(null, null);
@@ -5907,14 +5919,31 @@ namespace KimeraCS
             SetFrameEditorFields();
         }
 
+        private void pbTextureViewer_DoubleClick(object sender, EventArgs e)
+        {
+            if (cbTextureSelect.Items.Count > 0 && cbTextureSelect.SelectedIndex > -1)
+            {
+                switch (modelType)
+                {
+                    case K_HRC_SKELETON:
+                        frmTexViewer = new frmTextureViewer(this, fSkeleton.bones[SelectedBone].fRSDResources[SelectedBonePiece].Model);
+                        break;
+
+                    case K_AA_SKELETON:
+                    case K_MAGIC_SKELETON:
+                        frmTexViewer = new frmTextureViewer(this, bSkeleton.bones[SelectedBone].Models[SelectedBonePiece]);
+                        break;
+                }
+
+                frmTexViewer.ShowDialog();
+            }
+        }
+
 
 
 
 
 
     }
-
-   
-
 }
 
