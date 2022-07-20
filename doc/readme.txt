@@ -35,6 +35,7 @@ CTRL+Home	->	Reset Plane
 SHIFT+Left Mouse Click	->	Gets polygon color and sets in palette
 (this only works in "Paint Polygon" feature)
 ESCAPE		->	You close the window without applying/commiting changes
+BACKSPACE	->	Clears any selection in the Group list.
 
 
 ==== Special Features
