@@ -56,12 +56,16 @@ namespace KimeraCS
             toolTip1.SetToolTip(btnFlipH, "Flip UVs Horizontal");
             toolTip1.SetToolTip(btnFlipV, "Flip UVs Vertical");
             toolTip1.SetToolTip(btnRotateUV, "Rotate UVs");
+            toolTip1.SetToolTip(btnGreen, "Change White/Lime UVs lines color");
         }
 
         private void frmTextureViewer_Load(object sender, EventArgs e)
         {
             Text = "Texture Coordinates(UVs) Viewer" + " - Model: " + TexViewModel.fileName +
                                                        " - Tex: " + frmSkelEdit.cbTextureSelect.Items[frmSkelEdit.cbTextureSelect.SelectedIndex];
+
+            // Initialize things
+            if (frmSkelEdit.bPaintGreen) btnGreen.Checked = true;
 
             // Assign tooltips.
             DefineToolTips();
@@ -87,6 +91,18 @@ namespace KimeraCS
                     break;
 
                 case K_AA_SKELETON:
+                    if (bSkeleton.wpModels.Count > 0 && SelectedBone == bSkeleton.nBones)
+                    {
+                        tmpBMP = new Bitmap(Image.FromHbitmap(bSkeleton.textures[bSkeleton.wpModels[frmSkelEdit.cbWeapon.SelectedIndex].Groups[0].texID].HBMP),
+                                            new Size(512, 512));
+                    }
+                    else
+                    {
+                        tmpBMP = new Bitmap(Image.FromHbitmap(bSkeleton.textures[frmSkelEdit.cbTextureSelect.SelectedIndex].HBMP),
+                                            new Size(512, 512));
+                    }
+                    break;
+
                 case K_MAGIC_SKELETON:
                     tmpBMP = new Bitmap(Image.FromHbitmap(bSkeleton.textures[frmSkelEdit.cbTextureSelect.SelectedIndex].HBMP),
                                         new Size(512, 512));
@@ -146,8 +162,8 @@ namespace KimeraCS
 
                                 fV *= iHeight;
 
-                                // Draw the texture coordinates
-                                using (Brush tmpBrush = new SolidBrush(Color.White))
+                                // Draw the texture coordinatesç
+                                using (Brush tmpBrush = new SolidBrush(btnGreen.BackColor))
                                 {
                                     g.FillEllipse(tmpBrush, fU - fRadius, fV - fRadius, 2 * fRadius, 2 * fRadius);
 
@@ -205,8 +221,20 @@ namespace KimeraCS
                     break;
 
                 case K_AA_SKELETON:
+                    if (bSkeleton.wpModels.Count > 0 && SelectedBone == bSkeleton.nBones)
+                    {
+                        bSkeleton.wpModels[frmSkelEdit.cbWeapon.SelectedIndex] = CopyPModel(TexViewModel);
+
+                    }
+                    else
+                    {
+                        tmpPModel = CopyPModel(bSkeleton.bones[SelectedBone].Models[SelectedBonePiece]);
+                        tmpPModel.TexCoords = TexViewModel.TexCoords;
+                        bSkeleton.bones[SelectedBone].Models[SelectedBonePiece] = CopyPModel(tmpPModel);
+                    }
+                    break;
+
                 case K_MAGIC_SKELETON:
-                    //bSkeleton.bones[SelectedBone].Models[SelectedBonePiece] = CopyPModel(Model);
                     tmpPModel = CopyPModel(bSkeleton.bones[SelectedBone].Models[SelectedBonePiece]);
                     tmpPModel.TexCoords = TexViewModel.TexCoords;
                     bSkeleton.bones[SelectedBone].Models[SelectedBonePiece] = CopyPModel(tmpPModel);
@@ -332,6 +360,28 @@ namespace KimeraCS
 
             DrawUVs();
         }
+
+        private void btnGreen_CheckedChanged(object sender, EventArgs e)
+        {
+            if (btnGreen.Checked)
+            {
+                frmSkelEdit.bPaintGreen = true;
+                btnGreen.BackColor = Color.Lime;
+            }
+            else
+            {
+                frmSkelEdit.bPaintGreen = false;
+                btnGreen.BackColor = Color.White;
+            }
+
+            DrawUVs();
+        }
+
+
+
+
+
+
     }
 
 }
