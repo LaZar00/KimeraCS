@@ -56,7 +56,9 @@ namespace KimeraCS
     public partial class frmSkeletonEditor : Form
     {
 
-        public const string STR_APPNAME = "KimeraCS 1.4b";
+ 
+
+        public const string STR_APPNAME = "KimeraCS 1.4d";
 
         public static int modelWidth;
         public static int modelHeight;
@@ -140,6 +142,10 @@ namespace KimeraCS
         // Texture Viewer vars
         public frmTextureViewer frmTexViewer;
         public bool bPaintGreen;
+        public int iTexCoordViewerScale;
+
+        // DPI vars
+        public decimal dDPIScaleFactor;
 
 
         public frmSkeletonEditor()
@@ -148,7 +154,6 @@ namespace KimeraCS
 
             strGlobalPath = Application.StartupPath;
         }
-
 
 
         /////////////////////////////////////////////////////////////
@@ -215,6 +220,20 @@ namespace KimeraCS
         {
             ReadCFGFile();
             Text = STR_APPNAME;
+
+            
+            // Let's detect the original DPI Scale Factor of the computer
+            Screen[] screenList = Screen.AllScreens;
+
+            foreach (Screen screen in screenList)
+            {
+                DEVMODE dm = new DEVMODE();
+                dm.dmSize = (short)Marshal.SizeOf(typeof(DEVMODE));
+                EnumDisplaySettings(screen.DeviceName, -1, ref dm);
+
+                dDPIScaleFactor = Math.Round(Decimal.Divide(dm.dmPelsWidth, screen.Bounds.Width), 2);
+            }
+
 
             switch (ReadCharFilterFile())
             {
@@ -294,6 +313,7 @@ namespace KimeraCS
 
             // Init other forms vars
             bPaintGreen = false;
+            iTexCoordViewerScale = 1;
 
             // Initialize OpenGL Context;
             InitOpenGLContext();
@@ -1281,6 +1301,9 @@ namespace KimeraCS
                             }
                             else gbSelectedPieceFrame.Enabled = false;
                             gbSelectedBoneFrame.Enabled = true;
+
+                            if (bSkeleton.IsBattleLocation)
+                                cbTextureSelect.SelectedIndex = bSkeleton.bones[SelectedBone].Models[SelectedBonePiece].Groups[0].texID;
                         }
                         else
                         {
