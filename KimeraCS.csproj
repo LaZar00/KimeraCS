@@ -80,6 +80,9 @@
     <LangVersion>7.3</LangVersion>
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -206,6 +209,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.manifest" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -295,6 +299,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="KimeraCS.ico" />
+    <None Include="resources\UV_zoomout.png" />
+    <None Include="resources\UV_zoomin.png" />
     <None Include="resources\rotateUV_right.png" />
     <None Include="resources\flipUV_vertically.png" />
     <None Include="resources\flipUV_horizontally.png" />
