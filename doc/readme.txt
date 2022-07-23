@@ -1,5 +1,6 @@
-The icons of this tool has been obtained from:
+The icons of this tool have been obtained from:
 https://www.iconexperience.com/g_collection/
+https://icons8.com
 
 
 Keyboard Shortcuts:
