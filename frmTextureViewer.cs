@@ -25,6 +25,10 @@ namespace KimeraCS
 
         private frmSkeletonEditor frmSkelEdit;
 
+        public const int I_TEXTURECOORDVIEWMINSIZE = 512;
+        public const int I_WINDOWWIDTHBORDER = 24;
+        public const int I_WINDOWHEIGHTBORDER = 44;
+
         public PModel TexViewModel;
 
         public frmTextureViewer(frmSkeletonEditor frmSkelEdit, PModel modelIn)
@@ -57,6 +61,8 @@ namespace KimeraCS
             toolTip1.SetToolTip(btnFlipV, "Flip UVs Vertical");
             toolTip1.SetToolTip(btnRotateUV, "Rotate UVs");
             toolTip1.SetToolTip(btnGreen, "Change White/Lime UVs lines color");
+            toolTip1.SetToolTip(btnZoomIn, "Zoom In");
+            toolTip1.SetToolTip(btnZoomOut, "Zoom Out");
         }
 
         private void frmTextureViewer_Load(object sender, EventArgs e)
@@ -67,64 +73,69 @@ namespace KimeraCS
             // Initialize things
             if (frmSkelEdit.bPaintGreen) btnGreen.Checked = true;
 
+            // zoom
+            ChangeZoomButtons();
+
             // Assign tooltips.
             DefineToolTips();
 
-            DrawUVs();
+            ChangeZoomButtons();
+            ChangeTexCoordViewSize();
         }
 
         public void DrawUVs()
         {
-            Bitmap tmpBMP = null;
+            IntPtr hTmpBMP = IntPtr.Zero;
 
             int iGroupIdx, iPolyIdx, iVertCounter, iWidth, iHeight, iTexID;
-            int iU, iV;
-            float fU, fV, fSecondU, fSecondV, fFirstU, fFirstV, fRadius;
+            int iU, iV, iSecondU, iSecondV, iFirstU, iFirstV, iRadius;
+            decimal fU, fV;
 
             iTexID = frmSkelEdit.cbTextureSelect.SelectedIndex;
 
             switch(modelType)
             {
                 case K_HRC_SKELETON:
-                    tmpBMP = new Bitmap(Image.FromHbitmap(fSkeleton.bones[SelectedBone].fRSDResources[SelectedBonePiece].textures[frmSkelEdit.cbTextureSelect.SelectedIndex].HBMP),
-                                        new Size(512, 512));
+                    hTmpBMP = fSkeleton.bones[SelectedBone].fRSDResources[SelectedBonePiece].textures[iTexID].HBMP;
                     break;
 
                 case K_AA_SKELETON:
                     if (bSkeleton.wpModels.Count > 0 && SelectedBone == bSkeleton.nBones)
-                    {
-                        tmpBMP = new Bitmap(Image.FromHbitmap(bSkeleton.textures[bSkeleton.wpModels[frmSkelEdit.cbWeapon.SelectedIndex].Groups[0].texID].HBMP),
-                                            new Size(512, 512));
-                    }
+                        hTmpBMP = bSkeleton.textures[bSkeleton.wpModels[frmSkelEdit.cbWeapon.SelectedIndex].Groups[0].texID].HBMP;
                     else
-                    {
-                        tmpBMP = new Bitmap(Image.FromHbitmap(bSkeleton.textures[frmSkelEdit.cbTextureSelect.SelectedIndex].HBMP),
-                                            new Size(512, 512));
-                    }
+                        hTmpBMP = bSkeleton.textures[iTexID].HBMP;
+
                     break;
 
                 case K_MAGIC_SKELETON:
-                    tmpBMP = new Bitmap(Image.FromHbitmap(bSkeleton.textures[frmSkelEdit.cbTextureSelect.SelectedIndex].HBMP),
-                                        new Size(512, 512));
+                    hTmpBMP = bSkeleton.textures[iTexID].HBMP;
                     break;
             }
 
+
+            iSecondU = 0;
+            iSecondV = 0;
+            iFirstU = 0;
+            iFirstV = 0;
+            iRadius = 3;
+
+            //Bitmap tmpBMP = new Bitmap(I_TEXTURECOORDVIEWMINSIZE * frmSkelEdit.iTexCoordViewerScale, 
+            //                           I_TEXTURECOORDVIEWMINSIZE * frmSkelEdit.iTexCoordViewerScale);
+
+            Bitmap tmpBMP = new Bitmap(pbTextureView.Width, pbTextureView.Height);
 
             // Get the size available
             iWidth = tmpBMP.Width;
             iHeight = tmpBMP.Height;
 
-            fSecondU = 0;
-            fSecondV = 0;
-            fFirstU = 0;
-            fFirstV = 0;
-            fRadius = 3;
-
             using (Graphics g = Graphics.FromImage(tmpBMP))
             {
-                g.InterpolationMode = InterpolationMode.Default;
+                //g.InterpolationMode = InterpolationMode.Default;
                 g.PixelOffsetMode = PixelOffsetMode.Half;
+                g.InterpolationMode = InterpolationMode.NearestNeighbor;
 
+                g.DrawImage(Image.FromHbitmap(hTmpBMP), 0, 0, iWidth, iHeight);
+                     
                 for (iGroupIdx = 0; iGroupIdx < TexViewModel.Header.numGroups; iGroupIdx++)
                 {
                     if (TexViewModel.Groups[iGroupIdx].texFlag == 1 && TexViewModel.Groups[iGroupIdx].texID == iTexID)
@@ -136,56 +147,57 @@ namespace KimeraCS
                             // Get the 2D point (X,Y pos) of each of the points of the poly and draw the UV coordiantes with triangle shape
                             for (iVertCounter = 0; iVertCounter < 3; iVertCounter++)
                             {
-                                fU = TexViewModel.TexCoords[TexViewModel.Polys[iPolyIdx].Verts[iVertCounter] +
-                                                            TexViewModel.Groups[iGroupIdx].offsetTex].x;
+                                fU = (decimal)TexViewModel.TexCoords[TexViewModel.Polys[iPolyIdx].Verts[iVertCounter] +
+                                                                     TexViewModel.Groups[iGroupIdx].offsetTex].x;
 
-                                iU = (int)(fU * 100000);
-                                if (iU > 100000) fU -= (float)Math.Floor(fU);
-                                if (iU < 0)
+                                if (fU == 1.000000M) fU = 0.0M;
+                                if (fU < 0.0M) 
                                 {
-                                    if (iU > -100000) fU = 1.0f;
-                                    else fU += (float)Math.Floor(Math.Abs(fU));
-                                }
+                                    if ((fU % 1.0M) == 0) fU = 1.0M;
+                                    else fU = -fU;
+                                }                                
+                                if (fU > 1.000000M) fU -= Math.Floor(fU);                                
 
-                                fU *= iWidth;
+                                iU = (int)(fU * iWidth);
+                                if (iU == iWidth) iU -= 1;
 
-                                fV = TexViewModel.TexCoords[TexViewModel.Polys[iPolyIdx].Verts[iVertCounter] +
-                                                            TexViewModel.Groups[iGroupIdx].offsetTex].y;
 
-                                iV = (int)(fV * 100000);
-                                if (iV > 100000) fV -= (float)Math.Floor(fV);
-                                if (iV < 0)
+                                fV = (decimal)TexViewModel.TexCoords[TexViewModel.Polys[iPolyIdx].Verts[iVertCounter] +
+                                                                     TexViewModel.Groups[iGroupIdx].offsetTex].y;
+                                if (fV == 1.000000M) fV = 0.0M;
+                                if (fV < 0.0M)
                                 {
-                                    if (iV > -100000) fV = 1.0f;
-                                    else fV += (float)Math.Floor(Math.Abs(fV));
+                                    if ((fV % 1.0M) == 0) fV = 1.0M;
+                                    else fV = -fV;
                                 }
+                                if (fV > 1.000000M) fV -= Math.Floor(fV);
 
-                                fV *= iHeight;
+                                iV = (int)(fV * iHeight);
+                                if (iV == iHeight) iV -= 1;
 
-                                // Draw the texture coordinatesç
+                                // Draw the texture coordinates
                                 using (Brush tmpBrush = new SolidBrush(btnGreen.BackColor))
                                 {
-                                    g.FillEllipse(tmpBrush, fU - fRadius, fV - fRadius, 2 * fRadius, 2 * fRadius);
+                                    g.FillEllipse(tmpBrush, iU - iRadius, iV - iRadius, 2 * iRadius, 2 * iRadius);
 
                                     switch (iVertCounter)
                                     {
                                         case 0:
-                                            fFirstU = fU;
-                                            fFirstV = fV;
+                                            iFirstU = iU;
+                                            iFirstV = iV;
                                             break;
 
                                         case 1:
-                                            fSecondU = fU;
-                                            fSecondV = fV;
-
+                                            iSecondU = iU;
+                                            iSecondV = iV;
                                             break;
 
                                         case 2:
                                             using (Pen tmpPen = new Pen(tmpBrush))
                                             {
-                                                g.DrawLine(tmpPen, new PointF(fU, fV), new PointF(fFirstU, fFirstV));
-                                                g.DrawLine(tmpPen, new PointF(fFirstU, fFirstV), new PointF(fSecondU, fSecondV));
-                                                g.DrawLine(tmpPen, new PointF(fSecondU, fSecondV), new PointF(fU, fV));
+                                                g.DrawLine(tmpPen, new Point(iU, iV), new Point(iFirstU, iFirstV));
+                                                g.DrawLine(tmpPen, new Point(iFirstU, iFirstV), new Point(iSecondU, iSecondV));
+                                                g.DrawLine(tmpPen, new Point(iSecondU, iSecondV), new Point(iU, iV));
                                             }
 
                                             break;
@@ -247,8 +259,7 @@ namespace KimeraCS
         private void btnFlipH_Click(object sender, EventArgs e)
         {
             int iGroupIdx, iVertCounter, iTexID;
-            int iV;
-            float fV;
+            decimal fV;
 
             iTexID = frmSkelEdit.cbTextureSelect.SelectedIndex;
 
@@ -262,16 +273,18 @@ namespace KimeraCS
                                         TexViewModel.Groups[iGroupIdx].numVert; iVertCounter++)
                     {
                         // First we need to normalize the coordinate.
-                        fV = TexViewModel.TexCoords[iVertCounter].y;
-                        iV = (int)(fV * 100000);
-                        if (iV > 100000) fV -= (float)Math.Floor(fV);
-                        if (iV < 0)
+                        fV = (decimal)TexViewModel.TexCoords[iVertCounter].y;
+                        if (fV == 1.000000M) fV = 0.0M;
+                        if (fV < 0.0M)
                         {
-                            if (iV > -100000) fV = 1.0f;
-                            else fV += (float)Math.Floor(Math.Abs(fV));
+                            if ((fV % 1.0M) == 0) fV = 1.0M;
+                            else fV = -fV;
                         }
+                        if (fV > 1.000000M) fV -= Math.Floor(fV);
+                        fV = 1.0M - fV;
+                        if (fV == 1.000000M) fV = 0.9999999M;
 
-                        TexViewModel.TexCoords[iVertCounter].y = 1.0f - fV;
+                        TexViewModel.TexCoords[iVertCounter].y = (float)fV;
                     }
                 }
             }
@@ -282,8 +295,7 @@ namespace KimeraCS
         private void btnFlipV_Click(object sender, EventArgs e)
         {
             int iGroupIdx, iVertCounter, iTexID;
-            int iU;
-            float fU;
+            decimal fU;
 
             iTexID = frmSkelEdit.cbTextureSelect.SelectedIndex;
 
@@ -297,16 +309,18 @@ namespace KimeraCS
                                         TexViewModel.Groups[iGroupIdx].numVert; iVertCounter++)
                     {
                         // First we need to normalize the coordinate.
-                        fU = TexViewModel.TexCoords[iVertCounter].x;
-                        iU = (int)(fU * 100000);
-                        if (iU > 100000) fU -= (float)Math.Floor(fU);
-                        if (iU < 0)
+                        fU = (decimal)TexViewModel.TexCoords[iVertCounter].x;
+                        if (fU == 1.000000M) fU = 0.0M;
+                        if (fU < 0.0M)
                         {
-                            if (iU > -100000) fU = 1.0f;
-                            else fU += (float)Math.Floor(Math.Abs(fU));
+                            if ((fU % 1.0M) == 0) fU = 1.0M;
+                            else fU = -fU;
                         }
+                        if (fU > 1.000000M) fU -= Math.Floor(fU);
+                        fU = 1.0M - fU;
+                        if (fU == 1.000000M) fU = 0.9999999M;
 
-                        TexViewModel.TexCoords[iVertCounter].x = 1.0f - fU;
+                        TexViewModel.TexCoords[iVertCounter].x = (float)fU;
                     }
                 }
             }
@@ -318,8 +332,7 @@ namespace KimeraCS
         {
 
             int iGroupIdx, iVertCounter, iTexID;
-            int iU, iV;
-            float fU, fV;
+            decimal fU, fV;
 
             iTexID = frmSkelEdit.cbTextureSelect.SelectedIndex;
 
@@ -333,26 +346,33 @@ namespace KimeraCS
                                         TexViewModel.Groups[iGroupIdx].numVert; iVertCounter++)
                     {
                         // First we need to normalize the coordinate.
-                        fU = TexViewModel.TexCoords[iVertCounter].x;
-                        iU = (int)(fU * 100000);
-                        if (iU > 100000) fU -= (float)Math.Floor(fU);
-                        if (iU < 0)
-                        {
-                            if (iU > -100000) fU = 1.0f;
-                            else fU += (float)Math.Floor(Math.Abs(fU));
-                        }
+                        fU = (decimal)TexViewModel.TexCoords[iVertCounter].x;
 
-                        fV = TexViewModel.TexCoords[iVertCounter].y;
-                        iV = (int)(fV * 100000);
-                        if (iV > 100000) fV -= (float)Math.Floor(fV);
-                        if (iV < 0)
+                        if (fU == 1.000000M) fU = 0.0M;
+                        if (fU < 0.0M)
                         {
-                            if (iV > -100000) fV = 1.0f;
-                            else fV += (float)Math.Floor(Math.Abs(fV));
+                            if ((fU % 1.0M) == 0) fU = 1.0M;
+                            else fU = -fU;
                         }
+                        if (fU > 1.000000M) fU -= Math.Floor(fU);
+                        if (fU == 1.000000M) fU = 0.9999999M;
 
-                        TexViewModel.TexCoords[iVertCounter].x = 1.0f - fV;
-                        TexViewModel.TexCoords[iVertCounter].y = fU;
+
+                        fV = (decimal)TexViewModel.TexCoords[iVertCounter].y;
+                        if (fV == 1.000000M) fV = 0.0M;
+                        if (fV < 0.0M)
+                        {
+                            if ((fV % 1.0M) == 0) fV = 1.0M;
+                            else fV = -fV;
+                        }
+                        if (fV > 1.000000M) fV -= Math.Floor(fV);
+                        if (fV == 1.000000M) fV = 0.9999999M;
+
+                        fV = 1.0M - fV;
+
+
+                        TexViewModel.TexCoords[iVertCounter].x = (float)fV;
+                        TexViewModel.TexCoords[iVertCounter].y = (float)fU;
 
                     }
                 }
@@ -377,11 +397,126 @@ namespace KimeraCS
             DrawUVs();
         }
 
+        public void ChangeTexCoordViewSize()
+        {
+            int iWidth, iHeight, iTexID, iTexSize;
+            float fAspectRatio, fWidth, fHeight;
+
+            iTexID = frmSkelEdit.cbTextureSelect.SelectedIndex;
+            iWidth = I_TEXTURECOORDVIEWMINSIZE;
+            iHeight = I_TEXTURECOORDVIEWMINSIZE;
+
+            switch (modelType)
+            {
+                case K_HRC_SKELETON:
+                    iWidth = fSkeleton.bones[SelectedBone].fRSDResources[SelectedBonePiece].textures[iTexID].width;
+                    iHeight = fSkeleton.bones[SelectedBone].fRSDResources[SelectedBonePiece].textures[iTexID].height;
+                    break;
+
+                case K_AA_SKELETON:
+                    if (bSkeleton.wpModels.Count > 0 && SelectedBone == bSkeleton.nBones)
+                    {
+                        iWidth = bSkeleton.textures[bSkeleton.wpModels[frmSkelEdit.cbWeapon.SelectedIndex].Groups[0].texID].width;
+                        iHeight = bSkeleton.textures[bSkeleton.wpModels[frmSkelEdit.cbWeapon.SelectedIndex].Groups[0].texID].height;
+                    }
+                    else
+                    {
+                        iWidth = bSkeleton.textures[iTexID].width;
+                        iHeight = bSkeleton.textures[iTexID].height;
+                    }
+
+                    break;
+
+                case K_MAGIC_SKELETON:
+                    iWidth = bSkeleton.textures[iTexID].width;
+                    iHeight = bSkeleton.textures[iTexID].height;
+                    break;
+            }
+
+            fAspectRatio = (float)iWidth / (float)iHeight;
+            iTexSize = I_TEXTURECOORDVIEWMINSIZE * frmSkelEdit.iTexCoordViewerScale;
+
+            // Get the size available
+            fWidth = iTexSize;
+            fHeight = iTexSize;
+
+            if (fWidth / fHeight > fAspectRatio)
+            {
+                //  The area is too short and wide.
+                //  Make it narrower.
+                fWidth = fAspectRatio * fHeight;
+            }
+            else
+            {
+                //  The area is too tall and thin.
+                //  Make it shorter.
+                fHeight = fWidth / fAspectRatio;
+            }
+
+            pbTextureView.Width = (int)fWidth;
+            pbTextureView.Height = (int)fHeight;
 
 
+            // Let's assign a minimum size witdh/height for the window. This will help to the scrolling.
+            // Base: Width: 542, Height = 606
+            //iWidth = 542;
+            //iHeight = 606;
+            iWidth = pbTextureView.Width + (int)(I_WINDOWWIDTHBORDER * frmSkelEdit.dDPIScaleFactor);
+            if (pbTextureView.Width < I_TEXTURECOORDVIEWMINSIZE) 
+            {
+                iWidth = I_TEXTURECOORDVIEWMINSIZE + (int)(I_WINDOWWIDTHBORDER * frmSkelEdit.dDPIScaleFactor);
+
+                pbTextureView.Left = (panelTextureViewer.Width - pbTextureView.Width) / 2;
+            }
+            else
+            {
+                pbTextureView.Left = 2;
+            }
+
+            iHeight = pbTextureView.Height + panelButtons.Height + (int)(I_WINDOWHEIGHTBORDER * frmSkelEdit.dDPIScaleFactor);
+
+            if (iHeight > Screen.PrimaryScreen.WorkingArea.Height) 
+            {
+                iHeight = Screen.PrimaryScreen.WorkingArea.Height;
+                iWidth += 16;       // Add Vertical ScrollBar width to the form window width.
+            }
+
+            if (iWidth > Screen.PrimaryScreen.WorkingArea.Width) iWidth = Screen.PrimaryScreen.WorkingArea.Width;
 
 
+            MinimumSize = new Size(iWidth, iHeight);
+            Size = new Size(iWidth, iHeight);
 
+            this.Top = (Screen.PrimaryScreen.WorkingArea.Height - iHeight) / 2;
+            this.Left = (Screen.PrimaryScreen.WorkingArea.Width - iWidth) / 2;
+
+            DrawUVs();
+        }
+
+        public void ChangeZoomButtons()
+        {
+            if (frmSkelEdit.iTexCoordViewerScale == 1) btnZoomOut.Enabled = false;
+            else btnZoomOut.Enabled = true;
+
+            if (frmSkelEdit.iTexCoordViewerScale == 3) btnZoomIn.Enabled = false;
+            else btnZoomIn.Enabled = true;
+        }
+
+        private void btnZoomOut_Click(object sender, EventArgs e)
+        {
+            frmSkelEdit.iTexCoordViewerScale--;
+
+            ChangeZoomButtons();
+            ChangeTexCoordViewSize();
+        }
+
+        private void btnZoomIn_Click(object sender, EventArgs e)
+        {
+            frmSkelEdit.iTexCoordViewerScale++;
+
+            ChangeZoomButtons();
+            ChangeTexCoordViewSize();
+        }
     }
 
 }
