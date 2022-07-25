@@ -68,6 +68,9 @@ namespace KimeraCS
             this.pbTextureView.Size = new System.Drawing.Size(683, 630);
             this.pbTextureView.TabIndex = 1;
             this.pbTextureView.TabStop = false;
+            this.pbTextureView.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pbTextureView_MouseDown);
+            this.pbTextureView.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pbTextureView_MouseMove);
+            this.pbTextureView.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pbTextureView_MouseUp);
             // 
             // panelButtons
             // 
@@ -81,7 +84,7 @@ namespace KimeraCS
             this.panelButtons.Controls.Add(this.btnCommit);
             this.panelButtons.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panelButtons.Location = new System.Drawing.Point(3, 649);
-            this.panelButtons.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.panelButtons.Margin = new System.Windows.Forms.Padding(4);
             this.panelButtons.Name = "panelButtons";
             this.panelButtons.Size = new System.Drawing.Size(695, 47);
             this.panelButtons.TabIndex = 9;
@@ -206,6 +209,7 @@ namespace KimeraCS
             this.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Texture Coordinates (UVs) Viewer";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.frmTextureViewer_FormClosed);
             this.Load += new System.EventHandler(this.frmTextureViewer_Load);
             this.panelTextureViewer.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pbTextureView)).EndInit();

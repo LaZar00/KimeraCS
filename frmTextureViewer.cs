@@ -22,14 +22,37 @@ namespace KimeraCS
 
     public partial class frmTextureViewer : Form
     {
+        // UV Coordinates movement with mouse structs
+        public struct STPoint2DXY
+        {
+            public float x;
+            public float y;
+        }
+
+        public struct STUVXYCoord
+        {
+            public List<STPoint2DXY> XYCoords;
+        }
+
 
         private frmSkeletonEditor frmSkelEdit;
 
+        public const int I_MAXNUMGROUPS = 128;
         public const int I_TEXTURECOORDVIEWMINSIZE = 512;
         public const int I_WINDOWWIDTHBORDER = 24;
         public const int I_WINDOWHEIGHTBORDER = 44;
+        public const int I_RADIUS = 3;
 
         public PModel TexViewModel;
+
+
+        // UV Coordinates movement with mouse structs
+        public List<STUVXYCoord> lstUVXYCoords;
+        bool bFoundXYCoord;
+        bool bMouseLeftClicked;
+        bool bLoadingTextureViewer;
+        int localXYPointIdx, localGroupIdx;
+
 
         public frmTextureViewer(frmSkeletonEditor frmSkelEdit, PModel modelIn)
         {
@@ -38,7 +61,6 @@ namespace KimeraCS
             this.frmSkelEdit = frmSkelEdit;
             Owner = frmSkelEdit;
 
-            //tmpfRSDResource = CopyRSDResource(fRSDResourceIn);
             TexViewModel = CopyPModel(modelIn);
         }
 
@@ -65,22 +87,141 @@ namespace KimeraCS
             toolTip1.SetToolTip(btnZoomOut, "Zoom Out");
         }
 
+        public bool NormalizeTextureCoordinates(int iGroupIdx)
+        {
+            int iVertCounter;
+
+            for (iVertCounter = TexViewModel.Groups[iGroupIdx].offsetTex;
+                 iVertCounter < TexViewModel.Groups[iGroupIdx].offsetTex +
+                                TexViewModel.Groups[iGroupIdx].numVert; iVertCounter++)
+            {
+                if (TexViewModel.TexCoords[iVertCounter].x > 1.0f || TexViewModel.TexCoords[iVertCounter].x < 0.0f ||
+                    TexViewModel.TexCoords[iVertCounter].y > 1.0f || TexViewModel.TexCoords[iVertCounter].y < 0.0f)
+                    return true;
+            }
+
+                return false;
+        }
+
+        public void PrepareUVXYCoords()
+        {
+            int iGroupIdx, iVertCounter, iTexID, iWidth, iHeight;
+            float fU, fV;
+            STUVXYCoord tmplstUVXYCoords;
+            STPoint2DXY tmpP2D;
+            bool bNeedNormalize;
+
+            if (lstUVXYCoords == null) lstUVXYCoords = new List<STUVXYCoord>();
+            else lstUVXYCoords.Clear();
+
+            iTexID = frmSkelEdit.cbTextureSelect.SelectedIndex;
+            bNeedNormalize = false;
+
+            iWidth = pbTextureView.Width - 1;
+            iHeight = pbTextureView.Height - 1;
+
+            for (iGroupIdx = 0; iGroupIdx < TexViewModel.Header.numGroups; iGroupIdx++)
+            {
+
+                // We have one group to add to the list
+                tmplstUVXYCoords = new STUVXYCoord();
+
+                if (TexViewModel.Groups[iGroupIdx].texFlag == 1 && TexViewModel.Groups[iGroupIdx].texID == iTexID)
+                {
+
+                    // First, we will check if we need to normalize texture coordinates. Not is always needed, but we have to check all the UVs for this.
+                    if (NormalizeTextureCoordinates(iGroupIdx)) bNeedNormalize = true;
+
+                    // Now for each texture coordinate (UV) from offsetTex to numVert we must invert the Y (V) position for horizontal.
+                    tmplstUVXYCoords.XYCoords = new List<STPoint2DXY>();
+
+                    for (iVertCounter = TexViewModel.Groups[iGroupIdx].offsetTex;
+                         iVertCounter < TexViewModel.Groups[iGroupIdx].offsetTex +
+                                        TexViewModel.Groups[iGroupIdx].numVert; iVertCounter++)
+                    {
+                        fU = TexViewModel.TexCoords[iVertCounter].x;
+                        fV = TexViewModel.TexCoords[iVertCounter].y;
+
+                        if (bNeedNormalize)
+                        {
+                            // Normalize U if needed.
+                            if (fU >= 1)
+                            {
+                                fU -= (float)Math.Floor(fU);
+                            }
+                            else if (fU < 0)
+                            {
+                                // Maybe some values (like -0.00128) does not need to normalize and must be rounded.
+                                // Found this in Field CMDE.HRC model, Ninostyle Chibi version.
+                                if (fU >= -0.00128) fU = 0;
+                                else
+                                {
+                                    if (fU % 1.0f == 0) fU = 0;
+                                    else
+                                    {
+                                        fU = -fU;
+                                        fU -= (float)Math.Abs(Math.Floor(fU));
+                                        fU = 1 - fU;
+                                    }
+                                }
+                            }
+
+                            // Normalize V if needed.
+                            if (fV >= 1)
+                            {
+                                fV -= (float)Math.Floor(fV);
+                            }
+                            else if (fV < 0)
+                            {
+                                // Maybe some values (like -0.00128) does not need to normalize and must be rounded
+                                // Found this for fU in Field CMDE.HRC/AAAA.HRC(texID 2)  model, Ninostyle Chibi version.
+                                if (fV >= -0.00481) fV = 0;
+                                else
+                                {
+                                    if (fV % 1.0f == 0) fV = 0;
+                                    else
+                                    {
+                                        fV = -fV;
+                                        fV -= (float)Math.Abs(Math.Floor(fV));
+                                        fV = 1 - fV;
+                                    }
+                                }
+                            }
+                        }
+
+                        tmpP2D.x = fU * iWidth;
+                        tmpP2D.y = fV * iHeight;
+
+                        tmplstUVXYCoords.XYCoords.Add(tmpP2D);
+                    }
+                }
+
+                lstUVXYCoords.Add(tmplstUVXYCoords);
+            }
+        }
+
         private void frmTextureViewer_Load(object sender, EventArgs e)
         {
             Text = "Texture Coordinates(UVs) Viewer" + " - Model: " + TexViewModel.fileName +
                                                        " - Tex: " + frmSkelEdit.cbTextureSelect.Items[frmSkelEdit.cbTextureSelect.SelectedIndex];
 
+            bLoadingTextureViewer = true;
+
             // Initialize things
             if (frmSkelEdit.bPaintGreen) btnGreen.Checked = true;
-
-            // zoom
-            ChangeZoomButtons();
 
             // Assign tooltips.
             DefineToolTips();
 
+            // Draw UVs and prepare Texture Coordinate(UVs) Viewer form buttons.
             ChangeZoomButtons();
             ChangeTexCoordViewSize();
+
+            // Prepare list of UVs to XY points of the texture for UVpoints movement
+            PrepareUVXYCoords();
+            DrawUVs();
+
+            bLoadingTextureViewer = false;
         }
 
         public void DrawUVs()
@@ -88,12 +229,11 @@ namespace KimeraCS
             IntPtr hTmpBMP = IntPtr.Zero;
 
             int iGroupIdx, iPolyIdx, iVertCounter, iWidth, iHeight, iTexID;
-            int iU, iV, iSecondU, iSecondV, iFirstU, iFirstV, iRadius;
-            decimal fU, fV;
+            float fSecondU, fSecondV, fFirstU, fFirstV;
 
             iTexID = frmSkelEdit.cbTextureSelect.SelectedIndex;
 
-            switch(modelType)
+            switch (modelType)
             {
                 case K_HRC_SKELETON:
                     hTmpBMP = fSkeleton.bones[SelectedBone].fRSDResources[SelectedBonePiece].textures[iTexID].HBMP;
@@ -113,14 +253,10 @@ namespace KimeraCS
             }
 
 
-            iSecondU = 0;
-            iSecondV = 0;
-            iFirstU = 0;
-            iFirstV = 0;
-            iRadius = 3;
-
-            //Bitmap tmpBMP = new Bitmap(I_TEXTURECOORDVIEWMINSIZE * frmSkelEdit.iTexCoordViewerScale, 
-            //                           I_TEXTURECOORDVIEWMINSIZE * frmSkelEdit.iTexCoordViewerScale);
+            fSecondU = 0;
+            fSecondV = 0;
+            fFirstU = 0;
+            fFirstV = 0;
 
             Bitmap tmpBMP = new Bitmap(pbTextureView.Width, pbTextureView.Height);
 
@@ -131,7 +267,7 @@ namespace KimeraCS
             using (Graphics g = Graphics.FromImage(tmpBMP))
             {
                 //g.InterpolationMode = InterpolationMode.Default;
-                g.PixelOffsetMode = PixelOffsetMode.Half;
+                //g.PixelOffsetMode = PixelOffsetMode.Half;
                 g.InterpolationMode = InterpolationMode.NearestNeighbor;
 
                 g.DrawImage(Image.FromHbitmap(hTmpBMP), 0, 0, iWidth, iHeight);
@@ -147,57 +283,38 @@ namespace KimeraCS
                             // Get the 2D point (X,Y pos) of each of the points of the poly and draw the UV coordiantes with triangle shape
                             for (iVertCounter = 0; iVertCounter < 3; iVertCounter++)
                             {
-                                fU = (decimal)TexViewModel.TexCoords[TexViewModel.Polys[iPolyIdx].Verts[iVertCounter] +
-                                                                     TexViewModel.Groups[iGroupIdx].offsetTex].x;
-
-                                if (fU == 1.000000M) fU = 0.0M;
-                                if (fU < 0.0M) 
-                                {
-                                    if ((fU % 1.0M) == 0) fU = 1.0M;
-                                    else fU = -fU;
-                                }                                
-                                if (fU > 1.000000M) fU -= Math.Floor(fU);                                
-
-                                iU = (int)(fU * iWidth);
-                                if (iU == iWidth) iU -= 1;
-
-
-                                fV = (decimal)TexViewModel.TexCoords[TexViewModel.Polys[iPolyIdx].Verts[iVertCounter] +
-                                                                     TexViewModel.Groups[iGroupIdx].offsetTex].y;
-                                if (fV == 1.000000M) fV = 0.0M;
-                                if (fV < 0.0M)
-                                {
-                                    if ((fV % 1.0M) == 0) fV = 1.0M;
-                                    else fV = -fV;
-                                }
-                                if (fV > 1.000000M) fV -= Math.Floor(fV);
-
-                                iV = (int)(fV * iHeight);
-                                if (iV == iHeight) iV -= 1;
-
-                                // Draw the texture coordinates
+                                 // Draw the texture coordinates
                                 using (Brush tmpBrush = new SolidBrush(btnGreen.BackColor))
                                 {
-                                    g.FillEllipse(tmpBrush, iU - iRadius, iV - iRadius, 2 * iRadius, 2 * iRadius);
+                                    g.FillEllipse(tmpBrush, 
+                                                  lstUVXYCoords[iGroupIdx].XYCoords[TexViewModel.Polys[iPolyIdx].Verts[iVertCounter]].x - I_RADIUS,
+                                                  lstUVXYCoords[iGroupIdx].XYCoords[TexViewModel.Polys[iPolyIdx].Verts[iVertCounter]].y - I_RADIUS, 
+                                                  2 * I_RADIUS, 2 * I_RADIUS);
 
                                     switch (iVertCounter)
                                     {
                                         case 0:
-                                            iFirstU = iU;
-                                            iFirstV = iV;
+                                            fFirstU = lstUVXYCoords[iGroupIdx].XYCoords[TexViewModel.Polys[iPolyIdx].Verts[iVertCounter]].x;
+                                            fFirstV = lstUVXYCoords[iGroupIdx].XYCoords[TexViewModel.Polys[iPolyIdx].Verts[iVertCounter]].y;
                                             break;
 
                                         case 1:
-                                            iSecondU = iU;
-                                            iSecondV = iV;
+                                            fSecondU = lstUVXYCoords[iGroupIdx].XYCoords[TexViewModel.Polys[iPolyIdx].Verts[iVertCounter]].x;
+                                            fSecondV = lstUVXYCoords[iGroupIdx].XYCoords[TexViewModel.Polys[iPolyIdx].Verts[iVertCounter]].y;
                                             break;
 
                                         case 2:
                                             using (Pen tmpPen = new Pen(tmpBrush))
                                             {
-                                                g.DrawLine(tmpPen, new Point(iU, iV), new Point(iFirstU, iFirstV));
-                                                g.DrawLine(tmpPen, new Point(iFirstU, iFirstV), new Point(iSecondU, iSecondV));
-                                                g.DrawLine(tmpPen, new Point(iSecondU, iSecondV), new Point(iU, iV));
+                                                g.DrawLine(tmpPen,
+                                                    new PointF(lstUVXYCoords[iGroupIdx].XYCoords[TexViewModel.Polys[iPolyIdx].Verts[iVertCounter]].x,
+                                                               lstUVXYCoords[iGroupIdx].XYCoords[TexViewModel.Polys[iPolyIdx].Verts[iVertCounter]].y),
+                                                    new PointF(fFirstU, fFirstV));
+                                                g.DrawLine(tmpPen, new PointF(fFirstU, fFirstV), new PointF(fSecondU, fSecondV));
+                                                g.DrawLine(tmpPen, 
+                                                    new PointF(fSecondU, fSecondV),
+                                                    new PointF(lstUVXYCoords[iGroupIdx].XYCoords[TexViewModel.Polys[iPolyIdx].Verts[iVertCounter]].x,
+                                                               lstUVXYCoords[iGroupIdx].XYCoords[TexViewModel.Polys[iPolyIdx].Verts[iVertCounter]].y));
                                             }
 
                                             break;
@@ -211,7 +328,7 @@ namespace KimeraCS
             }
 
             pbTextureView.Image = tmpBMP;
-
+            pbTextureView.Refresh();
         }
 
         private void btnClose_Click(object sender, EventArgs e)
@@ -224,6 +341,10 @@ namespace KimeraCS
             FieldRSDResource tmpfRSDResource;
             PModel tmpPModel;
 
+            // Update texture coordinates from lstUVXYCoords to the TextureViewerModel
+            UpdateXYCoords();
+
+            // Commit the previous update to the original model
             switch (modelType)
             {
                 case K_HRC_SKELETON:
@@ -258,33 +379,28 @@ namespace KimeraCS
 
         private void btnFlipH_Click(object sender, EventArgs e)
         {
-            int iGroupIdx, iVertCounter, iTexID;
-            decimal fV;
+            int iGroupIdx, iTexID, iUVCounter, iHeight;
+            STPoint2DXY tmpP2DXY;
 
             iTexID = frmSkelEdit.cbTextureSelect.SelectedIndex;
+            iHeight = pbTextureView.Height - 1;
 
             for (iGroupIdx = 0; iGroupIdx < TexViewModel.Header.numGroups; iGroupIdx++)
             {
                 if (TexViewModel.Groups[iGroupIdx].texFlag == 1 && TexViewModel.Groups[iGroupIdx].texID == iTexID)
                 {
                     // Now for each texture coordinate (UV) from offsetTex to numVert we must invert the Y (V) position for horizontal.
-                    for (iVertCounter = TexViewModel.Groups[iGroupIdx].offsetTex;
-                         iVertCounter < TexViewModel.Groups[iGroupIdx].offsetTex +
-                                        TexViewModel.Groups[iGroupIdx].numVert; iVertCounter++)
+                    if (lstUVXYCoords[iGroupIdx].XYCoords != null)
                     {
-                        // First we need to normalize the coordinate.
-                        fV = (decimal)TexViewModel.TexCoords[iVertCounter].y;
-                        if (fV == 1.000000M) fV = 0.0M;
-                        if (fV < 0.0M)
+                        for (iUVCounter = 0; iUVCounter < lstUVXYCoords[iGroupIdx].XYCoords.Count; iUVCounter++)
                         {
-                            if ((fV % 1.0M) == 0) fV = 1.0M;
-                            else fV = -fV;
-                        }
-                        if (fV > 1.000000M) fV -= Math.Floor(fV);
-                        fV = 1.0M - fV;
-                        if (fV == 1.000000M) fV = 0.9999999M;
+                            tmpP2DXY = new STPoint2DXY();
+                            tmpP2DXY.x = lstUVXYCoords[iGroupIdx].XYCoords[iUVCounter].x;
+                            
+                            tmpP2DXY.y = iHeight - lstUVXYCoords[iGroupIdx].XYCoords[iUVCounter].y;
 
-                        TexViewModel.TexCoords[iVertCounter].y = (float)fV;
+                            lstUVXYCoords[iGroupIdx].XYCoords[iUVCounter] = tmpP2DXY;
+                        }
                     }
                 }
             }
@@ -294,33 +410,28 @@ namespace KimeraCS
 
         private void btnFlipV_Click(object sender, EventArgs e)
         {
-            int iGroupIdx, iVertCounter, iTexID;
-            decimal fU;
+            int iGroupIdx, iTexID, iUVCounter, iWidth;
+            STPoint2DXY tmpP2DXY;
 
             iTexID = frmSkelEdit.cbTextureSelect.SelectedIndex;
+            iWidth = pbTextureView.Width - 1;
 
             for (iGroupIdx = 0; iGroupIdx < TexViewModel.Header.numGroups; iGroupIdx++)
             {
                 if (TexViewModel.Groups[iGroupIdx].texFlag == 1 && TexViewModel.Groups[iGroupIdx].texID == iTexID)
                 {
-                    // Now for each texture coordinate (UV) from offsetTex to numVert we must invert the Y (V) position for horizontal.
-                    for (iVertCounter = TexViewModel.Groups[iGroupIdx].offsetTex;
-                         iVertCounter < TexViewModel.Groups[iGroupIdx].offsetTex +
-                                        TexViewModel.Groups[iGroupIdx].numVert; iVertCounter++)
+                    // Now for each texture coordinate (UV) from offsetTex to numVert we must invert the X (U) position for horizontal.
+                    if (lstUVXYCoords[iGroupIdx].XYCoords != null)
                     {
-                        // First we need to normalize the coordinate.
-                        fU = (decimal)TexViewModel.TexCoords[iVertCounter].x;
-                        if (fU == 1.000000M) fU = 0.0M;
-                        if (fU < 0.0M)
+                        for (iUVCounter = 0; iUVCounter < lstUVXYCoords[iGroupIdx].XYCoords.Count; iUVCounter++)
                         {
-                            if ((fU % 1.0M) == 0) fU = 1.0M;
-                            else fU = -fU;
-                        }
-                        if (fU > 1.000000M) fU -= Math.Floor(fU);
-                        fU = 1.0M - fU;
-                        if (fU == 1.000000M) fU = 0.9999999M;
+                            tmpP2DXY = new STPoint2DXY();
+                            tmpP2DXY.y = lstUVXYCoords[iGroupIdx].XYCoords[iUVCounter].y;
 
-                        TexViewModel.TexCoords[iVertCounter].x = (float)fU;
+                            tmpP2DXY.x = iWidth - lstUVXYCoords[iGroupIdx].XYCoords[iUVCounter].x;
+
+                            lstUVXYCoords[iGroupIdx].XYCoords[iUVCounter] = tmpP2DXY;
+                        }
                     }
                 }
             }
@@ -331,49 +442,28 @@ namespace KimeraCS
         private void btnRotateUV_Click(object sender, EventArgs e)
         {
 
-            int iGroupIdx, iVertCounter, iTexID;
-            decimal fU, fV;
+            int iGroupIdx, iUVCounter, iTexID, iHeight;
+            STPoint2DXY tmpP2DXY;
 
             iTexID = frmSkelEdit.cbTextureSelect.SelectedIndex;
+            iHeight = pbTextureView.Height - 1;
 
             for (iGroupIdx = 0; iGroupIdx < TexViewModel.Header.numGroups; iGroupIdx++)
             {
                 if (TexViewModel.Groups[iGroupIdx].texFlag == 1 && TexViewModel.Groups[iGroupIdx].texID == iTexID)
                 {
-                    // Now for each texture coordinate (UV) from offsetTex to numVert we must invert the Y (V) position for horizontal.
-                    for (iVertCounter = TexViewModel.Groups[iGroupIdx].offsetTex;
-                         iVertCounter < TexViewModel.Groups[iGroupIdx].offsetTex +
-                                        TexViewModel.Groups[iGroupIdx].numVert; iVertCounter++)
+                    // Now for each texture coordinate (UV) from offsetTex to numVert we must rotate clockwise.
+                    if (lstUVXYCoords[iGroupIdx].XYCoords != null)
                     {
-                        // First we need to normalize the coordinate.
-                        fU = (decimal)TexViewModel.TexCoords[iVertCounter].x;
-
-                        if (fU == 1.000000M) fU = 0.0M;
-                        if (fU < 0.0M)
+                        for (iUVCounter = 0; iUVCounter < lstUVXYCoords[iGroupIdx].XYCoords.Count; iUVCounter++)
                         {
-                            if ((fU % 1.0M) == 0) fU = 1.0M;
-                            else fU = -fU;
+                            tmpP2DXY = new STPoint2DXY();
+                            tmpP2DXY.y = lstUVXYCoords[iGroupIdx].XYCoords[iUVCounter].x;
+
+                            tmpP2DXY.x = iHeight - lstUVXYCoords[iGroupIdx].XYCoords[iUVCounter].y;
+
+                            lstUVXYCoords[iGroupIdx].XYCoords[iUVCounter] = tmpP2DXY;
                         }
-                        if (fU > 1.000000M) fU -= Math.Floor(fU);
-                        if (fU == 1.000000M) fU = 0.9999999M;
-
-
-                        fV = (decimal)TexViewModel.TexCoords[iVertCounter].y;
-                        if (fV == 1.000000M) fV = 0.0M;
-                        if (fV < 0.0M)
-                        {
-                            if ((fV % 1.0M) == 0) fV = 1.0M;
-                            else fV = -fV;
-                        }
-                        if (fV > 1.000000M) fV -= Math.Floor(fV);
-                        if (fV == 1.000000M) fV = 0.9999999M;
-
-                        fV = 1.0M - fV;
-
-
-                        TexViewModel.TexCoords[iVertCounter].x = (float)fV;
-                        TexViewModel.TexCoords[iVertCounter].y = (float)fU;
-
                     }
                 }
             }
@@ -394,7 +484,10 @@ namespace KimeraCS
                 btnGreen.BackColor = Color.White;
             }
 
-            DrawUVs();
+            if (!bLoadingTextureViewer)
+            {
+                DrawUVs();
+            }
         }
 
         public void ChangeTexCoordViewSize()
@@ -489,8 +582,6 @@ namespace KimeraCS
 
             this.Top = (Screen.PrimaryScreen.WorkingArea.Height - iHeight) / 2;
             this.Left = (Screen.PrimaryScreen.WorkingArea.Width - iWidth) / 2;
-
-            DrawUVs();
         }
 
         public void ChangeZoomButtons()
@@ -506,17 +597,134 @@ namespace KimeraCS
         {
             frmSkelEdit.iTexCoordViewerScale--;
 
+            // Let's update TextureViewerModel var UVs for make zoom.
+            UpdateXYCoords();
+
             ChangeZoomButtons();
             ChangeTexCoordViewSize();
+
+            // Prepare list of UVs to XY points of the texture for UVpoints movement
+            PrepareUVXYCoords();
+            DrawUVs();
         }
 
         private void btnZoomIn_Click(object sender, EventArgs e)
         {
             frmSkelEdit.iTexCoordViewerScale++;
 
+            // Let's update TextureViewerModel var UVs for make zoom.
+            UpdateXYCoords();
+
             ChangeZoomButtons();
             ChangeTexCoordViewSize();
+
+            // Prepare list of UVs to XY points of the texture for UVpoints movement
+            PrepareUVXYCoords();
+            DrawUVs();
         }
+
+        public bool foundXYPosMouse(int X, int Y)
+        {
+            localXYPointIdx = 0;
+            localGroupIdx = 0;
+
+            foreach (STUVXYCoord itmXYCoord in lstUVXYCoords)
+            {
+
+                if (itmXYCoord.XYCoords != null)
+                {
+                    foreach (STPoint2DXY itmP2D in itmXYCoord.XYCoords)
+                    {
+                        if (X >= ((int)itmP2D.x - I_RADIUS - 1) && X <= ((int)itmP2D.x + I_RADIUS - 1) &&
+                            Y >= ((int)itmP2D.y - I_RADIUS - 1) && Y <= ((int)itmP2D.y + I_RADIUS - 1))
+                            return true;
+
+                        localXYPointIdx++;
+                    }
+                }
+
+                localGroupIdx++;
+            }
+
+            return false;
+        }
+
+
+        public void UpdateXYCoords()
+        {
+            int iGroupIdx, iTexID, iVertCounter, iWidth, iHeight;
+
+            iTexID = frmSkelEdit.cbTextureSelect.SelectedIndex;
+            iWidth = pbTextureView.Width - 1;
+            iHeight = pbTextureView.Height - 1;
+
+            for (iGroupIdx = 0; iGroupIdx < TexViewModel.Header.numGroups; iGroupIdx++)
+            {
+                if (TexViewModel.Groups[iGroupIdx].texFlag == 1 && TexViewModel.Groups[iGroupIdx].texID == iTexID)
+                {
+                    for (iVertCounter = 0; iVertCounter < TexViewModel.Groups[iGroupIdx].numVert; iVertCounter++)
+                    {
+                        TexViewModel.TexCoords[TexViewModel.Groups[iGroupIdx].offsetTex + iVertCounter].x =
+                                       lstUVXYCoords[iGroupIdx].XYCoords[iVertCounter].x / iWidth;
+                        TexViewModel.TexCoords[TexViewModel.Groups[iGroupIdx].offsetTex + iVertCounter].y =
+                                       lstUVXYCoords[iGroupIdx].XYCoords[iVertCounter].y / iHeight;
+                    }
+                }
+            }
+        }
+
+        private void pbTextureView_MouseMove(object sender, MouseEventArgs e)
+        {
+            STPoint2DXY tmpP2D;
+            
+            if (bMouseLeftClicked)
+            {
+                if (bFoundXYCoord)
+                {
+                    tmpP2D.x = e.X;
+                    tmpP2D.y = e.Y;
+                    lstUVXYCoords[localGroupIdx].XYCoords[localXYPointIdx] = tmpP2D;
+
+                    DrawUVs();                    
+                }
+            }
+            else
+            {
+                if (foundXYPosMouse(e.X, e.Y))
+                {
+                    pbTextureView.Cursor = Cursors.Hand;
+                    bFoundXYCoord = true;
+                }
+                else
+                {
+                    pbTextureView.Cursor = Cursors.Default;
+                    bFoundXYCoord = false;
+                }
+            }
+        }
+
+        private void pbTextureView_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left) bMouseLeftClicked = true;             
+        }
+
+        private void pbTextureView_MouseUp(object sender, MouseEventArgs e)
+        {
+            bMouseLeftClicked = false;
+        }
+
+        private void frmTextureViewer_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            // Let's clear the List of UV Points.
+            foreach (STUVXYCoord itmUVXYCoord in lstUVXYCoords)
+            {
+                if (itmUVXYCoord.XYCoords != null)
+                            itmUVXYCoord.XYCoords.Clear();
+            }
+
+            lstUVXYCoords.Clear();
+        }
+
     }
 
 }
