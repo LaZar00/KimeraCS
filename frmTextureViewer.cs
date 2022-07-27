@@ -105,7 +105,7 @@ namespace KimeraCS
 
         public void PrepareUVXYCoords()
         {
-            int iGroupIdx, iVertCounter, iTexID, iWidth, iHeight;
+            int iGroupIdx, iVertCounter, iTexID;
             float fU, fV;
             STUVXYCoord tmplstUVXYCoords;
             STPoint2DXY tmpP2D;
@@ -116,9 +116,6 @@ namespace KimeraCS
 
             iTexID = frmSkelEdit.cbTextureSelect.SelectedIndex;
             bNeedNormalize = false;
-
-            iWidth = pbTextureView.Width - 1;
-            iHeight = pbTextureView.Height - 1;
 
             for (iGroupIdx = 0; iGroupIdx < TexViewModel.Header.numGroups; iGroupIdx++)
             {
@@ -189,8 +186,8 @@ namespace KimeraCS
                             }
                         }
 
-                        tmpP2D.x = fU * iWidth;
-                        tmpP2D.y = fV * iHeight;
+                        tmpP2D.x = fU * pbTextureView.Width;
+                        tmpP2D.y = fV * pbTextureView.Height;
 
                         tmplstUVXYCoords.XYCoords.Add(tmpP2D);
                     }
@@ -229,7 +226,7 @@ namespace KimeraCS
             IntPtr hTmpBMP = IntPtr.Zero;
 
             int iGroupIdx, iPolyIdx, iVertCounter, iWidth, iHeight, iTexID;
-            float fSecondU, fSecondV, fFirstU, fFirstV;
+            Point[] pointTriPoly = new Point[4];
 
             iTexID = frmSkelEdit.cbTextureSelect.SelectedIndex;
 
@@ -252,12 +249,6 @@ namespace KimeraCS
                     break;
             }
 
-
-            fSecondU = 0;
-            fSecondV = 0;
-            fFirstU = 0;
-            fFirstV = 0;
-
             Bitmap tmpBMP = new Bitmap(pbTextureView.Width, pbTextureView.Height);
 
             // Get the size available
@@ -267,11 +258,14 @@ namespace KimeraCS
             using (Graphics g = Graphics.FromImage(tmpBMP))
             {
                 //g.InterpolationMode = InterpolationMode.Default;
-                //g.PixelOffsetMode = PixelOffsetMode.Half;
+                g.PixelOffsetMode = PixelOffsetMode.Half;
                 g.InterpolationMode = InterpolationMode.NearestNeighbor;
 
                 g.DrawImage(Image.FromHbitmap(hTmpBMP), 0, 0, iWidth, iHeight);
-                     
+
+                g.PixelOffsetMode = PixelOffsetMode.None;
+                g.InterpolationMode = InterpolationMode.Default ;
+
                 for (iGroupIdx = 0; iGroupIdx < TexViewModel.Header.numGroups; iGroupIdx++)
                 {
                     if (TexViewModel.Groups[iGroupIdx].texFlag == 1 && TexViewModel.Groups[iGroupIdx].texID == iTexID)
@@ -286,35 +280,49 @@ namespace KimeraCS
                                  // Draw the texture coordinates
                                 using (Brush tmpBrush = new SolidBrush(btnGreen.BackColor))
                                 {
-                                    g.FillEllipse(tmpBrush, 
-                                                  lstUVXYCoords[iGroupIdx].XYCoords[TexViewModel.Polys[iPolyIdx].Verts[iVertCounter]].x - I_RADIUS,
-                                                  lstUVXYCoords[iGroupIdx].XYCoords[TexViewModel.Polys[iPolyIdx].Verts[iVertCounter]].y - I_RADIUS, 
+                                    g.FillEllipse(tmpBrush,
+                                                  Convert.ToInt32(lstUVXYCoords[iGroupIdx].XYCoords[TexViewModel.Polys[iPolyIdx].Verts[iVertCounter]].x) - I_RADIUS,
+                                                  Convert.ToInt32(lstUVXYCoords[iGroupIdx].XYCoords[TexViewModel.Polys[iPolyIdx].Verts[iVertCounter]].y) - I_RADIUS,
                                                   2 * I_RADIUS, 2 * I_RADIUS);
 
                                     switch (iVertCounter)
                                     {
                                         case 0:
-                                            fFirstU = lstUVXYCoords[iGroupIdx].XYCoords[TexViewModel.Polys[iPolyIdx].Verts[iVertCounter]].x;
-                                            fFirstV = lstUVXYCoords[iGroupIdx].XYCoords[TexViewModel.Polys[iPolyIdx].Verts[iVertCounter]].y;
+
+                                            pointTriPoly[0].X = Convert.ToInt32(lstUVXYCoords[iGroupIdx].XYCoords[TexViewModel.Polys[iPolyIdx].Verts[iVertCounter]].x);
+                                            pointTriPoly[0].Y = Convert.ToInt32(lstUVXYCoords[iGroupIdx].XYCoords[TexViewModel.Polys[iPolyIdx].Verts[iVertCounter]].y);
+
+                                            if (pointTriPoly[0].X >= iWidth) pointTriPoly[0].X--;
+                                            if (pointTriPoly[0].Y >= iHeight) pointTriPoly[0].Y--;
+
+                                            pointTriPoly[3].X = pointTriPoly[0].X;
+                                            pointTriPoly[3].Y = pointTriPoly[0].Y;
+
                                             break;
 
                                         case 1:
-                                            fSecondU = lstUVXYCoords[iGroupIdx].XYCoords[TexViewModel.Polys[iPolyIdx].Verts[iVertCounter]].x;
-                                            fSecondV = lstUVXYCoords[iGroupIdx].XYCoords[TexViewModel.Polys[iPolyIdx].Verts[iVertCounter]].y;
+
+                                            pointTriPoly[1].X = Convert.ToInt32(lstUVXYCoords[iGroupIdx].XYCoords[TexViewModel.Polys[iPolyIdx].Verts[iVertCounter]].x);
+                                            pointTriPoly[1].Y = Convert.ToInt32(lstUVXYCoords[iGroupIdx].XYCoords[TexViewModel.Polys[iPolyIdx].Verts[iVertCounter]].y);
+
+                                            if (pointTriPoly[1].X >= iWidth) pointTriPoly[1].X--;
+                                            if (pointTriPoly[1].Y >= iHeight) pointTriPoly[1].Y--;
+
                                             break;
 
                                         case 2:
-                                            using (Pen tmpPen = new Pen(tmpBrush))
+                                            using (Pen tmpPen = new Pen(btnGreen.BackColor))
                                             {
-                                                g.DrawLine(tmpPen,
-                                                    new PointF(lstUVXYCoords[iGroupIdx].XYCoords[TexViewModel.Polys[iPolyIdx].Verts[iVertCounter]].x,
-                                                               lstUVXYCoords[iGroupIdx].XYCoords[TexViewModel.Polys[iPolyIdx].Verts[iVertCounter]].y),
-                                                    new PointF(fFirstU, fFirstV));
-                                                g.DrawLine(tmpPen, new PointF(fFirstU, fFirstV), new PointF(fSecondU, fSecondV));
-                                                g.DrawLine(tmpPen, 
-                                                    new PointF(fSecondU, fSecondV),
-                                                    new PointF(lstUVXYCoords[iGroupIdx].XYCoords[TexViewModel.Polys[iPolyIdx].Verts[iVertCounter]].x,
-                                                               lstUVXYCoords[iGroupIdx].XYCoords[TexViewModel.Polys[iPolyIdx].Verts[iVertCounter]].y));
+
+                                                tmpPen.Alignment = PenAlignment.Center;
+
+                                                pointTriPoly[2].X = Convert.ToInt32(lstUVXYCoords[iGroupIdx].XYCoords[TexViewModel.Polys[iPolyIdx].Verts[iVertCounter]].x);
+                                                pointTriPoly[2].Y = Convert.ToInt32(lstUVXYCoords[iGroupIdx].XYCoords[TexViewModel.Polys[iPolyIdx].Verts[iVertCounter]].y);
+
+                                                if (pointTriPoly[2].X >= iWidth) pointTriPoly[2].X--;
+                                                if (pointTriPoly[2].Y >= iHeight) pointTriPoly[2].Y--;
+
+                                                g.DrawLines(tmpPen, pointTriPoly);
                                             }
 
                                             break;
@@ -383,7 +391,7 @@ namespace KimeraCS
             STPoint2DXY tmpP2DXY;
 
             iTexID = frmSkelEdit.cbTextureSelect.SelectedIndex;
-            iHeight = pbTextureView.Height - 1;
+            iHeight = pbTextureView.Height;
 
             for (iGroupIdx = 0; iGroupIdx < TexViewModel.Header.numGroups; iGroupIdx++)
             {
@@ -414,7 +422,7 @@ namespace KimeraCS
             STPoint2DXY tmpP2DXY;
 
             iTexID = frmSkelEdit.cbTextureSelect.SelectedIndex;
-            iWidth = pbTextureView.Width - 1;
+            iWidth = pbTextureView.Width;
 
             for (iGroupIdx = 0; iGroupIdx < TexViewModel.Header.numGroups; iGroupIdx++)
             {
@@ -446,7 +454,7 @@ namespace KimeraCS
             STPoint2DXY tmpP2DXY;
 
             iTexID = frmSkelEdit.cbTextureSelect.SelectedIndex;
-            iHeight = pbTextureView.Height - 1;
+            iHeight = pbTextureView.Height;
 
             for (iGroupIdx = 0; iGroupIdx < TexViewModel.Header.numGroups; iGroupIdx++)
             {
@@ -546,8 +554,8 @@ namespace KimeraCS
                 fHeight = fWidth / fAspectRatio;
             }
 
-            pbTextureView.Width = (int)fWidth;
-            pbTextureView.Height = (int)fHeight;
+            pbTextureView.Width = Convert.ToInt32(fWidth);
+            pbTextureView.Height = Convert.ToInt32(fHeight);
 
 
             // Let's assign a minimum size witdh/height for the window. This will help to the scrolling.
@@ -635,8 +643,8 @@ namespace KimeraCS
                 {
                     foreach (STPoint2DXY itmP2D in itmXYCoord.XYCoords)
                     {
-                        if (X >= ((int)itmP2D.x - I_RADIUS - 1) && X <= ((int)itmP2D.x + I_RADIUS - 1) &&
-                            Y >= ((int)itmP2D.y - I_RADIUS - 1) && Y <= ((int)itmP2D.y + I_RADIUS - 1))
+                        if (X >= (Convert.ToInt32(itmP2D.x) - I_RADIUS - 1) && X <= (Convert.ToInt32(itmP2D.x) + I_RADIUS - 1) &&
+                            Y >= (Convert.ToInt32(itmP2D.y) - I_RADIUS - 1) && Y <= (Convert.ToInt32(itmP2D.y) + I_RADIUS - 1))
                             return true;
 
                         localXYPointIdx++;
@@ -655,8 +663,8 @@ namespace KimeraCS
             int iGroupIdx, iTexID, iVertCounter, iWidth, iHeight;
 
             iTexID = frmSkelEdit.cbTextureSelect.SelectedIndex;
-            iWidth = pbTextureView.Width - 1;
-            iHeight = pbTextureView.Height - 1;
+            iWidth = pbTextureView.Width;
+            iHeight = pbTextureView.Height;
 
             for (iGroupIdx = 0; iGroupIdx < TexViewModel.Header.numGroups; iGroupIdx++)
             {
