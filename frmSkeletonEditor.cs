@@ -58,7 +58,7 @@ namespace KimeraCS
 
  
 
-        public const string STR_APPNAME = "KimeraCS 1.4e";
+        public const string STR_APPNAME = "KimeraCS 1.4f";
 
         public static int modelWidth;
         public static int modelHeight;
