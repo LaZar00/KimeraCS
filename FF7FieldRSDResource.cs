@@ -46,100 +46,106 @@ namespace KimeraCS
                 int rsdNTEXpos = 0;
 
                 // Let's read RSD file into memory.
-                // First check if exists
-                if (!File.Exists(rsdFileName))
-                {
-                    throw new FileNotFoundException("Error opening RSD file '" + rsdFileName + ".RSD'.");
-                }
-
-                // Assign to struct name of resource file
-                res_file = in_res_file;
 
                 // Let's put the ID (@RSD) All .rsd files have this.
                 ID = "@RSD940102";
 
-                rsdString = File.ReadAllLines(rsdFileName);
+                // Assign to struct name of resource file
+                res_file = in_res_file;
+                
+                numTextures = 0;
+                textures = new List<TEX>();
 
-                // Let's read PLY
-                while (rsdString[rsdNTEXpos][0] != 'P') rsdNTEXpos++;
-
-                // Let's read the P model
-                polyFileName = (rsdString[rsdNTEXpos].Split('=')[1]).Substring(0, (rsdString[rsdNTEXpos].Split('=')[1]).IndexOf('.')) + ".P";
-
-                // Let's read the P model into memory.
                 // First check if exists
-                if (!File.Exists(strFolderName + "\\" + polyFileName))
+                if (!File.Exists(rsdFileName))
                 {
-                    // We maybe want to load the rest of the model.
-                    // Here we give the choice to load it o cancel loading the model.
-                    drPModelError = MessageBox.Show("The .P Model file '" + polyFileName + "' does not exists. " +
-                                                    "Do you want to continue loading the other parts of the model?",
-                                                    "Information", MessageBoxButtons.YesNo);
-
-                    if (drPModelError == DialogResult.No)
-                    {
-                        // throw new FileNotFoundException("Error opening P file '" + polyFileName + ".P'.");
-                        throw new FileNotFoundException();
-                    }
-
-                    // We can fill the name of the .P model. This will help to saving.
-                    Model.fileName = polyFileName;
+                    //throw new FileNotFoundException("Error opening RSD file '" + rsdFileName);
+                    MessageBox.Show("File: " + in_res_file + ".RSD does not exists.");
                 }
                 else
                 {
-                    LoadPModel(ref Model, strFolderName, polyFileName);
-                }
+                    rsdString = File.ReadAllLines(rsdFileName);
 
+                    // Let's read PLY
+                    while (rsdString[rsdNTEXpos][0] != 'P') rsdNTEXpos++;
 
-                // Let's read NTEX
-                while (rsdString[rsdNTEXpos][0] != 'N') rsdNTEXpos++;
+                    // Let's read the P model
+                    polyFileName = (rsdString[rsdNTEXpos].Split('=')[1]).Substring(0, (rsdString[rsdNTEXpos].Split('=')[1]).IndexOf('.')) + ".P";
 
-                // Let's get the num textures
-                numTextures = Int32.Parse(rsdString[rsdNTEXpos].Split('=')[1]);
-                textures = new List<TEX>();
-
-                glTexParameterf(glTextureTarget.GL_TEXTURE_2D, glTextureParameter.GL_TEXTURE_MAG_FILTER, (float)glTextureMagFilter.GL_LINEAR);
-                glTexParameterf(glTextureTarget.GL_TEXTURE_2D, glTextureParameter.GL_TEXTURE_MIN_FILTER, (float)glTextureMagFilter.GL_LINEAR);
-
-                for (ti = 0; ti < numTextures; ti++)
-                {
-                    // Position to the "TEX[n]" line (check comments or lines not needed)
-                    while (rsdString[rsdNTEXpos][0] != 'T') rsdNTEXpos++;
-
-                    // Prepare itmTextureTEX var
-                    itmTextureTEX = new TEX();
-
-                    // Get each texture entry in RSD (TEX[n] entries)
-                    itmTextureTEX.TEXfileName = (rsdString[rsdNTEXpos].Split('=')[1]).Substring(0, rsdString[rsdNTEXpos].Split('=')[1].IndexOf('.')) + ".TEX";
-
-                    // Position for next "TEX[n]" line
-                    rsdNTEXpos++;
-
-                    ti_pool = 0;
-                    tex_foundQ = false;
-
-                    while (ti_pool < textures_pool.Count && !tex_foundQ)
+                    // Let's read the P model into memory.
+                    // First check if exists
+                    if (!File.Exists(strFolderName + "\\" + polyFileName))
                     {
-                        tex_foundQ = textures_pool[ti_pool].TEXfileName == itmTextureTEX.TEXfileName;
-                        ti_pool++;
-                    }
+                        // We maybe want to load the rest of the model.
+                        // Here we give the choice to load it o cancel loading the model.
+                        drPModelError = MessageBox.Show("The .P Model file '" + polyFileName + "' does not exists. " +
+                                                        "Do you want to continue loading the other parts of the model?",
+                                                        "Information", MessageBoxButtons.YesNo);
 
-                    if (tex_foundQ)
-                    {
-                        itmTextureTEX = textures_pool[ti_pool - 1];
+                        if (drPModelError == DialogResult.No)
+                        {
+                            // throw new FileNotFoundException("Error opening P file '" + polyFileName + ".P'.");
+                            throw new FileNotFoundException();
+                        }
+
+                        // We can fill the name of the .P model. This will help to saving.
+                        Model.fileName = polyFileName;
                     }
                     else
                     {
-                        if (ReadTEXTexture(ref itmTextureTEX, strFolderName + "\\" + itmTextureTEX.TEXfileName) == 0)
+                        LoadPModel(ref Model, strFolderName, polyFileName);
+                    }
+
+
+                    // Let's read NTEX
+                    while (rsdString[rsdNTEXpos][0] != 'N') rsdNTEXpos++;
+
+                    // Let's get the num textures
+                    numTextures = Int32.Parse(rsdString[rsdNTEXpos].Split('=')[1]);
+
+                    glTexParameterf(glTextureTarget.GL_TEXTURE_2D, glTextureParameter.GL_TEXTURE_MAG_FILTER, (float)glTextureMagFilter.GL_LINEAR);
+                    glTexParameterf(glTextureTarget.GL_TEXTURE_2D, glTextureParameter.GL_TEXTURE_MIN_FILTER, (float)glTextureMagFilter.GL_LINEAR);
+
+                    for (ti = 0; ti < numTextures; ti++)
+                    {
+                        // Position to the "TEX[n]" line (check comments or lines not needed)
+                        while (rsdString[rsdNTEXpos][0] != 'T') rsdNTEXpos++;
+
+                        // Prepare itmTextureTEX var
+                        itmTextureTEX = new TEX();
+
+                        // Get each texture entry in RSD (TEX[n] entries)
+                        itmTextureTEX.TEXfileName = (rsdString[rsdNTEXpos].Split('=')[1]).Substring(0, rsdString[rsdNTEXpos].Split('=')[1].IndexOf('.')) + ".TEX";
+
+                        // Position for next "TEX[n]" line
+                        rsdNTEXpos++;
+
+                        ti_pool = 0;
+                        tex_foundQ = false;
+
+                        while (ti_pool < textures_pool.Count && !tex_foundQ)
                         {
-                            // Load TEX Texture (or other format if existant).
-                            LoadTEXTexture(ref itmTextureTEX);
-                            // Prepare Bitmap from TEX Texture
-                            LoadBitmapFromTEXTexture(ref itmTextureTEX);
+                            tex_foundQ = textures_pool[ti_pool].TEXfileName == itmTextureTEX.TEXfileName;
+                            ti_pool++;
                         }
 
-                        // Add TEX Texture to the list of RSDResource textures
-                        textures.Add(itmTextureTEX);
+                        if (tex_foundQ)
+                        {
+                            itmTextureTEX = textures_pool[ti_pool - 1];
+                        }
+                        else
+                        {
+                            if (ReadTEXTexture(ref itmTextureTEX, strFolderName + "\\" + itmTextureTEX.TEXfileName) == 0)
+                            {
+                                // Load TEX Texture (or other format if existant).
+                                LoadTEXTexture(ref itmTextureTEX);
+                                // Prepare Bitmap from TEX Texture
+                                LoadBitmapFromTEXTexture(ref itmTextureTEX);
+                            }
+
+                            // Add TEX Texture to the list of RSDResource textures
+                            textures.Add(itmTextureTEX);
+                        }
                     }
                 }
             }
