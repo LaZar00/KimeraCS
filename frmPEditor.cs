@@ -1552,8 +1552,16 @@ namespace KimeraCS
                             AddStateToBufferPE(this);
 
                             VCountNewPoly = 0;
-                            AddGroup(ref EditedPModel, GroupModel.Verts, GroupModel.Polys, 
-                                     GroupModel.TexCoords, GroupModel.Vcolors, GroupModel.Pcolors);
+
+                            foreach (PGroup itmGroup in GroupModel.Groups)
+                            {
+                                AddGroup(ref EditedPModel, 
+                                         GroupModel.Verts.Skip(itmGroup.offsetVert).Take(itmGroup.numVert).ToArray(),
+                                         GroupModel.Polys.Skip(itmGroup.offsetPoly).Take(itmGroup.numPoly).ToArray(),
+                                         GroupModel.TexCoords.Skip(itmGroup.offsetTex).Take(itmGroup.numVert).ToArray(), 
+                                         GroupModel.Vcolors.Skip(itmGroup.offsetVert).Take(itmGroup.numVert).ToArray(), 
+                                         GroupModel.Pcolors.Skip(itmGroup.offsetPoly).Take(itmGroup.numPoly).ToArray());
+                            }
 
                             DestroyPModelResources(ref GroupModel);
 
@@ -3406,8 +3414,7 @@ namespace KimeraCS
                             p2 = EditedPModel.Verts[EditedPModel.Groups[iGroupIdx].offsetVert + vi2];
 
                             if (EditedPModel.Groups[iGroupIdx].texFlag == 1 || 
-                                EditedPModel.Groups[iGroupIdx].offsetTex > 0 || 
-                                EditedPModel.Hundrets[iGroupIdx].shademode == 2)
+                                EditedPModel.Groups[iGroupIdx].offsetTex > 0)
                             {
                                 tc1 = EditedPModel.TexCoords[EditedPModel.Groups[iGroupIdx].offsetTex + vi1];
                                 tc2 = EditedPModel.TexCoords[EditedPModel.Groups[iGroupIdx].offsetTex + vi2];
@@ -3428,8 +3435,7 @@ namespace KimeraCS
                                     iGroupIdx = tmpGroupIdx;
 
                                     if (EditedPModel.Groups[iGroupIdx].texFlag == 1 ||
-                                        EditedPModel.Groups[iGroupIdx].offsetTex > 0 ||
-                                        EditedPModel.Hundrets[iGroupIdx].shademode == 2)
+                                        EditedPModel.Groups[iGroupIdx].offsetTex > 0)
                                     {
                                         vi1 = EditedPModel.Polys[pi].Verts[ei];
                                         vi2 = EditedPModel.Polys[pi].Verts[(ei + 1) % 3];
