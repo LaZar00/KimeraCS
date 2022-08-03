@@ -1016,7 +1016,7 @@ namespace KimeraCS
                             Model.Vcolors[vi2] = Model.Vcolors[vi2 + 1];
                         }
 
-                        if (Model.Groups[gi].texFlag == 1 || Model.Groups[gi].offsetTex > 0 || Model.Hundrets[gi].shademode == 2)
+                        if (Model.Groups[gi].texFlag == 1 || Model.Groups[gi].offsetTex > 0)
                         {
                             for (tci = tciGlobal; tci < Model.Header.numTexCs - 1; tci++)
                                 Model.TexCoords[tci] = Model.TexCoords[tci + 1];
@@ -1044,7 +1044,7 @@ namespace KimeraCS
                         {
                             Model.Groups[iNextGroup].offsetVert--;
 
-                            if ((Model.Groups[gi].texFlag == 1 || Model.Groups[gi].offsetTex > 0 || Model.Hundrets[gi].shademode == 2) &&
+                            if ((Model.Groups[gi].texFlag == 1 || Model.Groups[gi].offsetTex > 0) &&
                                 Model.Groups[iNextGroup].offsetTex > 0)
                                 Model.Groups[iNextGroup].offsetTex--;
 
@@ -1056,7 +1056,7 @@ namespace KimeraCS
                     else
                     {
                         vi++;
-                        if (Model.Groups[gi].texFlag == 1 || Model.Groups[gi].offsetTex > 0 || Model.Hundrets[gi].shademode == 2) tciGlobal++;
+                        if (Model.Groups[gi].texFlag == 1 || Model.Groups[gi].offsetTex > 0) tciGlobal++;
                     }
 
                     vit++;
@@ -1254,7 +1254,7 @@ namespace KimeraCS
             Model.Groups[groupIndex].texID = 0;
 
             if (Model.TexCoords != null)
-                if (Model.Groups[groupIndex].texFlag == 1)
+                if (Model.Groups[groupIndex].texFlag == 1 || Model.Groups[groupIndex].offsetTex > 0)
                     Model.Groups[groupIndex].offsetTex = Model.TexCoords.Length;
                 else 
                     Model.Groups[groupIndex].offsetTex = 0;
@@ -2404,7 +2404,7 @@ namespace KimeraCS
             iNextGroup = GetNextGroup(Model, iGroupIdx);
             if (iNextGroup != -1)
             {
-                if (Model.Groups[iGroupIdx].texFlag == 1 || Model.Groups[iGroupIdx].offsetTex > 0 || Model.Hundrets[iGroupIdx].shademode == 2)
+                if (Model.Groups[iGroupIdx].texFlag == 1 || Model.Groups[iGroupIdx].offsetTex > 0)
                 {
                     ti2 = Model.Groups[iGroupIdx].offsetTex;
 
@@ -2451,7 +2451,7 @@ namespace KimeraCS
             Model.Header.numEdges -= Model.Groups[iGroupIdx].numEdge;
             Model.Header.numVerts -= Model.Groups[iGroupIdx].numVert;
 
-            if (Model.Groups[iGroupIdx].texFlag == 1 || Model.Groups[iGroupIdx].offsetTex > 0 || Model.Hundrets[iGroupIdx].shademode == 2)
+            if (Model.Groups[iGroupIdx].texFlag == 1 || Model.Groups[iGroupIdx].offsetTex > 0)
                 Model.Header.numTexCs -= Model.Groups[iGroupIdx].numVert;
 
             Model.Header.mirex_h--;
@@ -2475,7 +2475,7 @@ namespace KimeraCS
                 RemoveGroupPolys(ref Model, iGroupIdx);
                 RemoveGroupEdges(ref Model, iGroupIdx);
 
-                if (Model.Groups[iGroupIdx].texFlag == 1 || Model.Groups[iGroupIdx].offsetTex > 0 || Model.Hundrets[iGroupIdx].shademode == 2)
+                if (Model.Groups[iGroupIdx].texFlag == 1 || Model.Groups[iGroupIdx].offsetTex > 0)
                         RemoveGroupTexCoords(ref Model, iGroupIdx);
             }
             else
@@ -2534,16 +2534,12 @@ namespace KimeraCS
                         Model.Groups[iActualGroup].offsetEdge + Model.Groups[iActualGroup].numEdge;
 
                     // Let's do TexCoords
-                    //if (Model.Groups[iActualGroup].texFlag == 1 ||
-                    //    Model.Groups[iActualGroup].offsetTex > 0)       // Can be some poly with texture set to 0 but with UV.
                     if (Model.Groups[iActualGroup].texFlag == 1 ||
-                        Model.Groups[iActualGroup].offsetTex > 0 ||
-                        Model.Hundrets[iActualGroup].shademode == 2)
+                        Model.Groups[iActualGroup].offsetTex > 0)       // Can be some poly with texture set to 0 but with UV.
                     {
                         Model.Groups[iActualGroup].offsetTex = iNumTexCoords;
                         iNumTexCoords += Model.Groups[iActualGroup].numVert;
                     }
-                    else Model.Groups[iActualGroup].offsetTex = 0;
 
                     //if (Model.Groups[iActualGroup].texFlag == 1)
                     //{
@@ -2559,39 +2555,9 @@ namespace KimeraCS
                 }
 
                 // Let's assign latest TexCoords if needed.
-                if (Model.Groups[iActualGroup].texFlag == 1 || Model.Groups[iActualGroup].offsetTex > 0 || Model.Hundrets[iActualGroup].shademode == 2)
+                if (Model.Groups[iActualGroup].texFlag == 1 || Model.Groups[iActualGroup].offsetTex > 0)
                     Model.Groups[iActualGroup].offsetTex = iNumTexCoords;
            }
-
-
-            // THIS HAVE TO BE MODIFIED. IF WE HAVE MOVED THE GROUP (LET'S SAY THE LAST GROUP TO THE TOP)
-            // WE WILL ENCOUNTER PROBLEMS LATER BECAUSE GROUP 0 IS NOT TREATED WHEN REMOVING GROUP
-            // FOR EXAMPLE.
-            //for (gi = iGroupIdx; gi < Model.Header.numGroups; gi++)
-            //{
-            //    Model.Groups[gi] = Model.Groups[gi + 1];
-
-            //    if (gi > 0)
-            //    {
-            //        Model.Groups[gi].offsetVert = Model.Groups[gi - 1].offsetVert + Model.Groups[gi - 1].numVert;
-            //        Model.Groups[gi].offsetPoly = Model.Groups[gi - 1].offsetPoly + Model.Groups[gi - 1].numPoly;
-            //        Model.Groups[gi].offsetEdge = Model.Groups[gi - 1].offsetEdge + Model.Groups[gi - 1].numEdge;
-
-            //        if (Model.Groups[gi - 1].texFlag == 1)
-            //            Model.Groups[gi].offsetTex = Model.Groups[gi - 1].offsetTex + Model.Groups[gi - 1].numVert;
-            //        else
-            //            Model.Groups[gi].offsetTex = Model.Groups[gi - 1].offsetTex;
-            //    }
-            //    else
-            //    {
-            //        Model.Groups[gi].offsetVert = 0;
-            //        Model.Groups[gi].offsetPoly = 0;
-            //        Model.Groups[gi].offsetTex = 0;
-            //        Model.Groups[gi].offsetEdge = 0;
-            //    }
-            //}
-
-            //Array.Resize(ref Model.Groups, Model.Header.numGroups);
 
             ComputeNormals(ref Model);
         }
@@ -3093,7 +3059,7 @@ namespace KimeraCS
             Array.Resize(ref Model.Verts, Model.Header.numVerts);
             Array.Resize(ref Model.Vcolors, Model.Header.numVerts);
 
-            if (Model.Groups[iGroupIdx].texFlag == 1 || Model.Groups[iGroupIdx].offsetTex > 0 || Model.Hundrets[iGroupIdx].shademode == 2)
+            if (Model.Groups[iGroupIdx].texFlag == 1 || Model.Groups[iGroupIdx].offsetTex > 0)
             {
                 Model.Header.numTexCs++;
                 Array.Resize(ref Model.TexCoords, Model.Header.numTexCs);
@@ -3121,7 +3087,7 @@ namespace KimeraCS
                     Model.Vcolors[vi] = Model.Vcolors[vi - 1];
                 }
 
-                if (Model.Groups[iGroupIdx].texFlag == 1 || Model.Groups[iGroupIdx].offsetTex > 0 || Model.Hundrets[iGroupIdx].shademode == 2)
+                if (Model.Groups[iGroupIdx].texFlag == 1 || Model.Groups[iGroupIdx].offsetTex > 0)
                 {
                     baseTexCoords = Model.Groups[iGroupIdx].offsetTex + Model.Groups[iGroupIdx].numVert;
 
@@ -3133,7 +3099,7 @@ namespace KimeraCS
 
                 if (glIsEnabled(glCapability.GL_LIGHTING))
                 {
-                    if (Model.Groups[iGroupIdx].texFlag == 1 || Model.Groups[iGroupIdx].offsetTex > 0 || Model.Hundrets[iGroupIdx].shademode == 2)
+                    if (Model.Groups[iGroupIdx].texFlag == 1 || Model.Groups[iGroupIdx].offsetTex > 0)
                     {
                         //baseNormals = Model.Groups[iGroupIdx + 1].offsetVert;
                         baseNormals = Model.Groups[iNextGroup].offsetVert;
@@ -3149,8 +3115,8 @@ namespace KimeraCS
                 {
                     Model.Groups[iNextGroup].offsetVert++;
 
-                    if ((Model.Groups[iGroupIdx].texFlag == 1 || Model.Groups[iGroupIdx].offsetTex > 0 || Model.Hundrets[iGroupIdx].shademode == 2) &&
-                        (Model.Groups[iNextGroup].texFlag == 1 || Model.Groups[iNextGroup].offsetTex > 0 || Model.Hundrets[iGroupIdx].shademode == 2))
+                    if ((Model.Groups[iGroupIdx].texFlag == 1 || Model.Groups[iGroupIdx].offsetTex > 0) &&
+                        (Model.Groups[iNextGroup].texFlag == 1 || Model.Groups[iNextGroup].offsetTex > 0))
                     {
                         Model.Groups[iNextGroup].offsetTex++;
                     }
