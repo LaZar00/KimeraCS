@@ -1901,7 +1901,7 @@ namespace KimeraCS
             {
                 Model.Polys[pIndex].Verts[vi] = (short)PaintVertex(ref Model, iGroupIdx, Model.Polys[pIndex].Verts[vi], 
                                                                    bR, bG, bB, 
-                                                                   Model.Groups[iGroupIdx].texFlag == 1 || Model.Groups[iGroupIdx].offsetTex > 0 || Model.Hundrets[iGroupIdx].shademode == 2);
+                                                                   Model.Groups[iGroupIdx].texFlag == 1 || Model.Groups[iGroupIdx].offsetTex > 0);
                 //  'Debug.Print "Vert(:", .Verts(vi), ",", Group, ")", obj.Verts(.Verts(vi) + obj.Groups(Group).offVert).x, obj.Verts(.Verts(vi) + obj.Groups(Group).offVert).y, obj.Verts(.Verts(vi) + obj.Groups(Group).offVert).z
 
                 Model.Pcolors[pIndex] = Color.FromArgb(255, bR, bG, bB);
