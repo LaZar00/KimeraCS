@@ -66,7 +66,7 @@ namespace KimeraCS
             public int redBitMask;
             public int greenBitMask;
             public int blueBitMask;
-            public int alphaBitMask;
+            public uint alphaBitMask;
             public int redShift;
             public int greenShift;
             public int blueShift;
@@ -158,7 +158,7 @@ namespace KimeraCS
                             inTEXTexture.redBitMask = memReader.ReadInt32();
                             inTEXTexture.greenBitMask = memReader.ReadInt32();
                             inTEXTexture.blueBitMask = memReader.ReadInt32();
-                            inTEXTexture.alphaBitMask = memReader.ReadInt32();
+                            inTEXTexture.alphaBitMask = memReader.ReadUInt32();
                             inTEXTexture.redShift = memReader.ReadInt32();
                             inTEXTexture.greenShift = memReader.ReadInt32();
                             inTEXTexture.blueShift = memReader.ReadInt32();
@@ -488,7 +488,7 @@ namespace KimeraCS
 
         public static void LoadImageAsTexTexture(string fileName, ref TEX tex)
         {
-            Bitmap bmpLoaded, newBmpLoaded, bmpTexture;
+            Bitmap bmpLoaded, bmpWorker, bmpCnvToARGB32;
 
             if (Path.GetExtension(fileName).ToUpper() == ".TEX" || Path.GetExtension(fileName).Length <= 0)
             {
@@ -502,18 +502,16 @@ namespace KimeraCS
 
                 // We read the image (png/bmp/jpg/gif) into var
                 bmpLoaded = new Bitmap(fileName);
-
-                // We will convert the bitmap to 32RGBA
-                newBmpLoaded = new Bitmap(bmpLoaded);
-                bmpTexture = newBmpLoaded.Clone(new Rectangle(0, 0, newBmpLoaded.Width, newBmpLoaded.Height),
-                                                PixelFormat.Format32bppArgb);
+                bmpWorker = new Bitmap(bmpLoaded);
+                bmpCnvToARGB32 = bmpWorker.Clone(new Rectangle(0, 0, bmpWorker.Width, bmpWorker.Height),
+                                                 PixelFormat.Format32bppArgb);
 
                 // Let's get the TEX texture format
-                GetTEXTextureFromBitmap(ref tex, bmpTexture);
+                GetTEXTextureFromBitmap(ref tex, bmpCnvToARGB32);
 
+                bmpCnvToARGB32.Dispose();
+                bmpWorker.Dispose();
                 bmpLoaded.Dispose();
-                newBmpLoaded.Dispose();
-                bmpTexture.Dispose();
             }
 
             LoadTEXTexture(ref tex);
@@ -532,10 +530,11 @@ namespace KimeraCS
                 return false;
 
             // Check the alpha bytes in the data. Since the data is little-endian, the actual byte order is [BB GG RR AA]
-            for (int p = 3; p < pictureData.Length; p += 4)
+            for (int p = 0; p < pictureData.Length; p += 4)
             {
-                if (pictureData[p] != 255) return true;
+                if (pictureData[p + 3] != 255) return true;
             }
+
             return false;
         }
 
@@ -570,73 +569,132 @@ namespace KimeraCS
 
                 outTEX.version = 1;
                 outTEX.unk1 = 0;
+
                 outTEX.ColorKeyFlag = 0;
+                //outTEX.ColorKeyFlag = 1;
+
                 outTEX.unk2 = bHasAlpha ? 1 : 0;
+                //outTEX.unk2 = 1;
+
                 outTEX.unk3 = 0;
+                //outTEX.unk3 = 5;
+
                 outTEX.minBitsPerColor = 8;
+                //outTEX.minBitsPerColor = bits;
+
                 outTEX.maxBitsPerColor = 8;
+                
                 outTEX.minAlphaBits = 8;
+                //outTEX.minAlphaBits = 0;
                 outTEX.maxAlphaBits = 8;
+
                 outTEX.minBitsPerPixel = 32;
+                //outTEX.minBitsPerPixel = 8;
                 outTEX.maxBitsPerPixel = 32;
                 outTEX.unk4 = 0;
 
-                if (palSize > 0) outTEX.numPalettes = 1;
-                else outTEX.numPalettes = 0;
-
+                outTEX.numPalettes = palSize > 0 ? 1 : 0;
                 outTEX.numColorsPerPalette = palSize;
+
                 outTEX.bitDepth = bits;
                 outTEX.width = pictureInfo.bmiHeader.biWidth;
                 outTEX.height = pictureInfo.bmiHeader.biHeight;
 
-                if (bits < 8) outTEX.pitch = outTEX.width;
-                else outTEX.pitch = (bits * outTEX.width) / 8;
+                outTEX.pitch = bits < 8 ? outTEX.width : (bits * outTEX.width) / 8;
 
                 outTEX.unk5 = 0;
 
-                if (bits <= 8)
-                {
-                    outTEX.hasPal = 1;
-                    outTEX.bitsPerIndex = 8;
-                }
-                else
-                {
-                    outTEX.hasPal = 0;
-                    outTEX.bitsPerIndex = 0;
-                }
+                outTEX.hasPal = bits <= 8 ? 1 : 0;
+                outTEX.bitsPerIndex = bits <= 8 ? 8 : 0;
 
                 outTEX.indexedTo8BitsFlag = 0;
                 outTEX.paletteSize = palSize;
                 outTEX.numColorsPerPalette2 = palSize;
+
                 outTEX.runtimeData = 0;
+                //outTEX.runtimeData = 19752016;
 
                 outTEX.bitsPerPixel = bits;
                 outTEX.bytesPerPixel = bits < 8 ? 1 : bits / 8;
 
-                outTEX.numRedBits = 8;
-                outTEX.numGreenBits = 8;
-                outTEX.numBlueBits = 8;
-                outTEX.numAlphaBits = 8;
-                outTEX.redBitMask = 0xFF << 16;
-                outTEX.greenBitMask = 0xFF << 8;
-                outTEX.blueBitMask = 0xFF;
-                outTEX.alphaBitMask = 0xFF << 24;
-                outTEX.redShift = 0x10;
-                outTEX.greenShift = 8;
-                outTEX.blueShift = 0;
-                outTEX.alphaShift = 0x18;
+                switch (bits)
+                {
+                    case 16:
+                        outTEX.numRedBits = 5;
+                        outTEX.numGreenBits = 5;
+                        outTEX.numBlueBits = 5;
+                        outTEX.numAlphaBits = 0;
+                        outTEX.redBitMask = 0x7E00;
+                        outTEX.greenBitMask = 0x3E0;
+                        outTEX.blueBitMask = 0x1F;
+                        outTEX.alphaBitMask = 0;
+                        outTEX.redShift = 10;
+                        outTEX.greenShift = 5;
+                        outTEX.blueShift = 0;
+                        outTEX.alphaShift = 0;
+                        break;
+
+                    case 24:
+                        outTEX.numRedBits = 8;
+                        outTEX.numGreenBits = 8;
+                        outTEX.numBlueBits = 8;
+                        outTEX.numAlphaBits = 0;
+                        outTEX.redBitMask = 0xFF0000;
+                        outTEX.greenBitMask = 0xFF00;
+                        outTEX.blueBitMask = 0xFF;
+                        outTEX.alphaBitMask = 0;
+                        outTEX.redShift = 16;
+                        outTEX.greenShift = 8;
+                        outTEX.blueShift = 0;
+                        outTEX.alphaShift = 0;
+                        break;
+
+                    case 32:
+                        outTEX.numRedBits = 8;
+                        outTEX.numGreenBits = 8;
+                        outTEX.numBlueBits = 8;
+                        outTEX.numAlphaBits = 8;
+                        outTEX.redBitMask = 0xFF0000;
+                        outTEX.greenBitMask = 0xFF00;
+                        outTEX.blueBitMask = 0xFF;
+                        outTEX.alphaBitMask = 0xFF000000;
+                        outTEX.redShift = 16;
+                        outTEX.greenShift = 8;
+                        outTEX.blueShift = 0;
+                        outTEX.alphaShift = 24;
+                        break;
+                }
+
+                //outTEX.numRedBits = 8;
+                //outTEX.numGreenBits = 8;
+                //outTEX.numBlueBits = 8;
+                //outTEX.numAlphaBits = 8;
+                //outTEX.redBitMask = 0xFF << 16;
+                //outTEX.greenBitMask = 0xFF << 8;
+                //outTEX.blueBitMask = 0xFF;
+                //outTEX.alphaBitMask = 0xFF << 24;
+                //outTEX.redShift = 0x10;
+                //outTEX.greenShift = 8;
+                //outTEX.blueShift = 0;
+                //outTEX.alphaShift = 0x18;
                 outTEX.red8 = 8;
                 outTEX.green8 = 8;
                 outTEX.blue8 = 8;
                 outTEX.alpha8 = 8;
+
                 outTEX.redMax = 0xFF;
                 outTEX.greenMax = 0xFF;
                 outTEX.blueMax = 0xFF;
                 outTEX.alphaMax = 0xFF;
+                //outTEX.redMax = Convert.ToInt32(Math.Pow(2, outTEX.numRedBits) - 1);
+                //outTEX.greenMax = Convert.ToInt32(Math.Pow(2, outTEX.numGreenBits) - 1);
+                //outTEX.blueMax = Convert.ToInt32(Math.Pow(2, outTEX.numBlueBits) - 1);
+                //outTEX.alphaMax = Convert.ToInt32(Math.Pow(2, outTEX.numAlphaBits) - 1);
 
                 outTEX.colorKeyArrayFlag = 0;
                 outTEX.runtimeData2 = 0;
                 outTEX.referenceAlpha = 255;
+
                 outTEX.runtimeData3 = 4;
                 outTEX.unk6 = 0;
                 outTEX.paletteIndex = 0;
@@ -648,17 +706,22 @@ namespace KimeraCS
                 outTEX.unk10 = 0;
                 //outTEX.unk11 = 0;
 
+                //outTEX.unk6 = 4;
+                //outTEX.unk7 = 1;
+                //outTEX.paletteIndex = 0;
+                //outTEX.runtimeData3 = 34546076;
+                //outTEX.runtimeData4 = 0;
+                //outTEX.runtimeData5 = 0;
+                //outTEX.unk8 = 0;
+                //outTEX.unk9 = 480;
+                //outTEX.unk10 = 320;
+                //outTEX.unk11 = 512;
+
                 lineLength = outTEX.width * outTEX.bitsPerPixel;
+                linePad = lineLength % 32 == 0 ? 0 : 32 * ((lineLength / 32) + 1) - 8 * (lineLength / 8);
 
-                if (lineLength % 32 == 0) linePad = 0;
-                else linePad = 32 * ((lineLength / 32) + 1) - 8 * (lineLength / 8);
-
-                if (linePad == 0) linePadUseful = 0;
-                else linePadUseful = lineLength - 8 * (lineLength / 8);
-
-                if (linePad > 0 && linePad < 8) linePadBytes = 1;
-                else linePadBytes = linePad / 8;
-
+                linePadUseful = linePad == 0 ? 0 : lineLength + (-8 * (lineLength / 8));
+                linePadBytes = linePad > 0 && linePad < 8 ? 1 : linePad / 8;
                 lineLengthBytes = lineLength / 8 + linePadBytes;
 
                 texBitmapSize = outTEX.width * outTEX.height * outTEX.bytesPerPixel;
@@ -667,10 +730,10 @@ namespace KimeraCS
                 if (bits == 1 || bits == 4)
                 {
                     ti = 0;
-                    shift = (short)Math.Pow(2, bits);
-                    mask = (short)(shift - 1);
-                    parts = (short)((8 / bits) - 1);
-                    parts_left = (short)((linePadUseful / bits) - 1);
+                    shift = Convert.ToInt16(Math.Pow(2, bits));
+                    mask = Convert.ToInt16(shift - 1);
+                    parts = Convert.ToInt16((8 / bits) - 1);
+                    parts_left = Convert.ToInt16((linePadUseful / bits) - 1);
 
                     for (li = outTEX.height - 2; li >= 0; li--)
                     {
@@ -721,6 +784,7 @@ namespace KimeraCS
 
                     for (i = 0; i < outTEX.numColorsPerPalette; i++)
                     {
+                        outTEX.palette[(4 * i) + 3] = 0xFF;
                         outTEX.palette[(4 * i) + 2] = pictureInfo.bmiColors[i].rgbRed;
                         outTEX.palette[(4 * i) + 1] = pictureInfo.bmiColors[i].rgbGreen;
                         outTEX.palette[(4 * i)] = pictureInfo.bmiColors[i].rgbBlue;
