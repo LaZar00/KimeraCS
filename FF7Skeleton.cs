@@ -141,6 +141,7 @@ namespace KimeraCS
             }
             catch (Exception ex)
             {
+                MessageBox.Show(ex.Message, "Exception", MessageBoxButtons.OK);
                 iloadSkeletonResult = -1;  // Error loading skeleton
             }
 
