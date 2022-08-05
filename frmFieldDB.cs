@@ -62,6 +62,8 @@ namespace KimeraCS
             if (strLocalAnimName == "") lbAnimation.SetSelected(0, true);
             else lbAnimation.SetSelected(lbAnimation.Items.IndexOf(strLocalAnimName), true);
 
+            cbModel.Select();
+            cbModel.SelectAll();
         }
 
         private void btnSaveFieldDataDir_Click(object sender, EventArgs e)
@@ -103,7 +105,7 @@ namespace KimeraCS
             fbdFieldDataDirectory.Dispose();
         }
 
-        private void cbModel_SelectedValueChanged(object sender, EventArgs e)
+        public void UpdatelbAnimation()
         {
             int ai, ni;
 
@@ -123,6 +125,26 @@ namespace KimeraCS
 
             strLocalModelName = cbModel.Text;
             lbAnimation.SetSelected(0, true);
+
+            cbModel.Select();
+            cbModel.SelectAll();
+        }
+
+        private void cbModel_SelectedValueChanged(object sender, EventArgs e)
+        {
+            UpdatelbAnimation();
+        }
+
+        private void cbModel_TextChanged(object sender, EventArgs e)
+        {
+            int iModelIdx;
+
+            iModelIdx = cbModel.Items.IndexOf(cbModel.Text.ToUpper());
+
+            if (iModelIdx >= 0)
+            {
+                cbModel.SelectedIndex = iModelIdx;
+            }
         }
 
         private void frmFieldDB_FormClosed(object sender, FormClosedEventArgs e)

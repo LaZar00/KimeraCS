@@ -65,6 +65,7 @@ namespace KimeraCS
             this.cbModel.Size = new System.Drawing.Size(173, 24);
             this.cbModel.TabIndex = 1;
             this.cbModel.SelectedValueChanged += new System.EventHandler(this.cbModel_SelectedValueChanged);
+            this.cbModel.TextChanged += new System.EventHandler(this.cbModel_TextChanged);
             // 
             // gbModelNames
             // 
@@ -172,7 +173,7 @@ namespace KimeraCS
             // 
             this.btnClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.btnClose.Location = new System.Drawing.Point(277, 377);
-            this.btnClose.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnClose.Margin = new System.Windows.Forms.Padding(4);
             this.btnClose.Name = "btnClose";
             this.btnClose.Size = new System.Drawing.Size(251, 42);
             this.btnClose.TabIndex = 11;
@@ -203,6 +204,7 @@ namespace KimeraCS
             this.DoubleBuffered = true;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.KeyPreview = true;
             this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
