@@ -529,7 +529,7 @@ namespace KimeraCS
                     }
                 }
             }
-            catch
+            catch (Exception e)
             {
                 iResult = -1;
             }
@@ -961,7 +961,7 @@ namespace KimeraCS
         //  ---------------------------------------------------------------------------------------------------
         public static int GetNumFieldBones(string fileAnimFullPath)
         {
-            int numBones = 0;
+            int numBones = -1;
             byte[] fileBuffer;
             string strFileName;
 
@@ -978,12 +978,15 @@ namespace KimeraCS
             // Read All *.A Model file into memory for get numBones
             fileBuffer = File.ReadAllBytes(fileAnimFullPath);
 
-            using (var fileMemory = new MemoryStream(fileBuffer))
+            if (fileBuffer.Length > 0 && Path.GetFileNameWithoutExtension(fileAnimFullPath).Length > 0)
             {
-                using (var memReader = new BinaryReader(fileMemory))
+                using (var fileMemory = new MemoryStream(fileBuffer))
                 {
-                    memReader.BaseStream.Position = 0x8;
-                    numBones = memReader.ReadInt32();
+                    using (var memReader = new BinaryReader(fileMemory))
+                    {
+                        memReader.BaseStream.Position = 0x8;
+                        numBones = memReader.ReadInt32();
+                    }
                 }
             }
 
@@ -992,11 +995,12 @@ namespace KimeraCS
 
         public static bool SameFieldAnimNumBones(string strFileFieldAnimation, FieldSkeleton fSkeleton)
         {
-            int numFieldAnimBones = GetNumFieldBones(strFileFieldAnimation);
+            int numFieldAnimBones;
 
-            //if (fSkeleton.nBones == ) return true;
+            numFieldAnimBones = GetNumFieldBones(strFileFieldAnimation);
+
             if ((fSkeleton.nBones == 1 && numFieldAnimBones == 0) || 
-                (fSkeleton.nBones == GetNumFieldBones(strFileFieldAnimation))) return true;
+                (fSkeleton.nBones == numFieldAnimBones)) return true;
             else return false;
         }
 
