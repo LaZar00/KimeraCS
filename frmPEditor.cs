@@ -430,50 +430,57 @@ namespace KimeraCS
 
         public void panelEditorPModel_MouseWheel(object sender, MouseEventArgs e)
         {
-            Point3D p_temp;
-            Point3D p_temp2;
+            //Point3D p_temp;
+            //Point3D p_temp2;
 
-            float aux_y;
-            float tmpDIST;
+            //float aux_y;
+            //float tmpDIST;
 
-            if (ActiveForm != this) return;
+            //if (ActiveForm != this) return;
 
-            if (loadedPModel)
-            {
-                tmpDIST = DISTPE;
+            //if (loadedPModel)
+            //{
+            //    tmpDIST = DISTPE;
 
-                if (controlPressedQ)
-                    DISTPE = DISTPE + (e.Delta * ComputeDiameter(EditedPModel.BoundingBox)) / 10000;
-                else
-                    DISTPE = DISTPE + (e.Delta * ComputeDiameter(EditedPModel.BoundingBox)) / 1000;
+            //    if (controlPressedQ)
+            //        DISTPE = DISTPE + (e.Delta * ComputeDiameter(EditedPModel.BoundingBox)) / 10000;
+            //    else
+            //        DISTPE = DISTPE + (e.Delta * ComputeDiameter(EditedPModel.BoundingBox)) / 1000;
 
 
-                SetCameraModelView(panXPE, panYPE, panZPE + DISTPE, alphaPE, betaPE, gammaPE, 1, 1, 1);
+            //    SetCameraModelView(panXPE, panYPE, panZPE + DISTPE, alphaPE, betaPE, gammaPE, 1, 1, 1);
 
-                aux_y = panYPE;
+            //    aux_y = panYPE;
 
-                p_temp2 = new Point3D();
-                p_temp = new Point3D(x_lastPE, y_lastPE, GetDepthZ(p_temp2));
+            //    p_temp2 = new Point3D();
+            //    p_temp = new Point3D(x_lastPE, y_lastPE, GetDepthZ(p_temp2));
 
-                p_temp = GetUnProjectedCoords(p_temp);
+            //    p_temp = GetUnProjectedCoords(p_temp);
 
-                panXPE = panXPE + p_temp.x;
-                panYPE = panYPE + p_temp.y;
-                panZPE = panZPE + p_temp.z;
+            //    panXPE = panXPE + p_temp.x;
+            //    panYPE = panYPE + p_temp.y;
+            //    panZPE = panZPE + p_temp.z;
 
-                p_temp.x = x_lastPE;
-                p_temp.y = y_lastPE;
-                p_temp.z = GetDepthZ(p_temp2);
-                p_temp = GetUnProjectedCoords(p_temp);
+            //    p_temp.x = x_lastPE;
+            //    p_temp.y = y_lastPE;
+            //    p_temp.z = GetDepthZ(p_temp2);
+            //    p_temp = GetUnProjectedCoords(p_temp);
 
-                panXPE = panXPE - p_temp.x;
-                panYPE = panYPE - p_temp.y;
-                panZPE = panZPE - p_temp.z;
+            //    panXPE = panXPE - p_temp.x;
+            //    panYPE = panYPE - p_temp.y;
+            //    panZPE = panZPE - p_temp.z;
 
-                SetCameraModelView(panXPE, panYPE, panZPE + DISTPE, alphaPE, betaPE, gammaPE, 1, 1, 1);
+            //}
 
-                panelEditorPModel_Paint(null, null);
-            }
+            if (controlPressedQ)
+                DISTPE = DISTPE + (e.Delta * ComputeDiameter(EditedPModel.BoundingBox)) / 10000;
+            else
+                DISTPE = DISTPE + (e.Delta * ComputeDiameter(EditedPModel.BoundingBox)) / 1000;
+
+            SetCameraModelView(panXPE, panYPE, panZPE + DISTPE, alphaPE, betaPE, gammaPE, 1, 1, 1);
+
+            panelEditorPModel_Paint(null, null);
+
         }
 
         public void panelEditorPModel_Paint(object sender, PaintEventArgs e)
@@ -1188,6 +1195,9 @@ namespace KimeraCS
 
                 EditedPModel.Groups[lbGroups.SelectedIndex].HiddenQ =
                     !EditedPModel.Groups[lbGroups.SelectedIndex].HiddenQ;
+
+                //EditedPModel.Polys[173].Verts[1] = 1;
+                //EditedPModel.Polys[174].Verts[2] = 3;
 
                 FillGroupsList();
 
@@ -3609,8 +3619,8 @@ namespace KimeraCS
                         panXPE -= tmpPoint3D.x;
                         panYPE -= tmpPoint3D.y;
                         panZPE -= tmpPoint3D.z;
-
                     }
+
                     break;
             }
         }
