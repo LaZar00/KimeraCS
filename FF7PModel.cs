@@ -2462,10 +2462,11 @@ namespace KimeraCS
         public static void RemoveGroup(ref PModel Model, int iGroupIdx)
         {
             //int gi, gi2, giActualGroup, giPrevGroup, giMinOffPoly, giMaxOffPoly;
-            int iActualGroup, iNextGroup, iNumTexCoords;
+            int iActualGroup, iNextGroup, iNumTexCoords, iRealGID;
             bool bGroupHasOffsetPolyZero;
 
             bGroupHasOffsetPolyZero = Model.Groups[iGroupIdx].offsetPoly == 0;
+            iRealGID = Model.Groups[iGroupIdx].realGID;
 
             if (Model.Groups[iGroupIdx].numVert > 0)
             {
@@ -2495,11 +2496,13 @@ namespace KimeraCS
                 Model.Groups[0].offsetPoly = 0;
                 Model.Groups[0].offsetEdge = 0;
                 Model.Groups[0].offsetTex = 0;
+                Model.Groups[0].realGID = 0;
             }
             else
             {
                 // As we can change the group order, we need to check the group by the
                 // number of polys.
+
                 // Check if we want to remove a group of offset zero or not.
                 if (bGroupHasOffsetPolyZero)
                 {
@@ -2511,10 +2514,13 @@ namespace KimeraCS
                     Model.Groups[iGroupIdx].offsetPoly = 0;
                     Model.Groups[iGroupIdx].offsetEdge = 0;
                     Model.Groups[iGroupIdx].offsetTex = 0;
+                    Model.Groups[iGroupIdx].realGID = 0;
+                    iRealGID = 1;
                 }
                 else
                 {
                     // Else we need to find the group with polys 0.
+                   
                     iGroupIdx = GetNextGroup(Model, -1);
                 }
 
@@ -2549,6 +2555,10 @@ namespace KimeraCS
                     //    else
                     //        Model.Groups[iNextGroup].offsetTex = Model.Groups[iNextGroup].offsetTex;
                     //}
+
+                    // Update realGID of the group
+                    Model.Groups[iNextGroup].realGID = iRealGID;
+                    iRealGID++;
 
                     iActualGroup = iNextGroup;
                     iNextGroup = GetNextGroup(Model, iActualGroup);
