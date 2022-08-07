@@ -1657,18 +1657,29 @@ namespace KimeraCS
             }
         }
 
-        public static void DrawPModelEditor(bool bEnableLighting)
+
+        public static void DrawPModelEditor(bool bEnableLighting, float rotateAlpha, float rotateBeta, float rotateGamma, PictureBox pbIn)
         {
             double[] rot_mat = new double[16];
 
             Point3D p_min = new Point3D();
             Point3D p_max = new Point3D();
 
-            ComputePModelBoundingBox(EditedPModel, ref p_min, ref p_max);
+            glViewport(0, 0, pbIn.ClientRectangle.Width,
+                             pbIn.ClientRectangle.Height);
+            ClearPanel();
 
-            SetCameraAroundModel(ref p_min, ref p_max,
-                                 panXPE, panYPE, panZPE + DISTPE,
-                                 alphaPE, betaPE, gammaPE, 1, 1, 1);
+            SetCameraPModel(EditedPModel,
+                            panXPE, panYPE, panZPE + DISTPE,
+                            alphaPE, betaPE, gammaPE,
+                            1, 1, 1);
+
+            glMatrixMode(glMatrixModeList.GL_MODELVIEW);
+            glPushMatrix();
+
+            ConcatenateCameraModelView(repXPE, repYPE, repZPE,
+                                       rotateAlpha, rotateBeta, rotateGamma,
+                                       rszXPE, rszYPE, rszZPE);
 
             if (bEnableLighting)
             {
@@ -1689,22 +1700,7 @@ namespace KimeraCS
             }
             else glDisable(glCapability.GL_LIGHTING);
 
-            glMatrixMode(glMatrixModeList.GL_MODELVIEW);
-            glPushMatrix();
-
-            glTranslatef(EditedPModel.repositionX,
-                         EditedPModel.repositionY,
-                         EditedPModel.repositionZ);
-
-            BuildRotationMatrixWithQuaternionsXYZ(EditedPModel.rotateAlpha,
-                                                  EditedPModel.rotateBeta,
-                                                  EditedPModel.rotateGamma,
-                                                  ref rot_mat);
-
-            glMultMatrixd(rot_mat);
-            glScalef(EditedPModel.resizeX,
-                     EditedPModel.resizeY,
-                     EditedPModel.resizeZ);
+            SetDefaultOGLRenderState();
 
             switch (drawMode)
             {
@@ -1724,9 +1720,7 @@ namespace KimeraCS
                 case K_VCOLORS:
                     DrawPModel(ref EditedPModel, ref tex_ids, true);
                     break;
-            }
-
-            glPopMatrix();
+            }            
         }
 
 

@@ -472,6 +472,11 @@ namespace KimeraCS
 
             //}
 
+            //SetCameraModelView(panXPE, panYPE, panZPE + DISTPE, alphaPE, betaPE, gammaPE, 1, 1, 1);
+
+            //panelEditorPModel_Paint(null, null);
+
+
             if (controlPressedQ)
                 DISTPE = DISTPE + (e.Delta * ComputeDiameter(EditedPModel.BoundingBox)) / 10000;
             else
@@ -490,14 +495,11 @@ namespace KimeraCS
                 if (GetOGLContext() != OGLContextPEditor)
                     SetOGLContext(panelEditorPModelDC, OGLContextPEditor);
 
-                SetOGLEditorSettings();
+                //SetOGLEditorSettings();
 
-                glViewport(0, 0, panelEditorPModel.ClientRectangle.Width, 
-                                 panelEditorPModel.ClientRectangle.Height);
-                ClearPanel();
-                SetDefaultOGLRenderState();
-
-                DrawPModelEditor(chkEnableLighting.Checked);
+                DrawPModelEditor(chkEnableLighting.Checked, 
+                                 hsbRotateAlpha.Value, hsbRotateBeta.Value, hsbRotateGamma.Value,
+                                 panelEditorPModel);
 
                 if (chkShowPlane.Checked) DrawPlane(ref planeTransformation, ref planeOriginalPoint1,
                                                                              ref planeOriginalPoint2,
@@ -1195,9 +1197,6 @@ namespace KimeraCS
 
                 EditedPModel.Groups[lbGroups.SelectedIndex].HiddenQ =
                     !EditedPModel.Groups[lbGroups.SelectedIndex].HiddenQ;
-
-                //EditedPModel.Polys[173].Verts[1] = 1;
-                //EditedPModel.Polys[174].Verts[2] = 3;
 
                 FillGroupsList();
 
