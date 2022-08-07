@@ -650,7 +650,7 @@ namespace KimeraCS
             model_radius = CalculateDistance(p_min, p_max) / 2;
             distance_origin = CalculateDistance(center_model, origin);
             scene_radius = model_radius + distance_origin;
-            gluPerspective(60, width / height, Math.Max(0.1, -cZ - scene_radius), Math.Max(0.1, -cZ + scene_radius));
+            gluPerspective(60, (float)width / height, Math.Max(0.1, -cZ - scene_radius), Math.Max(0.1, -cZ + scene_radius));
 
             SetCameraModelView(cX, cY, cZ, alpha, beta, gamma, rszX, rszY, rszZ);
         }
