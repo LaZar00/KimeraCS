@@ -58,7 +58,7 @@ namespace KimeraCS
 
  
 
-        public const string STR_APPNAME = "KimeraCS 1.4h";
+        public const string STR_APPNAME = "KimeraCS 1.4k";
 
         public static int modelWidth;
         public static int modelHeight;
@@ -5958,10 +5958,17 @@ namespace KimeraCS
                 switch (modelType)
                 {
                     case K_HRC_SKELETON:
+                        if (fSkeleton.bones[SelectedBone].fRSDResources[SelectedBonePiece].textures[cbTextureSelect.SelectedIndex].texID == 0xFFFFFFFF)
+                            return;
+
                         frmTexViewer = new frmTextureViewer(this, fSkeleton.bones[SelectedBone].fRSDResources[SelectedBonePiece].Model);
+
                         break;
 
                     case K_AA_SKELETON:
+                    case K_MAGIC_SKELETON:
+                        if (bSkeleton.textures[cbTextureSelect.SelectedIndex].texID == 0xFFFFFFFF) return;
+
                         if (bSkeleton.wpModels.Count > 0 && SelectedBone == bSkeleton.nBones)
                         {
                             frmTexViewer = new frmTextureViewer(this, bSkeleton.wpModels[cbWeapon.SelectedIndex]);
@@ -5971,10 +5978,6 @@ namespace KimeraCS
                         {
                             frmTexViewer = new frmTextureViewer(this, bSkeleton.bones[SelectedBone].Models[SelectedBonePiece]);
                         }
-                        break;
-
-                    case K_MAGIC_SKELETON:
-                        frmTexViewer = new frmTextureViewer(this, bSkeleton.bones[SelectedBone].Models[SelectedBonePiece]);
                         break;
                 }
 
