@@ -379,15 +379,10 @@ namespace KimeraCS
                 pictureInfo.bmiHeader.biCompression = BitmapCompression.BI_RGB;
 
                 lineLength = pictureInfo.bmiHeader.biWidth * (int)pictureInfo.bmiHeader.biBitCount;
+                linePad = lineLength % 32 == 0 ? 0 : 32 * ((lineLength / 32) + 1) - 8 * (lineLength / 8);
 
-                if (lineLength % 32 == 0) linePad = 0;
-                else linePad = 32 * ((lineLength / 32) + 1) - 8 * (lineLength / 8);
-
-                if (linePad == 0) linePadUseful = 0;
-                else linePadUseful = lineLength - 8 * (lineLength / 8);
-
-                if (linePad > 0 && linePad < 8) linePadBytes = 1;
-                else linePadBytes = linePad / 8;
+                linePadUseful = linePad == 0 ? 0 : lineLength - 8 * (lineLength / 8);
+                linePadBytes = linePad > 0 && linePad < 8 ? 1 : linePad / 8;
 
                 lineLengthBytes = lineLength / 8 + linePadBytes;
 
@@ -397,14 +392,10 @@ namespace KimeraCS
                 pictureInfo.bmiHeader.biXPelsPerMeter = 0;
                 pictureInfo.bmiHeader.biYPelsPerMeter = 0;
 
-                if (inTEXTexture.ColorKeyFlag == 1) pictureInfo.bmiHeader.biClrUsed = (uint)inTEXTexture.paletteSize;
-                else pictureInfo.bmiHeader.biClrUsed = 0;
-
+                pictureInfo.bmiHeader.biClrUsed = inTEXTexture.ColorKeyFlag == 1 ? (uint)inTEXTexture.paletteSize : 0;
                 pictureInfo.bmiHeader.biClrImportant = pictureInfo.bmiHeader.biClrUsed;
 
-                if (pictureInfo.bmiHeader.biBitCount == BitCount.BitPerPixel1BPP ||
-                    pictureInfo.bmiHeader.biBitCount == BitCount.BitPerPixel4BPP ||
-                    pictureInfo.bmiHeader.biBitCount == BitCount.BitPerPixel8BPP)
+                if (pictureInfo.bmiHeader.biBitCount <= BitCount.BitPerPixel8BPP)
                 {
                     pictureInfo.bmiColors = new RGBQuad[256];
 
@@ -488,7 +479,7 @@ namespace KimeraCS
 
         public static void LoadImageAsTexTexture(string fileName, ref TEX tex)
         {
-            Bitmap bmpLoaded, bmpWorker, bmpCnvToARGB32;
+            DirectBitmap tmpDirectBitmap;
 
             if (Path.GetExtension(fileName).ToUpper() == ".TEX" || Path.GetExtension(fileName).Length <= 0)
             {
@@ -501,17 +492,12 @@ namespace KimeraCS
                 tex.TEXfileName = Path.GetFileNameWithoutExtension(fileName).ToUpper() + ".TEX";
 
                 // We read the image (png/bmp/jpg/gif) into var
-                bmpLoaded = new Bitmap(fileName);
-                bmpWorker = new Bitmap(bmpLoaded);
-                bmpCnvToARGB32 = bmpWorker.Clone(new Rectangle(0, 0, bmpWorker.Width, bmpWorker.Height),
-                                                 PixelFormat.Format32bppArgb);
+                tmpDirectBitmap = new DirectBitmap(fileName);
 
                 // Let's get the TEX texture format
-                GetTEXTextureFromBitmap(ref tex, bmpCnvToARGB32);
+                GetTEXTextureFromBitmap(ref tex, tmpDirectBitmap);
 
-                bmpCnvToARGB32.Dispose();
-                bmpWorker.Dispose();
-                bmpLoaded.Dispose();
+                tmpDirectBitmap.Dispose();
             }
 
             LoadTEXTexture(ref tex);
@@ -538,8 +524,7 @@ namespace KimeraCS
             return false;
         }
 
-        //public static void GetTEXTextureFromBitmap(ref TEX outTEX, IntPtr hDC, IntPtr hBMP)
-        public static void GetTEXTextureFromBitmap(ref TEX outTEX, Bitmap bmpTexture)
+        public static void GetTEXTextureFromBitmap(ref TEX outTEX, DirectBitmap bmpTexture)
         {
             int li, si, ti, pi, palSize, texBitmapSize, i;
             long lineLength, lineLengthBytes, linePad, linePadUseful, linePadBytes, line_end;
@@ -561,7 +546,7 @@ namespace KimeraCS
 
                 ReleaseDC(IntPtr.Zero, mDC);
 
-                bHasAlpha = IsAlphaBitmap(bmpTexture, pictureData);
+                bHasAlpha = IsAlphaBitmap(bmpTexture.Bitmap, pictureData);
 
                 bits = (short)pictureInfo.bmiHeader.biBitCount;
                 palSize = 0;
@@ -571,25 +556,17 @@ namespace KimeraCS
                 outTEX.unk1 = 0;
 
                 outTEX.ColorKeyFlag = 0;
-                //outTEX.ColorKeyFlag = 1;
 
                 outTEX.unk2 = bHasAlpha ? 1 : 0;
-                //outTEX.unk2 = 1;
-
                 outTEX.unk3 = 0;
-                //outTEX.unk3 = 5;
 
                 outTEX.minBitsPerColor = 8;
-                //outTEX.minBitsPerColor = bits;
+                outTEX.maxBitsPerColor = 8;              
 
-                outTEX.maxBitsPerColor = 8;
-                
                 outTEX.minAlphaBits = 8;
-                //outTEX.minAlphaBits = 0;
                 outTEX.maxAlphaBits = 8;
 
                 outTEX.minBitsPerPixel = 32;
-                //outTEX.minBitsPerPixel = 8;
                 outTEX.maxBitsPerPixel = 32;
                 outTEX.unk4 = 0;
 
@@ -612,7 +589,6 @@ namespace KimeraCS
                 outTEX.numColorsPerPalette2 = palSize;
 
                 outTEX.runtimeData = 0;
-                //outTEX.runtimeData = 19752016;
 
                 outTEX.bitsPerPixel = bits;
                 outTEX.bytesPerPixel = bits < 8 ? 1 : bits / 8;
@@ -665,18 +641,6 @@ namespace KimeraCS
                         break;
                 }
 
-                //outTEX.numRedBits = 8;
-                //outTEX.numGreenBits = 8;
-                //outTEX.numBlueBits = 8;
-                //outTEX.numAlphaBits = 8;
-                //outTEX.redBitMask = 0xFF << 16;
-                //outTEX.greenBitMask = 0xFF << 8;
-                //outTEX.blueBitMask = 0xFF;
-                //outTEX.alphaBitMask = 0xFF << 24;
-                //outTEX.redShift = 0x10;
-                //outTEX.greenShift = 8;
-                //outTEX.blueShift = 0;
-                //outTEX.alphaShift = 0x18;
                 outTEX.red8 = 8;
                 outTEX.green8 = 8;
                 outTEX.blue8 = 8;
@@ -686,10 +650,6 @@ namespace KimeraCS
                 outTEX.greenMax = 0xFF;
                 outTEX.blueMax = 0xFF;
                 outTEX.alphaMax = 0xFF;
-                //outTEX.redMax = Convert.ToInt32(Math.Pow(2, outTEX.numRedBits) - 1);
-                //outTEX.greenMax = Convert.ToInt32(Math.Pow(2, outTEX.numGreenBits) - 1);
-                //outTEX.blueMax = Convert.ToInt32(Math.Pow(2, outTEX.numBlueBits) - 1);
-                //outTEX.alphaMax = Convert.ToInt32(Math.Pow(2, outTEX.numAlphaBits) - 1);
 
                 outTEX.colorKeyArrayFlag = 0;
                 outTEX.runtimeData2 = 0;
@@ -705,17 +665,6 @@ namespace KimeraCS
                 outTEX.unk9 = 0;
                 outTEX.unk10 = 0;
                 //outTEX.unk11 = 0;
-
-                //outTEX.unk6 = 4;
-                //outTEX.unk7 = 1;
-                //outTEX.paletteIndex = 0;
-                //outTEX.runtimeData3 = 34546076;
-                //outTEX.runtimeData4 = 0;
-                //outTEX.runtimeData5 = 0;
-                //outTEX.unk8 = 0;
-                //outTEX.unk9 = 480;
-                //outTEX.unk10 = 320;
-                //outTEX.unk11 = 512;
 
                 lineLength = outTEX.width * outTEX.bitsPerPixel;
                 linePad = lineLength % 32 == 0 ? 0 : 32 * ((lineLength / 32) + 1) - 8 * (lineLength / 8);
