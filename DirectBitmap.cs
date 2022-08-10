@@ -16,6 +16,8 @@ namespace KimeraCS
         public bool Disposed { get; private set; }
         public int Height { get; private set; }
         public int Width { get; private set; }
+        public int BitsPerPixel { get; private set; }
+        public int Stride { get; private set; }
 
         protected GCHandle BitsHandle { get; private set; }
 
@@ -25,7 +27,117 @@ namespace KimeraCS
             Height = height;
             Bits = new Int32[width * height];
             BitsHandle = GCHandle.Alloc(Bits, GCHandleType.Pinned);
+
             Bitmap = new Bitmap(width, height, width * 4, PixelFormat.Format32bppPArgb, BitsHandle.AddrOfPinnedObject());
+
+            Rectangle rect = new Rectangle(0, 0, Bitmap.Width, Bitmap.Height);
+            System.Drawing.Imaging.BitmapData bmpData =
+                Bitmap.LockBits(rect, System.Drawing.Imaging.ImageLockMode.ReadWrite,
+                Bitmap.PixelFormat);
+
+            Stride = bmpData.Stride;
+
+            switch(bmpData.PixelFormat)
+            {
+                case PixelFormat.Format1bppIndexed:
+                    BitsPerPixel = 1;
+                    break;
+
+                case PixelFormat.Format4bppIndexed:
+                    BitsPerPixel = 4;
+                    break;
+
+                case PixelFormat.Format8bppIndexed:
+                    BitsPerPixel = 8;
+                    break;
+
+                case PixelFormat.Format16bppGrayScale:
+                case PixelFormat.Format16bppArgb1555:
+                case PixelFormat.Format16bppRgb555:
+                case PixelFormat.Format16bppRgb565:
+                    BitsPerPixel = 16;
+                    break;
+
+                case PixelFormat.Format24bppRgb:
+                    BitsPerPixel = 24;
+                    break;
+
+                case PixelFormat.Format32bppArgb:
+                case PixelFormat.Format32bppRgb:
+                case PixelFormat.Format32bppPArgb:
+                    BitsPerPixel = 32;
+                    break;
+
+                default:
+                    BitsPerPixel = 32;
+                    break;
+            }
+
+            Bitmap.UnlockBits(bmpData);
+        }
+
+        public DirectBitmap(string filename)
+        {
+            Bitmap tmpBmp = new Bitmap(filename);
+
+            Width = tmpBmp.Width;
+            Height = tmpBmp.Height;
+            Bits = new Int32[tmpBmp.Width * tmpBmp.Height];
+            BitsHandle = GCHandle.Alloc(Bits, GCHandleType.Pinned);
+
+            Bitmap = new Bitmap(tmpBmp.Width, tmpBmp.Height, tmpBmp.Width * 4, PixelFormat.Format32bppPArgb, BitsHandle.AddrOfPinnedObject());
+
+            Rectangle rect = new Rectangle(0, 0, Bitmap.Width, Bitmap.Height);
+            System.Drawing.Imaging.BitmapData bmpData =
+                Bitmap.LockBits(rect, System.Drawing.Imaging.ImageLockMode.ReadWrite,
+                Bitmap.PixelFormat);
+
+            Stride = bmpData.Stride;
+
+            switch (bmpData.PixelFormat)
+            {
+                case PixelFormat.Format1bppIndexed:
+                    BitsPerPixel = 1;
+                    break;
+
+                case PixelFormat.Format4bppIndexed:
+                    BitsPerPixel = 4;
+                    break;
+
+                case PixelFormat.Format8bppIndexed:
+                    BitsPerPixel = 8;
+                    break;
+
+                case PixelFormat.Format16bppGrayScale:
+                case PixelFormat.Format16bppArgb1555:
+                case PixelFormat.Format16bppRgb555:
+                case PixelFormat.Format16bppRgb565:
+                    BitsPerPixel = 16;
+                    break;
+
+                case PixelFormat.Format24bppRgb:
+                    BitsPerPixel = 24;
+                    break;
+
+                case PixelFormat.Format32bppArgb:
+                case PixelFormat.Format32bppRgb:
+                case PixelFormat.Format32bppPArgb:
+                    BitsPerPixel = 32;
+                    break;
+
+                default:
+                    BitsPerPixel = 32;
+                    break;
+            }
+
+            Bitmap.UnlockBits(bmpData);
+
+            using (Graphics g = Graphics.FromImage(Bitmap))
+            {
+                g.DrawImage(tmpBmp, 0, 0);
+            }
+
+            tmpBmp.Dispose();
         }
 
         public void SetPixel(int x, int y, Color colour)
