@@ -361,35 +361,11 @@ namespace KimeraCS
             GetDIBits(hDC, hBMP, 0, 0, lpvBits, ref bmpInfo, DIBColorTable.DIB_RGB_COLORS);
         }
 
-        ////  Uses the 3-call method to GetDIBits for retriving the bitmap data (including original pallete)
-        //public static void GetAllBitmapData(IntPtr hDC, IntPtr hBMP, ref byte[] bmpData, ref BitmapInfo bmpInfo)
-        //{
-        //    GetHeaderBitmapInfo(hDC, hBMP, ref bmpInfo);
-
-        //    if (bmpInfo.bmiHeader.biBitCount == BitCount.BitPerPixel1BPP || 
-        //        bmpInfo.bmiHeader.biBitCount == BitCount.BitPerPixel4BPP ||
-        //        bmpInfo.bmiHeader.biBitCount == BitCount.BitPerPixel8BPP)
-        //    {
-        //        uint oldUsed = bmpInfo.bmiHeader.biClrUsed;  //Read bitmap palette
-
-        //        GetDIBits(hDC, hBMP, 0, 0, null, ref bmpInfo, 0);
-        //        bmpInfo.bmiHeader.biClrUsed = oldUsed;
-        //    }
-
-        //    // bmpData = new byte[((((((bmpInfo.bmiHeader.biWidth * (int)bmpInfo.bmiHeader.biBitCount) + 31) & 0xFFFFFFE0) / 0x20) * bmpInfo.bmiHeader.biHeight) * 4 - 1)];
-        //    bmpData = new byte[((((((bmpInfo.bmiHeader.biWidth * (int)bmpInfo.bmiHeader.biBitCount) + 31) & 0xFFFFFFE0) / 0x20) * bmpInfo.bmiHeader.biHeight) * 4)];
-
-        //    //  Read Image data
-        //    //GetDIBits(hDC, hBMP, 0, (uint)bmpInfo.bmiHeader.biHeight, bmpData, ref bmpInfo, 0);
-
-        //}
-
+ 
         //  Uses the 3-call method to GetDIBits for retriving the bitmap data (including original pallete)
         public static void GetAllBitmapData(IntPtr hDC, IntPtr hBMP,
-                                            Bitmap bmpTexture, ref BitmapInfo bmpInfo, out byte[] pictureData)
+                                            DirectBitmap bmpTexture, ref BitmapInfo bmpInfo, out byte[] pictureData)
         {
-            GetHeaderBitmapInfo(hDC, hBMP, ref bmpInfo);
-
             if (bmpInfo.bmiHeader.biBitCount == BitCount.BitPerPixel1BPP ||
                 bmpInfo.bmiHeader.biBitCount == BitCount.BitPerPixel4BPP ||
                 bmpInfo.bmiHeader.biBitCount == BitCount.BitPerPixel8BPP)
@@ -400,24 +376,18 @@ namespace KimeraCS
                 bmpInfo.bmiHeader.biClrUsed = oldUsed;
             }
 
-            // Lock the bitmap's bits.  
-            Rectangle rect = new Rectangle(0, 0, bmpTexture.Width, bmpTexture.Height);
-            System.Drawing.Imaging.BitmapData bmpData =
-                bmpTexture.LockBits(rect, System.Drawing.Imaging.ImageLockMode.ReadWrite,
-                bmpTexture.PixelFormat);
+            // Declare an array to hold the bytes of the bitmap.         
+            pictureData = new byte[bmpTexture.Stride * bmpTexture.Height];
 
-            // Get the address of the first line.
-            IntPtr ptr = bmpData.Scan0;
-
-            // Declare an array to hold the bytes of the bitmap.
-            int bytes = Math.Abs(bmpData.Stride) * bmpTexture.Height;
-            pictureData = new byte[bytes];
-
-            // Copy the RGB values into the array.
-            Marshal.Copy(ptr, pictureData, 0, bytes);
-
-            // Unlock the bits.
-            bmpTexture.UnlockBits(bmpData);
+            // We put each color to the TEX structure pictureData
+            int bmpSize = bmpTexture.Width * bmpTexture.Height;
+            for (int i = 0; i < bmpSize; i++)
+            {
+                pictureData[i * 4] = (byte)(bmpTexture.Bits[i] & 0xFF);
+                pictureData[i * 4 + 1] = (byte)(bmpTexture.Bits[i] >> 8 & 0xFF);
+                pictureData[i * 4 + 2] = (byte)(bmpTexture.Bits[i] >> 16 & 0xFF);
+                pictureData[i * 4 + 3] = (byte)(bmpTexture.Bits[i] >> 24 & 0xFF);
+            }
         }
 
 
@@ -447,9 +417,9 @@ namespace KimeraCS
 
             //  Create image at the correct size.
             if (iImgWidth < pbIn.ClientSize.Width && iImgHeight < pbIn.ClientSize.Height)
-                tmpBMP = new Bitmap(pbIn.ClientSize.Width, pbIn.ClientSize.Height);
+                tmpBMP = new Bitmap(pbIn.ClientSize.Width, pbIn.ClientSize.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
             else
-                tmpBMP = new Bitmap(iImgWidth, iImgHeight);
+                tmpBMP = new Bitmap(iImgWidth, iImgHeight, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 
             using (Graphics g = Graphics.FromImage(tmpBMP))
             {
