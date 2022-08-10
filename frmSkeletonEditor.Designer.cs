@@ -358,7 +358,6 @@ namespace KimeraCS
             this.cbTextureSelect.Size = new System.Drawing.Size(152, 24);
             this.cbTextureSelect.TabIndex = 1;
             this.cbTextureSelect.SelectedIndexChanged += new System.EventHandler(this.cbTextureSelect_SelectedIndexChanged);
-            this.cbTextureSelect.Click += new System.EventHandler(this.cbTextureSelect_Click);
             // 
             // pbTextureViewer
             // 

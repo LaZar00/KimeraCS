@@ -58,7 +58,7 @@ namespace KimeraCS
 
  
 
-        public const string STR_APPNAME = "KimeraCS 1.4k";
+        public const string STR_APPNAME = "KimeraCS 1.4m";
 
         public static int modelWidth;
         public static int modelHeight;
@@ -707,8 +707,8 @@ namespace KimeraCS
             {
                 POINTAPI aux = new POINTAPI();
 
-                SetStretchBltMode(textureViewerDC, StretchMode.STRETCH_HALFTONE);
-                SetBrushOrgEx(textureViewerDC, 0, 0, ref aux);
+                //SetStretchBltMode(textureViewerDC, StretchMode.STRETCH_HALFTONE);
+                //SetBrushOrgEx(textureViewerDC, 0, 0, ref aux);
 
                 switch (modelType)
                 {
@@ -733,10 +733,10 @@ namespace KimeraCS
                                          fSkeleton.bones[SelectedBone].fRSDResources[SelectedBonePiece].textures[cbTextureSelect.SelectedIndex].HBMP);
 
                                 //StretchBlt(textureViewerDC, 0, 0, pbTextureViewer.ClientRectangle.Width, pbTextureViewer.ClientRectangle.Height,
-                                //           fSkeleton.bones[SelectedBone].resources[SelectedBonePiece].textures[cbTextureSelect.SelectedIndex].HDC,
+                                //           fSkeleton.bones[SelectedBone].fRSDResources[SelectedBonePiece].textures[cbTextureSelect.SelectedIndex].HDC,
                                 //           0, 0,
-                                //           fSkeleton.bones[SelectedBone].resources[SelectedBonePiece].textures[cbTextureSelect.SelectedIndex].width,
-                                //           fSkeleton.bones[SelectedBone].resources[SelectedBonePiece].textures[cbTextureSelect.SelectedIndex].height,
+                                //           fSkeleton.bones[SelectedBone].fRSDResources[SelectedBonePiece].textures[cbTextureSelect.SelectedIndex].width,
+                                //           fSkeleton.bones[SelectedBone].fRSDResources[SelectedBonePiece].textures[cbTextureSelect.SelectedIndex].height,
                                 //           TernaryRasterOperations.SRCCOPY);
                             }
                             else
@@ -2577,11 +2577,6 @@ namespace KimeraCS
 
                     break;
             }
-        }
-
-        private void cbTextureSelect_Click(object sender, EventArgs e)
-        {
-            textureViewer_Paint(null, null);
         }
 
         private void cbTextureSelect_SelectedIndexChanged(object sender, EventArgs e)
