@@ -2466,7 +2466,6 @@ namespace KimeraCS
             bool bGroupHasOffsetPolyZero;
 
             bGroupHasOffsetPolyZero = Model.Groups[iGroupIdx].offsetPoly == 0;
-            iRealGID = Model.Groups[iGroupIdx].realGID;
 
             if (Model.Groups[iGroupIdx].numVert > 0)
             {
@@ -2502,26 +2501,18 @@ namespace KimeraCS
             {
                 // As we can change the group order, we need to check the group by the
                 // number of polys.
+                iRealGID = 1;
+                iGroupIdx = GetNextGroup(Model, -1);
 
                 // Check if we want to remove a group of offset zero or not.
                 if (bGroupHasOffsetPolyZero)
                 {
-                    // Now need to find the group with the lower offsetpoly.
-                    iGroupIdx = GetNextGroup(Model, -1);
-
                     // We have the group with polys 0. Update offsets directly.
                     Model.Groups[iGroupIdx].offsetVert = 0;
                     Model.Groups[iGroupIdx].offsetPoly = 0;
                     Model.Groups[iGroupIdx].offsetEdge = 0;
                     Model.Groups[iGroupIdx].offsetTex = 0;
                     Model.Groups[iGroupIdx].realGID = 0;
-                    iRealGID = 1;
-                }
-                else
-                {
-                    // Else we need to find the group with polys 0.
-                   
-                    iGroupIdx = GetNextGroup(Model, -1);
                 }
 
                 // While there are groups to recalculate:
@@ -2540,8 +2531,7 @@ namespace KimeraCS
                         Model.Groups[iActualGroup].offsetEdge + Model.Groups[iActualGroup].numEdge;
 
                     // Let's do TexCoords
-                    if (Model.Groups[iActualGroup].texFlag == 1 ||
-                        Model.Groups[iActualGroup].offsetTex > 0)       // Can be some poly with texture set to 0 but with UV.
+                    if (Model.Groups[iActualGroup].texFlag == 1 || Model.Groups[iActualGroup].offsetTex > 0)       // Can be some poly with texture set to 0 but with UV.
                     {
                         Model.Groups[iActualGroup].offsetTex = iNumTexCoords;
                         iNumTexCoords += Model.Groups[iActualGroup].numVert;
