@@ -338,9 +338,9 @@ namespace KimeraCS
 
                 if (chkEnableLighting.Checked) glEnable(glCapability.GL_LIGHTING);
 
-                glClearColor(0.4f, 0.4f, 0.65f, 0);
-                glViewport(0, 0, panelEditorPModel.ClientRectangle.Width, panelEditorPModel.ClientRectangle.Height);
-                glClear(glBufferMask.GL_COLOR_BUFFER_BIT | glBufferMask.GL_DEPTH_BUFFER_BIT);
+                //glClearColor(0.4f, 0.4f, 0.65f, 0);
+                //glViewport(0, 0, panelEditorPModel.ClientRectangle.Width, panelEditorPModel.ClientRectangle.Height);
+                //glClear(glBufferMask.GL_COLOR_BUFFER_BIT | glBufferMask.GL_DEPTH_BUFFER_BIT);
 
                 SetCameraPModel(EditedPModel, panXPE, panYPE, panZPE + DISTPE,
                                 alphaPE, betaPE, gammaPE, 1, 1, 1);
@@ -348,9 +348,6 @@ namespace KimeraCS
                 ConcatenateCameraModelViewQuat(repXPE, repYPE, repZPE,
                                                EditedPModel.rotationQuaternion,
                                                rszXPE, rszYPE, rszZPE);
-
-                x_lastPE = e.X;
-                y_lastPE = e.Y;
 
                 switch (e.Button)
                 {
@@ -369,6 +366,9 @@ namespace KimeraCS
                 }
 
                 panelEditorPModel_Paint(null, null);
+
+                x_lastPE = e.X;
+                y_lastPE = e.Y;
             }
         }
 
@@ -495,27 +495,30 @@ namespace KimeraCS
                 if (GetOGLContext() != OGLContextPEditor)
                     SetOGLContext(panelEditorPModelDC, OGLContextPEditor);
 
-                //SetOGLEditorSettings();
+                SetOGLEditorSettings();
 
                 DrawPModelEditor(chkEnableLighting.Checked, 
                                  hsbRotateAlpha.Value, hsbRotateBeta.Value, hsbRotateGamma.Value,
                                  panelEditorPModel);
 
+                SetOGLEditorSettings();
+
                 if (chkShowPlane.Checked) DrawPlane(ref planeTransformation, ref planeOriginalPoint1,
                                                                              ref planeOriginalPoint2,
                                                                              ref planeOriginalPoint3,
                                                                              ref planeOriginalPoint4);
+
                 if (chkShowAxes.Checked) DrawAxes(panelEditorPModel);
 
                 glFlush();
                 SwapBuffers(panelEditorPModelDC);
 
-                if (frmSkelEdit.pbIsMinimized)
-                {
-                    frmSkelEdit.panelModel_Paint(null, null);
+                //if (frmSkelEdit.pbIsMinimized)
+                //{
+                //    frmSkelEdit.panelModel_Paint(null, null);
 
-                    frmSkelEdit.pbIsMinimized = false;
-                }
+                //    frmSkelEdit.pbIsMinimized = false;
+                //}
             }
         }
 
@@ -2389,7 +2392,7 @@ namespace KimeraCS
 
             //MessageBox.Show("frmPEditor", "Test", MessageBoxButtons.OK);
 
-            //panelEditorPModel_Paint(null, null);
+            panelEditorPModel_Paint(null, null);
         }
 
         private void pbPaletteColor_MouseDown(object sender, MouseEventArgs e)
@@ -2789,7 +2792,8 @@ namespace KimeraCS
             //                       EditedPModel.rotationQuaternion,
             //                       rszXPE, rszYPE, rszZPE);
 
-            ApplyPChanges(ref EditedPModel, bDNormals);
+
+            ApplyPChangesPE(ref EditedPModel, bDNormals);
 
             loadingModifiersQ = true;
             hsbResizeX.Value = 100;
@@ -2866,15 +2870,22 @@ namespace KimeraCS
             if (primaryFunc == K_PAINT)
             {
                 rbPaintPolygon.BackColor = Color.LightCoral;
+                rbPolygonColors.PerformClick();
             }
             else
             {
                 if (secondaryFunc == K_PAINT)
-                   rbPaintPolygon.BackColor = Color.PowderBlue;
+                {
+                    rbPaintPolygon.BackColor = Color.PowderBlue;
+                    rbPolygonColors.PerformClick();
+                }                   
                 else
                 {
                     if (ternaryFunc == K_PAINT)
+                    {
                         rbPaintPolygon.BackColor = Color.MediumAquamarine;
+                        rbPolygonColors.PerformClick();
+                    }
                     else
                         rbPaintPolygon.BackColor = Color.Transparent;
                 }
@@ -2913,15 +2924,22 @@ namespace KimeraCS
             if (primaryFunc == K_ERASE_POLY)
             {
                 rbErasePolygon.BackColor = Color.LightCoral;
+                rbPolygonColors.PerformClick();
             }
             else
             {
                 if (secondaryFunc == K_ERASE_POLY)
+                {
                     rbErasePolygon.BackColor = Color.PowderBlue;
+                    rbPolygonColors.PerformClick();
+                }
                 else
                 {
                     if (ternaryFunc == K_ERASE_POLY)
+                    {
                         rbErasePolygon.BackColor = Color.MediumAquamarine;
+                        rbPolygonColors.PerformClick();
+                    }                        
                     else
                         rbErasePolygon.BackColor = Color.Transparent;
                 }
@@ -2933,15 +2951,22 @@ namespace KimeraCS
             if (primaryFunc == K_PICK_VERTEX)
             {
                 rbMoveVertex.BackColor = Color.LightCoral;
+                rbPolygonColors.PerformClick();
             }
             else
             {
                 if (secondaryFunc == K_PICK_VERTEX)
+                {
                     rbMoveVertex.BackColor = Color.PowderBlue;
+                    rbPolygonColors.PerformClick();
+                }
                 else
                 {
                     if (ternaryFunc == K_PICK_VERTEX)
+                    {
                         rbMoveVertex.BackColor = Color.MediumAquamarine;
+                        rbPolygonColors.PerformClick();
+                    }                        
                     else
                         rbMoveVertex.BackColor = Color.Transparent;
                 }
@@ -3013,15 +3038,22 @@ namespace KimeraCS
             if (primaryFunc == K_NEW_POLY)
             {
                 rbNewPolygon.BackColor = Color.LightCoral;
+                rbPolygonColors.PerformClick();
             }
             else
             {
                 if (secondaryFunc == K_NEW_POLY)
+                {
                     rbNewPolygon.BackColor = Color.PowderBlue;
+                    rbPolygonColors.PerformClick();
+                }
                 else
                 {
                     if (ternaryFunc == K_NEW_POLY)
+                    {
                         rbNewPolygon.BackColor = Color.MediumAquamarine;
+                        rbPolygonColors.PerformClick();
+                    }
                     else
                         rbNewPolygon.BackColor = Color.Transparent;
                 }
