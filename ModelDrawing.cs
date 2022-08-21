@@ -1130,9 +1130,9 @@ namespace KimeraCS
                     case K_P_MAGIC_MODEL:
                         ComputePModelBoundingBox(fPModel, ref p_min, ref p_max);
 
-                        SetCameraAroundModel(ref p_min, ref p_max, 
-                                             frmSkeletonEditor.panX, frmSkeletonEditor.panY, (float)(frmSkeletonEditor.panZ + frmSkeletonEditor.DIST),
-                                             (float)frmSkeletonEditor.alpha, (float)frmSkeletonEditor.beta, (float)frmSkeletonEditor.gamma, 1, 1, 1);
+                        SetCameraAroundModel(ref p_min, ref p_max,
+                                             panX, panY, (float)(panZ + DIST),
+                                             (float)alpha, (float)beta, (float)gamma, 1, 1, 1);
 
                         if (bShowGround)
                         {
@@ -1171,8 +1171,8 @@ namespace KimeraCS
                                                 ref p_min, ref p_max);
 
                         SetCameraAroundModel(ref p_min, ref p_max, 
-                                             frmSkeletonEditor.panX, frmSkeletonEditor.panY, (float)(frmSkeletonEditor.panZ + frmSkeletonEditor.DIST),
-                                             (float)frmSkeletonEditor.alpha, (float)frmSkeletonEditor.beta, (float)frmSkeletonEditor.gamma, 1, 1, 1);
+                                             panX, panY, (float)(panZ + DIST),
+                                             (float)alpha, (float)beta, (float)gamma, 1, 1, 1);
 
                         if (bShowGround)
                         {
@@ -1223,8 +1223,8 @@ namespace KimeraCS
                                                  ref p_min, ref p_max);
 
                         SetCameraAroundModel(ref p_min, ref p_max,
-                                             frmSkeletonEditor.panX, frmSkeletonEditor.panY, (float)(frmSkeletonEditor.panZ + frmSkeletonEditor.DIST), 
-                                             (float)frmSkeletonEditor.alpha, (float)frmSkeletonEditor.beta, (float)frmSkeletonEditor.gamma, 1, 1, 1);
+                                             panX, panY, (float)(panZ + DIST), 
+                                             (float)alpha, (float)beta, (float)gamma, 1, 1, 1);
 
                         if (bShowGround)
                         {
