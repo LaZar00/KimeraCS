@@ -416,16 +416,13 @@ namespace KimeraCS
             double[] P_matrix = new double[16];
             double[] rot_mat = new double[16];
 
-            //int[] selBuff = new int[Skeleton.nBones * 4];
             int[] selBuff = new int[fSkeleton.bones.Count * 4];
 
-            //string[] joint_stack = new string[Skeleton.nBones * 4];
             string[] joint_stack = new string[fSkeleton.bones.Count * 4];
 
             jsp = 0;
             joint_stack[jsp] = fSkeleton.bones[0].joint_f;
 
-            //glSelectBuffer(Skeleton.nBones * 4, selBuff);
             glSelectBuffer(fSkeleton.bones.Count * 4, selBuff);
             glInitNames();
 
@@ -440,7 +437,7 @@ namespace KimeraCS
             height = vp[3];
 
             gluPickMatrix(px - 1, height - py + 1, 3, 3, vp);
-            //    'gluPerspective 60, width / height, 0.1, 10000 'max(0.1 - DIST, 0.1), ComputeHRCDiameter(obj) * 2 - DIST
+            //gluPerspective(60, (float)width / height, 0.1, 10000); //'max(0.1 - DIST, 0.1), ComputeHRCDiameter(obj) * 2 - DIST
             glMultMatrixd(P_matrix);
 
             glMatrixMode(glMatrixModeList.GL_MODELVIEW);
@@ -453,7 +450,6 @@ namespace KimeraCS
             BuildRotationMatrixWithQuaternions(fFrame.rootRotationAlpha, fFrame.rootRotationBeta, fFrame.rootRotationGamma, ref rot_mat);
             glMultMatrixd(rot_mat);
 
-            //for (bi = 0; bi < Skeleton.nBones; bi++)
             for (bi = 0; bi < fSkeleton.bones.Count; bi++)
             {
                 glPushName((uint)bi);
@@ -537,11 +533,12 @@ namespace KimeraCS
             glLoadIdentity();
 
             glGetIntegerv((uint)glCapability.GL_VIEWPORT, vp);
+            width = vp[2];
             height = vp[3];
 
             gluPickMatrix(px - 1, height - py + 1, 3, 3, vp);
-            //gluPerspective(60, width / height, 0.1, 10000);        // max(0.1 - DIST, 0.1) , ComputeFieldDiameter(ref Skeleton) * 2 - DIST);
-            glMultMatrixd(P_matrix);
+            gluPerspective(60, (float)width / height, 0.1, 10000);        // max(0.1 - DIST, 0.1) , ComputeFieldDiameter(ref Skeleton) * 2 - DIST);
+            //glMultMatrixd(P_matrix);
 
             glMatrixMode(glMatrixModeList.GL_MODELVIEW);
             glPushMatrix();
@@ -740,7 +737,7 @@ namespace KimeraCS
                 ApplyPChanges(ref tmpRSDResource.Model, false);
                 fBone.fRSDResources[ri] = tmpRSDResource;
 
-                glMatrixMode(glMatrixModeList.GL_MODELVIEW);
+                //glMatrixMode(glMatrixModeList.GL_MODELVIEW);
                 glPopMatrix();
             }
 
