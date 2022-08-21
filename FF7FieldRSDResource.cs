@@ -70,7 +70,8 @@ namespace KimeraCS
                     while (rsdString[rsdNTEXpos][0] != 'P') rsdNTEXpos++;
 
                     // Let's read the P model
-                    polyFileName = (rsdString[rsdNTEXpos].Split('=')[1]).Substring(0, (rsdString[rsdNTEXpos].Split('=')[1]).IndexOf('.')) + ".P";
+                    //polyFileName = (rsdString[rsdNTEXpos].Split('=')[1]).Substring(0, (rsdString[rsdNTEXpos].Split('=')[1]).IndexOf('.')) + ".P";
+                    polyFileName = Path.GetFileNameWithoutExtension(rsdString[rsdNTEXpos].Split('=')[1]) + ".P";
 
                     // Let's read the P model into memory.
                     // First check if exists
