@@ -674,7 +674,7 @@ namespace KimeraCS
 
             scene_radius = ComputeSceneRadius(p_min, p_max);
 
-            gluPerspective(60, width / height, Math.Max(0.1, -cZ - scene_radius), Math.Max(0.1, -cZ + scene_radius));
+            gluPerspective(60, (float)width / height, Math.Max(0.1, -cZ - scene_radius), Math.Max(0.1, -cZ + scene_radius));
 
             SetCameraModelView(cX, cY, cZ, alpha, beta, gamma, rszX, rszY, rszZ);
         }
@@ -697,7 +697,7 @@ namespace KimeraCS
 
             scene_radius = ComputeSceneRadius(p_min, p_max);
 
-            gluPerspective(60, width / height, Math.Max(0.1, -cZ - scene_radius), Math.Max(0.1, -cZ + scene_radius));
+            gluPerspective(60, (float)width / height, Math.Max(0.1, -cZ - scene_radius), Math.Max(0.1, -cZ + scene_radius));
 
             SetCameraModelViewQuat(cX, cY, cZ, quat, rszX, rszY, rszZ);
         }
