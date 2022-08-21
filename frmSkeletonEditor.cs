@@ -58,7 +58,7 @@ namespace KimeraCS
 
  
 
-        public const string STR_APPNAME = "KimeraCS 1.4m";
+        public const string STR_APPNAME = "KimeraCS 1.4o";
 
         public static int modelWidth;
         public static int modelHeight;
@@ -808,6 +808,12 @@ namespace KimeraCS
         {
             if (loaded)
             {
+                //if (Application.OpenForms.Count > 1 && bPEditorOpened() && !pbIsMinimized)
+                //{
+                //    // Render also PEditor. It seems is opened
+                //    frmPEdit.panelEditorPModel_Paint(null, null);
+                //}
+
                 if (GetOGLContext() != OGLContext)
                     SetOGLContext(panelModelDC, OGLContext);
 
@@ -822,12 +828,6 @@ namespace KimeraCS
 
                 glFlush();
                 SwapBuffers(panelModelDC);
-
-                if (Application.OpenForms.Count > 1 && bPEditorOpened() && !pbIsMinimized)
-                {
-                    // Render also PEditor. It seems is opened
-                    frmPEdit.panelEditorPModel_Paint(null, null);
-                }
 
             }
         }
@@ -1218,9 +1218,9 @@ namespace KimeraCS
             if (loaded)
             {               
 
-                glClearColor(0.4f, 0.4f, 0.65f, 0);
-                glViewport(0, 0, panelModel.ClientRectangle.Width, panelModel.ClientRectangle.Height);
-                glClear(glBufferMask.GL_COLOR_BUFFER_BIT | glBufferMask.GL_DEPTH_BUFFER_BIT);
+                //glClearColor(0.4f, 0.4f, 0.65f, 0);
+                //glViewport(0, 0, panelModel.ClientRectangle.Width, panelModel.ClientRectangle.Height);
+                //glClear(glBufferMask.GL_COLOR_BUFFER_BIT | glBufferMask.GL_DEPTH_BUFFER_BIT);
 
                 switch (modelType)
                 {
@@ -1317,7 +1317,13 @@ namespace KimeraCS
 
                                 // Select the weapon texture
                                 if (bSkeleton.wpModels[cbWeapon.SelectedIndex].Groups[0].texFlag == 1)
-                                    cbTextureSelect.SelectedIndex = bSkeleton.wpModels[cbWeapon.SelectedIndex].Groups[0].texID;
+                                {
+                                    if (bSkeleton.textures.Count > bSkeleton.wpModels[cbWeapon.SelectedIndex].Groups[0].texID)
+                                        cbTextureSelect.SelectedIndex = bSkeleton.wpModels[cbWeapon.SelectedIndex].Groups[0].texID;
+                                    else
+                                        if (bSkeleton.textures.Count > 0)
+                                            cbTextureSelect.SelectedIndex = 0;
+                                }
                             }
                             else
                             {
@@ -2683,6 +2689,7 @@ namespace KimeraCS
                                     tex.TEXfileName = GetBattleModelTextureFilename(bSkeleton, bSkeleton.nTextures - 1);
 
                                     bSkeleton.textures.Add(tex);
+                                    Array.Resize(ref bSkeleton.TexIDS, bSkeleton.nTextures);
                                     bSkeleton.TexIDS[bSkeleton.nTextures - 1] = tex.texID;
                                     SetTextureEditorFields();
                                     cbTextureSelect.SelectedIndex = bSkeleton.nTextures - 1;
@@ -2698,7 +2705,7 @@ namespace KimeraCS
                     panelModel_Paint(null, null);
                 }
             }
-            catch
+            catch (Exception ex)
             {
                 MessageBox.Show("Error adding texture file " + Path.GetFileName(openFile.FileName).ToUpper() + ".",
                                 "Error");
@@ -5688,7 +5695,7 @@ namespace KimeraCS
 
             //MessageBox.Show("frmSkeletonEditor", "Test", MessageBoxButtons.OK);
 
-            //panelModel_Paint(null, null);
+           panelModel_Paint(null, null);
         }
 
         public void tsUIOpacity100_Click(object sender, EventArgs e)
