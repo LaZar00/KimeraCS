@@ -1645,36 +1645,69 @@ namespace KimeraCS
 
         public static void ApplyCurrentVCoords(ref PModel Model)
         {
-            int vi,gi;
+            int vi, gi;
+ 
+             for (gi = 0; gi < Model.Header.numGroups; gi++)
+             {
+                //glMatrixMode(glMatrixModeList.GL_MODELVIEW);
+                //glLoadIdentity();
+                //glPushMatrix();
+
+                //glTranslatef(Model.Groups[gi].repGroupX, Model.Groups[gi].repGroupY, Model.Groups[gi].repGroupZ);
+
+                //BuildRotationMatrixWithQuaternionsXYZ(Model.Groups[gi].rotGroupAlpha,
+                //                                      Model.Groups[gi].rotGroupBeta,
+                //                                      Model.Groups[gi].rotGroupGamma,
+                //                                      ref rot_mat);
+                //glMultMatrixd(rot_mat);
+
+                //glScalef(Model.Groups[gi].rszGroupX, Model.Groups[gi].rszGroupY, Model.Groups[gi].rszGroupZ);
+
+                for (vi = Model.Groups[gi].offsetVert; vi < Model.Groups[gi].offsetVert + Model.Groups[gi].numVert; vi++)
+                {
+                    Model.Verts[vi] = GetEyeSpaceCoords(Model.Verts[vi]);
+                }
+
+                //glPopMatrix();
+            }
+        }
+
+        public static void ApplyCurrentVCoordsPE(ref PModel Model)
+        {
+            int vi, gi, iActualGroup;
             double[] rot_mat = new double[16];
 
             SetCameraModelViewQuat(repXPE, repYPE, repZPE,
                                    EditedPModel.rotationQuaternion,
                                    rszXPE, rszYPE, rszZPE);
 
-            for (gi = 0; gi < Model.Header.numGroups; gi++)
+            iActualGroup = GetNextGroup(Model, -1);
+
+            while (iActualGroup != -1)
             {
                 glMatrixMode(glMatrixModeList.GL_MODELVIEW);
-                glLoadIdentity();
-                //glPushMatrix();
+                //glLoadIdentity();
+                glPushMatrix();
 
-                glTranslatef(Model.Groups[gi].repGroupX, Model.Groups[gi].repGroupY, Model.Groups[gi].repGroupZ);
+                glTranslatef(Model.Groups[iActualGroup].repGroupX, Model.Groups[iActualGroup].repGroupY, Model.Groups[iActualGroup].repGroupZ);
 
-                BuildRotationMatrixWithQuaternionsXYZ(Model.Groups[gi].rotGroupAlpha,
-                                                      Model.Groups[gi].rotGroupBeta,
-                                                      Model.Groups[gi].rotGroupGamma,
+                BuildRotationMatrixWithQuaternionsXYZ(Model.Groups[iActualGroup].rotGroupAlpha,
+                                                      Model.Groups[iActualGroup].rotGroupBeta,
+                                                      Model.Groups[iActualGroup].rotGroupGamma,
                                                       ref rot_mat);
                 glMultMatrixd(rot_mat);
 
-                glScalef(Model.Groups[gi].rszGroupX, Model.Groups[gi].rszGroupY, Model.Groups[gi].rszGroupZ);
+                glScalef(Model.Groups[iActualGroup].rszGroupX, Model.Groups[iActualGroup].rszGroupY, Model.Groups[iActualGroup].rszGroupZ);
 
-                for (vi = Model.Groups[gi].offsetTex; vi < Model.Groups[gi].offsetTex + Model.Groups[gi].numVert; vi++)
+                for (vi = Model.Groups[iActualGroup].offsetVert; vi < Model.Groups[iActualGroup].offsetVert + Model.Groups[iActualGroup].numVert; vi++)
                 {
                     Model.Verts[vi] = GetEyeSpaceCoords(Model.Verts[vi]);
                 }
 
-                //glPopMatrix();
-            }            
+                glPopMatrix();
+
+                iActualGroup = GetNextGroup(Model, iActualGroup);
+            }
         }
 
         public static void ComputePColors(ref PModel Model)
@@ -1702,6 +1735,45 @@ namespace KimeraCS
                                                        temp_g / 3,
                                                        temp_b / 3);
                 }
+            }
+        }
+
+        public static void ApplyPChangesPE(ref PModel Model, bool DNormals)
+        {
+            try
+            {
+                KillUnusedVertices(ref Model);
+
+                ApplyCurrentVCoordsPE(ref Model);
+
+                ComputePColors(ref Model);
+                ComputeEdges(ref Model);
+
+                if (DNormals) DisableNormals(ref Model);
+                else ComputeNormals(ref Model);
+
+                ComputeBoundingBox(ref Model);
+
+                for (int iGroupIdx = 0; iGroupIdx < Model.Header.numGroups; iGroupIdx++)
+                {
+                    Model.Groups[iGroupIdx].repGroupX = 0;
+                    Model.Groups[iGroupIdx].repGroupY = 0;
+                    Model.Groups[iGroupIdx].repGroupZ = 0;
+                    Model.Groups[iGroupIdx].rszGroupX = 1;
+                    Model.Groups[iGroupIdx].rszGroupY = 1;
+                    Model.Groups[iGroupIdx].rszGroupZ = 1;
+                    Model.Groups[iGroupIdx].rotGroupAlpha = 0;
+                    Model.Groups[iGroupIdx].rotGroupBeta = 0;
+                    Model.Groups[iGroupIdx].rotGroupGamma = 0;
+                    Model.Groups[iGroupIdx].rotationQuaternionGroup.x = 0;
+                    Model.Groups[iGroupIdx].rotationQuaternionGroup.y = 0;
+                    Model.Groups[iGroupIdx].rotationQuaternionGroup.z = 0;
+                    Model.Groups[iGroupIdx].rotationQuaternionGroup.w = 1;
+                }
+            }
+            catch
+            {
+                MessageBox.Show("Error applying PChange at " + Model.fileName + "!!!", "Error", MessageBoxButtons.OK);
             }
         }
 
@@ -1740,22 +1812,6 @@ namespace KimeraCS
                 Model.rotationQuaternion.z = 0;
                 Model.rotationQuaternion.w = 1;
 
-                for (int iGroupIdx = 0; iGroupIdx < Model.Header.numGroups; iGroupIdx++)
-                {
-                    Model.Groups[iGroupIdx].repGroupX = 0;
-                    Model.Groups[iGroupIdx].repGroupY = 0;
-                    Model.Groups[iGroupIdx].repGroupZ = 0;
-                    Model.Groups[iGroupIdx].rszGroupX = 1;
-                    Model.Groups[iGroupIdx].rszGroupY = 1;
-                    Model.Groups[iGroupIdx].rszGroupZ = 1;
-                    Model.Groups[iGroupIdx].rotGroupAlpha = 0;
-                    Model.Groups[iGroupIdx].rotGroupBeta = 0;
-                    Model.Groups[iGroupIdx].rotGroupGamma = 0;
-                    Model.Groups[iGroupIdx].rotationQuaternionGroup.x = 0;
-                    Model.Groups[iGroupIdx].rotationQuaternionGroup.y = 0;
-                    Model.Groups[iGroupIdx].rotationQuaternionGroup.z = 0;
-                    Model.Groups[iGroupIdx].rotationQuaternionGroup.w = 1;
-                }
             }
             catch
             {
@@ -2345,7 +2401,7 @@ namespace KimeraCS
 
         public static void RemoveGroupEdges(ref PModel Model, int iGroupIdx)
         {
-            int ei, ei2, iNextGroup;
+            int ei, ei2, iNextGroup, iCountNumEdges, iCountEdgesGroups;
             //int iNextGroup, iActualGroup, iNumEdgesDelete;
 
             //iActualGroup = iGroupIdx;
@@ -2385,9 +2441,19 @@ namespace KimeraCS
             iNextGroup = GetNextGroup(Model, iGroupIdx);
             if (iNextGroup != -1)
             {
+                iCountEdgesGroups = GetNextGroup(Model, -1);
+                iCountNumEdges = 0;
+
+                while (iCountEdgesGroups != iGroupIdx)
+                {
+                    iCountNumEdges += Model.Groups[iCountEdgesGroups].numEdge;
+                    iCountEdgesGroups = GetNextGroup(Model, iCountEdgesGroups);
+                }
+
                 ei2 = Model.Groups[iGroupIdx].offsetEdge;
 
-                for (ei = Model.Groups[iNextGroup].offsetEdge; ei < Model.Header.numEdges; ei++)
+                //for (ei = Model.Groups[iNextGroup].offsetEdge; ei < Model.Header.numEdges; ei++)
+                for (ei = iCountNumEdges; ei < Model.Header.numEdges; ei++)
                 {
                     Model.Edges[ei2] = Model.Edges[ei];
                     ei2++;
@@ -2625,12 +2691,13 @@ namespace KimeraCS
             float minZ;
             double[] rot_mat = new double[16];
             int[] vp = new int[4];
-
+            
             int[] selBuff = new int[Model.Header.numPolys * 4];
 
-            glViewport(0, 0, panelEditorPModel.ClientRectangle.Width, panelEditorPModel.ClientRectangle.Height);
-            ClearPanel();
-            SetDefaultOGLRenderState();
+            //glViewport(0, 0, panelEditorPModel.ClientRectangle.Width, panelEditorPModel.ClientRectangle.Height);
+            //ClearPanel();
+
+            //SetDefaultOGLRenderState();
 
             ComputePModelBoundingBox(EditedPModel, ref p_min, ref p_max);
 
@@ -2641,6 +2708,7 @@ namespace KimeraCS
             glDisable(glCapability.GL_LIGHTING);
 
             glMatrixMode(glMatrixModeList.GL_MODELVIEW);
+
             glPushMatrix();
 
             glTranslatef(EditedPModel.repositionX,
