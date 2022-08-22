@@ -2392,7 +2392,7 @@ namespace KimeraCS
 
             //MessageBox.Show("frmPEditor", "Test", MessageBoxButtons.OK);
 
-            panelEditorPModel_Paint(null, null);
+            //panelEditorPModel_Paint(null, null);
         }
 
         private void pbPaletteColor_MouseDown(object sender, MouseEventArgs e)

@@ -5695,7 +5695,7 @@ namespace KimeraCS
 
             //MessageBox.Show("frmSkeletonEditor", "Test", MessageBoxButtons.OK);
 
-           panelModel_Paint(null, null);
+           //panelModel_Paint(null, null);
         }
 
         public void tsUIOpacity100_Click(object sender, EventArgs e)
