@@ -4,6 +4,8 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Text;
 
 namespace KimeraCS
 {
@@ -656,10 +658,188 @@ namespace KimeraCS
             }
         }
 
+        public static void ReadFieldFrameData(FieldSkeleton fSkeleton, ref FieldAnimation fAnimation, string strFileName)
+        {
+            int iBonePosition, iFrameCounter;
+            bool bFoundBone;
+            string[] strSplitKeyData;
+            FieldFrame fFrame;
+            FieldRotation fRotation;
+            FieldAnimation tmpfAnimation;
+
+            iBonePosition = 0;
+            iFrameCounter = 0;
+            bFoundBone = false;
+
+            string[] strInputFrameData = File.ReadAllLines(strFileName);
+
+            if (strInputFrameData.Length <= 0) return;
+
+            fFrame.rotations = new List<FieldRotation>();
+            tmpfAnimation = new FieldAnimation();
+            tmpfAnimation.frames = new List<FieldFrame>();
+
+            foreach (string strLine in strInputFrameData)
+            {
+                if (strLine != "")
+                {
+                    strSplitKeyData = strLine.Split(':');
+
+                    switch(strSplitKeyData[0])
+                    {
+                        case "MODEL_TYPE":
+                            if (strSplitKeyData[1] != "3")
+                            {
+                                MessageBox.Show("This is very odd, but you have loaded a file with an unsupported Model Type.",
+                                                "Warning");
+                                return;
+                            }
+                            break;
+
+                        case "FILENAME":
+                            tmpfAnimation.strFieldAnimationFile = strSplitKeyData[1];
+
+                            break;
+
+                        case "RUNTIME_DATA":
+                            tmpfAnimation.runtime_data = new int[5];
+
+                            tmpfAnimation.runtime_data[0] = int.Parse(strSplitKeyData[1].Split('_')[0]);
+                            tmpfAnimation.runtime_data[1] = int.Parse(strSplitKeyData[1].Split('_')[1]);
+                            tmpfAnimation.runtime_data[2] = int.Parse(strSplitKeyData[1].Split('_')[2]);
+                            tmpfAnimation.runtime_data[3] = int.Parse(strSplitKeyData[1].Split('_')[3]);
+                            tmpfAnimation.runtime_data[4] = int.Parse(strSplitKeyData[1].Split('_')[4]);
+                            break;
+
+                        case "FRAME":
+                            iFrameCounter = int.Parse(strSplitKeyData[1]);
+
+                            fFrame = new FieldFrame();
+                            fFrame.rotations = new List<FieldRotation>();
+
+                            if (fAnimation.strFieldAnimationFile != "DUMMY.A")
+                            {
+                                // Let's put the frame 0 values to all the bones.
+                                foreach (FieldRotation itmfRotation in fAnimation.frames[0].rotations)
+                                {
+                                    fFrame.rotations.Add(itmfRotation);
+                                }
+                            }
+                            else
+                            {
+                                for (int i = 0; i < fSkeleton.nBones; i++) fFrame.rotations.Add(new FieldRotation());
+                            }
+
+                            break;
+
+                        case "BONE":
+                            iBonePosition = 0;
+                            bFoundBone = false;
+
+                            while (iBonePosition < fAnimation.nBones && !bFoundBone)
+                            {
+                                if (fSkeleton.bones[iBonePosition].joint_i == strSplitKeyData[1].Split('-')[0] &&
+                                    fSkeleton.bones[iBonePosition].joint_f == strSplitKeyData[1].Split('-')[1])
+                                {
+                                    bFoundBone = true;
+                                }
+                                else iBonePosition++;
+                            }
+
+                            break;
+
+                        case "BONEROT":
+                            if (bFoundBone)
+                            {
+                                fRotation = new FieldRotation();
+
+                                fRotation.alpha = float.Parse(strSplitKeyData[1].Split('_')[0], CultureInfo.InvariantCulture.NumberFormat);
+                                fRotation.beta = float.Parse(strSplitKeyData[1].Split('_')[1], CultureInfo.InvariantCulture.NumberFormat);
+                                fRotation.gamma = float.Parse(strSplitKeyData[1].Split('_')[2], CultureInfo.InvariantCulture.NumberFormat);
+
+                                fFrame.rotations[iBonePosition] = fRotation;
+                            }
+
+                            break;
+
+                        case "ROTAT_TRANS":
+                            fFrame.rootRotationAlpha = float.Parse(strSplitKeyData[1].Split('_')[0], CultureInfo.InvariantCulture.NumberFormat);
+                            fFrame.rootRotationBeta = float.Parse(strSplitKeyData[1].Split('_')[1], CultureInfo.InvariantCulture.NumberFormat);
+                            fFrame.rootRotationGamma = float.Parse(strSplitKeyData[1].Split('_')[2], CultureInfo.InvariantCulture.NumberFormat);
+
+                            fFrame.rootTranslationX = float.Parse(strSplitKeyData[1].Split('_')[3], CultureInfo.InvariantCulture.NumberFormat);
+                            fFrame.rootTranslationY = float.Parse(strSplitKeyData[1].Split('_')[4], CultureInfo.InvariantCulture.NumberFormat);
+                            fFrame.rootTranslationZ = float.Parse(strSplitKeyData[1].Split('_')[5], CultureInfo.InvariantCulture.NumberFormat);
+
+                            tmpfAnimation.frames.Add(fFrame);
+
+                            break;
+                    }
+                }
+            }
+
+            // Update last values
+            tmpfAnimation.nBones = fSkeleton.nBones;
+            tmpfAnimation.nFrames = iFrameCounter;
+
+            tmpfAnimation.rotationOrder = new byte[3];
+            tmpfAnimation.rotationOrder[0] = 1;
+            tmpfAnimation.rotationOrder[1] = 0;
+            tmpfAnimation.rotationOrder[2] = 2;
+
+            tmpfAnimation.version = 1;
+            tmpfAnimation.unused = 0;
+
+            fAnimation = tmpfAnimation;
+        }
+
+
 
         //  ---------------------------------------------------------------------------------------------------
         //  ============================================== SAVING =============================================
         //  ---------------------------------------------------------------------------------------------------
+        public static void WriteFieldFrameData(FieldSkeleton fSkeleton, FieldAnimation fAnimation, string strFileName)
+        {
+            int bi, iFrameCounter;
+            StringBuilder strOutputFrameData = new StringBuilder();
+
+            iFrameCounter = 0;
+
+            strOutputFrameData.AppendLine("MODEL_TYPE:" + modelType.ToString());
+            strOutputFrameData.AppendLine("FILENAME:" + fAnimation.strFieldAnimationFile.ToUpper());
+            strOutputFrameData.AppendLine("RUNTIME_DATA:" + fAnimation.runtime_data[0].ToString() + "_" +
+                                                            fAnimation.runtime_data[1].ToString() + "_" +
+                                                            fAnimation.runtime_data[2].ToString() + "_" +
+                                                            fAnimation.runtime_data[3].ToString() + "_" +
+                                                            fAnimation.runtime_data[4].ToString());
+            strOutputFrameData.AppendLine("");
+
+            foreach (FieldFrame fFrame in fAnimation.frames)
+            {
+                strOutputFrameData.AppendLine("");
+
+                strOutputFrameData.AppendLine("FRAME:" + iFrameCounter.ToString());
+                for (bi = 0; bi < fSkeleton.nBones; bi++)
+                {
+                    strOutputFrameData.AppendLine("BONE:" + fSkeleton.bones[bi].joint_i + "-" + fSkeleton.bones[bi].joint_f);
+                    strOutputFrameData.AppendLine("BONEROT:" + fFrame.rotations[bi].alpha.ToString(CultureInfo.InvariantCulture.NumberFormat) + "_" +
+                                                               fFrame.rotations[bi].beta.ToString(CultureInfo.InvariantCulture.NumberFormat) + "_" +
+                                                               fFrame.rotations[bi].gamma.ToString(CultureInfo.InvariantCulture.NumberFormat));
+                }
+                strOutputFrameData.AppendLine("ROTAT_TRANS:" + fFrame.rootRotationAlpha.ToString(CultureInfo.InvariantCulture.NumberFormat) + "_" +
+                                                               fFrame.rootRotationBeta.ToString(CultureInfo.InvariantCulture.NumberFormat) + "_" +
+                                                               fFrame.rootRotationGamma.ToString(CultureInfo.InvariantCulture.NumberFormat) + "_" +
+                                                               fFrame.rootTranslationX.ToString(CultureInfo.InvariantCulture.NumberFormat) + "_" +
+                                                               fFrame.rootTranslationY.ToString(CultureInfo.InvariantCulture.NumberFormat) + "_" +
+                                                               fFrame.rootTranslationZ.ToString(CultureInfo.InvariantCulture.NumberFormat));
+                strOutputFrameData.AppendLine("");
+
+                iFrameCounter++;
+            }
+
+            File.WriteAllText(strFileName.ToUpper(), strOutputFrameData.ToString());
+        }
+
         public static void WriteFieldAnimation(FieldAnimation fAnimation, string fileName)
         {
             int fi, bi;

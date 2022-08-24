@@ -451,6 +451,61 @@ namespace KimeraCS
             return iNumAnimFramesIsOneResult;
         }
 
+        public static int ReadFrameData(string strFileName)
+        {
+            int iinputFrameData = 0;
+
+            try
+            {
+                switch (modelType)
+                {
+                    case K_HRC_SKELETON:
+                        ReadFieldFrameData(fSkeleton, ref fAnimation, strFileName);
+
+                        iinputFrameData = 1;
+                        break;
+
+                    case K_AA_SKELETON:
+                    case K_MAGIC_SKELETON:
+                        //iinputFrameData = WriteBattleFrameDataPack(ref bAnimationsPack, strFileName);
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                iinputFrameData = -1;
+            }
+
+            return iinputFrameData;
+        }
+
+        public static int WriteFrameData(string strFileName)
+        {
+            int ioutputFrameData = 0;
+
+            try
+            {
+                switch (modelType)
+                {
+                    case K_HRC_SKELETON:
+                        WriteFieldFrameData(fSkeleton, fAnimation, strFileName);
+
+                        ioutputFrameData = 1;
+                        break;
+
+                    case K_AA_SKELETON:
+                    case K_MAGIC_SKELETON:
+                        //ioutputFrameData = WriteBattleAnimationsPack(ref bAnimationsPack, strFileName);
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                ioutputFrameData = -1;
+            }
+
+            return ioutputFrameData;
+        }
 
 
 
