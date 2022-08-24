@@ -55,19 +55,11 @@ namespace KimeraCS
                 // Skeleton number of bones
                 nBones = Int32.Parse(hrcString[2].Substring(7));
                 // Check model without skeleton
-                //if (nBones == 0) nBones = 1;
 
                 bones = new List<FieldBone>();
 
                 // Populate bones.
                 // There is always "root" even there are no bones in some models.
-                //bones.Add(new FieldBone(hrcString[4],
-                //                        hrcString[5],
-                //                        hrcString[6],
-                //                        hrcString[7],
-                //                        ref textures_pool,
-                //                        loadGeometryQ,
-                //                        strFileDirectoryName));
 
                 //  We will get the rest of bones rows checking if we are reading a correct line from
                 //  .HRC file. There are some Field Models that can have '#' lines not useful among other things maybe.
@@ -114,22 +106,6 @@ namespace KimeraCS
 
                     i++;
                 }
-
-
-                //for (var i = 1; i < nBones; i++)
-                //{
-                //    //int i_row = (5 * i) - 1;
-                //    //int i_row = (5 * i) + 4;
-
-                //    //bones.Add(new FieldBone(hrcString[i_row],
-                //    //                        hrcString[i_row + 1],
-                //    //                        hrcString[i_row + 2],
-                //    //                        hrcString[i_row + 3],
-                //    //                        ref textures_pool,
-                //    //                        loadGeometryQ,
-                //    //                        strFileDirectoryName));
-
-                //}
             }
         }
 
