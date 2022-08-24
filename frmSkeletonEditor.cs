@@ -58,7 +58,7 @@ namespace KimeraCS
 
  
 
-        public const string STR_APPNAME = "KimeraCS 1.4o";
+        public const string STR_APPNAME = "KimeraCS 1.4q";
 
         public static int modelWidth;
         public static int modelHeight;
@@ -463,6 +463,8 @@ namespace KimeraCS
 
             saveAnimationToolStripMenuItem.Enabled = false;
             saveAnimationAsToolStripMenuItem.Enabled = false;
+            outputFramesDataTXTToolStripMenuItem.Enabled = false;
+            inputFramesDataTXTToolStripMenuItem.Enabled = false;
 
             saveSkeletonToolStripMenuItem.Enabled = false;
             saveSkeletonAsToolStripMenuItem.Enabled = false;
@@ -539,6 +541,8 @@ namespace KimeraCS
 
                     saveAnimationToolStripMenuItem.Enabled = true;
                     saveAnimationAsToolStripMenuItem.Enabled = true;
+                    outputFramesDataTXTToolStripMenuItem.Enabled = true;
+                    inputFramesDataTXTToolStripMenuItem.Enabled = true;
 
                     saveSkeletonToolStripMenuItem.Enabled = true;
                     saveSkeletonAsToolStripMenuItem.Enabled = true;
@@ -2527,6 +2531,111 @@ namespace KimeraCS
             {
                 MessageBox.Show("Error exception saving " + modelTypeStr + " file " + 
                                 Path.GetFileName(saveFile.FileName).ToUpper() + ".",
+                                "Error");
+                return;
+            }
+        }
+
+        private void outputFramesDataAsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            int iSaveResult;
+
+            // Set filter options and filter index depending on modelType
+            saveFile.Title = "Output Frame Data to TXT";
+            saveFile.Filter = "Frame Data|*.txt|All files|*.*";
+
+            // Check Initial Directory
+            saveFile.FileName = Path.GetFileNameWithoutExtension(strGlobalFieldAnimationName) + ".TXT";
+            saveFile.FilterIndex = 1;
+            saveFile.InitialDirectory = strGlobalPathSaveAnimationFolder;
+
+            try
+            {
+                // Process input if the user clicked OK.
+                if (saveFile.ShowDialog() == DialogResult.OK)
+                {
+                    // We save the Frames Data
+                    iSaveResult = WriteFrameData(saveFile.FileName);
+
+                    if (iSaveResult == 1)
+                    {
+                        MessageBox.Show("Frame Data of animation " + strGlobalFieldAnimationName.ToUpper() + " has been saved.",
+                                        "Information");
+                    }
+                    else if (iSaveResult == -1)
+                    {
+                        MessageBox.Show("It has been some problem while saving the Frame Data to file " +
+                                        Path.GetFileName(saveFile.FileName).ToUpper() + ".",
+                                        "Error");
+                    }
+                }
+            }
+            catch
+            {
+                MessageBox.Show("Error exception saving the Frame Data to file " +
+                                Path.GetFileName(saveFile.FileName).ToUpper() + ".",
+                                "Error");
+                return;
+            }
+        }
+
+        private void inputFramesDataTXTToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            int iOpenResult;
+
+            // Set filter options and filter index depending on modelType
+            openFile.Title = "Input Frame Data from TXT";
+            openFile.Filter = "Frame Data|*.txt|All files|*.*";
+
+            // Check Initial Directory
+            openFile.FileName = Path.GetFileNameWithoutExtension(strGlobalFieldAnimationName) + ".TXT";
+            openFile.FilterIndex = 1;
+            openFile.InitialDirectory = strGlobalPathFieldAnimationFolder;
+
+            try
+            {
+                // Process input if the user clicked OK.
+                if (openFile.ShowDialog() == DialogResult.OK)
+                {
+                    // Let's save state to buffer
+                    AddStateToBuffer(this);
+
+                    // We load the Frames Data
+                    iOpenResult = ReadFrameData(openFile.FileName);
+
+                    if (iOpenResult == -1)
+                    {
+                        MessageBox.Show("It has been some problem while loading the Frame Data from file " +
+                                        Path.GetFileName(openFile.FileName).ToUpper() + ".",
+                                        "Error");
+                    }
+
+                    strGlobalFieldAnimationName = fAnimation.strFieldAnimationFile;
+
+                    // Let's stop the Animation
+                    btnPlayStopAnim.Checked = false;
+
+                    iCurrentFrameScroll = 0;
+                    tbCurrentFrameScroll.Value = 0;
+                    txtAnimationFrame.Text = iCurrentFrameScroll.ToString();
+
+                    if (fAnimation.nFrames > 0)
+                        tbCurrentFrameScroll.Maximum = fAnimation.nFrames - 1;
+                    else
+                        tbCurrentFrameScroll.Maximum = 0;
+
+                    SetFrameEditorFields();
+
+                    Text = STR_APPNAME + " - Model: " + strGlobalFieldSkeletonName +
+                                         " / Anim: " + strGlobalFieldAnimationName;
+
+                    panelModel_Paint(null, null);
+                }
+            }
+            catch
+            {
+                MessageBox.Show("Error exception loading the Frame Data from file " +
+                                Path.GetFileName(openFile.FileName).ToUpper() + ".",
                                 "Error");
                 return;
             }
@@ -5695,7 +5804,7 @@ namespace KimeraCS
 
             //MessageBox.Show("frmSkeletonEditor", "Test", MessageBoxButtons.OK);
 
-           //panelModel_Paint(null, null);
+            //panelModel_Paint(null, null);
         }
 
         public void tsUIOpacity100_Click(object sender, EventArgs e)

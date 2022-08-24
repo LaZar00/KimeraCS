@@ -169,6 +169,8 @@ namespace KimeraCS
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.saveAnimationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAnimationAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.outputFramesDataTXTToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.inputFramesDataTXTToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripFPS15 = new System.Windows.Forms.ToolStripMenuItem();
@@ -217,7 +219,7 @@ namespace KimeraCS
             this.panel1.Controls.Add(this.cbBoneSelector);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Right;
             this.panel1.Location = new System.Drawing.Point(766, 28);
-            this.panel1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.panel1.Margin = new System.Windows.Forms.Padding(4);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(213, 771);
             this.panel1.TabIndex = 6;
@@ -434,7 +436,7 @@ namespace KimeraCS
             this.chkPropagateChangesForward.Checked = true;
             this.chkPropagateChangesForward.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkPropagateChangesForward.Location = new System.Drawing.Point(29, 150);
-            this.chkPropagateChangesForward.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.chkPropagateChangesForward.Margin = new System.Windows.Forms.Padding(4);
             this.chkPropagateChangesForward.Name = "chkPropagateChangesForward";
             this.chkPropagateChangesForward.Size = new System.Drawing.Size(147, 21);
             this.chkPropagateChangesForward.TabIndex = 3;
@@ -603,7 +605,7 @@ namespace KimeraCS
             // txtBoneOptionsLength
             // 
             this.txtBoneOptionsLength.Location = new System.Drawing.Point(61, 103);
-            this.txtBoneOptionsLength.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtBoneOptionsLength.Margin = new System.Windows.Forms.Padding(4);
             this.txtBoneOptionsLength.Name = "txtBoneOptionsLength";
             this.txtBoneOptionsLength.Size = new System.Drawing.Size(111, 22);
             this.txtBoneOptionsLength.TabIndex = 10;
@@ -787,7 +789,7 @@ namespace KimeraCS
             this.panel2.Controls.Add(this.chkDListEnable);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Left;
             this.panel2.Location = new System.Drawing.Point(0, 28);
-            this.panel2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.panel2.Margin = new System.Windows.Forms.Padding(4);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(211, 771);
             this.panel2.TabIndex = 7;
@@ -807,9 +809,9 @@ namespace KimeraCS
             this.groupBox1.Controls.Add(this.hsbLightPosX);
             this.groupBox1.ForeColor = System.Drawing.SystemColors.Control;
             this.groupBox1.Location = new System.Drawing.Point(7, 602);
-            this.groupBox1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox1.Margin = new System.Windows.Forms.Padding(4);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox1.Padding = new System.Windows.Forms.Padding(4);
             this.groupBox1.Size = new System.Drawing.Size(197, 165);
             this.groupBox1.TabIndex = 13;
             this.groupBox1.TabStop = false;
@@ -819,7 +821,7 @@ namespace KimeraCS
             // 
             this.chkInifintyFarLights.AutoSize = true;
             this.chkInifintyFarLights.Location = new System.Drawing.Point(17, 140);
-            this.chkInifintyFarLights.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.chkInifintyFarLights.Margin = new System.Windows.Forms.Padding(4);
             this.chkInifintyFarLights.Name = "chkInifintyFarLights";
             this.chkInifintyFarLights.Size = new System.Drawing.Size(142, 21);
             this.chkInifintyFarLights.TabIndex = 14;
@@ -831,7 +833,7 @@ namespace KimeraCS
             // 
             this.chkRightLight.AutoSize = true;
             this.chkRightLight.Location = new System.Drawing.Point(105, 118);
-            this.chkRightLight.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.chkRightLight.Margin = new System.Windows.Forms.Padding(4);
             this.chkRightLight.Name = "chkRightLight";
             this.chkRightLight.Size = new System.Drawing.Size(63, 21);
             this.chkRightLight.TabIndex = 13;
@@ -843,7 +845,7 @@ namespace KimeraCS
             // 
             this.chkLeftLight.AutoSize = true;
             this.chkLeftLight.Location = new System.Drawing.Point(17, 118);
-            this.chkLeftLight.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.chkLeftLight.Margin = new System.Windows.Forms.Padding(4);
             this.chkLeftLight.Name = "chkLeftLight";
             this.chkLeftLight.Size = new System.Drawing.Size(54, 21);
             this.chkLeftLight.TabIndex = 12;
@@ -855,7 +857,7 @@ namespace KimeraCS
             // 
             this.chkRearLight.AutoSize = true;
             this.chkRearLight.Location = new System.Drawing.Point(105, 100);
-            this.chkRearLight.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.chkRearLight.Margin = new System.Windows.Forms.Padding(4);
             this.chkRearLight.Name = "chkRearLight";
             this.chkRearLight.Size = new System.Drawing.Size(61, 21);
             this.chkRearLight.TabIndex = 11;
@@ -867,7 +869,7 @@ namespace KimeraCS
             // 
             this.chkFrontLight.AutoSize = true;
             this.chkFrontLight.Location = new System.Drawing.Point(17, 100);
-            this.chkFrontLight.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.chkFrontLight.Margin = new System.Windows.Forms.Padding(4);
             this.chkFrontLight.Name = "chkFrontLight";
             this.chkFrontLight.Size = new System.Drawing.Size(63, 21);
             this.chkFrontLight.TabIndex = 10;
@@ -936,7 +938,7 @@ namespace KimeraCS
             // 
             this.cbWeapon.FormattingEnabled = true;
             this.cbWeapon.Location = new System.Drawing.Point(132, 572);
-            this.cbWeapon.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.cbWeapon.Margin = new System.Windows.Forms.Padding(4);
             this.cbWeapon.Name = "cbWeapon";
             this.cbWeapon.Size = new System.Drawing.Size(69, 24);
             this.cbWeapon.TabIndex = 12;
@@ -947,7 +949,7 @@ namespace KimeraCS
             // 
             this.cbBattleAnimation.FormattingEnabled = true;
             this.cbBattleAnimation.Location = new System.Drawing.Point(132, 546);
-            this.cbBattleAnimation.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.cbBattleAnimation.Margin = new System.Windows.Forms.Padding(4);
             this.cbBattleAnimation.Name = "cbBattleAnimation";
             this.cbBattleAnimation.Size = new System.Drawing.Size(69, 24);
             this.cbBattleAnimation.TabIndex = 11;
@@ -982,7 +984,7 @@ namespace KimeraCS
             // btnComputeWeaponPosition
             // 
             this.btnComputeWeaponPosition.Location = new System.Drawing.Point(7, 501);
-            this.btnComputeWeaponPosition.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnComputeWeaponPosition.Margin = new System.Windows.Forms.Padding(4);
             this.btnComputeWeaponPosition.Name = "btnComputeWeaponPosition";
             this.btnComputeWeaponPosition.Size = new System.Drawing.Size(197, 43);
             this.btnComputeWeaponPosition.TabIndex = 8;
@@ -994,7 +996,7 @@ namespace KimeraCS
             // btnComputeGroundHeight
             // 
             this.btnComputeGroundHeight.Location = new System.Drawing.Point(7, 475);
-            this.btnComputeGroundHeight.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnComputeGroundHeight.Margin = new System.Windows.Forms.Padding(4);
             this.btnComputeGroundHeight.Name = "btnComputeGroundHeight";
             this.btnComputeGroundHeight.Size = new System.Drawing.Size(197, 27);
             this.btnComputeGroundHeight.TabIndex = 7;
@@ -1058,9 +1060,9 @@ namespace KimeraCS
             this.gbRotateFrame.Controls.Add(this.hsbRotateAlpha);
             this.gbRotateFrame.ForeColor = System.Drawing.SystemColors.ButtonFace;
             this.gbRotateFrame.Location = new System.Drawing.Point(7, 236);
-            this.gbRotateFrame.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.gbRotateFrame.Margin = new System.Windows.Forms.Padding(4);
             this.gbRotateFrame.Name = "gbRotateFrame";
-            this.gbRotateFrame.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.gbRotateFrame.Padding = new System.Windows.Forms.Padding(4);
             this.gbRotateFrame.Size = new System.Drawing.Size(184, 169);
             this.gbRotateFrame.TabIndex = 2;
             this.gbRotateFrame.TabStop = false;
@@ -1069,7 +1071,7 @@ namespace KimeraCS
             // txtRotateGamma
             // 
             this.txtRotateGamma.Location = new System.Drawing.Point(135, 137);
-            this.txtRotateGamma.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtRotateGamma.Margin = new System.Windows.Forms.Padding(4);
             this.txtRotateGamma.Name = "txtRotateGamma";
             this.txtRotateGamma.Size = new System.Drawing.Size(36, 22);
             this.txtRotateGamma.TabIndex = 8;
@@ -1098,7 +1100,7 @@ namespace KimeraCS
             // txtRotateBeta
             // 
             this.txtRotateBeta.Location = new System.Drawing.Point(136, 89);
-            this.txtRotateBeta.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtRotateBeta.Margin = new System.Windows.Forms.Padding(4);
             this.txtRotateBeta.Name = "txtRotateBeta";
             this.txtRotateBeta.Size = new System.Drawing.Size(36, 22);
             this.txtRotateBeta.TabIndex = 5;
@@ -1136,7 +1138,7 @@ namespace KimeraCS
             // txtRotateAlpha
             // 
             this.txtRotateAlpha.Location = new System.Drawing.Point(136, 41);
-            this.txtRotateAlpha.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtRotateAlpha.Margin = new System.Windows.Forms.Padding(4);
             this.txtRotateAlpha.Name = "txtRotateAlpha";
             this.txtRotateAlpha.Size = new System.Drawing.Size(36, 22);
             this.txtRotateAlpha.TabIndex = 1;
@@ -1166,9 +1168,9 @@ namespace KimeraCS
             this.gbRepositionFrame.Controls.Add(this.hsbRepositionX);
             this.gbRepositionFrame.ForeColor = System.Drawing.SystemColors.ButtonFace;
             this.gbRepositionFrame.Location = new System.Drawing.Point(7, 127);
-            this.gbRepositionFrame.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.gbRepositionFrame.Margin = new System.Windows.Forms.Padding(4);
             this.gbRepositionFrame.Name = "gbRepositionFrame";
-            this.gbRepositionFrame.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.gbRepositionFrame.Padding = new System.Windows.Forms.Padding(4);
             this.gbRepositionFrame.Size = new System.Drawing.Size(184, 106);
             this.gbRepositionFrame.TabIndex = 1;
             this.gbRepositionFrame.TabStop = false;
@@ -1177,7 +1179,7 @@ namespace KimeraCS
             // txtRepositionZ
             // 
             this.txtRepositionZ.Location = new System.Drawing.Point(139, 74);
-            this.txtRepositionZ.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtRepositionZ.Margin = new System.Windows.Forms.Padding(4);
             this.txtRepositionZ.Name = "txtRepositionZ";
             this.txtRepositionZ.Size = new System.Drawing.Size(36, 22);
             this.txtRepositionZ.TabIndex = 8;
@@ -1207,7 +1209,7 @@ namespace KimeraCS
             // txtRepositionY
             // 
             this.txtRepositionY.Location = new System.Drawing.Point(139, 49);
-            this.txtRepositionY.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtRepositionY.Margin = new System.Windows.Forms.Padding(4);
             this.txtRepositionY.Name = "txtRepositionY";
             this.txtRepositionY.Size = new System.Drawing.Size(36, 22);
             this.txtRepositionY.TabIndex = 5;
@@ -1246,7 +1248,7 @@ namespace KimeraCS
             // txtRepositionX
             // 
             this.txtRepositionX.Location = new System.Drawing.Point(139, 25);
-            this.txtRepositionX.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtRepositionX.Margin = new System.Windows.Forms.Padding(4);
             this.txtRepositionX.Name = "txtRepositionX";
             this.txtRepositionX.Size = new System.Drawing.Size(36, 22);
             this.txtRepositionX.TabIndex = 1;
@@ -1277,9 +1279,9 @@ namespace KimeraCS
             this.gbResizeFrame.Controls.Add(this.hsbResizePieceX);
             this.gbResizeFrame.ForeColor = System.Drawing.SystemColors.ButtonFace;
             this.gbResizeFrame.Location = new System.Drawing.Point(7, 17);
-            this.gbResizeFrame.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.gbResizeFrame.Margin = new System.Windows.Forms.Padding(4);
             this.gbResizeFrame.Name = "gbResizeFrame";
-            this.gbResizeFrame.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.gbResizeFrame.Padding = new System.Windows.Forms.Padding(4);
             this.gbResizeFrame.Size = new System.Drawing.Size(184, 106);
             this.gbResizeFrame.TabIndex = 0;
             this.gbResizeFrame.TabStop = false;
@@ -1288,7 +1290,7 @@ namespace KimeraCS
             // txtResizePieceZ
             // 
             this.txtResizePieceZ.Location = new System.Drawing.Point(139, 74);
-            this.txtResizePieceZ.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtResizePieceZ.Margin = new System.Windows.Forms.Padding(4);
             this.txtResizePieceZ.Name = "txtResizePieceZ";
             this.txtResizePieceZ.Size = new System.Drawing.Size(36, 22);
             this.txtResizePieceZ.TabIndex = 8;
@@ -1318,7 +1320,7 @@ namespace KimeraCS
             // txtResizePieceY
             // 
             this.txtResizePieceY.Location = new System.Drawing.Point(139, 49);
-            this.txtResizePieceY.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtResizePieceY.Margin = new System.Windows.Forms.Padding(4);
             this.txtResizePieceY.Name = "txtResizePieceY";
             this.txtResizePieceY.Size = new System.Drawing.Size(36, 22);
             this.txtResizePieceY.TabIndex = 5;
@@ -1357,7 +1359,7 @@ namespace KimeraCS
             // txtResizePieceX
             // 
             this.txtResizePieceX.Location = new System.Drawing.Point(139, 25);
-            this.txtResizePieceX.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtResizePieceX.Margin = new System.Windows.Forms.Padding(4);
             this.txtResizePieceX.Name = "txtResizePieceX";
             this.txtResizePieceX.Size = new System.Drawing.Size(36, 22);
             this.txtResizePieceX.TabIndex = 1;
@@ -1406,7 +1408,7 @@ namespace KimeraCS
             this.panel3.Controls.Add(this.txtAnimationFrame);
             this.panel3.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panel3.Location = new System.Drawing.Point(211, 712);
-            this.panel3.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.panel3.Margin = new System.Windows.Forms.Padding(4);
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(555, 87);
             this.panel3.TabIndex = 8;
@@ -1416,7 +1418,7 @@ namespace KimeraCS
             this.btnFramePrev.BackgroundImage = global::KimeraCS.Properties.Resources.media_rewind;
             this.btnFramePrev.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.btnFramePrev.Location = new System.Drawing.Point(381, 9);
-            this.btnFramePrev.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnFramePrev.Margin = new System.Windows.Forms.Padding(4);
             this.btnFramePrev.Name = "btnFramePrev";
             this.btnFramePrev.Size = new System.Drawing.Size(43, 39);
             this.btnFramePrev.TabIndex = 25;
@@ -1429,7 +1431,7 @@ namespace KimeraCS
             this.btnFrameNext.BackgroundImage = global::KimeraCS.Properties.Resources.media_fast_forward;
             this.btnFrameNext.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.btnFrameNext.Location = new System.Drawing.Point(464, 9);
-            this.btnFrameNext.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnFrameNext.Margin = new System.Windows.Forms.Padding(4);
             this.btnFrameNext.Name = "btnFrameNext";
             this.btnFrameNext.Size = new System.Drawing.Size(43, 39);
             this.btnFrameNext.TabIndex = 24;
@@ -1443,7 +1445,7 @@ namespace KimeraCS
             this.btnPlayStopAnim.BackgroundImage = global::KimeraCS.Properties.Resources.media_play;
             this.btnPlayStopAnim.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.btnPlayStopAnim.Location = new System.Drawing.Point(423, 9);
-            this.btnPlayStopAnim.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnPlayStopAnim.Margin = new System.Windows.Forms.Padding(4);
             this.btnPlayStopAnim.Name = "btnPlayStopAnim";
             this.btnPlayStopAnim.Size = new System.Drawing.Size(43, 39);
             this.btnPlayStopAnim.TabIndex = 23;
@@ -1456,7 +1458,7 @@ namespace KimeraCS
             this.btnFrameEnd.BackgroundImage = global::KimeraCS.Properties.Resources.media_end;
             this.btnFrameEnd.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.btnFrameEnd.Location = new System.Drawing.Point(505, 9);
-            this.btnFrameEnd.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnFrameEnd.Margin = new System.Windows.Forms.Padding(4);
             this.btnFrameEnd.Name = "btnFrameEnd";
             this.btnFrameEnd.Size = new System.Drawing.Size(43, 39);
             this.btnFrameEnd.TabIndex = 22;
@@ -1469,7 +1471,7 @@ namespace KimeraCS
             this.btnFrameBegin.BackgroundImage = global::KimeraCS.Properties.Resources.media_beginning;
             this.btnFrameBegin.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.btnFrameBegin.Location = new System.Drawing.Point(340, 9);
-            this.btnFrameBegin.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnFrameBegin.Margin = new System.Windows.Forms.Padding(4);
             this.btnFrameBegin.Name = "btnFrameBegin";
             this.btnFrameBegin.Size = new System.Drawing.Size(43, 39);
             this.btnFrameBegin.TabIndex = 21;
@@ -1777,6 +1779,8 @@ namespace KimeraCS
             this.toolStripSeparator3,
             this.saveAnimationToolStripMenuItem,
             this.saveAnimationAsToolStripMenuItem,
+            this.outputFramesDataTXTToolStripMenuItem,
+            this.inputFramesDataTXTToolStripMenuItem,
             this.toolStripSeparator4,
             this.toolStripMenuItem1,
             this.toolStripSeparator5,
@@ -1789,7 +1793,7 @@ namespace KimeraCS
             // 
             this.loadFieldAnimationToolStripMenuItem.Enabled = false;
             this.loadFieldAnimationToolStripMenuItem.Name = "loadFieldAnimationToolStripMenuItem";
-            this.loadFieldAnimationToolStripMenuItem.Size = new System.Drawing.Size(339, 26);
+            this.loadFieldAnimationToolStripMenuItem.Size = new System.Drawing.Size(361, 26);
             this.loadFieldAnimationToolStripMenuItem.Text = "Load Field Animation";
             this.loadFieldAnimationToolStripMenuItem.Click += new System.EventHandler(this.loadFieldAnimationToolStripMenuItem_Click);
             // 
@@ -1797,21 +1801,21 @@ namespace KimeraCS
             // 
             this.loadBattleMagicLimitsAnimationStripMenuItem.Enabled = false;
             this.loadBattleMagicLimitsAnimationStripMenuItem.Name = "loadBattleMagicLimitsAnimationStripMenuItem";
-            this.loadBattleMagicLimitsAnimationStripMenuItem.Size = new System.Drawing.Size(339, 26);
+            this.loadBattleMagicLimitsAnimationStripMenuItem.Size = new System.Drawing.Size(361, 26);
             this.loadBattleMagicLimitsAnimationStripMenuItem.Text = "Load Battle/Magic/Limits Animations";
             this.loadBattleMagicLimitsAnimationStripMenuItem.Click += new System.EventHandler(this.loadBattleMagicLimitAnimationsStripMenuItem_Click);
             // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(336, 6);
+            this.toolStripSeparator3.Size = new System.Drawing.Size(358, 6);
             // 
             // saveAnimationToolStripMenuItem
             // 
             this.saveAnimationToolStripMenuItem.Enabled = false;
             this.saveAnimationToolStripMenuItem.Name = "saveAnimationToolStripMenuItem";
             this.saveAnimationToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.W)));
-            this.saveAnimationToolStripMenuItem.Size = new System.Drawing.Size(339, 26);
+            this.saveAnimationToolStripMenuItem.Size = new System.Drawing.Size(361, 26);
             this.saveAnimationToolStripMenuItem.Text = "Save Animation";
             this.saveAnimationToolStripMenuItem.Click += new System.EventHandler(this.saveAnimationToolStripMenuItem_Click);
             // 
@@ -1819,14 +1823,30 @@ namespace KimeraCS
             // 
             this.saveAnimationAsToolStripMenuItem.Enabled = false;
             this.saveAnimationAsToolStripMenuItem.Name = "saveAnimationAsToolStripMenuItem";
-            this.saveAnimationAsToolStripMenuItem.Size = new System.Drawing.Size(339, 26);
+            this.saveAnimationAsToolStripMenuItem.Size = new System.Drawing.Size(361, 26);
             this.saveAnimationAsToolStripMenuItem.Text = "Save Animation As...";
             this.saveAnimationAsToolStripMenuItem.Click += new System.EventHandler(this.saveAnimationAsToolStripMenuItem_Click);
+            // 
+            // outputFramesDataTXTToolStripMenuItem
+            // 
+            this.outputFramesDataTXTToolStripMenuItem.Enabled = false;
+            this.outputFramesDataTXTToolStripMenuItem.Name = "outputFramesDataTXTToolStripMenuItem";
+            this.outputFramesDataTXTToolStripMenuItem.Size = new System.Drawing.Size(361, 26);
+            this.outputFramesDataTXTToolStripMenuItem.Text = "Output Frames Data to .TXT (Only Field)";
+            this.outputFramesDataTXTToolStripMenuItem.Click += new System.EventHandler(this.outputFramesDataAsToolStripMenuItem_Click);
+            // 
+            // inputFramesDataTXTToolStripMenuItem
+            // 
+            this.inputFramesDataTXTToolStripMenuItem.Enabled = false;
+            this.inputFramesDataTXTToolStripMenuItem.Name = "inputFramesDataTXTToolStripMenuItem";
+            this.inputFramesDataTXTToolStripMenuItem.Size = new System.Drawing.Size(361, 26);
+            this.inputFramesDataTXTToolStripMenuItem.Text = "Input Frames Data from .TXT (Only Field)";
+            this.inputFramesDataTXTToolStripMenuItem.Click += new System.EventHandler(this.inputFramesDataTXTToolStripMenuItem_Click);
             // 
             // toolStripSeparator4
             // 
             this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(336, 6);
+            this.toolStripSeparator4.Size = new System.Drawing.Size(358, 6);
             // 
             // toolStripMenuItem1
             // 
@@ -1835,7 +1855,7 @@ namespace KimeraCS
             this.toolStripFPS30,
             this.toolStripFPS60});
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(339, 26);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(361, 26);
             this.toolStripMenuItem1.Text = "FPS for Play Animation";
             // 
             // toolStripFPS15
@@ -1864,12 +1884,12 @@ namespace KimeraCS
             // toolStripSeparator5
             // 
             this.toolStripSeparator5.Name = "toolStripSeparator5";
-            this.toolStripSeparator5.Size = new System.Drawing.Size(336, 6);
+            this.toolStripSeparator5.Size = new System.Drawing.Size(358, 6);
             // 
             // interpolateAllAnimationsToolStripMenuItem
             // 
             this.interpolateAllAnimationsToolStripMenuItem.Name = "interpolateAllAnimationsToolStripMenuItem";
-            this.interpolateAllAnimationsToolStripMenuItem.Size = new System.Drawing.Size(339, 26);
+            this.interpolateAllAnimationsToolStripMenuItem.Size = new System.Drawing.Size(361, 26);
             this.interpolateAllAnimationsToolStripMenuItem.Text = "Interpolate All Animations";
             this.interpolateAllAnimationsToolStripMenuItem.Click += new System.EventHandler(this.interpolateAllAnimationsToolStripMenuItem_Click);
             // 
@@ -1896,7 +1916,7 @@ namespace KimeraCS
             | System.Windows.Forms.AnchorStyles.Right)));
             this.panelModel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.panelModel.Location = new System.Drawing.Point(212, 31);
-            this.panelModel.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.panelModel.Margin = new System.Windows.Forms.Padding(4);
             this.panelModel.Name = "panelModel";
             this.panelModel.Size = new System.Drawing.Size(552, 680);
             this.panelModel.TabIndex = 9;
@@ -1922,7 +1942,7 @@ namespace KimeraCS
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
             this.MainMenuStrip = this.menuStrip1;
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.MinimumSize = new System.Drawing.Size(994, 819);
             this.Name = "frmSkeletonEditor";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
@@ -2125,6 +2145,8 @@ namespace KimeraCS
         private System.Windows.Forms.ToolStripMenuItem tsUIOpacity75;
         private System.Windows.Forms.ToolStripMenuItem tsUIOpacity50;
         private System.Windows.Forms.ToolStripMenuItem tsUIOpacity25;
+        private System.Windows.Forms.ToolStripMenuItem outputFramesDataTXTToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem inputFramesDataTXTToolStripMenuItem;
     }
 }
 
