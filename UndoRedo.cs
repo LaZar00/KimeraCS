@@ -192,12 +192,20 @@ namespace KimeraCS
                     if (frmSkEditor.cbTextureSelect.Items.Count > 0)
                         frmSkEditor.cbTextureSelect.SelectedIndex = sState.textureIndex;
 
-                    if (sState.frameIndex > fAnimation.nFrames)
-                        frmSkEditor.tbCurrentFrameScroll.Value = fAnimation.nFrames - 1;
+                    if (sState.frameIndex > fAnimation.nFrames) 
+                    {
+                        if (fAnimation.nFrames <= 0)
+                            frmSkEditor.tbCurrentFrameScroll.Value = 0;
+                        else
+                            frmSkEditor.tbCurrentFrameScroll.Value = fAnimation.nFrames - 1;
+                    }
                     else
                         frmSkEditor.tbCurrentFrameScroll.Value = sState.frameIndex;
 
-                    frmSkEditor.tbCurrentFrameScroll.Maximum = fAnimation.nFrames - 1;
+                    if (fAnimation.nFrames <= 0)
+                        frmSkEditor.tbCurrentFrameScroll.Maximum = 0;
+                    else
+                        frmSkEditor.tbCurrentFrameScroll.Maximum = fAnimation.nFrames - 1;
 
                     break;
 
