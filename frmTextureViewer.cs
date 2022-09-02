@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.Drawing.Drawing2D;
 using System.Collections.Generic;
+using System.IO;
 using System.ComponentModel;
 using System.Data;
 using System.Linq;
@@ -53,6 +54,11 @@ namespace KimeraCS
         bool bLoadingTextureViewer;
         int localXYPointIdx, localGroupIdx;
 
+        public bool shiftPressedQ;
+        public int iPosXClicked;
+        public int iPosYClicked;
+        Cursor Hand, HandPlus;
+
 
         public frmTextureViewer(frmSkeletonEditor frmSkelEdit, PModel modelIn)
         {
@@ -62,6 +68,8 @@ namespace KimeraCS
             Owner = frmSkelEdit;
 
             TexViewModel = CopyPModel(modelIn);
+
+            shiftPressedQ = false;
         }
 
 
@@ -100,7 +108,7 @@ namespace KimeraCS
                     return true;
             }
 
-                return false;
+            return false;
         }
 
         public void PrepareUVXYCoords()
@@ -123,7 +131,9 @@ namespace KimeraCS
                 // We have one group to add to the list
                 tmplstUVXYCoords = new STUVXYCoord();
 
-                if (TexViewModel.Groups[iGroupIdx].texFlag == 1 && TexViewModel.Groups[iGroupIdx].texID == iTexID)
+                if (TexViewModel.TexCoords.Length > 0 &&
+                    TexViewModel.Groups[iGroupIdx].texFlag == 1 && 
+                    TexViewModel.Groups[iGroupIdx].texID == iTexID)
                 {
 
                     // First, we will check if we need to normalize texture coordinates. Not is always needed, but we have to check all the UVs for this.
@@ -215,6 +225,8 @@ namespace KimeraCS
             ChangeTexCoordViewSize();
 
             // Prepare list of UVs to XY points of the texture for UVpoints movement
+            Hand = new Cursor(new MemoryStream(Properties.Resources.hand));
+            HandPlus = new Cursor(new MemoryStream(Properties.Resources.handplus));
             PrepareUVXYCoords();
             DrawUVs();
 
@@ -268,7 +280,9 @@ namespace KimeraCS
 
                 for (iGroupIdx = 0; iGroupIdx < TexViewModel.Header.numGroups; iGroupIdx++)
                 {
-                    if (TexViewModel.Groups[iGroupIdx].texFlag == 1 && TexViewModel.Groups[iGroupIdx].texID == iTexID)
+                    if (TexViewModel.TexCoords.Length > 0 &&
+                        TexViewModel.Groups[iGroupIdx].texFlag == 1 && 
+                        TexViewModel.Groups[iGroupIdx].texID == iTexID)
                     {
                         for (iPolyIdx = TexViewModel.Groups[iGroupIdx].offsetPoly; 
                              iPolyIdx < TexViewModel.Groups[iGroupIdx].offsetPoly +
@@ -395,7 +409,9 @@ namespace KimeraCS
 
             for (iGroupIdx = 0; iGroupIdx < TexViewModel.Header.numGroups; iGroupIdx++)
             {
-                if (TexViewModel.Groups[iGroupIdx].texFlag == 1 && TexViewModel.Groups[iGroupIdx].texID == iTexID)
+                if (TexViewModel.TexCoords.Length > 0 && 
+                    TexViewModel.Groups[iGroupIdx].texFlag == 1 && 
+                    TexViewModel.Groups[iGroupIdx].texID == iTexID)
                 {
                     // Now for each texture coordinate (UV) from offsetTex to numVert we must invert the Y (V) position for horizontal.
                     if (lstUVXYCoords[iGroupIdx].XYCoords != null)
@@ -426,7 +442,9 @@ namespace KimeraCS
 
             for (iGroupIdx = 0; iGroupIdx < TexViewModel.Header.numGroups; iGroupIdx++)
             {
-                if (TexViewModel.Groups[iGroupIdx].texFlag == 1 && TexViewModel.Groups[iGroupIdx].texID == iTexID)
+                if (TexViewModel.TexCoords.Length > 0 && 
+                    TexViewModel.Groups[iGroupIdx].texFlag == 1 && 
+                    TexViewModel.Groups[iGroupIdx].texID == iTexID)
                 {
                     // Now for each texture coordinate (UV) from offsetTex to numVert we must invert the X (U) position for horizontal.
                     if (lstUVXYCoords[iGroupIdx].XYCoords != null)
@@ -458,7 +476,9 @@ namespace KimeraCS
 
             for (iGroupIdx = 0; iGroupIdx < TexViewModel.Header.numGroups; iGroupIdx++)
             {
-                if (TexViewModel.Groups[iGroupIdx].texFlag == 1 && TexViewModel.Groups[iGroupIdx].texID == iTexID)
+                if (TexViewModel.TexCoords.Length > 0 && 
+                    TexViewModel.Groups[iGroupIdx].texFlag == 1 && 
+                    TexViewModel.Groups[iGroupIdx].texID == iTexID)
                 {
                     // Now for each texture coordinate (UV) from offsetTex to numVert we must rotate clockwise.
                     if (lstUVXYCoords[iGroupIdx].XYCoords != null)
@@ -633,7 +653,6 @@ namespace KimeraCS
 
         public bool foundXYPosMouse(int X, int Y)
         {
-            localXYPointIdx = 0;
             localGroupIdx = 0;
 
             foreach (STUVXYCoord itmXYCoord in lstUVXYCoords)
@@ -641,6 +660,9 @@ namespace KimeraCS
 
                 if (itmXYCoord.XYCoords != null)
                 {
+
+                    localXYPointIdx = 0;
+
                     foreach (STPoint2DXY itmP2D in itmXYCoord.XYCoords)
                     {
                         if (X >= (Convert.ToInt32(itmP2D.x) - I_RADIUS - 1) && X <= (Convert.ToInt32(itmP2D.x) + I_RADIUS - 1) &&
@@ -668,7 +690,9 @@ namespace KimeraCS
 
             for (iGroupIdx = 0; iGroupIdx < TexViewModel.Header.numGroups; iGroupIdx++)
             {
-                if (TexViewModel.Groups[iGroupIdx].texFlag == 1 && TexViewModel.Groups[iGroupIdx].texID == iTexID)
+                if (TexViewModel.TexCoords.Length > 0 && 
+                    TexViewModel.Groups[iGroupIdx].texFlag == 1 && 
+                    TexViewModel.Groups[iGroupIdx].texID == iTexID)
                 {
                     for (iVertCounter = 0; iVertCounter < TexViewModel.Groups[iGroupIdx].numVert; iVertCounter++)
                     {
@@ -689,9 +713,31 @@ namespace KimeraCS
             {
                 if (bFoundXYCoord)
                 {
-                    tmpP2D.x = e.X;
-                    tmpP2D.y = e.Y;
-                    lstUVXYCoords[localGroupIdx].XYCoords[localXYPointIdx] = tmpP2D;
+                    if (shiftPressedQ)
+                    {
+                        int iLocalGroupXYCounter;
+                        int iDiffX, iDiffY;
+
+                        iDiffX = e.X - iPosXClicked;
+                        iDiffY = e.Y - iPosYClicked;
+
+                        for (iLocalGroupXYCounter = 0; iLocalGroupXYCounter < lstUVXYCoords[localGroupIdx].XYCoords.Count; iLocalGroupXYCounter++)
+                        {
+                            tmpP2D.x = lstUVXYCoords[localGroupIdx].XYCoords[iLocalGroupXYCounter].x + iDiffX;
+                            tmpP2D.y = lstUVXYCoords[localGroupIdx].XYCoords[iLocalGroupXYCounter].y + iDiffY;
+
+                            lstUVXYCoords[localGroupIdx].XYCoords[iLocalGroupXYCounter] = tmpP2D;
+                        }
+
+                        iPosXClicked = e.X;
+                        iPosYClicked = e.Y;
+                    }
+                    else
+                    {
+                        tmpP2D.x = e.X;
+                        tmpP2D.y = e.Y;
+                        lstUVXYCoords[localGroupIdx].XYCoords[localXYPointIdx] = tmpP2D;
+                    }
 
                     DrawUVs();                    
                 }
@@ -700,7 +746,11 @@ namespace KimeraCS
             {
                 if (foundXYPosMouse(e.X, e.Y))
                 {
-                    pbTextureView.Cursor = Cursors.Hand;
+                    if (shiftPressedQ)
+                        pbTextureView.Cursor = HandPlus;
+                    else
+                        pbTextureView.Cursor = Hand;
+
                     bFoundXYCoord = true;
                 }
                 else
@@ -713,12 +763,48 @@ namespace KimeraCS
 
         private void pbTextureView_MouseDown(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Left) bMouseLeftClicked = true;             
+            if (e.Button == MouseButtons.Left)
+            {
+                bMouseLeftClicked = true;
+                iPosXClicked = e.X;
+                iPosYClicked = e.Y;
+            }
+            else
+            {
+                iPosXClicked = 0;
+                iPosYClicked = 0;
+            }
         }
 
         private void pbTextureView_MouseUp(object sender, MouseEventArgs e)
         {
             bMouseLeftClicked = false;
+        }
+
+        private void frmTextureViewer_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.ShiftKey) shiftPressedQ = true;
+
+            if (bFoundXYCoord)
+            {
+                if (shiftPressedQ)
+                    pbTextureView.Cursor = HandPlus;
+                else
+                    pbTextureView.Cursor = Hand;
+            }
+        }
+
+        private void frmTextureViewer_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Shift || e.KeyCode == Keys.ShiftKey) shiftPressedQ = false;
+
+            if (!shiftPressedQ)
+            {
+                if (bFoundXYCoord)
+                    pbTextureView.Cursor = Hand;
+                else
+                    pbTextureView.Cursor = Cursors.Default;
+            }
         }
 
         private void frmTextureViewer_FormClosed(object sender, FormClosedEventArgs e)
@@ -732,6 +818,8 @@ namespace KimeraCS
 
             lstUVXYCoords.Clear();
         }
+
+ 
 
     }
 

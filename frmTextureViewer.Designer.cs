@@ -119,10 +119,10 @@ namespace KimeraCS
             this.btnClose.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.btnClose.AutoSize = true;
             this.btnClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnClose.Location = new System.Drawing.Point(519, 2);
+            this.btnClose.Location = new System.Drawing.Point(498, 2);
             this.btnClose.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnClose.Name = "btnClose";
-            this.btnClose.Size = new System.Drawing.Size(173, 42);
+            this.btnClose.Size = new System.Drawing.Size(192, 42);
             this.btnClose.TabIndex = 15;
             this.btnClose.Text = "Close";
             this.btnClose.UseVisualStyleBackColor = true;
@@ -180,10 +180,10 @@ namespace KimeraCS
             // 
             this.btnCommit.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.btnCommit.AutoSize = true;
-            this.btnCommit.Location = new System.Drawing.Point(340, 2);
+            this.btnCommit.Location = new System.Drawing.Point(305, 2);
             this.btnCommit.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnCommit.Name = "btnCommit";
-            this.btnCommit.Size = new System.Drawing.Size(173, 42);
+            this.btnCommit.Size = new System.Drawing.Size(192, 42);
             this.btnCommit.TabIndex = 9;
             this.btnCommit.Text = "Commit";
             this.btnCommit.UseVisualStyleBackColor = true;
@@ -211,6 +211,8 @@ namespace KimeraCS
             this.Text = "Texture Coordinates (UVs) Viewer";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.frmTextureViewer_FormClosed);
             this.Load += new System.EventHandler(this.frmTextureViewer_Load);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.frmTextureViewer_KeyDown);
+            this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.frmTextureViewer_KeyUp);
             this.panelTextureViewer.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pbTextureView)).EndInit();
             this.panelButtons.ResumeLayout(false);
