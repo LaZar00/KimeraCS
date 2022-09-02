@@ -12,6 +12,8 @@ namespace KimeraCS
 
     using Defines;
 
+    using static frmSkeletonEditor;
+
     using static FF7Skeleton;
     using static FF7BattleAnimation;
 
@@ -182,6 +184,11 @@ namespace KimeraCS
                                         }
 
                                         //  Debug.Print "Loaded weapon model " + weaponFileName
+                                    }
+                                    else
+                                    {
+                                        tmpWPModel = new PModel();
+                                        wpModels.Add(tmpWPModel);
                                     }
                                 }
                             }
@@ -762,7 +769,7 @@ namespace KimeraCS
             glPopMatrix();
 
             //if(weaponIndex > -1 && bSkeleton.nWeapons > 0)
-            if (bSkeleton.wpModels.Count > 0 && bAnimationsPack.WeaponAnimations.Count > 0)
+            if (ianimWeaponIndex > -1 && bSkeleton.wpModels.Count > 0 && bAnimationsPack.WeaponAnimations.Count > 0)
             {
                 glPushMatrix();
                 glTranslated(wpFrame.startX, wpFrame.startY, wpFrame.startZ);
@@ -997,9 +1004,12 @@ namespace KimeraCS
 
                 for (wi = 0; wi < bSkeleton.nWeapons; wi++)
                 {
-                    tmpwpModel = bSkeleton.wpModels[wi];
-                    ApplyBattleWeaponChanges(ref tmpwpModel);
-                    bSkeleton.wpModels[wi] = tmpwpModel;
+                    if (bSkeleton.wpModels[wi].Polys != null)
+                    {
+                        tmpwpModel = bSkeleton.wpModels[wi];
+                        ApplyBattleWeaponChanges(ref tmpwpModel);
+                        bSkeleton.wpModels[wi] = tmpwpModel;
+                    }
                 }
                 glPopMatrix();
             }
@@ -1118,10 +1128,13 @@ namespace KimeraCS
 
             for (wi = 0; wi < bSkeleton.nWeapons; wi++)
             {
-                tmpModel = bSkeleton.wpModels[wi];
-                WriteGlobalPModel(ref tmpModel, strFullDirectoryName + "\\" + strBaseFileName + Convert.ToChar(pSuffix1) + 
-                                                                                                Convert.ToChar(pSuffix2 + wi));
-                bSkeleton.wpModels[wi] = tmpModel;
+                if (bSkeleton.wpModels[wi].Polys != null)
+                {
+                    tmpModel = bSkeleton.wpModels[wi];
+                    WriteGlobalPModel(ref tmpModel, strFullDirectoryName + "\\" + strBaseFileName + Convert.ToChar(pSuffix1) +
+                                                                                                    Convert.ToChar(pSuffix2 + wi));
+                    bSkeleton.wpModels[wi] = tmpModel;
+                }
             }
 
 
@@ -1238,9 +1251,12 @@ namespace KimeraCS
                 // Free weapon models
                 for (wi = 0; wi < bSkeleton.wpModels.Count; wi++)
                 {
-                    tmpModel = bSkeleton.wpModels[wi];
-                    DestroyPModelResources(ref tmpModel);
-                    bSkeleton.wpModels[wi] = tmpModel;
+                    if (bSkeleton.wpModels[wi].Polys != null)
+                    {
+                        tmpModel = bSkeleton.wpModels[wi];
+                        DestroyPModelResources(ref tmpModel);
+                        bSkeleton.wpModels[wi] = tmpModel;
+                    }
                 }
 
                 if (bSkeleton.wpModels != null) bSkeleton.wpModels.Clear();
