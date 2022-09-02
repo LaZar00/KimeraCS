@@ -30,13 +30,20 @@ Double-click	->	Open Texture Coordinates (UVs) Viewer
 
 == PEditor only
 +/-			->	More/Less Brightness of the colors
+Q			->	Clears any selection in the Group list.
 R 			->	Reset Brightness of the colors
 H 			->	Show/Hide selected group
+N			->	Resets New Poly feature counted vertices
 CTRL+Home	->	Reset Plane
 SHIFT+Left Mouse Click	->	Gets polygon color and sets in palette
 (this only works in "Paint Polygon" feature)
 ESCAPE		->	You close the window without applying/commiting changes
-BACKSPACE	->	Clears any selection in the Group list.
+
+
+== Texture Coordinates(UVs) Viewer only
+Hold Left Mouse Click		->	Move UV to a desired position
+SHIFT+Hold Left Mouse Click	->	Move ALL UVs to a desired position
+
 
 
 ==== Special Features
