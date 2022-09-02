@@ -58,7 +58,7 @@ namespace KimeraCS
 
  
 
-        public const string STR_APPNAME = "KimeraCS 1.4q";
+        public const string STR_APPNAME = "KimeraCS 1.4t";
 
         public static int modelWidth;
         public static int modelHeight;
@@ -221,7 +221,11 @@ namespace KimeraCS
             ReadCFGFile();
             Text = STR_APPNAME;
 
-            
+            //   Some initial settings to reduce flickering of the screen
+            this.SetStyle(ControlStyles.UserPaint, true);
+            this.SetStyle(ControlStyles.AllPaintingInWmPaint, true);
+            this.SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
+
             // Let's detect the original DPI Scale Factor of the computer
             Screen[] screenList = Screen.AllScreens;
 
@@ -266,11 +270,6 @@ namespace KimeraCS
             if (iwindowPosX == 0 && iwindowPosY == 0) this.CenterToScreen();
             else this.Location = new Point(iwindowPosX, iwindowPosY);
 
-            // Activate double buffering (yeah, yeah, I know, we have the DoubleBuffer property.
-            SetStyle(ControlStyles.UserPaint, true);
-            SetStyle(ControlStyles.AllPaintingInWmPaint, false);
-            SetStyle(ControlStyles.DoubleBuffer, true);
-
             // Undo/Redo feature
             DoNotAddStateQ = false;
             InitializeUndoRedo();
@@ -311,7 +310,7 @@ namespace KimeraCS
             // Activate MouseWheel events for panelModel PictureBox;
             panelModel.MouseWheel += panelModel_MouseWheel;
 
-            // Init other forms vars
+            // Texture Coordinates(UVs) Viewer Globals
             bPaintGreen = false;
             iTexCoordViewerScale = 1;
 
@@ -349,6 +348,10 @@ namespace KimeraCS
         private void frmSkeletonEditor_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Control || e.KeyCode == Keys.ControlKey) controlPressedQ = false;
+
+            panelModel.Update();
+            panelModel_Paint(null, null);
+            textureViewer_Paint(null, null);
         }
 
         private void frmSkeletonEditor_Resize(object sender, EventArgs e)
@@ -367,7 +370,7 @@ namespace KimeraCS
                 textureViewer_Paint(null, null);
             }
 
-            // Assign this if visible
+            // Assign this size if visible
             if (this.Visible)
             {
                 isizeWindowWidth = this.Size.Width;
@@ -472,8 +475,8 @@ namespace KimeraCS
             undoToolStripMenuItem.Enabled = false;
             redoToolStripMenuItem.Enabled = false;
 
-            SetOGLContext(panelModelDC, OGLContext);
-            SetOGLSettings();
+            //SetOGLContext(panelModelDC, OGLContext);
+            //SetOGLSettings();
         }
 
         public void EnableWinFormsDataControls()
@@ -512,7 +515,9 @@ namespace KimeraCS
 
                     tbCurrentFrameScroll.Value = 0;
                     tbCurrentFrameScroll.Minimum = 0;
+                    
                     tbCurrentFrameScroll.Maximum = fAnimation.nFrames - 1;
+
                     tbCurrentFrameScroll.Enabled = true;
                     txtAnimationFrame.Text = tbCurrentFrameScroll.Value.ToString();
                     lblAnimationFrame.Visible = true;
@@ -562,7 +567,13 @@ namespace KimeraCS
                     gbTexturesFrame.Text = "Textures (Model)";
 
                     // Battle Weapons
-                    for (wi = 0; wi < bSkeleton.nWeapons; wi++) cbWeapon.Items.Add(wi.ToString());
+                    for (wi = 0; wi < bSkeleton.nWeapons; wi++)
+                    {
+                        if (bSkeleton.wpModels[wi].Polys != null)
+                            cbWeapon.Items.Add(wi.ToString());
+                        else
+                            cbWeapon.Items.Add("EMPTY"); 
+                    }
 
                     if (!bSkeleton.IsBattleLocation)
                     {
@@ -2245,6 +2256,7 @@ namespace KimeraCS
                         iCurrentFrameScroll = 0;
                         tbCurrentFrameScroll.Value = 0;
                         txtAnimationFrame.Text = iCurrentFrameScroll.ToString();
+
                         tbCurrentFrameScroll.Maximum = fAnimation.nFrames - 1;
 
                         SetFrameEditorFields();
@@ -2619,10 +2631,7 @@ namespace KimeraCS
                     tbCurrentFrameScroll.Value = 0;
                     txtAnimationFrame.Text = iCurrentFrameScroll.ToString();
 
-                    if (fAnimation.nFrames > 0)
-                        tbCurrentFrameScroll.Maximum = fAnimation.nFrames - 1;
-                    else
-                        tbCurrentFrameScroll.Maximum = 0;
+                    tbCurrentFrameScroll.Maximum = fAnimation.nFrames - 1;
 
                     SetFrameEditorFields();
 
@@ -5873,7 +5882,9 @@ namespace KimeraCS
 
         private void cbWeapon_SelectedIndexChanged(object sender, EventArgs e)
         {
-            ianimWeaponIndex = Int32.Parse(cbWeapon.Text);
+            ianimWeaponIndex = -1;
+            if (cbWeapon.Text != "EMPTY") ianimWeaponIndex = Int32.Parse(cbWeapon.Text);
+            
             panelModel_Paint(null, null);
         }
 
@@ -6082,8 +6093,8 @@ namespace KimeraCS
 
                         if (bSkeleton.wpModels.Count > 0 && SelectedBone == bSkeleton.nBones)
                         {
-                            frmTexViewer = new frmTextureViewer(this, bSkeleton.wpModels[cbWeapon.SelectedIndex]);
-                            
+                            if (ianimWeaponIndex == -1) return;
+                            frmTexViewer = new frmTextureViewer(this, bSkeleton.wpModels[cbWeapon.SelectedIndex]);                           
                         }
                         else
                         {

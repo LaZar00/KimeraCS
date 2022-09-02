@@ -937,10 +937,10 @@ namespace KimeraCS
             // cbWeapon
             // 
             this.cbWeapon.FormattingEnabled = true;
-            this.cbWeapon.Location = new System.Drawing.Point(132, 572);
+            this.cbWeapon.Location = new System.Drawing.Point(120, 572);
             this.cbWeapon.Margin = new System.Windows.Forms.Padding(4);
             this.cbWeapon.Name = "cbWeapon";
-            this.cbWeapon.Size = new System.Drawing.Size(69, 24);
+            this.cbWeapon.Size = new System.Drawing.Size(84, 24);
             this.cbWeapon.TabIndex = 12;
             this.cbWeapon.Visible = false;
             this.cbWeapon.SelectedIndexChanged += new System.EventHandler(this.cbWeapon_SelectedIndexChanged);
@@ -948,10 +948,10 @@ namespace KimeraCS
             // cbBattleAnimation
             // 
             this.cbBattleAnimation.FormattingEnabled = true;
-            this.cbBattleAnimation.Location = new System.Drawing.Point(132, 546);
+            this.cbBattleAnimation.Location = new System.Drawing.Point(120, 546);
             this.cbBattleAnimation.Margin = new System.Windows.Forms.Padding(4);
             this.cbBattleAnimation.Name = "cbBattleAnimation";
-            this.cbBattleAnimation.Size = new System.Drawing.Size(69, 24);
+            this.cbBattleAnimation.Size = new System.Drawing.Size(84, 24);
             this.cbBattleAnimation.TabIndex = 11;
             this.cbBattleAnimation.Visible = false;
             this.cbBattleAnimation.SelectedIndexChanged += new System.EventHandler(this.cbBattleAnimation_SelectedIndexChanged);
@@ -959,7 +959,7 @@ namespace KimeraCS
             // lblWeapon
             // 
             this.lblWeapon.ForeColor = System.Drawing.SystemColors.Control;
-            this.lblWeapon.Location = new System.Drawing.Point(56, 575);
+            this.lblWeapon.Location = new System.Drawing.Point(52, 575);
             this.lblWeapon.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblWeapon.Name = "lblWeapon";
             this.lblWeapon.Size = new System.Drawing.Size(68, 17);
@@ -971,7 +971,7 @@ namespace KimeraCS
             // lblBattleAnimation
             // 
             this.lblBattleAnimation.ForeColor = System.Drawing.SystemColors.Control;
-            this.lblBattleAnimation.Location = new System.Drawing.Point(9, 549);
+            this.lblBattleAnimation.Location = new System.Drawing.Point(5, 549);
             this.lblBattleAnimation.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblBattleAnimation.Name = "lblBattleAnimation";
             this.lblBattleAnimation.RightToLeft = System.Windows.Forms.RightToLeft.No;
