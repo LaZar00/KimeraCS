@@ -780,7 +780,7 @@ namespace KimeraCS
 
             // Update last values
             tmpfAnimation.nBones = fSkeleton.nBones;
-            tmpfAnimation.nFrames = iFrameCounter;
+            tmpfAnimation.nFrames = iFrameCounter + 1;
 
             tmpfAnimation.rotationOrder = new byte[3];
             tmpfAnimation.rotationOrder[0] = 1;
