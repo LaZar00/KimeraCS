@@ -713,7 +713,7 @@ namespace KimeraCS
                 ApplyPChanges(ref tmpRSDResource.Model, false);
                 fBone.fRSDResources[ri] = tmpRSDResource;
 
-                //glMatrixMode(glMatrixModeList.GL_MODELVIEW);
+                glMatrixMode(glMatrixModeList.GL_MODELVIEW);
                 glPopMatrix();
             }
 
