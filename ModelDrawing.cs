@@ -81,7 +81,7 @@ namespace KimeraCS
                                        Normals[Polys[pi].Normals[vi]].y,
                                        Normals[Polys[pi].Normals[vi]].z);
 
-                        if (Group.texFlag == 1)
+                        if (Group.texFlag == 1 && TexCoords.Length > 0)
                         {
                             x = TexCoords[Group.offsetTex + Polys[pi].Verts[vi]].x;
                             y = TexCoords[Group.offsetTex + Polys[pi].Verts[vi]].y;
@@ -834,7 +834,7 @@ namespace KimeraCS
             double[] rot_mat = new double[16];
 
             //if (weaponIndex > -1 && bSkeleton.nWeapons > 0)       // -- Commented in KimeraVB6
-            if (bSkeleton.wpModels.Count > 0 && bAnimationsPack.WeaponAnimations.Count > 0)
+            if (ianimWeaponIndex > -1 && bSkeleton.wpModels.Count > 0 && bAnimationsPack.WeaponAnimations.Count > 0)
             {
                 glPushMatrix();
                 glTranslated(wpFrame.startX, wpFrame.startY, wpFrame.startZ);
@@ -1061,7 +1061,7 @@ namespace KimeraCS
             glPopMatrix();
 
             //if (weaponIndex > -1 && bSkeleton.nWeapons > 0)       // -- Commented in KimeraVB6
-            if (bSkeleton.wpModels.Count > 0 && bAnimationsPack.WeaponAnimations.Count > 0)
+            if (ianimWeaponIndex > -1 && bSkeleton.wpModels.Count > 0 && bAnimationsPack.WeaponAnimations.Count > 0)
             {
                 glPushMatrix();
                 glTranslated(wpFrame.startX, wpFrame.startY, wpFrame.startZ);
@@ -1677,9 +1677,9 @@ namespace KimeraCS
             glMatrixMode(glMatrixModeList.GL_MODELVIEW);
             glPushMatrix();
 
-            ConcatenateCameraModelView(repXPE, repYPE, repZPE,
-                                       rotateAlpha, rotateBeta, rotateGamma,
-                                       rszXPE, rszYPE, rszZPE);
+            //ConcatenateCameraModelView(repXPE, repYPE, repZPE,
+            //                           rotateAlpha, rotateBeta, rotateGamma,
+            //                           rszXPE, rszYPE, rszZPE);
 
             if (bEnableLighting)
             {
@@ -1919,7 +1919,6 @@ namespace KimeraCS
 
             return Color.FromArgb(tmpA / 3, tmpR / 3, tmpG / 3, tmpB / 3);
         }
-
 
 
 
