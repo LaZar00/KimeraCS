@@ -194,7 +194,7 @@ namespace KimeraCS
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(5, 2, 0, 2);
-            this.menuStrip1.Size = new System.Drawing.Size(960, 28);
+            this.menuStrip1.Size = new System.Drawing.Size(960, 30);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -207,7 +207,7 @@ namespace KimeraCS
             this.toolStripSeparator1,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(46, 24);
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(46, 26);
             this.fileToolStripMenuItem.Text = "&File";
             // 
             // loadModelToolStripMenuItem
@@ -251,7 +251,7 @@ namespace KimeraCS
             this.toolStripSeparator4,
             this.unselectGroupToolStripMenuItem});
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
-            this.editToolStripMenuItem.Size = new System.Drawing.Size(49, 24);
+            this.editToolStripMenuItem.Size = new System.Drawing.Size(49, 26);
             this.editToolStripMenuItem.Text = "&Edit";
             // 
             // undoToolStripMenuItem
@@ -259,7 +259,7 @@ namespace KimeraCS
             this.undoToolStripMenuItem.Enabled = false;
             this.undoToolStripMenuItem.Name = "undoToolStripMenuItem";
             this.undoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.U)));
-            this.undoToolStripMenuItem.Size = new System.Drawing.Size(192, 26);
+            this.undoToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.undoToolStripMenuItem.Text = "Undo";
             this.undoToolStripMenuItem.Click += new System.EventHandler(this.undoToolStripMenuItem_Click);
             // 
@@ -268,19 +268,19 @@ namespace KimeraCS
             this.redoToolStripMenuItem.Enabled = false;
             this.redoToolStripMenuItem.Name = "redoToolStripMenuItem";
             this.redoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R)));
-            this.redoToolStripMenuItem.Size = new System.Drawing.Size(192, 26);
+            this.redoToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.redoToolStripMenuItem.Text = "Redo";
             this.redoToolStripMenuItem.Click += new System.EventHandler(this.redoToolStripMenuItem_Click);
             // 
             // toolStripSeparator4
             // 
             this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(189, 6);
+            this.toolStripSeparator4.Size = new System.Drawing.Size(221, 6);
             // 
             // unselectGroupToolStripMenuItem
             // 
             this.unselectGroupToolStripMenuItem.Name = "unselectGroupToolStripMenuItem";
-            this.unselectGroupToolStripMenuItem.Size = new System.Drawing.Size(192, 26);
+            this.unselectGroupToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.unselectGroupToolStripMenuItem.Text = "Unselect group";
             this.unselectGroupToolStripMenuItem.Click += new System.EventHandler(this.unselectGroupToolStripMenuItem_Click);
             // 
@@ -298,7 +298,7 @@ namespace KimeraCS
             this.invertToolStripMenuItem,
             this.resetToolStripMenuItem});
             this.planeToolStripMenuItem.Name = "planeToolStripMenuItem";
-            this.planeToolStripMenuItem.Size = new System.Drawing.Size(116, 24);
+            this.planeToolStripMenuItem.Size = new System.Drawing.Size(116, 26);
             this.planeToolStripMenuItem.Text = "&Plane features";
             // 
             // mirrorModelToolStripMenuItem
@@ -377,7 +377,7 @@ namespace KimeraCS
             this.deleteAllPolysnotSelectedColorToolStripMenuItem,
             this.killPrecalculatedLightningToolStripMenuItem});
             this.paletteToolStripMenuItem.Name = "paletteToolStripMenuItem";
-            this.paletteToolStripMenuItem.Size = new System.Drawing.Size(125, 24);
+            this.paletteToolStripMenuItem.Size = new System.Drawing.Size(125, 26);
             this.paletteToolStripMenuItem.Text = "Pale&tte features";
             // 
             // deleteAllPolysSelectedColorToolStripMenuItem
@@ -414,10 +414,10 @@ namespace KimeraCS
             this.panel1.Controls.Add(this.gbDrawMode);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Left;
             this.panel1.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.panel1.Location = new System.Drawing.Point(0, 28);
+            this.panel1.Location = new System.Drawing.Point(0, 30);
             this.panel1.Margin = new System.Windows.Forms.Padding(4);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(211, 645);
+            this.panel1.Size = new System.Drawing.Size(211, 643);
             this.panel1.TabIndex = 1;
             // 
             // gbColorEditor
@@ -758,10 +758,10 @@ namespace KimeraCS
             this.panel2.Controls.Add(this.gbReposition);
             this.panel2.Controls.Add(this.gbResize);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel2.Location = new System.Drawing.Point(768, 28);
+            this.panel2.Location = new System.Drawing.Point(768, 30);
             this.panel2.Margin = new System.Windows.Forms.Padding(4);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(192, 645);
+            this.panel2.Size = new System.Drawing.Size(192, 643);
             this.panel2.TabIndex = 2;
             // 
             // gbPlaneOperations

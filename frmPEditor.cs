@@ -206,7 +206,7 @@ namespace KimeraCS
                     if (Application.OpenForms[1].WindowState == FormWindowState.Minimized) return;
 
                     // We can redraw the model in panel
-                    panelEditorPModel.Update();
+                    //panelEditorPModel.Update();
                     panelEditorPModel_Paint(null, null);
                 }
 
@@ -225,10 +225,10 @@ namespace KimeraCS
 
             if (e.KeyCode == Keys.ControlKey) controlPressedQ = true;
 
-            // With Backspace key we will "Deselect" any selected group in the list of groups.
+            // With "Q" key we will "Deselect" any selected group in the list of groups.
             // This method (Group Selected/No Group Selected) will be used to Reposition/Resize/Rotate
             // the Model or the selected Group.
-            if (e.KeyCode == Keys.Back)
+            if (e.KeyCode == Keys.Q)
             {
                 unselectGroupToolStripMenuItem.PerformClick();
             }
@@ -267,6 +267,9 @@ namespace KimeraCS
             if (e.KeyCode == Keys.Shift || e.KeyCode == Keys.ShiftKey) shiftPressedQ = 0;
 
             if (e.KeyCode == Keys.Control || e.KeyCode == Keys.ControlKey) controlPressedQ = false;
+
+            panelEditorPModel.Update();
+            panelEditorPModel_Paint(null, null);
         }
 
         private void chkEnableLighting_CheckedChanged(object sender, EventArgs e)
@@ -1585,6 +1588,11 @@ namespace KimeraCS
                             panelEditorPModel_Paint(null, null);
                             CopyModelColors2VP(EditedPModel, ref vcolorsOriginal, ref pcolorsOriginal);
                             chkPalettized_CheckedChanged(null, null);
+
+                            // Let's clear selected groups of lbGroups listbox
+                            SelectedGroup = -1;
+                            lbGroups.SelectedIndex = -1;
+                            ChangeGroupEnable(false);
                         }
                     }
                 }
@@ -1816,6 +1824,11 @@ namespace KimeraCS
         private void frmPEditor_Load(object sender, EventArgs e)
         {
             bLoading = true;
+
+            //   Some initial settings to reduce flickering of the screen
+            this.SetStyle(ControlStyles.UserPaint, true);
+            this.SetStyle(ControlStyles.AllPaintingInWmPaint, true);
+            this.SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
 
             //// Set Minimum Size (using the property sometimes changes auto in designer)
             //// Init also Width/Height as per CFG values
@@ -2462,7 +2475,7 @@ namespace KimeraCS
             OGLContextPEditor = CreateOGLContext(panelEditorPModelDC);
 
             // Initialize OpenGL Context;
-            SetOGLEditorSettings();
+            //SetOGLEditorSettings();
 
             loadedPModel = false;
 
@@ -2501,8 +2514,7 @@ namespace KimeraCS
             // Define CTRL+Home shortcut for reset plane feature ("Home" key is not present in my visual studio notebook? is a VS bug?
             resetToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.Home;
             resetToolStripMenuItem.ShortcutKeyDisplayString = "CTRL+Home";
-            //unselectGroupToolStripMenuItem.ShortcutKeys = Keys.Back;
-            unselectGroupToolStripMenuItem.ShortcutKeyDisplayString = "Backspace";
+            unselectGroupToolStripMenuItem.ShortcutKeyDisplayString = "Q";
 
             // Undo/Redo PE feature
             DoNotAddPEStateQ = false;
