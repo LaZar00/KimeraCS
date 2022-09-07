@@ -180,8 +180,10 @@ namespace KimeraCS
             this.interpolateAllAnimationsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.databaseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showCharlgpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.showBattlelgpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveFile = new System.Windows.Forms.SaveFileDialog();
             this.panelModel = new System.Windows.Forms.PictureBox();
+            this.showMagiclgpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1.SuspendLayout();
             this.gbTexturesFrame.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUDMoveTextureUpDown)).BeginInit();
@@ -305,7 +307,7 @@ namespace KimeraCS
             // 
             // btnFlipHorizontal
             // 
-            this.btnFlipHorizontal.BackgroundImage = global::KimeraCS.Properties.Resources.mirror_vertically;
+            this.btnFlipHorizontal.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btnFlipHorizontal.BackgroundImage")));
             this.btnFlipHorizontal.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.btnFlipHorizontal.Location = new System.Drawing.Point(151, 106);
             this.btnFlipHorizontal.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
@@ -317,7 +319,7 @@ namespace KimeraCS
             // 
             // btnFlipVertical
             // 
-            this.btnFlipVertical.BackgroundImage = global::KimeraCS.Properties.Resources.mirror_horizontally;
+            this.btnFlipVertical.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btnFlipVertical.BackgroundImage")));
             this.btnFlipVertical.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.btnFlipVertical.Location = new System.Drawing.Point(151, 64);
             this.btnFlipVertical.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
@@ -329,7 +331,7 @@ namespace KimeraCS
             // 
             // btnRotate
             // 
-            this.btnRotate.BackgroundImage = global::KimeraCS.Properties.Resources.arrow_circle2;
+            this.btnRotate.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btnRotate.BackgroundImage")));
             this.btnRotate.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.btnRotate.Location = new System.Drawing.Point(151, 22);
             this.btnRotate.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
@@ -1415,7 +1417,7 @@ namespace KimeraCS
             // 
             // btnFramePrev
             // 
-            this.btnFramePrev.BackgroundImage = global::KimeraCS.Properties.Resources.media_rewind;
+            this.btnFramePrev.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btnFramePrev.BackgroundImage")));
             this.btnFramePrev.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.btnFramePrev.Location = new System.Drawing.Point(381, 9);
             this.btnFramePrev.Margin = new System.Windows.Forms.Padding(4);
@@ -1428,7 +1430,7 @@ namespace KimeraCS
             // 
             // btnFrameNext
             // 
-            this.btnFrameNext.BackgroundImage = global::KimeraCS.Properties.Resources.media_fast_forward;
+            this.btnFrameNext.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btnFrameNext.BackgroundImage")));
             this.btnFrameNext.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.btnFrameNext.Location = new System.Drawing.Point(464, 9);
             this.btnFrameNext.Margin = new System.Windows.Forms.Padding(4);
@@ -1442,7 +1444,7 @@ namespace KimeraCS
             // btnPlayStopAnim
             // 
             this.btnPlayStopAnim.Appearance = System.Windows.Forms.Appearance.Button;
-            this.btnPlayStopAnim.BackgroundImage = global::KimeraCS.Properties.Resources.media_play;
+            this.btnPlayStopAnim.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btnPlayStopAnim.BackgroundImage")));
             this.btnPlayStopAnim.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.btnPlayStopAnim.Location = new System.Drawing.Point(423, 9);
             this.btnPlayStopAnim.Margin = new System.Windows.Forms.Padding(4);
@@ -1455,7 +1457,7 @@ namespace KimeraCS
             // 
             // btnFrameEnd
             // 
-            this.btnFrameEnd.BackgroundImage = global::KimeraCS.Properties.Resources.media_end;
+            this.btnFrameEnd.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btnFrameEnd.BackgroundImage")));
             this.btnFrameEnd.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.btnFrameEnd.Location = new System.Drawing.Point(505, 9);
             this.btnFrameEnd.Margin = new System.Windows.Forms.Padding(4);
@@ -1468,7 +1470,7 @@ namespace KimeraCS
             // 
             // btnFrameBegin
             // 
-            this.btnFrameBegin.BackgroundImage = global::KimeraCS.Properties.Resources.media_beginning;
+            this.btnFrameBegin.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btnFrameBegin.BackgroundImage")));
             this.btnFrameBegin.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.btnFrameBegin.Location = new System.Drawing.Point(340, 9);
             this.btnFrameBegin.Margin = new System.Windows.Forms.Padding(4);
@@ -1521,7 +1523,7 @@ namespace KimeraCS
             // 
             // btnPasteFrame
             // 
-            this.btnPasteFrame.BackgroundImage = global::KimeraCS.Properties.Resources.clipboard_paste;
+            this.btnPasteFrame.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btnPasteFrame.BackgroundImage")));
             this.btnPasteFrame.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.btnPasteFrame.Enabled = false;
             this.btnPasteFrame.Location = new System.Drawing.Point(51, 44);
@@ -1535,7 +1537,7 @@ namespace KimeraCS
             // 
             // btnCopyFrame
             // 
-            this.btnCopyFrame.BackgroundImage = global::KimeraCS.Properties.Resources.copy;
+            this.btnCopyFrame.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btnCopyFrame.BackgroundImage")));
             this.btnCopyFrame.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.btnCopyFrame.Location = new System.Drawing.Point(9, 44);
             this.btnCopyFrame.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
@@ -1896,7 +1898,9 @@ namespace KimeraCS
             // databaseToolStripMenuItem
             // 
             this.databaseToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.showCharlgpToolStripMenuItem});
+            this.showCharlgpToolStripMenuItem,
+            this.showBattlelgpToolStripMenuItem,
+            this.showMagiclgpToolStripMenuItem});
             this.databaseToolStripMenuItem.Name = "databaseToolStripMenuItem";
             this.databaseToolStripMenuItem.Size = new System.Drawing.Size(86, 24);
             this.databaseToolStripMenuItem.Text = "&Database";
@@ -1908,6 +1912,13 @@ namespace KimeraCS
             this.showCharlgpToolStripMenuItem.Size = new System.Drawing.Size(252, 26);
             this.showCharlgpToolStripMenuItem.Text = "Show CHAR.LGP";
             this.showCharlgpToolStripMenuItem.Click += new System.EventHandler(this.showCharlgpToolStripMenuItem_Click);
+            // 
+            // showBattlelgpToolStripMenuItem
+            // 
+            this.showBattlelgpToolStripMenuItem.Name = "showBattlelgpToolStripMenuItem";
+            this.showBattlelgpToolStripMenuItem.Size = new System.Drawing.Size(252, 26);
+            this.showBattlelgpToolStripMenuItem.Text = "Show BATTLE.LGP";
+            this.showBattlelgpToolStripMenuItem.Click += new System.EventHandler(this.showBattlelgpToolStripMenuItem_Click);
             // 
             // panelModel
             // 
@@ -1926,6 +1937,13 @@ namespace KimeraCS
             this.panelModel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.panelModel_MouseDown);
             this.panelModel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.panelModel_MouseMove);
             this.panelModel.MouseUp += new System.Windows.Forms.MouseEventHandler(this.panelModel_MouseUp);
+            // 
+            // showMagiclgpToolStripMenuItem
+            // 
+            this.showMagiclgpToolStripMenuItem.Name = "showMagiclgpToolStripMenuItem";
+            this.showMagiclgpToolStripMenuItem.Size = new System.Drawing.Size(252, 26);
+            this.showMagiclgpToolStripMenuItem.Text = "Show MAGIC.LGP";
+            this.showMagiclgpToolStripMenuItem.Click += new System.EventHandler(this.showMagiclgpToolStripMenuItem_Click);
             // 
             // frmSkeletonEditor
             // 
@@ -2147,6 +2165,8 @@ namespace KimeraCS
         private System.Windows.Forms.ToolStripMenuItem tsUIOpacity25;
         private System.Windows.Forms.ToolStripMenuItem outputFramesDataTXTToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem inputFramesDataTXTToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem showBattlelgpToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem showMagiclgpToolStripMenuItem;
     }
 }
 
