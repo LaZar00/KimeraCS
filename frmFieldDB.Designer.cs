@@ -124,7 +124,7 @@ namespace KimeraCS
             // 
             this.lblFieldDataDir.AutoSize = true;
             this.lblFieldDataDir.ForeColor = System.Drawing.SystemColors.Control;
-            this.lblFieldDataDir.Location = new System.Drawing.Point(21, 320);
+            this.lblFieldDataDir.Location = new System.Drawing.Point(23, 320);
             this.lblFieldDataDir.Name = "lblFieldDataDir";
             this.lblFieldDataDir.Size = new System.Drawing.Size(137, 17);
             this.lblFieldDataDir.TabIndex = 6;
