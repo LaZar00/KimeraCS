@@ -179,10 +179,24 @@ namespace KimeraCS
 
                         case K_AA_SKELETON:
                             // Battle Skeleton (aa)
+                            bSkeleton = new BattleSkeleton(strFileName, CanHaveLimitBreak(Path.GetFileNameWithoutExtension(strFileName).ToUpper()), true);
+
+                            // Normally we will have the ??DA file with the Animation Pack.
+                            // Location Battle Models has NOT ??DA file.
+                            // But editing models, it is possible we work without it. So, we will make something
+                            // similiar as we did with Field Models, but we will check if ??DA file for the model exists.
+                            bAnimationsPack = new BattleAnimationsPack(bSkeleton, strFileName);
                             break;
 
                         case K_MAGIC_SKELETON:
                             // Magic Skeleton (.d)
+                            bSkeleton = new BattleSkeleton(strFileName, true);
+
+                            // Normally we will have the ??DA file with the Animation Pack.
+                            // Location Battle Models has NOT ??DA file.
+                            // But editing models, it is possible we work without it. So, we will make something
+                            // similiar as we did with Field Models, but we will check if ??DA file for the model exists.
+                            bAnimationsPack = new BattleAnimationsPack(bSkeleton, strFileName);
                             break;
                     }
                 }

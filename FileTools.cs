@@ -16,7 +16,13 @@ namespace KimeraCS
     public static class FileTools
     {
         private const string CFG_FILE_NAME = "Kimera.cfg";
-        private const string CHAR_LGP_FILTER_FILE_NAME = "ifalna.fil";
+
+        public const string CHAR_LGP_FILTER_FILE_NAME = "ifalna.fil";
+        public const string BATTLEENEMIES_LGP_FILTER_FILE_NAME = "ifalnab.fil";
+        public const string BATTLELOCATIONS_LGP_FILTER_FILE_NAME = "ifalnal.fil";
+        public const string BATTLEMAINPCS_LGP_FILTER_FILE_NAME = "ifalnap.fil";
+        public const string MAGIC_LGP_FILTER_FILE_NAME = "ifalnam.fil";
+
 
         //public const string AERITH_BATTLE_SKELETON = "RVAA";
         //public const string BARRET_BATTLE_SKELETON = "SEAA";
@@ -39,17 +45,30 @@ namespace KimeraCS
             public List<string> lstAnims;
         }
 
+        public struct STBattleLGPRegister
+        {
+            public string fileName;
+            public string modelName;
+        }
+
         public struct STLimitsRegister
         {
             public string strModelName;
             public List<string> lstLimitsAnimations;
         }
 
-        public static int numCharLGPRegisters;
-        public static bool bDBLoaded;
-        public static List<STCharLGPRegister> lstCharLGPRegisters;
-        public static List<STLimitsRegister> lstBattleLimitsAnimations;
         public static Hashtable lstCFGKeys = new Hashtable();
+
+        public static int numCharLGPRegisters;
+        public static bool bDBLoaded, bDBEnemiesLoaded, bDBLocationsLoaded, bDBMainPCsLoaded, bDBMagicLoaded;
+
+        public static List<STCharLGPRegister> lstCharLGPRegisters;
+        public static List<STBattleLGPRegister> lstBattleEnemiesLGPRegisters;
+        public static List<STBattleLGPRegister> lstBattleLocationsLGPRegisters;
+        public static List<STBattleLGPRegister> lstBattleMainsLGPRegisters;
+        public static List<STBattleLGPRegister> lstMagicLGPRegisters;
+
+        public static List<STLimitsRegister> lstBattleLimitsAnimations;
 
         public static int idefaultFieldInterpFrames = 1;
         public static int idefaultBattleInterpFrames = 3;
@@ -324,6 +343,51 @@ namespace KimeraCS
                     }
 
                     lstCharLGPRegisters.Add(stcLGPReg);
+                    lstCharLGPRegisters.Sort((fN1, fN2) => fN1.fileName.CompareTo(fN2.fileName));
+                }
+                else
+                {
+                    iResult = 0;
+                }
+            }
+            catch
+            {
+
+                iResult = -1;
+            }
+
+            return iResult;
+        }
+
+        public static int ReadBattleFilterFile(string fileName, ref List<STBattleLGPRegister> tmpBattleLGPRegister)
+        {
+            int iResult = 1;
+            string strFileName;
+            string[] strLinesFilterFile;
+            STBattleLGPRegister stcBLGPReg;
+
+            try
+            {
+                strFileName = strGlobalPath + "\\" + fileName;
+
+                if (File.Exists(strFileName))
+                {
+
+                    strLinesFilterFile = File.ReadAllLines(strFileName);
+                    tmpBattleLGPRegister = new List<STBattleLGPRegister>();
+
+                    foreach (string strLineFilter in strLinesFilterFile)
+                    {
+                        if (strLineFilter.Length > 0)
+                        {
+                            stcBLGPReg = new STBattleLGPRegister();
+
+                            stcBLGPReg.fileName = strLineFilter.Split('=')[0];
+                            stcBLGPReg.modelName = "[" + stcBLGPReg.fileName + "] - " + strLineFilter.Split('=')[1];
+                            tmpBattleLGPRegister.Add(stcBLGPReg);
+                        }
+                    }
+
                     lstCharLGPRegisters.Sort((fN1, fN2) => fN1.fileName.CompareTo(fN2.fileName));
                 }
                 else

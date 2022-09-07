@@ -102,6 +102,12 @@
     <Compile Include="FF7BattleAnimation.cs" />
     <Compile Include="FF7BattleSkeleton.cs" />
     <Compile Include="FolderBrowserDialogObject.cs" />
+    <Compile Include="frmBattleDB.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmBattleDB.Designer.cs">
+      <DependentUpon>frmBattleDB.cs</DependentUpon>
+    </Compile>
     <Compile Include="frmFieldDB.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -119,6 +125,12 @@
     </Compile>
     <Compile Include="frmInterpolateAll.Designer.cs">
       <DependentUpon>frmInterpolateAll.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frmMagicDB.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmMagicDB.Designer.cs">
+      <DependentUpon>frmMagicDB.cs</DependentUpon>
     </Compile>
     <Compile Include="frmPEditor.cs">
       <SubType>Form</SubType>
@@ -168,6 +180,9 @@
     <Compile Include="UndoRedoPE.cs" />
     <Compile Include="User32.cs" />
     <Compile Include="Utils.cs" />
+    <EmbeddedResource Include="frmBattleDB.resx">
+      <DependentUpon>frmBattleDB.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="frmFieldDB.resx">
       <DependentUpon>frmFieldDB.cs</DependentUpon>
     </EmbeddedResource>
@@ -176,6 +191,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="frmInterpolateAll.resx">
       <DependentUpon>frmInterpolateAll.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmMagicDB.resx">
+      <DependentUpon>frmMagicDB.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="frmPEditor.resx">
       <DependentUpon>frmPEditor.cs</DependentUpon>
