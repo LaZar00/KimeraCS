@@ -56,9 +56,7 @@ namespace KimeraCS
     public partial class frmSkeletonEditor : Form
     {
 
- 
-
-        public const string STR_APPNAME = "KimeraCS 1.4t";
+         public const string STR_APPNAME = "KimeraCS 1.5";
 
         public static int modelWidth;
         public static int modelHeight;
@@ -130,6 +128,8 @@ namespace KimeraCS
 
         // Other forms instances of main frmSkeletonEditor
         frmFieldDB frmFieldDatabase;
+        frmBattleDB frmBattleDatabase;
+        frmMagicDB frmMagicDatabase;
         frmInterpolateAll frmInterpAll;
 
         // StopWatch
@@ -216,6 +216,127 @@ namespace KimeraCS
 
         /////////////////////////////////////////////////////////////
         // MAIN LOAD FORM
+        public void InitializeDBs()
+        {
+            // Instantiate Field Database form
+            switch (ReadCharFilterFile())
+            {
+                case 0:
+                    MessageBox.Show("Caution: " + CHAR_LGP_FILTER_FILE_NAME + " file does not exists. Field Database NOT available.", "Warning", MessageBoxButtons.OK);
+
+                    bDBLoaded = false;
+                    showCharlgpToolStripMenuItem.Enabled = false;
+                    break;
+
+                case -1:
+                    MessageBox.Show("Error reading " + CHAR_LGP_FILTER_FILE_NAME + " file. Field Database NOT available.", "Error", MessageBoxButtons.OK);
+
+                    bDBLoaded = false;
+                    showCharlgpToolStripMenuItem.Enabled = false;
+                    break;
+
+                default:
+                    // Instantiate Database form
+                    bDBLoaded = true;
+                    frmFieldDatabase = new frmFieldDB();
+                    break;
+            }
+
+            // Instantiate Battle Databases (Enemies/Locations/MainPCs) form
+            switch (ReadBattleFilterFile(BATTLEENEMIES_LGP_FILTER_FILE_NAME, ref lstBattleEnemiesLGPRegisters))
+            {
+                case 0:
+                    MessageBox.Show("Caution: " + BATTLEENEMIES_LGP_FILTER_FILE_NAME + " file does not exists. Battle Enemies Database NOT available.", "Warning", MessageBoxButtons.OK);
+
+                    bDBEnemiesLoaded = false;                    
+                    break;
+
+                case -1:
+                    MessageBox.Show("Error reading " + BATTLEENEMIES_LGP_FILTER_FILE_NAME + " file. Battle Enemies Database NOT available.", "Error", MessageBoxButtons.OK);
+
+                    bDBEnemiesLoaded = false;
+                    break;
+
+                default:
+                    bDBEnemiesLoaded = true;
+                    break;
+            }
+
+            switch (ReadBattleFilterFile(BATTLELOCATIONS_LGP_FILTER_FILE_NAME, ref lstBattleLocationsLGPRegisters))
+            {
+                case 0:
+                    MessageBox.Show("Caution: " + BATTLELOCATIONS_LGP_FILTER_FILE_NAME + " file does not exists. Battle Locations Database NOT available.", "Warning", MessageBoxButtons.OK);
+
+                    bDBLocationsLoaded = false;
+                    break;
+
+                case -1:
+                    MessageBox.Show("Error reading " + BATTLELOCATIONS_LGP_FILTER_FILE_NAME + " file. Battle Locations Database NOT available.", "Error", MessageBoxButtons.OK);
+
+                    bDBLocationsLoaded = false;
+                    break;
+
+                default:
+                    bDBLocationsLoaded = true;
+                    break;
+            }
+
+            switch (ReadBattleFilterFile(BATTLEMAINPCS_LGP_FILTER_FILE_NAME, ref lstBattleMainsLGPRegisters))
+            {
+                case 0:
+                    MessageBox.Show("Caution: " + BATTLEMAINPCS_LGP_FILTER_FILE_NAME + " file does not exists. Battle Main PCs Database NOT available.", "Warning", MessageBoxButtons.OK);
+
+                    bDBMainPCsLoaded = false;
+                    break;
+
+                case -1:
+                    MessageBox.Show("Error reading " + BATTLEMAINPCS_LGP_FILTER_FILE_NAME + " file. Battle Main PCs Database NOT available.", "Error", MessageBoxButtons.OK);
+
+                    bDBMainPCsLoaded = false;
+                    break;
+
+                default:
+                    bDBMainPCsLoaded = true;
+                    break;
+            }
+
+            if (bDBEnemiesLoaded || bDBLocationsLoaded || bDBMainPCsLoaded)
+            {
+                showBattlelgpToolStripMenuItem.Enabled = true;
+                frmBattleDatabase = new frmBattleDB();
+            }                
+            else
+            {
+                showBattlelgpToolStripMenuItem.Enabled = false;
+            }
+
+            // Instantiate Magic Database form
+            switch (ReadBattleFilterFile(MAGIC_LGP_FILTER_FILE_NAME, ref lstMagicLGPRegisters))
+            {
+                case 0:
+                    MessageBox.Show("Caution: " + MAGIC_LGP_FILTER_FILE_NAME + " file does not exists. Magic Database NOT available.", "Warning", MessageBoxButtons.OK);
+
+                    showMagiclgpToolStripMenuItem.Enabled = false;
+                    bDBMagicLoaded = false;
+                    break;
+
+                case -1:
+                    MessageBox.Show("Error reading " + MAGIC_LGP_FILTER_FILE_NAME + " file. Magic Database NOT available.", "Error", MessageBoxButtons.OK);
+
+                    showMagiclgpToolStripMenuItem.Enabled = false;
+                    bDBMagicLoaded = false;
+                    break;
+
+                default:
+                    showMagiclgpToolStripMenuItem.Enabled = true;
+                    bDBMagicLoaded = true;
+                    
+                    frmMagicDatabase = new frmMagicDB();
+                    break;
+            }
+
+        }
+
         private void frmSkeletonEditor_Load(object sender, EventArgs e)
         {
             ReadCFGFile();
@@ -239,25 +360,9 @@ namespace KimeraCS
             }
 
 
-            switch (ReadCharFilterFile())
-            {
-                case 0:
-                    MessageBox.Show("Caution: ilfana.fil file does not exists. Field Database NOT available.", "Warning", MessageBoxButtons.OK);
+            // Initialize Databases files
+            InitializeDBs();
 
-                    bDBLoaded = false;
-                    showCharlgpToolStripMenuItem.Enabled = false;
-                    break;
-
-                case -1:
-                    MessageBox.Show("Error reading ilfana.fil file.", "Error", MessageBoxButtons.OK);
-                    break;
-
-                default:
-                    // Instantiate Database form
-                    bDBLoaded = true;
-                    frmFieldDatabase = new frmFieldDB();
-                    break;
-            }
 
             // Instantiate other forms
             frmInterpAll = new frmInterpolateAll();
@@ -1623,6 +1728,26 @@ namespace KimeraCS
             }
         }
 
+        private void showBattlelgpToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            frmBattleDatabase.ShowDialog();
+
+            if (frmBattleDB.bSelectedBattleFileFromDB)
+            {
+                loadSkeletonFromBattleDB(frmBattleDB.strBattleFile, frmBattleDB.strBattleAnimFile);
+            }
+        }
+
+        private void showMagiclgpToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            frmMagicDatabase.ShowDialog();
+
+            if (frmMagicDB.bSelectedMagicFileFromDB)
+            {
+                loadSkeletonFromBattleDB(frmMagicDB.strMagicFile, frmMagicDB.strMagicAnimFile);
+            }
+        }
+
         private void loadFieldSkeletonToolStripMenuItem_Click(object sender, EventArgs e)
         {
             int iLoadResult;
@@ -2985,9 +3110,9 @@ namespace KimeraCS
 
                         WriteCFGFile();
                     }
-
-                    panelModel_Paint(null, null);
                 }
+
+                panelModel_Paint(null, null);
             }
             catch
             {
@@ -6031,6 +6156,82 @@ namespace KimeraCS
             catch
             {
                 MessageBox.Show("Global error opening Field Skeleton file " + Path.GetFileName(frmFieldDB.strFieldFile).ToUpper() + ".",
+                                "Error");
+            }
+        }
+
+        public void loadSkeletonFromBattleDB(string strfileNameModel, string strfileNameAnim)
+        {
+            Point3D p_min = new Point3D();
+            Point3D p_max = new Point3D();
+
+            int iLoadResult = 0;
+
+            try
+            {
+                // Set Global Paths
+                strGlobalBattleSkeletonName =
+                        Path.GetDirectoryName(strfileNameModel) + "\\" + Path.GetFileName(strfileNameModel).ToUpper();
+                strGlobalBattleAnimationName =
+                        Path.GetDirectoryName(strfileNameAnim) + "\\" + Path.GetFileName(strfileNameAnim).ToUpper();
+
+                // Initialize OpenGL Context;
+                //InitOpenGLContext();
+
+                // Disable/Make Invisible in Forms Data controls
+                InitializeWinFormsDataControls();
+
+                // Load Battle Skeleton
+                iLoadResult = LoadSkeletonFromDB(strfileNameModel, strfileNameAnim, true);
+
+                if (iLoadResult == -2)
+                {
+                    MessageBox.Show("Error Destroying Skeleton file " + Path.GetFileName(strfileNameModel).ToUpper() + ".",
+                                    "Error");
+                    return;
+                }
+
+                if (iLoadResult == -1)
+                {
+                    MessageBox.Show("Error opening Skeleton file " + Path.GetFileName(strfileNameModel).ToUpper() + ".",
+                                    "Error");
+                    return;
+                }
+
+                if (iLoadResult == 0)
+                {
+                    MessageBox.Show("The file " + Path.GetFileName(strfileNameModel).ToUpper() + " has not any known Skeleton format.",
+                                    "Warning");
+                    return;
+                }
+
+                // Update Paths
+                WriteCFGFile();
+
+                // Enable/Make Visible Win Forms Data controls
+                EnableWinFormsDataControls();
+
+                // ComputeBoundingBoxes
+                ComputeBattleBoundingBox(bSkeleton, bAnimationsPack.SkeletonAnimations[ianimIndex].frames[0], ref p_min, ref p_max);
+
+                diameter = ComputeBattleDiameter(bSkeleton);
+
+                // Set frame values in frame editor groupbox...
+                SetFrameEditorFields();
+
+                // Set texture values in texture editor groupbox...
+                SetTextureEditorFields();
+
+                // PostLoadModelPreparations
+                PostLoadModelPreparations(ref p_min, ref p_max);
+
+                // We can draw the model in panel
+                panelModel_Paint(null, null);
+
+            }
+            catch
+            {
+                MessageBox.Show("Global error opening Battle Skeleton file " + Path.GetFileName(frmFieldDB.strFieldFile).ToUpper() + ".",
                                 "Error");
             }
         }
