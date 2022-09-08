@@ -65,7 +65,7 @@ namespace KimeraCS
         public static List<STCharLGPRegister> lstCharLGPRegisters;
         public static List<STBattleLGPRegister> lstBattleEnemiesLGPRegisters;
         public static List<STBattleLGPRegister> lstBattleLocationsLGPRegisters;
-        public static List<STBattleLGPRegister> lstBattleMainsLGPRegisters;
+        public static List<STBattleLGPRegister> lstBattleMainPCsLGPRegisters;
         public static List<STBattleLGPRegister> lstMagicLGPRegisters;
 
         public static List<STLimitsRegister> lstBattleLimitsAnimations;
@@ -383,7 +383,7 @@ namespace KimeraCS
                             stcBLGPReg = new STBattleLGPRegister();
 
                             stcBLGPReg.fileName = strLineFilter.Split('=')[0];
-                            stcBLGPReg.modelName = "[" + stcBLGPReg.fileName + "] - " + strLineFilter.Split('=')[1];
+                            stcBLGPReg.modelName = strLineFilter.Split('=')[1];
                             tmpBattleLGPRegister.Add(stcBLGPReg);
                         }
                     }
