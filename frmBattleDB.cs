@@ -3,10 +3,8 @@ using System.IO;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reflection;
 using System.Windows.Forms;
 
 namespace KimeraCS
@@ -22,6 +20,11 @@ namespace KimeraCS
         
         public static bool bSelectedBattleFileFromDB;
 
+        public string typedChars = string.Empty;
+        public static int iTabPageSelected;
+
+        DataGridViewColumn tmpdgvEnemiesSortColumn;
+        SortOrder tmpdgvEnemiesSortOrder;
 
         public frmBattleDB()
         {
@@ -37,29 +40,50 @@ namespace KimeraCS
             if (strBattleLGPPathSrc == "") strBattleLGPPathSrc = strGlobalPath;
             txtBattleDataDir.Text = strBattleLGPPathSrc;
             
-            lbEnemies.Items.Clear();
-            lbLocations.Items.Clear();
-            lbMainPCs.Items.Clear();
+
+            //Set Double buffering on the Grid using reflection and the bindingflags enum.
+            typeof(DataGridView).InvokeMember("DoubleBuffered", 
+                                              BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.SetProperty, null,
+                                              dgvEnemies, new object[] { true });
+            typeof(DataGridView).InvokeMember("DoubleBuffered",
+                                              BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.SetProperty, null,
+                                              dgvLocations, new object[] { true });
+            typeof(DataGridView).InvokeMember("DoubleBuffered",
+                                              BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.SetProperty, null,
+                                              dgvMainPCs, new object[] { true });
 
             // Enemies
             if (bDBEnemiesLoaded)
             {
+                dgvEnemies.Rows.Clear();
+                dgvEnemies.Refresh();
+
                 for (mi = 0; mi < lstBattleEnemiesLGPRegisters.Count; mi++)
-                    lbEnemies.Items.Add(lstBattleEnemiesLGPRegisters[mi].modelName);
+                {
+                    dgvEnemies.Rows.Insert(mi, lstBattleEnemiesLGPRegisters[mi].fileName,
+                                               lstBattleEnemiesLGPRegisters[mi].modelName);
+
+                    dgvEnemies.Rows[mi].HeaderCell.Value = mi.ToString();
+                }
+                    
 
                 tcBattleDB.TabPages[0].Enabled = true;
 
                 if (strLocalEnemyModelName == "")
                 {
-                    lbEnemies.SelectedIndex = 0;
-                    lbEnemies.SelectedValue = 0;
+                    dgvEnemies.Rows[0].Selected = true;
                 }
                 else
                 {
-                    lbEnemies.SelectedIndex = lbEnemies.FindStringExact(strLocalEnemyModelName);
+                    DataGridViewRow dgvRow = dgvEnemies.Rows
+                                                .Cast<DataGridViewRow>()
+                                                .Where(r => r.Cells[0].Value.ToString().Equals(strLocalEnemyModelName))
+                                                .First();
+
+                    dgvEnemies.CurrentCell = dgvEnemies.Rows[dgvRow.Index].Cells[0];
+                    dgvEnemies.Rows[dgvRow.Index].Selected = true;
                 }
 
-                lbEnemies.Select();
             }
             else tcBattleDB.TabPages[0].Enabled = false;
 
@@ -67,22 +91,33 @@ namespace KimeraCS
             // Locations
             if (bDBLocationsLoaded)
             {
+                dgvLocations.Rows.Clear();
+                dgvLocations.Refresh();
+
                 for (mi = 0; mi < lstBattleLocationsLGPRegisters.Count; mi++)
-                    lbLocations.Items.Add(lstBattleLocationsLGPRegisters[mi].modelName);
+                {
+                    dgvLocations.Rows.Insert(mi, lstBattleLocationsLGPRegisters[mi].fileName,
+                                                 lstBattleLocationsLGPRegisters[mi].modelName);
+
+                    dgvLocations.Rows[mi].HeaderCell.Value = mi.ToString();
+                }
 
                 tcBattleDB.TabPages[1].Enabled = true;
 
                 if (strLocalLocationModelName == "")
                 {
-                    lbLocations.SelectedIndex = 0;
-                    lbLocations.SelectedValue = 0;
+                    dgvLocations.Rows[0].Selected = true;
                 }
                 else
                 {
-                    lbLocations.SelectedIndex = lbLocations.FindStringExact(strLocalLocationModelName);
-                }
+                    DataGridViewRow dgvRow = dgvLocations.Rows
+                                                .Cast<DataGridViewRow>()
+                                                .Where(r => r.Cells[0].Value.ToString().Equals(strLocalLocationModelName))
+                                                .First();
 
-                lbLocations.Select();
+                    dgvLocations.CurrentCell = dgvLocations.Rows[dgvRow.Index].Cells[0];
+                    dgvLocations.Rows[dgvRow.Index].Selected = true;
+                }
             }
             else tcBattleDB.TabPages[1].Enabled = false;
 
@@ -90,24 +125,50 @@ namespace KimeraCS
             // Main PCs
             if (bDBMainPCsLoaded)
             {
-                for (mi = 0; mi < lstBattleMainsLGPRegisters.Count; mi++)
-                    lbMainPCs.Items.Add(lstBattleMainsLGPRegisters[mi].modelName);
+                dgvMainPCs.Rows.Clear();
+                dgvMainPCs.Refresh();
+
+                for (mi = 0; mi < lstBattleMainPCsLGPRegisters.Count; mi++)
+                {
+                    dgvMainPCs.Rows.Insert(mi, lstBattleMainPCsLGPRegisters[mi].fileName,
+                                               lstBattleMainPCsLGPRegisters[mi].modelName);
+
+                    dgvMainPCs.Rows[mi].HeaderCell.Value = mi.ToString();
+                }
 
                 tcBattleDB.TabPages[2].Enabled = true;
 
                 if (strLocalMainPCModelName == "")
                 {
-                    lbMainPCs.SelectedIndex = 0;
-                    lbMainPCs.SelectedValue = 0;
+                    dgvMainPCs.Rows[0].Selected = true;
                 }
                 else
                 {
-                    lbMainPCs.SelectedIndex = lbMainPCs.FindStringExact(strLocalMainPCModelName);
-                }
+                    DataGridViewRow dgvRow = dgvMainPCs.Rows
+                                                .Cast<DataGridViewRow>()
+                                                .Where(r => r.Cells[0].Value.ToString().Equals(strLocalMainPCModelName))
+                                                .First();
 
-                lbMainPCs.Select();
+                    dgvMainPCs.CurrentCell = dgvMainPCs.Rows[dgvRow.Index].Cells[0];
+                    dgvMainPCs.Rows[dgvRow.Index].Selected = true;
+                }
             }
             else tcBattleDB.TabPages[2].Enabled = false;
+
+            tcBattleDB.TabIndex = iTabPageSelected;
+
+            if (iTabPageSelected == 0)
+            {
+                if (tmpdgvEnemiesSortColumn != null && tmpdgvEnemiesSortColumn.Index == 1 )
+                {
+                    if (tmpdgvEnemiesSortOrder == SortOrder.Ascending)
+                        dgvEnemies.Sort(dgvEnemies.SortedColumn, ListSortDirection.Ascending);
+                    else if (tmpdgvEnemiesSortOrder == SortOrder.Descending)
+                        dgvEnemies.Sort(dgvEnemies.SortedColumn, ListSortDirection.Descending);
+                }
+                
+                dgvEnemies.Select();
+            }
         }
 
         private void btnSelectDirBrowser_Click(object sender, EventArgs e)
@@ -144,19 +205,73 @@ namespace KimeraCS
             fbdBattleDataDirectory.Dispose();
         }
 
-        private void lbEnemies_DoubleClick(object sender, EventArgs e)
+        private void dgvLocations_DoubleClick(object sender, EventArgs e)
         {
-            if (lbEnemies.SelectedIndex > -1) btnLoadModelAnimation.PerformClick();
+            if (dgvLocations.SelectedRows.Count > 0) btnLoadModelAnimation.PerformClick();
         }
 
-        private void lbLocations_DoubleClick(object sender, EventArgs e)
+        private void dgvMainPCs_DoubleClick(object sender, EventArgs e)
         {
-            if (lbEnemies.SelectedIndex > -1) btnLoadModelAnimation.PerformClick();
+            if (dgvMainPCs.SelectedRows.Count > 0) btnLoadModelAnimation.PerformClick();
         }
 
-        private void lbMainPCs_DoubleClick(object sender, EventArgs e)
+        private void dgvEnemies_DoubleClick(object sender, EventArgs e)
         {
-            if (lbEnemies.SelectedIndex > -1) btnLoadModelAnimation.PerformClick();
+            if (dgvEnemies.SelectedRows.Count > 0) btnLoadModelAnimation.PerformClick();
+        }
+
+        private void dgvEnemies_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (Char.IsLetter(e.KeyChar) || Char.IsWhiteSpace(e.KeyChar))
+            {
+                typedChars += e.KeyChar.ToString().ToUpper();
+
+                List<DataGridViewRow> dgvRows = dgvEnemies.Rows
+                                                    .Cast<DataGridViewRow>()
+                                                    .Where(r => r.Cells[1].Value.ToString().ToUpper()
+                                                    .Contains(typedChars)).ToList();
+
+                if (dgvRows.Count > 0)
+                {
+                    dgvEnemies.CurrentCell = dgvEnemies.Rows[dgvRows[0].Index].Cells[0];
+                    dgvEnemies.Rows[dgvRows[0].Index].Selected = true;
+                }
+            }
+            else
+            {
+                typedChars = string.Empty;
+                return;
+            }
+        }
+
+        private void tcBattleDB_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            iTabPageSelected = tcBattleDB.TabIndex;
+        }
+
+        private void dgvEnemies_Click(object sender, EventArgs e)
+        {
+            typedChars = "";
+        }
+
+        private void dgvEnemies_Sorted(object sender, EventArgs e)
+        {
+            tmpdgvEnemiesSortColumn = dgvEnemies.SortedColumn;
+            tmpdgvEnemiesSortOrder = dgvEnemies.SortOrder;
+        }
+
+        private void btnClose_Click(object sender, EventArgs e)
+        {
+            strLocalEnemyModelName = dgvEnemies.Rows[dgvEnemies.SelectedRows[0].Index].Cells[0].Value.ToString();
+            strLocalLocationModelName = dgvLocations.Rows[dgvLocations.SelectedRows[0].Index].Cells[0].Value.ToString();
+            strLocalMainPCModelName = dgvMainPCs.Rows[dgvMainPCs.SelectedRows[0].Index].Cells[0].Value.ToString();
+
+            if (!bSelectedBattleFileFromDB)
+            {
+                strLocalEnemyModelName = "";
+                strLocalLocationModelName = "";
+                strLocalMainPCModelName = "";
+            }
         }
 
         private void btnSaveBattleDataDir_Click(object sender, EventArgs e)
@@ -169,13 +284,13 @@ namespace KimeraCS
             switch(tcBattleDB.SelectedIndex)
             {
                 case 0:
-                    strLocalEnemyModelName = lbEnemies.Text;
+                    strLocalEnemyModelName = dgvEnemies.Rows[dgvEnemies.SelectedRows[0].Index].Cells[0].Value.ToString();
                     break;
                 case 1:
-                    strLocalLocationModelName = lbLocations.Text;
+                    strLocalLocationModelName = dgvLocations.Rows[dgvLocations.SelectedRows[0].Index].Cells[0].Value.ToString();
                     break;
                 case 2:
-                    strLocalMainPCModelName = lbMainPCs.Text;
+                    strLocalMainPCModelName = dgvMainPCs.Rows[dgvMainPCs.SelectedRows[0].Index].Cells[0].Value.ToString();
                     break;
             }
 
@@ -196,13 +311,13 @@ namespace KimeraCS
             switch (tcBattleDB.SelectedIndex)
             {
                 case 0:
-                    strModelName = lbEnemies.Text.Substring(1, 4);
+                    strModelName = dgvEnemies.Rows[dgvEnemies.SelectedRows[0].Index].Cells[0].Value.ToString();
                     break;
                 case 1:
-                    strModelName = lbLocations.Text.Substring(1, 4);
+                    strModelName = dgvLocations.Rows[dgvLocations.SelectedRows[0].Index].Cells[0].Value.ToString();
                     break;
                 case 2:
-                    strModelName = lbMainPCs.Text.Substring(1, 4);
+                    strModelName = dgvMainPCs.Rows[dgvMainPCs.SelectedRows[0].Index].Cells[0].Value.ToString();
                     break;
             }
 
