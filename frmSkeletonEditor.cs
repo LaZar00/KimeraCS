@@ -56,7 +56,7 @@ namespace KimeraCS
     public partial class frmSkeletonEditor : Form
     {
 
-         public const string STR_APPNAME = "KimeraCS 1.5";
+        public const string STR_APPNAME = "KimeraCS 1.5b";
 
         public static int modelWidth;
         public static int modelHeight;
@@ -281,7 +281,7 @@ namespace KimeraCS
                     break;
             }
 
-            switch (ReadBattleFilterFile(BATTLEMAINPCS_LGP_FILTER_FILE_NAME, ref lstBattleMainsLGPRegisters))
+            switch (ReadBattleFilterFile(BATTLEMAINPCS_LGP_FILTER_FILE_NAME, ref lstBattleMainPCsLGPRegisters))
             {
                 case 0:
                     MessageBox.Show("Caution: " + BATTLEMAINPCS_LGP_FILTER_FILE_NAME + " file does not exists. Battle Main PCs Database NOT available.", "Warning", MessageBoxButtons.OK);
