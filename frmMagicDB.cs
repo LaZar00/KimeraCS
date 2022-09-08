@@ -3,10 +3,8 @@ using System.IO;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reflection;
 using System.Windows.Forms;
 
 namespace KimeraCS
@@ -34,23 +32,39 @@ namespace KimeraCS
             if (strMagicLGPPathSrc == "") strMagicLGPPathSrc = strGlobalPath;
             txtMagicDataDir.Text = strMagicLGPPathSrc;
 
-            lbMagic.Items.Clear();
 
+            //Set Double buffering on the Grid using reflection and the bindingflags enum.
+            typeof(DataGridView).InvokeMember("DoubleBuffered",
+                                              BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.SetProperty, null,
+                                              dgvMagic, new object[] { true });
+
+            // Magic
             if (bDBMagicLoaded)
             {
+                dgvMagic.Rows.Clear();
+                dgvMagic.Refresh();
+
                 for (mi = 0; mi < lstMagicLGPRegisters.Count; mi++)
-                    lbMagic.Items.Add(lstMagicLGPRegisters[mi].modelName);
+                {
+                    dgvMagic.Rows.Insert(mi, mi,
+                                             lstMagicLGPRegisters[mi].fileName,
+                                             lstMagicLGPRegisters[mi].modelName);
+                }
 
                 if (strLocalMagicModelName == "")
                 {
-                    lbMagic.SelectedIndex = 0;
+                    dgvMagic.Rows[0].Selected = true;
                 }
                 else
                 {
-                    lbMagic.SelectedIndex = lbMagic.FindStringExact(strLocalMagicModelName);
-                }
+                    DataGridViewRow dgvRow = dgvMagic.Rows
+                                                .Cast<DataGridViewRow>()
+                                                .Where(r => r.Cells[1].Value.ToString().Equals(strLocalMagicModelName))
+                                                .First();
 
-                lbMagic.Select();
+                    dgvMagic.CurrentCell = dgvMagic.Rows[dgvRow.Index].Cells[1];
+                    dgvMagic.Rows[dgvRow.Index].Selected = true;
+                }
             }
         }
 
@@ -95,7 +109,7 @@ namespace KimeraCS
 
         private void btnClose_Click(object sender, EventArgs e)
         {
-            strLocalMagicModelName = lbMagic.Text;
+            strLocalMagicModelName = dgvMagic.Rows[dgvMagic.SelectedRows[0].Index].Cells[1].Value.ToString();
 
             if (!bSelectedMagicFileFromDB)
             {
@@ -103,50 +117,66 @@ namespace KimeraCS
             }
         }
 
-        private void lbMagic_DoubleClick(object sender, EventArgs e)
+        private void dgvMagic_DoubleClick(object sender, EventArgs e)
         {
-            if (lbMagic.SelectedIndex > -1)
+            if (dgvMagic.SelectedRows.Count > 0) btnLoadModelAnimation.PerformClick();
+        }
+
+        private void frmMagicDB_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            strLocalMagicModelName = dgvMagic.Rows[dgvMagic.SelectedRows[0].Index].Cells[1].Value.ToString();
+
+            if (!bSelectedMagicFileFromDB)
             {
-                btnLoadModelAnimation.PerformClick();
+                strLocalMagicModelName = "";
             }
         }
 
         private void btnLoadModelAnimation_Click(object sender, EventArgs e)
         {
+            string strModelName = "";
 
             bSelectedMagicFileFromDB = false;
 
-            if (lbMagic.Text != "")
+            if (dgvMagic.SelectedRows.Count > 0)
             {
-                strMagicFile = txtMagicDataDir.Text + "\\" + lstMagicLGPRegisters[lbMagic.SelectedIndex].fileName + ".D";
+                strModelName = dgvMagic.Rows[dgvMagic.SelectedRows[0].Index].Cells[1].Value.ToString();
+
+                if (strModelName != "")
+                {
+                    strMagicFile = txtMagicDataDir.Text + "\\" + strModelName + ".D";
+                }
+                else
+                {
+                    MessageBox.Show("You have not selected any Magic Model.", "Information", MessageBoxButtons.OK);
+                    return;
+                }
+
+                strMagicAnimFile = txtMagicDataDir.Text + "\\" + strModelName + ".A00";
+
+
+                // Check existance of the files.
+                if (!File.Exists(strMagicFile))
+                {
+                    MessageBox.Show("The file selected as Magic Model " + strModelName + ".D does not exists.",
+                                    "Error");
+                    return;
+                }
+
+                if (!File.Exists(strMagicAnimFile))
+                {
+                    MessageBox.Show("The file selected as Magic Model Animation " + strModelName + ".A00 does not exists.",
+                                    "Error");
+                    return;
+                }
+
+                bSelectedMagicFileFromDB = true;
+
+                Close();
             }
-            else
-            {
-                MessageBox.Show("You have not selected any Magic Model.", "Information", MessageBoxButtons.OK);
-                return;
-            }
-
-            strMagicAnimFile = txtMagicDataDir.Text + "\\" + lstMagicLGPRegisters[lbMagic.SelectedIndex].fileName + ".A00";
-
-            // Check existance of the files.
-            if (!File.Exists(strMagicFile))
-            {
-                MessageBox.Show("The file selected as Magic Model " + lstMagicLGPRegisters[lbMagic.SelectedIndex].fileName + " does not exists.",
-                                "Error");
-                return;
-            }
-
-            if (!File.Exists(strMagicAnimFile))
-            {
-                 MessageBox.Show("The file selected as Field Animation " + lstMagicLGPRegisters[lbMagic.SelectedIndex].fileName + ".A00" + " does not exists.",
-                                 "Error");
-                 return;
-            }
-
-            bSelectedMagicFileFromDB = true;
-
-            Close();
         }
+
+
 
     }
 }
