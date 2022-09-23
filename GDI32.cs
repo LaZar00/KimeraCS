@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Windows.Forms;
 using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -427,6 +428,24 @@ namespace KimeraCS
                 g.PixelOffsetMode = PixelOffsetMode.Half;
 
                 g.DrawImage(Image.FromHbitmap(hBMP), 0, 0, fWidth, fHeight);
+            }
+
+            return tmpBMP;
+        }
+
+        //  This function fits a bitmap to a picturebox scaling/shrinking it if necessary with NearestNeighbor interpolate option
+        //  Variant that allows pass as reference the pbIn
+        public static Bitmap PutDIBIntoBitmap(int iImgWidth, int iImgHeight, IntPtr hBMP)
+        {
+            Bitmap tmpBMP;
+            tmpBMP = new Bitmap(iImgWidth, iImgHeight, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+
+            using (Graphics g = Graphics.FromImage(tmpBMP))
+            {
+                g.InterpolationMode = InterpolationMode.NearestNeighbor;
+                g.PixelOffsetMode = PixelOffsetMode.Half;
+
+                g.DrawImage(Image.FromHbitmap(hBMP), 0, 0, iImgWidth, iImgHeight);
             }
 
             return tmpBMP;
