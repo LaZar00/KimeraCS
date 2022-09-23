@@ -101,6 +101,7 @@
     <Compile Include="FF7BattleAnimationsPack.cs" />
     <Compile Include="FF7BattleAnimation.cs" />
     <Compile Include="FF7BattleSkeleton.cs" />
+    <Compile Include="FF7TMDModel.cs" />
     <Compile Include="FolderBrowserDialogObject.cs" />
     <Compile Include="frmBattleDB.cs">
       <SubType>Form</SubType>
@@ -138,11 +139,23 @@
     <Compile Include="frmPEditor.Designer.cs">
       <DependentUpon>frmPEditor.cs</DependentUpon>
     </Compile>
+    <Compile Include="frmTEXToPNGBatchConversion.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmTEXToPNGBatchConversion.Designer.cs">
+      <DependentUpon>frmTEXToPNGBatchConversion.cs</DependentUpon>
+    </Compile>
     <Compile Include="frmTextureViewer.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="frmTextureViewer.Designer.cs">
       <DependentUpon>frmTextureViewer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frmTMDObjList.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmTMDObjList.Designer.cs">
+      <DependentUpon>frmTMDObjList.cs</DependentUpon>
     </Compile>
     <Compile Include="InputBoxCS.cs" />
     <Compile Include="Model_3DS.cs" />
@@ -202,8 +215,14 @@
       <DependentUpon>frmSkeletonEditor.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="frmTEXToPNGBatchConversion.resx">
+      <DependentUpon>frmTEXToPNGBatchConversion.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="frmTextureViewer.resx">
       <DependentUpon>frmTextureViewer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmTMDObjList.resx">
+      <DependentUpon>frmTMDObjList.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
