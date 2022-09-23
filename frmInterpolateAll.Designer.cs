@@ -160,7 +160,7 @@ namespace KimeraCS
             // 
             this.btnGo.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnGo.Location = new System.Drawing.Point(11, 272);
-            this.btnGo.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnGo.Margin = new System.Windows.Forms.Padding(2);
             this.btnGo.Name = "btnGo";
             this.btnGo.Size = new System.Drawing.Size(224, 28);
             this.btnGo.TabIndex = 19;
@@ -172,7 +172,7 @@ namespace KimeraCS
             // 
             this.btnSaveOptions.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnSaveOptions.Location = new System.Drawing.Point(239, 272);
-            this.btnSaveOptions.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnSaveOptions.Margin = new System.Windows.Forms.Padding(2);
             this.btnSaveOptions.Name = "btnSaveOptions";
             this.btnSaveOptions.Size = new System.Drawing.Size(99, 28);
             this.btnSaveOptions.TabIndex = 1;
@@ -185,7 +185,7 @@ namespace KimeraCS
             this.btnClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.btnClose.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnClose.Location = new System.Drawing.Point(425, 272);
-            this.btnClose.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnClose.Margin = new System.Windows.Forms.Padding(2);
             this.btnClose.Name = "btnClose";
             this.btnClose.Size = new System.Drawing.Size(124, 28);
             this.btnClose.TabIndex = 20;
@@ -196,7 +196,7 @@ namespace KimeraCS
             // nudInterpFrameField
             // 
             this.nudInterpFrameField.Location = new System.Drawing.Point(420, 56);
-            this.nudInterpFrameField.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.nudInterpFrameField.Margin = new System.Windows.Forms.Padding(2);
             this.nudInterpFrameField.Maximum = new decimal(new int[] {
             1000,
             0,
@@ -219,7 +219,7 @@ namespace KimeraCS
             // nudInterpFrameBattleMagic
             // 
             this.nudInterpFrameBattleMagic.Location = new System.Drawing.Point(420, 174);
-            this.nudInterpFrameBattleMagic.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.nudInterpFrameBattleMagic.Margin = new System.Windows.Forms.Padding(2);
             this.nudInterpFrameBattleMagic.Maximum = new decimal(new int[] {
             1000,
             0,
@@ -242,7 +242,7 @@ namespace KimeraCS
             // txtExtractedCharLGPSrc
             // 
             this.txtExtractedCharLGPSrc.Location = new System.Drawing.Point(94, 44);
-            this.txtExtractedCharLGPSrc.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtExtractedCharLGPSrc.Margin = new System.Windows.Forms.Padding(2);
             this.txtExtractedCharLGPSrc.Name = "txtExtractedCharLGPSrc";
             this.txtExtractedCharLGPSrc.Size = new System.Drawing.Size(258, 20);
             this.txtExtractedCharLGPSrc.TabIndex = 2;
@@ -250,7 +250,7 @@ namespace KimeraCS
             // txtExtractedBattleLGPSrc
             // 
             this.txtExtractedBattleLGPSrc.Location = new System.Drawing.Point(94, 123);
-            this.txtExtractedBattleLGPSrc.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtExtractedBattleLGPSrc.Margin = new System.Windows.Forms.Padding(2);
             this.txtExtractedBattleLGPSrc.Name = "txtExtractedBattleLGPSrc";
             this.txtExtractedBattleLGPSrc.Size = new System.Drawing.Size(258, 20);
             this.txtExtractedBattleLGPSrc.TabIndex = 6;
@@ -258,7 +258,7 @@ namespace KimeraCS
             // txtExtractedMagicLGPSrc
             // 
             this.txtExtractedMagicLGPSrc.Location = new System.Drawing.Point(94, 202);
-            this.txtExtractedMagicLGPSrc.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtExtractedMagicLGPSrc.Margin = new System.Windows.Forms.Padding(2);
             this.txtExtractedMagicLGPSrc.Name = "txtExtractedMagicLGPSrc";
             this.txtExtractedMagicLGPSrc.Size = new System.Drawing.Size(258, 20);
             this.txtExtractedMagicLGPSrc.TabIndex = 10;
@@ -266,7 +266,7 @@ namespace KimeraCS
             // txtExtractedCharLGPDest
             // 
             this.txtExtractedCharLGPDest.Location = new System.Drawing.Point(94, 65);
-            this.txtExtractedCharLGPDest.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtExtractedCharLGPDest.Margin = new System.Windows.Forms.Padding(2);
             this.txtExtractedCharLGPDest.Name = "txtExtractedCharLGPDest";
             this.txtExtractedCharLGPDest.Size = new System.Drawing.Size(258, 20);
             this.txtExtractedCharLGPDest.TabIndex = 4;
@@ -274,7 +274,7 @@ namespace KimeraCS
             // txtExtractedBattleLGPDest
             // 
             this.txtExtractedBattleLGPDest.Location = new System.Drawing.Point(94, 144);
-            this.txtExtractedBattleLGPDest.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtExtractedBattleLGPDest.Margin = new System.Windows.Forms.Padding(2);
             this.txtExtractedBattleLGPDest.Name = "txtExtractedBattleLGPDest";
             this.txtExtractedBattleLGPDest.Size = new System.Drawing.Size(258, 20);
             this.txtExtractedBattleLGPDest.TabIndex = 8;
@@ -282,7 +282,7 @@ namespace KimeraCS
             // txtExtractedMagicLGPDest
             // 
             this.txtExtractedMagicLGPDest.Location = new System.Drawing.Point(94, 223);
-            this.txtExtractedMagicLGPDest.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtExtractedMagicLGPDest.Margin = new System.Windows.Forms.Padding(2);
             this.txtExtractedMagicLGPDest.Name = "txtExtractedMagicLGPDest";
             this.txtExtractedMagicLGPDest.Size = new System.Drawing.Size(258, 20);
             this.txtExtractedMagicLGPDest.TabIndex = 12;
@@ -291,7 +291,7 @@ namespace KimeraCS
             // 
             this.btnExtCharLGPSrc.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnExtCharLGPSrc.Location = new System.Drawing.Point(356, 44);
-            this.btnExtCharLGPSrc.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnExtCharLGPSrc.Margin = new System.Windows.Forms.Padding(2);
             this.btnExtCharLGPSrc.Name = "btnExtCharLGPSrc";
             this.btnExtCharLGPSrc.Size = new System.Drawing.Size(30, 20);
             this.btnExtCharLGPSrc.TabIndex = 3;
@@ -303,7 +303,7 @@ namespace KimeraCS
             // 
             this.btnExtCharLGPDst.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnExtCharLGPDst.Location = new System.Drawing.Point(356, 65);
-            this.btnExtCharLGPDst.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnExtCharLGPDst.Margin = new System.Windows.Forms.Padding(2);
             this.btnExtCharLGPDst.Name = "btnExtCharLGPDst";
             this.btnExtCharLGPDst.Size = new System.Drawing.Size(30, 20);
             this.btnExtCharLGPDst.TabIndex = 5;
@@ -315,7 +315,7 @@ namespace KimeraCS
             // 
             this.btnExtBattleLGPSrc.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnExtBattleLGPSrc.Location = new System.Drawing.Point(356, 123);
-            this.btnExtBattleLGPSrc.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnExtBattleLGPSrc.Margin = new System.Windows.Forms.Padding(2);
             this.btnExtBattleLGPSrc.Name = "btnExtBattleLGPSrc";
             this.btnExtBattleLGPSrc.Size = new System.Drawing.Size(30, 20);
             this.btnExtBattleLGPSrc.TabIndex = 7;
@@ -327,7 +327,7 @@ namespace KimeraCS
             // 
             this.btnExtBattleLGPDst.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnExtBattleLGPDst.Location = new System.Drawing.Point(356, 144);
-            this.btnExtBattleLGPDst.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnExtBattleLGPDst.Margin = new System.Windows.Forms.Padding(2);
             this.btnExtBattleLGPDst.Name = "btnExtBattleLGPDst";
             this.btnExtBattleLGPDst.Size = new System.Drawing.Size(30, 20);
             this.btnExtBattleLGPDst.TabIndex = 9;
@@ -339,7 +339,7 @@ namespace KimeraCS
             // 
             this.btnExtMagicLGPSrc.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnExtMagicLGPSrc.Location = new System.Drawing.Point(356, 202);
-            this.btnExtMagicLGPSrc.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnExtMagicLGPSrc.Margin = new System.Windows.Forms.Padding(2);
             this.btnExtMagicLGPSrc.Name = "btnExtMagicLGPSrc";
             this.btnExtMagicLGPSrc.Size = new System.Drawing.Size(30, 20);
             this.btnExtMagicLGPSrc.TabIndex = 11;
@@ -351,7 +351,7 @@ namespace KimeraCS
             // 
             this.btnExtMagicLGPDst.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnExtMagicLGPDst.Location = new System.Drawing.Point(356, 223);
-            this.btnExtMagicLGPDst.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnExtMagicLGPDst.Margin = new System.Windows.Forms.Padding(2);
             this.btnExtMagicLGPDst.Name = "btnExtMagicLGPDst";
             this.btnExtMagicLGPDst.Size = new System.Drawing.Size(30, 20);
             this.btnExtMagicLGPDst.TabIndex = 13;
@@ -363,7 +363,7 @@ namespace KimeraCS
             // 
             this.chkProcessCharLGP.AutoSize = true;
             this.chkProcessCharLGP.Location = new System.Drawing.Point(521, 57);
-            this.chkProcessCharLGP.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.chkProcessCharLGP.Margin = new System.Windows.Forms.Padding(2);
             this.chkProcessCharLGP.Name = "chkProcessCharLGP";
             this.chkProcessCharLGP.Size = new System.Drawing.Size(15, 14);
             this.chkProcessCharLGP.TabIndex = 16;
@@ -373,7 +373,7 @@ namespace KimeraCS
             // 
             this.chkProcessBattleLGP.AutoSize = true;
             this.chkProcessBattleLGP.Location = new System.Drawing.Point(521, 139);
-            this.chkProcessBattleLGP.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.chkProcessBattleLGP.Margin = new System.Windows.Forms.Padding(2);
             this.chkProcessBattleLGP.Name = "chkProcessBattleLGP";
             this.chkProcessBattleLGP.Size = new System.Drawing.Size(15, 14);
             this.chkProcessBattleLGP.TabIndex = 17;
@@ -383,7 +383,7 @@ namespace KimeraCS
             // 
             this.chkProcessMagicLGP.AutoSize = true;
             this.chkProcessMagicLGP.Location = new System.Drawing.Point(521, 217);
-            this.chkProcessMagicLGP.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.chkProcessMagicLGP.Margin = new System.Windows.Forms.Padding(2);
             this.chkProcessMagicLGP.Name = "chkProcessMagicLGP";
             this.chkProcessMagicLGP.Size = new System.Drawing.Size(15, 14);
             this.chkProcessMagicLGP.TabIndex = 18;
@@ -438,7 +438,7 @@ namespace KimeraCS
             this.btnCancel.Enabled = false;
             this.btnCancel.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnCancel.Location = new System.Drawing.Point(489, 34);
-            this.btnCancel.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnCancel.Margin = new System.Windows.Forms.Padding(2);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(60, 24);
             this.btnCancel.TabIndex = 26;
@@ -504,7 +504,7 @@ namespace KimeraCS
             // 
             this.btnSaveLog.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnSaveLog.Location = new System.Drawing.Point(342, 272);
-            this.btnSaveLog.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnSaveLog.Margin = new System.Windows.Forms.Padding(2);
             this.btnSaveLog.Name = "btnSaveLog";
             this.btnSaveLog.Size = new System.Drawing.Size(79, 28);
             this.btnSaveLog.TabIndex = 26;
@@ -569,7 +569,7 @@ namespace KimeraCS
             this.DoubleBuffered = true;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.MaximizeBox = false;
             this.Name = "frmInterpolateAll";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
