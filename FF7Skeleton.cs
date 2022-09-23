@@ -21,6 +21,7 @@ namespace KimeraCS
     using static FF7BattleAnimation;
 
     using static FF7PModel;
+    using static FF7TMDModel;
 
     using static Lighting;
 
@@ -49,6 +50,7 @@ namespace KimeraCS
         public const int K_AA_SKELETON = 4;
         public const int K_MAGIC_SKELETON = 5;
         public const int K_3DS_MODEL = 6;
+
         public static int modelType = -1;
 
         // Animation constants for skeleton
@@ -64,7 +66,9 @@ namespace KimeraCS
         public static BattleAnimationsPack bAnimationsPack;
 
         public static PModel fPModel;
+        public static TMDModel mTMDModel;
 
+        public static bool IsTMDModel;
 
 
         //

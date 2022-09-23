@@ -705,29 +705,35 @@ namespace KimeraCS
         //  ---------------------------------------------------------------------------------------------------------
         //  ----------------------------------------------- MERGING -------------------------------------------------
         //  ---------------------------------------------------------------------------------------------------------
-        public static void MergeGroups(ref PGroup[] Group, PGroup[] inGroup)
+        public static void MergeGroups(ref PGroup[] outMergedGroup, PGroup[] inGroup)
         {
-            int gi, maxtiGroup, numGroupsGroup, numGroupsinGroup, numPolys, numEdges, numVerts, numTexCs;
+            int gi, maxtiGroup, numGroupsMergedGroup, numGroupsinGroup, numPolys, numEdges, numVerts, numTexCs;
 
-            numGroupsGroup = Group.Length;
+            numGroupsMergedGroup = outMergedGroup.Length;
             numGroupsinGroup = inGroup.Length;
 
-            Array.Resize(ref Group, numGroupsGroup + numGroupsinGroup);
+            Array.Resize(ref outMergedGroup, numGroupsMergedGroup + numGroupsinGroup);
 
             maxtiGroup = 0;
 
-            for (gi = 0; gi < numGroupsGroup; gi++)
+            for (gi = 0; gi < numGroupsMergedGroup; gi++)
             {
-                if (Group[gi].texFlag == 1)
-                    if (Group[gi].texID > maxtiGroup) maxtiGroup = Group[gi].texID;
+                if (outMergedGroup[gi].texFlag == 1)
+                    if (outMergedGroup[gi].texID > maxtiGroup) maxtiGroup = outMergedGroup[gi].texID;
             }
 
-            numPolys = Group[numGroupsGroup - 1].offsetPoly + Group[numGroupsGroup - 1].numPoly;
-            numEdges = Group[numGroupsGroup - 1].offsetEdge + Group[numGroupsGroup - 1].numEdge;
-            numVerts = Group[numGroupsGroup - 1].offsetVert + Group[numGroupsGroup - 1].numVert;
+            numPolys = outMergedGroup[numGroupsMergedGroup - 1].offsetPoly + 
+                       outMergedGroup[numGroupsMergedGroup - 1].numPoly;
+            numEdges = outMergedGroup[numGroupsMergedGroup - 1].offsetEdge + 
+                       outMergedGroup[numGroupsMergedGroup - 1].numEdge;
+            numVerts = outMergedGroup[numGroupsMergedGroup - 1].offsetVert + 
+                       outMergedGroup[numGroupsMergedGroup - 1].numVert;
 
-            if (Group[numGroupsGroup].texFlag == 1) numTexCs = Group[numGroupsGroup - 1].offsetTex + Group[numGroupsGroup - 1].numVert;
-            else numTexCs = Group[numGroupsGroup - 1].offsetTex;
+            if (outMergedGroup[numGroupsMergedGroup].texFlag == 1)
+                numTexCs = outMergedGroup[numGroupsMergedGroup - 1].offsetTex + 
+                           outMergedGroup[numGroupsMergedGroup - 1].numVert;
+            else 
+                numTexCs = outMergedGroup[numGroupsMergedGroup - 1].offsetTex;
 
             for (gi = 0; gi < numGroupsinGroup; gi++)
             {
@@ -738,7 +744,7 @@ namespace KimeraCS
 
                 if (inGroup[gi].texFlag == 1) inGroup[gi].texID = inGroup[gi].texID + maxtiGroup;
 
-                Group[numGroupsGroup + gi] = inGroup[gi];
+                outMergedGroup[numGroupsMergedGroup + gi] = inGroup[gi];
             }
         }
 
@@ -814,6 +820,67 @@ namespace KimeraCS
             }
         }
 
+        public static void MergeGroupsIntoOne(PModel inPModel, out PModel outPModel)
+        {
+            
+            outPModel = new PModel();
+            outPModel.Groups = new PGroup[1];
+            outPModel.fileName = inPModel.fileName;
+
+            // Header
+            outPModel.Header.off00 = inPModel.Header.off00;
+            outPModel.Header.off04 = inPModel.Header.off04;
+            outPModel.Header.off14 = inPModel.Header.off14;
+            outPModel.Header.off28 = inPModel.Header.off28;
+            outPModel.Header.off2C = inPModel.Header.off2C;
+            outPModel.Header.off3C = inPModel.Header.off3C;
+            outPModel.Header.vertexColor = inPModel.Header.vertexColor;
+
+
+            outPModel.Header.numVerts = inPModel.Header.numVerts;
+            outPModel.Verts = new Point3D[inPModel.Header.numVerts];
+            Array.Copy(inPModel.Verts, outPModel.Verts, inPModel.Header.numVerts);
+
+            outPModel.Header.numPolys = inPModel.Header.numPolys;
+            outPModel.Polys = new PPolygon[inPModel.Header.numPolys];
+            Array.Copy(inPModel.Polys, outPModel.Polys, inPModel.Header.numPolys);
+
+            outPModel.Header.numEdges = inPModel.Header.numEdges;
+            outPModel.Edges = new PEdge[inPModel.Header.numEdges];
+            Array.Copy(inPModel.Edges, outPModel.Edges, inPModel.Header.numEdges);
+
+            outPModel.Header.numNormals = inPModel.Header.numNormals;
+            outPModel.Normals = new Point3D[inPModel.Header.numNormals];
+            Array.Copy(inPModel.Normals, outPModel.Normals, inPModel.Header.numNormals);
+
+            outPModel.Header.numNormIdx = inPModel.Header.numNormIdx;
+            outPModel.NormalIndex = new int[inPModel.Header.numNormIdx];
+            Array.Copy(inPModel.NormalIndex, outPModel.NormalIndex, inPModel.Header.numNormIdx);
+
+            outPModel.Vcolors = new Color[inPModel.Header.numVerts];
+            Array.Copy(inPModel.Vcolors, outPModel.Vcolors, inPModel.Header.numVerts);
+
+            outPModel.Pcolors = new Color[inPModel.Header.numPolys];
+            Array.Copy(inPModel.Pcolors, outPModel.Pcolors, inPModel.Header.numPolys);
+
+            outPModel.Hundrets = new PHundret[1];
+            Array.Copy(inPModel.Hundrets, outPModel.Hundrets, 1);
+
+            outPModel.Header.mirex_h = 1;
+            outPModel.Header.mirex_g = inPModel.Header.mirex_g;
+            outPModel.Header.unknown = new int[16];
+
+            outPModel.Header.numGroups = 1;
+
+            // We will avoid Texture Coordinates
+            outPModel.Header.numTexCs = 0;
+
+            // Apply the group number data of the input model to the output model
+            outPModel.Groups[0].numVert = inPModel.Header.numVerts;
+            outPModel.Groups[0].numPoly = inPModel.Header.numPolys;
+            outPModel.Groups[0].numEdge = inPModel.Header.numEdges;
+            outPModel.Groups[0].DListNum = 1;
+        }
 
 
 
@@ -886,7 +953,8 @@ namespace KimeraCS
             if (Model.Normals.Length > 0) nNormals = Model.Normals.Length - 1;
 
             nTextures = 0;
-            if (Model.TexCoords.Length > 0) nTextures = Model.TexCoords.Length - 1;
+            if (Model.TexCoords != null)
+                if (Model.TexCoords.Length > 0) nTextures = Model.TexCoords.Length - 1;
 
             for (gi = 0; gi < Model.Header.numGroups; gi++)
             {
@@ -1316,7 +1384,9 @@ namespace KimeraCS
             Model.Header.mirex_h += 1;
             Array.Resize(ref Model.Hundrets, Model.Header.mirex_h);
             FillHundrestsDefaultValues(ref Model.Hundrets[Model.Header.mirex_h - 1]);
-            Model.Hundrets[Model.Header.mirex_h - 1].texID = Model.Hundrets[Model.Header.mirex_h - 2].texID;
+
+            if (Model.Header.mirex_h > 1)
+                Model.Hundrets[Model.Header.mirex_h - 1].texID = Model.Hundrets[Model.Header.mirex_h - 2].texID;
 
             // Assign other non-group vars as realGID or Reposition/Resize/Rotate.
             Model.Groups[groupIndex].realGID = Model.Groups.Length - 1;
@@ -1883,10 +1953,13 @@ namespace KimeraCS
                             }
 
                         // Write Texture Coords
-                        foreach (Point2D up2DTexCoord in Model.TexCoords)
+                        if (Model.TexCoords != null)
                         {
-                            fileWriter.Write(up2DTexCoord.x);
-                            fileWriter.Write(up2DTexCoord.y);
+                            foreach (Point2D up2DTexCoord in Model.TexCoords)
+                            {
+                                fileWriter.Write(up2DTexCoord.x);
+                                fileWriter.Write(up2DTexCoord.y);
+                            }
                         }
 
                         // Write VColors
@@ -2054,8 +2127,14 @@ namespace KimeraCS
             modelOut.Normals = new Point3D[modelIn.Normals.Length];
             modelIn.Normals.CopyTo(modelOut.Normals, 0);
 
-            modelOut.TexCoords = new Point2D[modelIn.TexCoords.Length];
-            modelIn.TexCoords.CopyTo(modelOut.TexCoords, 0);
+            if (modelIn.TexCoords != null)
+            {
+                if (modelIn.TexCoords.Length > 0)
+                {
+                    modelOut.TexCoords = new Point2D[modelIn.TexCoords.Length];
+                    modelIn.TexCoords.CopyTo(modelOut.TexCoords, 0);
+                }
+            }
 
             modelOut.Vcolors = new Color[modelIn.Vcolors.Length];
             modelIn.Vcolors.CopyTo(modelOut.Vcolors, 0);
@@ -2114,24 +2193,6 @@ namespace KimeraCS
             else return K_P_MAGIC_MODEL;
         }
 
-        //public static void CommitCurrentVPColors(ref PModel Model)
-        //{
-        //    int gi, vi;
-        //    int[] vp = new int[4];
-
-        //    glDisable(glCapability.GL_BLEND);
-
-        //    for (gi = 0; gi < Model.Header.numGroups; gi++)
-        //    {
-        //        // Vertex colors
-        //        for (vi = Model.Groups[gi].offsetVert; vi < Model.Groups[gi].offsetVert + Model.Groups[gi].numVert; vi++)
-        //        {
-        //            Model.Vcolors[vi] = GetVertColor(ref Model.Verts[vi], ref Model.Normals[vi], ref Model.Vcolors[vi]);
-        //        }
-        //    }
-
-        //}
-
 
 
         //  -------------------------------------------------------------------------------------------------
@@ -2186,41 +2247,6 @@ namespace KimeraCS
         public static void RemoveGroupVColors(ref PModel Model, int iGroupIdx)
         {
             int vci, vci2, iNextGroup;
-            //int iNextGroup, iActualGroup, iNumVColorsDelete;
-
-            //iActualGroup = iGroupIdx;
-            //iNumVColorsDelete = Model.Groups[iActualGroup].numVert;
-            //iNextGroup = GetNextGroup(Model, iActualGroup);
-
-            //while (iNextGroup != -1)
-            //{
-            //    vci2 = Model.Groups[iActualGroup].offsetVert;
-
-            //    for (vci = Model.Groups[iNextGroup].offsetVert; vci < Model.Groups[iNextGroup].offsetVert + Model.Groups[iNextGroup].numVert; vci++)
-            //    {
-            //        Model.Vcolors[vci2] = Model.Vcolors[vci];
-            //        vci2++;
-            //    }
-
-            //    iActualGroup = iNextGroup;
-            //    iNextGroup = GetNextGroup(Model, iActualGroup);
-            //}
-
-            //Array.Resize(ref Model.Vcolors, Model.Header.numVerts - iNumVColorsDelete);
-
-            //if (GetNextGroup(Model, iGroupIdx) != -1)
-            //{
-            //    if (iGroupIdx < Model.Header.numGroups - 1)
-            //    {
-            //        vci2 = Model.Groups[iGroupIdx].offsetVert;
-
-            //        for (vci = Model.Groups[iGroupIdx + 1].offsetVert; vci < Model.Header.numVerts; vci++)
-            //        {
-            //            Model.Vcolors[vci2] = Model.Vcolors[vci];
-            //            vci2++;
-            //        }
-            //    }
-            //}
 
             iNextGroup = GetNextGroup(Model, iGroupIdx);
             if (iNextGroup != -1)
@@ -2240,41 +2266,6 @@ namespace KimeraCS
         public static void RemoveGroupVertices(ref PModel Model, int iGroupIdx)
         {
             int vi, vi2, iNextGroup;
-            //int iNextGroup, iActualGroup, iNumVertsDelete;
-
-            //iActualGroup = iGroupIdx;
-            //iNumVertsDelete = Model.Groups[iActualGroup].numVert;
-            //iNextGroup = GetNextGroup(Model, iActualGroup);
-
-            //while (iNextGroup != -1)
-            //{
-            //    vi2 = Model.Groups[iActualGroup].offsetVert;
-
-            //    for (vi = Model.Groups[iNextGroup].offsetVert; vi < Model.Groups[iNextGroup].offsetVert + Model.Groups[iNextGroup].numVert; vi++)
-            //    {
-            //        Model.Verts[vi2] = Model.Verts[vi];
-            //        vi2++;
-            //    }
-
-            //    iActualGroup = iNextGroup;
-            //    iNextGroup = GetNextGroup(Model, iActualGroup);
-            //}
-
-            //Array.Resize(ref Model.Verts, Model.Header.numVerts - iNumVertsDelete);
-
-            //if (GetNextGroup(Model, iGroupIdx) != -1)
-            //{
-            //    if (iGroupIdx < Model.Header.numGroups - 1)
-            //    {
-            //        vi2 = Model.Groups[iGroupIdx].offsetVert;
-
-            //        for (vi = Model.Groups[iGroupIdx + 1].offsetVert; vi < Model.Header.numVerts; vi++)
-            //        {
-            //            Model.Verts[vi2] = Model.Verts[vi];
-            //            vi2++;
-            //        }
-            //    }
-            //}
 
             iNextGroup = GetNextGroup(Model, iGroupIdx);
             if (iNextGroup != -1)
@@ -2294,41 +2285,6 @@ namespace KimeraCS
         public static void RemoveGroupPColors(ref PModel Model, int iGroupIdx)
         {
             int pci, pci2, iNextGroup;
-            //int iNextGroup, iActualGroup, iNumPColorsDelete;
-
-            //iActualGroup = iGroupIdx;
-            //iNumPColorsDelete = Model.Groups[iActualGroup].numPoly;
-            //iNextGroup = GetNextGroup(Model, iActualGroup);
-
-            //while (iNextGroup != -1)
-            //{
-            //    pci2 = Model.Groups[iActualGroup].offsetPoly;
-
-            //    for (pci = Model.Groups[iNextGroup].offsetPoly; pci < Model.Groups[iNextGroup].offsetPoly + Model.Groups[iNextGroup].numPoly; pci++)
-            //    {
-            //        Model.Pcolors[pci2] = Model.Pcolors[pci];
-            //        pci2++;
-            //    }
-
-            //    iActualGroup = iNextGroup;
-            //    iNextGroup = GetNextGroup(Model, iActualGroup);
-            //}
-
-            //Array.Resize(ref Model.Pcolors, Model.Header.numPolys - iNumPColorsDelete);
-
-            //if (GetNextGroup(Model, iGroupIdx) != -1)
-            //{
-            //    if (iGroupIdx < Model.Header.numGroups - 1)
-            //    {
-            //        pci2 = Model.Groups[iGroupIdx].offsetPoly;
-
-            //        for (pci = Model.Groups[iGroupIdx + 1].offsetPoly; pci < Model.Header.numPolys; pci++)
-            //        {
-            //            Model.Pcolors[pci2] = Model.Pcolors[pci];
-            //            pci2++;
-            //        }
-            //    }
-            //}
 
             iNextGroup = GetNextGroup(Model, iGroupIdx);
             if (iNextGroup != -1)
@@ -2348,42 +2304,6 @@ namespace KimeraCS
         public static void RemoveGroupPolys(ref PModel Model, int iGroupIdx)
         {
             int pi, pi2, iNextGroup;
-            //int iNextGroup, iActualGroup, iNumPolysDelete;
-
-            //iActualGroup = iGroupIdx;
-            //iNumPolysDelete = Model.Groups[iActualGroup].numPoly;
-            //iNextGroup = GetNextGroup(Model, iActualGroup);
-
-            //while (iNextGroup != -1)
-            //{
-            //    pi2 = Model.Groups[iActualGroup].offsetPoly;
-
-            //    for (pi = Model.Groups[iNextGroup].offsetPoly; pi < Model.Groups[iNextGroup].offsetPoly + Model.Groups[iNextGroup].numPoly; pi++)
-            //    {
-            //        Model.Polys[pi2] = new PPolygon(Model.Polys[pi]);
-            //        pi2++;
-            //    }
-
-            //    iActualGroup = iNextGroup;
-            //    iNextGroup = GetNextGroup(Model, iActualGroup);
-            //}
-
-            //Array.Resize(ref Model.Polys, Model.Header.numPolys - iNumPolysDelete);
-
-            //if (GetNextGroup(Model, iGroupIdx) != -1)
-            //{
-            //    if (iGroupIdx < Model.Header.numGroups - 1)
-            //    {
-            //        pi2 = Model.Groups[iGroupIdx].offsetPoly;
-
-            //        for (pi = Model.Groups[iGroupIdx + 1].offsetPoly; pi < Model.Header.numPolys; pi++)
-            //        {
-            //            Model.Polys[pi2] = Model.Polys[pi];
-            //            pi2++;
-            //        }
-            //    }
-            //}
-
             iNextGroup = GetNextGroup(Model, iGroupIdx);
             if (iNextGroup != -1)
             {
@@ -2402,41 +2322,6 @@ namespace KimeraCS
         public static void RemoveGroupEdges(ref PModel Model, int iGroupIdx)
         {
             int ei, ei2, iNextGroup, iCountNumEdges, iCountEdgesGroups;
-            //int iNextGroup, iActualGroup, iNumEdgesDelete;
-
-            //iActualGroup = iGroupIdx;
-            //iNumEdgesDelete = Model.Groups[iActualGroup].numEdge;
-            //iNextGroup = GetNextGroup(Model, iActualGroup);
-
-            //while (iNextGroup != -1)
-            //{
-            //    ei2 = Model.Groups[iActualGroup].offsetEdge;
-
-            //    for (ei = Model.Groups[iNextGroup].offsetEdge; ei < Model.Groups[iNextGroup].offsetEdge + Model.Groups[iNextGroup].numEdge; ei++)
-            //    {
-            //        Model.Edges[ei2] = Model.Edges[ei];
-            //        ei2++;
-            //    }
-
-            //    iActualGroup = iNextGroup;
-            //    iNextGroup = GetNextGroup(Model, iActualGroup);
-            //}
-
-            //Array.Resize(ref Model.Edges, Model.Header.numEdges - iNumEdgesDelete);
-
-            //if (GetNextGroup(Model, iGroupIdx) != -1)
-            //{
-            //    if (iGroupIdx < Model.Header.numGroups - 1)
-            //    {
-            //        ei2 = Model.Groups[iGroupIdx].offsetEdge;
-
-            //        for (ei = Model.Groups[iGroupIdx + 1].offsetEdge; ei < Model.Header.numEdges; ei++)
-            //        {
-            //            Model.Edges[ei2] = Model.Edges[ei];
-            //            ei2++;
-            //        }
-            //    }
-            //}
 
             iNextGroup = GetNextGroup(Model, iGroupIdx);
             if (iNextGroup != -1)
@@ -2452,7 +2337,6 @@ namespace KimeraCS
 
                 ei2 = Model.Groups[iGroupIdx].offsetEdge;
 
-                //for (ei = Model.Groups[iNextGroup].offsetEdge; ei < Model.Header.numEdges; ei++)
                 for (ei = iCountNumEdges; ei < Model.Header.numEdges; ei++)
                 {
                     Model.Edges[ei2] = Model.Edges[ei];
@@ -2586,7 +2470,7 @@ namespace KimeraCS
                 iNextGroup = GetNextGroup(Model, iGroupIdx);
                 iNumTexCoords = Model.Groups[iActualGroup].offsetTex;
 
-                while (iNextGroup != - 1)
+                while (iNextGroup != -1)
                 {
                     // Assign new offsets to the next group found
                     Model.Groups[iNextGroup].offsetVert =
@@ -2602,15 +2486,6 @@ namespace KimeraCS
                         Model.Groups[iActualGroup].offsetTex = iNumTexCoords;
                         iNumTexCoords += Model.Groups[iActualGroup].numVert;
                     }
-
-                    //if (Model.Groups[iActualGroup].texFlag == 1)
-                    //{
-                    //    if (Model.Groups[iNextGroup].texFlag == 1)
-                    //        Model.Groups[iNextGroup].offsetTex =
-                    //            Model.Groups[iActualGroup].offsetTex + Model.Groups[iActualGroup].numVert;
-                    //    else
-                    //        Model.Groups[iNextGroup].offsetTex = Model.Groups[iNextGroup].offsetTex;
-                    //}
 
                     // Update realGID of the group
                     Model.Groups[iNextGroup].realGID = iRealGID;
@@ -2799,20 +2674,8 @@ namespace KimeraCS
             return iGetClosestPolygonResult;
         }
 
-        //public static int GetPolygonGroup(PGroup[] Groups, int pi)
         public static int GetPolygonGroup(PModel Model, int pi)
         {
-            //int baseP = 0, iGetPolygonGroupResult = 0;
-
-            //baseP += Groups[0].numPoly;
-
-            //while (baseP <= pi)
-            //{
-            //    iGetPolygonGroupResult++;
-            //    baseP += Groups[iGetPolygonGroupResult].numPoly;
-            //}
-
-            //return iGetPolygonGroupResult;
             int baseP = 0, iNextGroup;
 
             // Get first 0 group
@@ -3044,9 +2907,7 @@ namespace KimeraCS
                     vVerts[i] = Model.Verts[Model.Groups[iGroupIdx].offsetVert + i];
                     vVcolors[i] = Model.Vcolors[Model.Groups[iGroupIdx].offsetVert + i];
                 }
-                //Array.Copy(Model.Verts, Model.Groups[iGroupIdx].offsetVert, vVerts, 0, vVerts.Length);
-                //Array.Copy(Model.Vcolors, Model.Groups[iGroupIdx].offsetVert, vVcolors, 0, vVcolors.Length);
-
+ 
                 vFaces = new PPolygon[Model.Groups[iGroupIdx].numPoly];
                 vPcolors = new Color[Model.Groups[iGroupIdx].numPoly];
                 for (i = 0; i < Model.Groups[iGroupIdx].numPoly; i++)
@@ -3054,8 +2915,6 @@ namespace KimeraCS
                     vFaces[i] = new PPolygon(Model.Polys[Model.Groups[iGroupIdx].offsetPoly + i]);
                     vPcolors[i] = Model.Pcolors[Model.Groups[iGroupIdx].offsetPoly + i];
                 }
-                //Array.Copy(Model.Polys, Model.Groups[iGroupIdx].offsetPoly, vFaces, 0, vFaces.Length);
-                //Array.Copy(Model.Pcolors, Model.Groups[iGroupIdx].offsetPoly, vPcolors, 0, vPcolors.Length);
 
                 if (Model.Groups[iGroupIdx].texFlag == 1)
                 {
@@ -3064,7 +2923,6 @@ namespace KimeraCS
                     {
                         vTexCoords[i] = Model.TexCoords[Model.Groups[iGroupIdx].offsetTex + i];
                     }
-                    //Array.Copy(Model.TexCoords, Model.Groups[iGroupIdx].offsetTex, vTexCoords, 0, vTexCoords.Length);
                 }                           
                 
                 AddGroup(ref Model, vVerts, vFaces, vTexCoords, vVcolors, vPcolors);
@@ -3225,21 +3083,8 @@ namespace KimeraCS
             Model.Verts[iVertIdx].z = tmpUP3D.z;
         }
 
-        //public static int GetVertexGroup(PGroup[] pGroups, int iVertIdx)
         public static int GetVertexGroup(PModel Model, int iVertIdx)
         {
-            //int iGetVertexGroupResult = 0;
-            //int vBase = 0;
-
-            //vBase += pGroups[0].numVert;
-
-            //while (vBase <= iVertIdx)
-            //{
-            //    iGetVertexGroupResult++;
-            //    vBase += pGroups[iGetVertexGroupResult].numVert;
-            //}
-
-            //return iGetVertexGroupResult;
             int vBase = 0, iNextGroup;
 
             // Get first 0 group
@@ -3278,11 +3123,9 @@ namespace KimeraCS
 
                 iNextGroup = GetNextGroup(Model, iGroupIdx);
 
-                //if (iGroupIdx < Model.Header.numGroups - 1)
                 if (iNextGroup != -1)
                 {
 
-                    //basePolys = Model.Groups[iGroupIdx + 1].offsetPoly;
                     basePolys = Model.Groups[iNextGroup].offsetPoly;
 
                     for (pi = Model.Header.numPolys - 1; pi >= basePolys; pi--)
@@ -3296,10 +3139,6 @@ namespace KimeraCS
                         Model.Groups[iNextGroup].offsetPoly++;
                         iNextGroup = GetNextGroup(Model, iNextGroup);
                     }
-                    //for (gi = iGroupIdx + 1; gi < Model.Header.numGroups; gi++)
-                    //{
-                    //    Model.Groups[gi].offsetPoly++;
-                    //}
                 }
 
                 if (iGroupIdx < Model.Header.numGroups)
