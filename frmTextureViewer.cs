@@ -131,79 +131,82 @@ namespace KimeraCS
                 // We have one group to add to the list
                 tmplstUVXYCoords = new STUVXYCoord();
 
-                if (TexViewModel.TexCoords.Length > 0 &&
-                    TexViewModel.Groups[iGroupIdx].texFlag == 1 && 
-                    TexViewModel.Groups[iGroupIdx].texID == iTexID)
+                if (TexViewModel.TexCoords != null)
                 {
-
-                    // First, we will check if we need to normalize texture coordinates. Not is always needed, but we have to check all the UVs for this.
-                    if (NormalizeTextureCoordinates(iGroupIdx)) bNeedNormalize = true;
-
-                    // Now for each texture coordinate (UV) from offsetTex to numVert we must invert the Y (V) position for horizontal.
-                    tmplstUVXYCoords.XYCoords = new List<STPoint2DXY>();
-
-                    for (iVertCounter = TexViewModel.Groups[iGroupIdx].offsetTex;
-                         iVertCounter < TexViewModel.Groups[iGroupIdx].offsetTex +
-                                        TexViewModel.Groups[iGroupIdx].numVert; iVertCounter++)
+                    if (TexViewModel.TexCoords.Length > 0 &&
+                        TexViewModel.Groups[iGroupIdx].texFlag == 1 &&
+                        TexViewModel.Groups[iGroupIdx].texID == iTexID)
                     {
-                        fU = TexViewModel.TexCoords[iVertCounter].x;
-                        fV = TexViewModel.TexCoords[iVertCounter].y;
 
-                        if (bNeedNormalize)
+                        // First, we will check if we need to normalize texture coordinates. Not is always needed, but we have to check all the UVs for this.
+                        if (NormalizeTextureCoordinates(iGroupIdx)) bNeedNormalize = true;
+
+                        // Now for each texture coordinate (UV) from offsetTex to numVert we must invert the Y (V) position for horizontal.
+                        tmplstUVXYCoords.XYCoords = new List<STPoint2DXY>();
+
+                        for (iVertCounter = TexViewModel.Groups[iGroupIdx].offsetTex;
+                             iVertCounter < TexViewModel.Groups[iGroupIdx].offsetTex +
+                                            TexViewModel.Groups[iGroupIdx].numVert; iVertCounter++)
                         {
-                            // Normalize U if needed.
-                            if (fU >= 1)
+                            fU = TexViewModel.TexCoords[iVertCounter].x;
+                            fV = TexViewModel.TexCoords[iVertCounter].y;
+
+                            if (bNeedNormalize)
                             {
-                                fU -= (float)Math.Floor(fU);
-                            }
-                            else if (fU < 0)
-                            {
-                                // Maybe some values (like -0.00128) does not need to normalize and must be rounded.
-                                // Found this in Field CMDE.HRC model, Ninostyle Chibi version.
-                                if (fU >= -0.00128) fU = 0;
-                                else
+                                // Normalize U if needed.
+                                if (fU >= 1)
                                 {
-                                    if (fU % 1.0f == 0) fU = 0;
+                                    fU -= (float)Math.Floor(fU);
+                                }
+                                else if (fU < 0)
+                                {
+                                    // Maybe some values (like -0.00128) does not need to normalize and must be rounded.
+                                    // Found this in Field CMDE.HRC model, Ninostyle Chibi version.
+                                    if (fU >= -0.00128) fU = 0;
                                     else
                                     {
-                                        fU = -fU;
-                                        fU -= (float)Math.Abs(Math.Floor(fU));
-                                        fU = 1 - fU;
+                                        if (fU % 1.0f == 0) fU = 0;
+                                        else
+                                        {
+                                            fU = -fU;
+                                            fU -= (float)Math.Abs(Math.Floor(fU));
+                                            fU = 1 - fU;
+                                        }
+                                    }
+                                }
+
+                                // Normalize V if needed.
+                                if (fV >= 1)
+                                {
+                                    fV -= (float)Math.Floor(fV);
+                                }
+                                else if (fV < 0)
+                                {
+                                    // Maybe some values (like -0.00128) does not need to normalize and must be rounded
+                                    // Found this for fU in Field CMDE.HRC/AAAA.HRC(texID 2)  model, Ninostyle Chibi version.
+                                    if (fV >= -0.00481) fV = 0;
+                                    else
+                                    {
+                                        if (fV % 1.0f == 0) fV = 0;
+                                        else
+                                        {
+                                            fV = -fV;
+                                            fV -= (float)Math.Abs(Math.Floor(fV));
+                                            fV = 1 - fV;
+                                        }
                                     }
                                 }
                             }
 
-                            // Normalize V if needed.
-                            if (fV >= 1)
-                            {
-                                fV -= (float)Math.Floor(fV);
-                            }
-                            else if (fV < 0)
-                            {
-                                // Maybe some values (like -0.00128) does not need to normalize and must be rounded
-                                // Found this for fU in Field CMDE.HRC/AAAA.HRC(texID 2)  model, Ninostyle Chibi version.
-                                if (fV >= -0.00481) fV = 0;
-                                else
-                                {
-                                    if (fV % 1.0f == 0) fV = 0;
-                                    else
-                                    {
-                                        fV = -fV;
-                                        fV -= (float)Math.Abs(Math.Floor(fV));
-                                        fV = 1 - fV;
-                                    }
-                                }
-                            }
+                            tmpP2D.x = fU * pbTextureView.Width;
+                            tmpP2D.y = fV * pbTextureView.Height;
+
+                            tmplstUVXYCoords.XYCoords.Add(tmpP2D);
                         }
-
-                        tmpP2D.x = fU * pbTextureView.Width;
-                        tmpP2D.y = fV * pbTextureView.Height;
-
-                        tmplstUVXYCoords.XYCoords.Add(tmpP2D);
                     }
-                }
 
-                lstUVXYCoords.Add(tmplstUVXYCoords);
+                    lstUVXYCoords.Add(tmplstUVXYCoords);
+                }
             }
         }
 
