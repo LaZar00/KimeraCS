@@ -1581,7 +1581,15 @@ namespace KimeraCS
             return GetPointInLine(p1, p2, alpha);
         }
 
+        public static bool FindWindowOpened (string strWindowName)
+        {
+            foreach (Form itmFrm in Application.OpenForms)
+            {
+                if (itmFrm.Name == strWindowName) return true;
+            }
 
+            return false;
+        }
 
     }
 }
