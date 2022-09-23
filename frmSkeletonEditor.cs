@@ -26,7 +26,6 @@ namespace KimeraCS
     using Defines;
 
     using static frmPEditor;
-    using static frmTextureViewer;
 
     using static FF7Skeleton;
     using static FF7FieldSkeleton;
@@ -39,6 +38,7 @@ namespace KimeraCS
 
     using static FF7TEXTexture;
     using static FF7PModel;
+    using static FF7TMDModel;
 
     using static ModelDrawing;
     using static InputBoxCS;
@@ -56,7 +56,7 @@ namespace KimeraCS
     public partial class frmSkeletonEditor : Form
     {
 
-        public const string STR_APPNAME = "KimeraCS 1.5b";
+        public const string STR_APPNAME = "KimeraCS 1.5f";
 
         public static int modelWidth;
         public static int modelHeight;
@@ -131,6 +131,7 @@ namespace KimeraCS
         frmBattleDB frmBattleDatabase;
         frmMagicDB frmMagicDatabase;
         frmInterpolateAll frmInterpAll;
+        frmTEXToPNGBatchConversion frmTEX2PNGBC;
 
         // StopWatch
         Stopwatch swPlayAnimation;
@@ -143,6 +144,9 @@ namespace KimeraCS
         public frmTextureViewer frmTexViewer;
         public bool bPaintGreen;
         public int iTexCoordViewerScale;
+
+        // TMD Object List
+        public frmTMDObjList frmTMDOL;
 
         // DPI vars
         public decimal dDPIScaleFactor;
@@ -366,6 +370,7 @@ namespace KimeraCS
 
             // Instantiate other forms
             frmInterpAll = new frmInterpolateAll();
+            frmTEX2PNGBC = new frmTEXToPNGBatchConversion();
 
             // Set Minimum Size (using the property sometimes changes auto in designer)
             // Init also Width/Height as per CFG values
@@ -440,6 +445,9 @@ namespace KimeraCS
             if (e.KeyCode == Keys.Delete && SelectedBone > -1)
                 btnRemovePiece.PerformClick();
 
+            if (e.KeyCode == Keys.F2)
+                if (IsTMDModel) frmTMDOL.Show();
+
             if (controlPressedQ && e.KeyCode == Keys.Up) alpha++;
             if (controlPressedQ && e.KeyCode == Keys.Down) alpha--;
             if (controlPressedQ && e.KeyCode == Keys.Left) beta--;
@@ -493,11 +501,14 @@ namespace KimeraCS
             SelectedBone = -1;
             SelectedBonePiece = -1;
             Text = STR_APPNAME;
+            
 
             // UndoRedo
             UndoCursor = 0;
             RedoCursor = 0;
 
+
+            // Anims Buttons
             if (btnPlayStopAnim.Checked) btnPlayStopAnim.Checked = false;
 
             lblAnimationFrame.Visible = false;
@@ -553,6 +564,7 @@ namespace KimeraCS
 
             gbSelectedBoneFrame.Visible = false;
             gbTexturesFrame.Visible = false;
+            //gbTexturesFrame.Location = new Point(gbTexturesFrame.Location.X, 193);
             gbAnimationOptionsFrame.Visible = false;
 
             btnComputeGroundHeight.Visible = false;
@@ -580,6 +592,11 @@ namespace KimeraCS
             undoToolStripMenuItem.Enabled = false;
             redoToolStripMenuItem.Enabled = false;
 
+
+            // TMD vars
+            IsTMDModel = false;
+                                            if (frmTMDOL != null) frmTMDOL.Dispose();
+
             //SetOGLContext(panelModelDC, OGLContext);
             //SetOGLSettings();
         }
@@ -596,6 +613,7 @@ namespace KimeraCS
                 case K_P_MAGIC_MODEL:
                 case K_3DS_MODEL:
                     if (modelType == K_3DS_MODEL) Text = Text + " - Model: " + Path.GetFileNameWithoutExtension(strGlobal3DSModelName).ToUpper() + ".P";
+                    else if (IsTMDModel) Text = Text + " - Model: " + strGlobalTMDModelName.ToUpper();
                     else Text = Text + " - Model: " + strGlobalPModelName.ToUpper();
 
 
@@ -912,16 +930,6 @@ namespace KimeraCS
                 //       0, 0, pbTextureViewer.ClientRectangle.Width, pbTextureViewer.ClientRectangle.Height,
                 //       textureViewerDC, 0, 0, TernaryRasterOperations.WHITENESS);
             }
-        }
-
-        public bool bPEditorOpened()
-        {
-            foreach (Form itmFrm in Application.OpenForms)
-            {
-                if (itmFrm.Name == "frmPEditor") return true;
-            }
-
-            return false;
         }
 
         public void panelModel_Paint(object sender, PaintEventArgs e)
@@ -1675,7 +1683,8 @@ namespace KimeraCS
 
                 if (tmpPModel.Verts != null && tmpPModel.Verts.Length > 0)
                 {
-                    if (Application.OpenForms.Count > 1) frmPEdit.Close();
+                    // Close previous P Editor if any.
+                    if (FindWindowOpened("frmPEditor")) frmPEdit.Close();
 
                     // We will stop Play Animation if it is running
                     if (btnPlayStopAnim.Checked) btnPlayStopAnim.Checked = false;
@@ -1778,7 +1787,7 @@ namespace KimeraCS
                     if (File.Exists(openFile.FileName))
                     {
                         // Close frmPEditor if opened
-                        if (Application.OpenForms.Count > 1) frmPEdit.Close();
+                        if (FindWindowOpened("frmPEditor")) frmPEdit.Close();
 
                         // Disable/Make Invisible in Forms Data controls
                         InitializeWinFormsDataControls();
@@ -1871,7 +1880,7 @@ namespace KimeraCS
                     if (File.Exists(openFile.FileName))
                     {
                         // Close frmPEditor if opened
-                        if (Application.OpenForms.Count > 1) frmPEdit.Close();
+                        if (FindWindowOpened("frmPEditor")) frmPEdit.Close();
 
                         // Disable/Make Invisible in Forms Data controls
                         InitializeWinFormsDataControls();
@@ -1956,7 +1965,7 @@ namespace KimeraCS
 
             // Set filter options and filter index.
             openFile.Title = "Open Model";
-            openFile.Filter = "FF7 Field Model|*.P|FF7 Battle Model (*.*)|*.*|FF7 Magic Model|*.P??|All files|*.*";
+            openFile.Filter = "FF7 Field Model|*.P|FF7 Battle Model (*.*)|*.*|FF7 Magic Model|*.P??|FF7 TMD Model|*.TMD|All files|*.*";
             openFile.FilterIndex = 2;
             openFile.FileName = null;
 
@@ -1978,7 +1987,7 @@ namespace KimeraCS
                     if (File.Exists(openFile.FileName))
                     {
                         // Close frmPEditor if opened
-                        if (Application.OpenForms.Count > 1) frmPEdit.Close();
+                        if (FindWindowOpened("frmPEditor")) frmPEdit.Close();
 
                         // Disable/Make Invisible in Forms Data controls
                         InitializeWinFormsDataControls();
@@ -1999,41 +2008,77 @@ namespace KimeraCS
                             }
                         }
 
-                        // Set Global Paths
-                        strGlobalPathPModelFolder = Path.GetDirectoryName(openFile.FileName);
-                        strGlobalPModelName = Path.GetFileName(openFile.FileName).ToUpper();
-
                         // Load the Model
-                        fPModel = new PModel();
-                        LoadPModel(ref fPModel, strGlobalPathPModelFolder,
-                                   Path.GetFileName(strGlobalPModelName));
+                        if (Path.GetExtension(openFile.FileName).ToUpper() == ".TMD")
+                        {
+                            // Set Global Paths
+                            strGlobalPathTMDModelFolder = Path.GetDirectoryName(openFile.FileName);
+                            strGlobalTMDModelName = Path.GetFileName(openFile.FileName).ToUpper();
 
+                            mTMDModel = new TMDModel();
+                            LoadTMDModel(ref mTMDModel, strGlobalPathTMDModelFolder,
+                                         Path.GetFileName(strGlobalTMDModelName));
+
+                            if (mTMDModel.TMDObjectList != null && mTMDModel.TMDObjectList.Length > 0)
+                            {
+                                // We have at least loaded the TMD_MODEL.
+                                IsTMDModel = true;
+
+                                // Now let's try to convert the TMD model into P model.
+                                fPModel = new PModel();
+
+                                fPModel.fileName = Path.GetFileNameWithoutExtension(strGlobalTMDModelName) + "_" + "001";
+
+                                ConvertTMD2PModel(ref fPModel, mTMDModel, 0);
+
+                                //for (int i = 0; i < 15; i++)
+                                //{
+                                //    ConvertTMD2PModel(ref fPModel, mTMDModel, i);
+                                //}
+
+                                frmTMDOL = new frmTMDObjList(this);
+                                frmTMDOL.PopulateTMDObjList();
+                                frmTMDOL.Show();
+                            }
+                        }
+                        else
+                        {
+                            // Set Global Paths
+                            strGlobalPathPModelFolder = Path.GetDirectoryName(openFile.FileName);
+                            strGlobalPModelName = Path.GetFileName(openFile.FileName).ToUpper();
+
+                            fPModel = new PModel();
+                            LoadPModel(ref fPModel, strGlobalPathPModelFolder,
+                                       Path.GetFileName(strGlobalPModelName));
+                        }
+
+                        // Decide the modelType
                         if (fPModel.Header.numVerts > 0)
                         {
                             modelType = GetPModelType(strGlobalPModelName);
-
-                            // Enable/Make Visible Win Forms Data controls
-                            EnableWinFormsDataControls();
-
-                            ComputePModelBoundingBox(fPModel, ref p_min, ref p_max);
-                            diameter = ComputeDiameter(fPModel.BoundingBox);
-
-                            // Set frame values in frame editor groupbox...
-                            SetFrameEditorFields();
-
-                            // Set texture values in texture editor groupbox...
-                            SetTextureEditorFields();
-
-                            // PostLoadModelPreparations
-                            PostLoadModelPreparations(ref p_min, ref p_max);
-
-                            // We can draw the model in panel
-                            panelModel_Paint(null, null);
                         }
+
+                        // Enable/Make Visible Win Forms Data controls
+                        EnableWinFormsDataControls();
+
+                        ComputePModelBoundingBox(fPModel, ref p_min, ref p_max);
+                        diameter = ComputeDiameter(fPModel.BoundingBox);
+
+                        // Set frame values in frame editor groupbox...
+                        SetFrameEditorFields();
+
+                        // Set texture values in texture editor groupbox...
+                        SetTextureEditorFields();
+
+                        // PostLoadModelPreparations
+                        PostLoadModelPreparations(ref p_min, ref p_max);
+
+                        // We can draw the model in panel
+                        panelModel_Paint(null, null);
                     }
                 }
             }
-            catch
+            catch (Exception ex)
             {
                 MessageBox.Show("Error opening Model file " + openFile.FileName.ToUpper() + ".",
                                 "Error");
@@ -2070,7 +2115,7 @@ namespace KimeraCS
                     if (File.Exists(openFile.FileName))
                     {
                         // Close frmPEditor if opened
-                        if (Application.OpenForms.Count > 1) frmPEdit.Close();
+                        if (FindWindowOpened("frmPEditor")) frmPEdit.Close();
 
                         // Disable/Make Invisible in Forms Data controls
                         InitializeWinFormsDataControls();
@@ -5401,149 +5446,6 @@ namespace KimeraCS
                         bAnimationsPack.WeaponAnimations[ianimIndex] = tmpbAnimation;
                     }
 
-                    //tmpbAnimation = bAnimationsPack.SkeletonAnimations[ianimIndex];
-
-                    ////  Numframes1 and NumFrames2 are usually different.
-                    ////  Don't know if this is relevant at all, but keep the balance between them just in case
-                    //primarySecondaryCountersCoef = tmpbAnimation.numFrames / tmpbAnimation.numFramesShort;
-
-                    ////  Have in mind that the maximum number of frames for Battle Animations is 32,767
-                    ////  because the value in structure are 2 bytes signed.
-                    ////  We need to check this before create the new frames.
-                    //nFrames = tmpbAnimation.numFramesShort * (numInterpolatedFrames + 1) - frameOffset;
-                    //if (nFrames > 0xFFFF)
-                    //{
-                    //    MessageBox.Show("Can't interpolate this Battle Animation because its number of frames " +
-                    //                    "is higher (" + nFrames.ToString() + ") than maximum number of frames " +
-                    //                    "(65535) for the battle animation FF7 format.", "Error", MessageBoxButtons.OK);
-                    //    return;
-                    //}
-
-                    ////  Create new frames
-                    //tmpbAnimation.numFramesShort = (ushort)nFrames;
-                    //tmpbAnimation.numFrames = (int)(tmpbAnimation.numFramesShort * primarySecondaryCountersCoef);
-
-                    //nFrames = tmpbAnimation.numFramesShort - tmpbAnimation.frames.Count;
-                    //for (i = 0; i < nFrames; i++) tmpbAnimation.frames.Add(tmpbFrame);
-
-                    //// Move the original frames into their new positions
-                    //for (fi = tmpbAnimation.numFramesShort - (1 + numInterpolatedFrames - frameOffset); fi >= 0; fi -= nextElemDiff)
-                    //    tmpbAnimation.frames[fi] = tmpbAnimation.frames[fi / (numInterpolatedFrames + 1)];
-
-                    ////  Interpolate the new frames
-                    //for (fi = 0; fi <= tmpbAnimation.numFramesShort - (1 + nextElemDiff + numInterpolatedFrames - frameOffset); fi += nextElemDiff)
-                    //{
-                    //    for (ifi = 1; ifi <= numInterpolatedFrames; ifi++)
-                    //    {
-                    //        alpha = (float)ifi / (numInterpolatedFrames + 1);
-                    //        if (bSkeleton.nBones > 1)
-                    //        {
-                    //            tmpbFrame = tmpbAnimation.frames[fi + ifi];
-                    //            GetTwoBattleFramesInterpolation(bSkeleton, tmpbAnimation.frames[fi], tmpbAnimation.frames[fi + numInterpolatedFrames + 1],
-                    //                                            alpha, ref tmpbFrame);
-                    //            tmpbAnimation.frames[fi + ifi] = tmpbFrame;
-                    //        }
-                    //        else
-                    //        {
-                    //            tmpbFrame = tmpbAnimation.frames[fi + ifi];
-                    //            GetTwoBattleFramesWeaponInterpolation(bSkeleton, tmpbAnimation.frames[fi], tmpbAnimation.frames[fi + numInterpolatedFrames + 1],
-                    //                                            alpha, ref tmpbFrame);
-                    //            tmpbAnimation.frames[fi + ifi] = tmpbFrame;
-                    //        }
-                    //    }
-
-                    //    //  Interpolate the first frame too  NOTE: COMMENTED IN ORIGINAL KIMERA VB6
-                    //    //GetTwoBattleFramesInterpolation(bSkeleton, tmpbAnimation.frames[fi], tmpbAnimation.frames[fi + numInterpolatedFrames + 1],
-                    //    //                                0, ref tmpbFrame);
-                    //    //tmpbAnimation.frames[fi] = CopybFrame(tmpbFrame);
-                    //}
-
-                    //baseFinalFrame = tmpbAnimation.numFramesShort - numInterpolatedFrames - 1;
-                    //if (isLoop == DialogResult.Yes)
-                    //{
-                    //    for (ifi = 1; ifi <= numInterpolatedFrames; ifi++)
-                    //    {
-                    //        alpha = (float)ifi / (numInterpolatedFrames + 1);
-                    //        if (bSkeleton.nBones > 1)
-                    //        {
-                    //            tmpbFrame = tmpbAnimation.frames[baseFinalFrame + ifi];
-                    //            GetTwoBattleFramesInterpolation(bSkeleton, tmpbAnimation.frames[baseFinalFrame], tmpbAnimation.frames[0], alpha, ref tmpbFrame);
-                    //            tmpbAnimation.frames[baseFinalFrame + ifi] = tmpbFrame;
-                    //        }
-                    //        else
-                    //        {
-                    //            tmpbFrame = tmpbAnimation.frames[baseFinalFrame + ifi];
-                    //            GetTwoBattleFramesWeaponInterpolation(bSkeleton, tmpbAnimation.frames[baseFinalFrame], tmpbAnimation.frames[0], alpha, ref tmpbFrame);
-                    //            tmpbAnimation.frames[baseFinalFrame + ifi] = tmpbFrame;
-                    //        }
-                    //    }
-                    //}
-
-                    //bAnimationsPack.SkeletonAnimations[ianimIndex] = tmpbAnimation;
-
-                    ////  NOTE: COMMENTED IN ORIGINAL KIMERA VB6
-                    ////GetTwoBattleFramesInterpolation(bSkeleton, tmpbAnimation.frames[baseFinalFrame], tmpbAnimation.frames[tmpbAnimation.numFramesShort - 1], 1, ref tmpbFrame);
-                    ////tmpbAnimation.frames[tmpbAnimation.numFramesShort - 1] = CopybFrame(tmpbFrame);
-                    ////NormalizeBattleAnimation(bAnimationsPack.SkeletonAnimations[ianimIndex]);
-
-                    ////  Also don't forget about the weapon frames(where available)
-                    //if (ianimIndex < bAnimationsPack.nbWeaponAnims && bSkeleton.wpModels.Count > 0)
-                    //{
-                    //    tmpbAnimation = bAnimationsPack.WeaponAnimations[ianimIndex];
-                    //    tmpbAnimation.numFramesShort = bAnimationsPack.SkeletonAnimations[ianimIndex].numFramesShort;
-                    //    tmpbAnimation.numFrames = bAnimationsPack.SkeletonAnimations[ianimIndex].numFrames;
-
-                    //    nFrames = tmpbAnimation.numFramesShort - tmpbAnimation.frames.Count;
-                    //    for (i = 0; i < nFrames; i++) tmpbAnimation.frames.Add(tmpbFrame);
-
-                    //    // Move the original frames into their new positions
-                    //    for (fi = tmpbAnimation.numFramesShort - (1 + numInterpolatedFrames - frameOffset); fi >= 0; fi -= nextElemDiff)
-                    //        tmpbAnimation.frames[fi] = tmpbAnimation.frames[fi / (numInterpolatedFrames + 1)];
-
-                    //    //  Interpolate the new frames
-                    //    for (fi = 0; fi < tmpbAnimation.numFramesShort - (1 + numInterpolatedFrames + numInterpolatedFrames - frameOffset); fi += nextElemDiff)
-                    //    {
-                    //        for (ifi = 1; ifi <= numInterpolatedFrames; ifi++)
-                    //        {
-                    //            alpha = (float)ifi / (numInterpolatedFrames + 1);
-
-                    //            tmpbFrame = tmpbAnimation.frames[fi + ifi];
-                    //            GetTwoBattleFramesWeaponInterpolation(bSkeleton, tmpbAnimation.frames[fi], tmpbAnimation.frames[fi + nextElemDiff],
-                    //                                                  alpha, ref tmpbFrame);
-                    //            tmpbAnimation.frames[fi + ifi] = tmpbFrame;
-                    //        }
-
-                    //        //  NOTE: COMMENTED IN ORIGINAL KIMERA VB6
-                    //        //GetTwoBattleFramesWeaponInterpolation(bSkeleton, tmpbAnimation.frames[fi], tmpbAnimation.frames[fi + numInterpolatedFrames + 1],
-                    //        //                                      0, ref tmpbFrame);
-                    //        //tmpbAnimation.frames[fi] = CopybFrame(tmpbFrame);
-                    //    }
-
-                    //    baseFinalFrame = tmpbAnimation.numFramesShort - numInterpolatedFrames - 1;
-                    //    if (isLoop == DialogResult.Yes)
-                    //    {
-                    //        for (ifi = 1; ifi <= numInterpolatedFrames; ifi++)
-                    //        {
-                    //            alpha = (float)ifi / (numInterpolatedFrames + 1);
-
-                    //            tmpbFrame = tmpbAnimation.frames[baseFinalFrame + ifi];
-                    //            GetTwoBattleFramesWeaponInterpolation(bSkeleton, tmpbAnimation.frames[baseFinalFrame], tmpbAnimation.frames[0],
-                    //                                                  alpha, ref tmpbFrame);
-                    //            tmpbAnimation.frames[baseFinalFrame + ifi] = tmpbFrame;
-                    //        }
-
-                    //        //  NOTE: COMMENTED IN ORIGINAL KIMERA VB6
-                    //        //GetTwoBattleFramesWeaponInterpolation(bSkeleton, tmpbAnimation.frames[baseFinalFrame], tmpbAnimation.frames[tmpbAnimation.numFramesShort - 1],
-                    //        //                                      1, ref tmpbFrame);
-                    //        //tmpbAnimation.frames[tmpbAnimation.numFramesShort - 1] = CopybFrame(tmpbFrame);
-                    //    }
-
-                    //    bAnimationsPack.WeaponAnimations[ianimIndex] = tmpbAnimation;
-
-                    //    //  NOTE: COMMENTED IN ORIGINAL KIMERA VB6
-                    //    //NormalizeBattleAnimation(bAnimationsPack.WeaponAnimations[ianimIndex]);
-                    //}
-
                     tbCurrentFrameScroll.Maximum = bAnimationsPack.SkeletonAnimations[ianimIndex].numFramesShort - 1;
                     break;
             }
@@ -5929,6 +5831,11 @@ namespace KimeraCS
             frmInterpAll.ShowDialog();
         }
 
+        private void TEXToPNGBatchConversionToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            frmTEX2PNGBC.ShowDialog();
+        }
+
         private void frmSkeletonEditor_Activated(object sender, EventArgs e)
         {
             //if (GetOGLContext() != OGLContext)
@@ -6307,8 +6214,6 @@ namespace KimeraCS
                 frmTexViewer.ShowDialog();
             }
         }
-
-
 
 
 
