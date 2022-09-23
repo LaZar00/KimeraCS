@@ -128,8 +128,8 @@ namespace KimeraCS
 
             if (materialsV != null)
             {
-                matIndex = materialsV.Length + 1;
-                Array.Resize(ref materialsV, matIndex);
+                matIndex = materialsV.Length;
+                Array.Resize(ref materialsV, materialsV.Length + 1);
                 materialsV[matIndex] = new mat_list_node();
             }
             else
@@ -422,8 +422,8 @@ namespace KimeraCS
                         // Read material mapping info
                         if (tmpMesh.faceMaterialsV != null)
                         {
-                            matIndex = tmpMesh.faceMaterialsV.Length + 1;
-                            Array.Resize(ref tmpMesh.faceMaterialsV, matIndex);
+                            matIndex = tmpMesh.faceMaterialsV.Length;
+                            Array.Resize(ref tmpMesh.faceMaterialsV, matIndex + 1);
                             tmpMesh.faceMaterialsV[matIndex] = new face_mat_node();
                         }
                         else 
@@ -539,8 +539,8 @@ namespace KimeraCS
 
             if (modelsV != null)
             {
-                modelIndex = modelsV.Length + 1;
-                Array.Resize(ref modelsV, modelIndex);
+                modelIndex = modelsV.Length;
+                Array.Resize(ref modelsV, modelIndex + 1);
                 modelsV[modelIndex] = new Model3DS();
             }
             else
@@ -552,14 +552,15 @@ namespace KimeraCS
             do
             {
                 memReader.BaseStream.Position = offset;
-                id = memReader.ReadUInt16();
-                offset += 2;
 
                 if (offset >= fileLength)
                 {
                     doneQ = true;
                     break;
                 }
+
+                id = memReader.ReadUInt16();
+                offset += 2;
 
                 memReader.BaseStream.Position = offset;
                 llen = memReader.ReadInt32();
@@ -568,7 +569,7 @@ namespace KimeraCS
                 switch(id)
                 {
                     case 0x4000:
-                        // Some object chunk (provably a mesh)
+                        // Some object chunk (probably a mesh)
                         ReadMesh3DS(memReader, ref offset, fileLength, llen, ref modelsV[modelIndex].meshesV);
                         break;
 
@@ -607,14 +608,14 @@ namespace KimeraCS
             {
                 memReader.BaseStream.Position = offset;
 
-                id = memReader.ReadUInt16();
-                offset += 2;
-
-                if (offset > fileLength)
+                if (offset >= fileLength)
                 {
                     doneQ = true;
                     break;
                 }
+
+                id = memReader.ReadUInt16();
+                offset += 2;
 
                 llen = memReader.ReadInt32();
                 offset += 4;
@@ -769,7 +770,7 @@ namespace KimeraCS
         //  ---------------------------------------------------------------------------------------------------------
         //  ---------------------------------------- 3Ds => PModel --------------------------------------------------
         //  ---------------------------------------------------------------------------------------------------------
-        private static void GetVerts(ref mesh_object_node mesh, out Point3D[] vertsV)
+        private static void GetVerts(mesh_object_node mesh, out Point3D[] vertsV)
         {
             int i;
 
@@ -783,7 +784,7 @@ namespace KimeraCS
             }
         }
 
-        private static void GetFaces(ref mesh_object_node mesh, out PPolygon[] facesV)
+        private static void GetFaces(mesh_object_node mesh, out PPolygon[] facesV)
         {
             int fi;
 
@@ -804,7 +805,7 @@ namespace KimeraCS
             }
         }
 
-        private static void GetTexCoords(ref mesh_object_node mesh, out Point2D[] texCoordsV)
+        private static void GetTexCoords(mesh_object_node mesh, out Point2D[] texCoordsV)
         {
             int i;
 
@@ -822,7 +823,7 @@ namespace KimeraCS
             }
         }
 
-        private static void GetVColors(ref mesh_object_node mesh, mat_list_node[] materialsV, out Color[] vcolorsV)
+        private static void GetVColors(mesh_object_node mesh, mat_list_node[] materialsV, out Color[] vcolorsV)
         {
             int ci, fi;
             stIntVector[] faces_per_vert;
@@ -878,7 +879,7 @@ namespace KimeraCS
             }
         }
 
-        private static void GetPColors(ref mesh_object_node mesh, mat_list_node[] materialsV, out Color[] pcolorsV)
+        private static void GetPColors(mesh_object_node mesh, mat_list_node[] materialsV, out Color[] pcolorsV)
         {
             int ci;
 
@@ -892,7 +893,7 @@ namespace KimeraCS
             }
         }
 
-        private static void ConvertMesh3DSToPModel(ref mesh_object_node mesh, mat_list_node[] materialsV, ref PModel Model)
+        private static void ConvertMesh3DSToPModel(mesh_object_node mesh, mat_list_node[] materialsV, ref PModel Model)
         {
             Point3D[] vertsV;
             PPolygon[] facesV;
@@ -900,16 +901,16 @@ namespace KimeraCS
             Color[] vcolorsV;
             Color[] pcolorsV;
 
-            GetVerts(ref mesh, out vertsV);
-            GetFaces(ref mesh, out facesV);
-            GetTexCoords(ref mesh, out texcoordsV);
-            GetVColors(ref mesh, materialsV, out vcolorsV);
-            GetPColors(ref mesh, materialsV, out pcolorsV);
+            GetVerts(mesh, out vertsV);
+            GetFaces(mesh, out facesV);
+            GetTexCoords(mesh, out texcoordsV);
+            GetVColors(mesh, materialsV, out vcolorsV);
+            GetPColors(mesh, materialsV, out pcolorsV);
 
             AddGroup(ref Model, vertsV, facesV, texcoordsV, vcolorsV, pcolorsV);
         }
 
-        public static void ConvertModel3DSToPModel(ref Model3DS Model, ref PModel outModel)
+        public static void ConvertModel3DSToPModel(Model3DS Model, ref PModel outModel)
         {
             int mi, numMeshes;
 
@@ -917,7 +918,7 @@ namespace KimeraCS
 
             for (mi = 0; mi < numMeshes; mi++)
             {
-                ConvertMesh3DSToPModel(ref Model.meshesV[mi], Model.materialsV, ref outModel);
+                ConvertMesh3DSToPModel(Model.meshesV[mi], Model.materialsV, ref outModel);
             }
         }
 
@@ -929,7 +930,7 @@ namespace KimeraCS
 
             for (mi = 0; mi < numModels; mi++)
             {
-                ConvertModel3DSToPModel(ref modelsV[mi], ref outModel);
+                ConvertModel3DSToPModel(modelsV[mi], ref outModel);
             }
 
             outModel.Header.off00 = 1;
