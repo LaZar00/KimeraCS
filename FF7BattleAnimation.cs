@@ -712,7 +712,7 @@ namespace KimeraCS
         {
             int bi, jsp, jsp0, stageIndex;
             //string[] joint_stack = new string[bSkeleton.nBones];
-            int[] joint_stack = new int[bSkeleton.nBones];
+            int[] joint_stack = new int[bSkeleton.nBones + 1];
             float hipArmAngle = 0, c1, c2;
             BattleFrameBone tmpbFrameBone;
 
