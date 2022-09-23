@@ -194,7 +194,7 @@ namespace KimeraCS
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(5, 2, 0, 2);
-            this.menuStrip1.Size = new System.Drawing.Size(960, 30);
+            this.menuStrip1.Size = new System.Drawing.Size(960, 28);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -207,7 +207,7 @@ namespace KimeraCS
             this.toolStripSeparator1,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(46, 26);
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(46, 24);
             this.fileToolStripMenuItem.Text = "&File";
             // 
             // loadModelToolStripMenuItem
@@ -251,7 +251,7 @@ namespace KimeraCS
             this.toolStripSeparator4,
             this.unselectGroupToolStripMenuItem});
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
-            this.editToolStripMenuItem.Size = new System.Drawing.Size(49, 26);
+            this.editToolStripMenuItem.Size = new System.Drawing.Size(49, 24);
             this.editToolStripMenuItem.Text = "&Edit";
             // 
             // undoToolStripMenuItem
@@ -298,7 +298,7 @@ namespace KimeraCS
             this.invertToolStripMenuItem,
             this.resetToolStripMenuItem});
             this.planeToolStripMenuItem.Name = "planeToolStripMenuItem";
-            this.planeToolStripMenuItem.Size = new System.Drawing.Size(116, 26);
+            this.planeToolStripMenuItem.Size = new System.Drawing.Size(116, 24);
             this.planeToolStripMenuItem.Text = "&Plane features";
             // 
             // mirrorModelToolStripMenuItem
@@ -377,7 +377,7 @@ namespace KimeraCS
             this.deleteAllPolysnotSelectedColorToolStripMenuItem,
             this.killPrecalculatedLightningToolStripMenuItem});
             this.paletteToolStripMenuItem.Name = "paletteToolStripMenuItem";
-            this.paletteToolStripMenuItem.Size = new System.Drawing.Size(125, 26);
+            this.paletteToolStripMenuItem.Size = new System.Drawing.Size(125, 24);
             this.paletteToolStripMenuItem.Text = "Pale&tte features";
             // 
             // deleteAllPolysSelectedColorToolStripMenuItem
@@ -414,10 +414,10 @@ namespace KimeraCS
             this.panel1.Controls.Add(this.gbDrawMode);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Left;
             this.panel1.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.panel1.Location = new System.Drawing.Point(0, 30);
+            this.panel1.Location = new System.Drawing.Point(0, 28);
             this.panel1.Margin = new System.Windows.Forms.Padding(4);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(211, 643);
+            this.panel1.Size = new System.Drawing.Size(211, 645);
             this.panel1.TabIndex = 1;
             // 
             // gbColorEditor
@@ -758,10 +758,10 @@ namespace KimeraCS
             this.panel2.Controls.Add(this.gbReposition);
             this.panel2.Controls.Add(this.gbResize);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel2.Location = new System.Drawing.Point(768, 30);
+            this.panel2.Location = new System.Drawing.Point(768, 28);
             this.panel2.Margin = new System.Windows.Forms.Padding(4);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(192, 643);
+            this.panel2.Size = new System.Drawing.Size(192, 645);
             this.panel2.TabIndex = 2;
             // 
             // gbPlaneOperations
@@ -795,7 +795,7 @@ namespace KimeraCS
             this.chkShowPlane.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.chkShowPlane.Name = "chkShowPlane";
             this.chkShowPlane.Size = new System.Drawing.Size(117, 30);
-            this.chkShowPlane.TabIndex = 26;
+            this.chkShowPlane.TabIndex = 32;
             this.chkShowPlane.Text = "Show plane";
             this.chkShowPlane.UseVisualStyleBackColor = true;
             this.chkShowPlane.Click += new System.EventHandler(this.chkShowPlane_Click);
@@ -816,7 +816,7 @@ namespace KimeraCS
             -2147483648});
             this.nudZPlane.Name = "nudZPlane";
             this.nudZPlane.Size = new System.Drawing.Size(103, 22);
-            this.nudZPlane.TabIndex = 21;
+            this.nudZPlane.TabIndex = 29;
             this.nudZPlane.ValueChanged += new System.EventHandler(this.nudZPlane_ValueChanged);
             // 
             // nudAlphaPlane
@@ -830,7 +830,7 @@ namespace KimeraCS
             0});
             this.nudAlphaPlane.Name = "nudAlphaPlane";
             this.nudAlphaPlane.Size = new System.Drawing.Size(103, 22);
-            this.nudAlphaPlane.TabIndex = 25;
+            this.nudAlphaPlane.TabIndex = 30;
             this.nudAlphaPlane.ValueChanged += new System.EventHandler(this.nudAlphaPlane_ValueChanged);
             // 
             // nudYPlane
@@ -849,7 +849,7 @@ namespace KimeraCS
             -2147483648});
             this.nudYPlane.Name = "nudYPlane";
             this.nudYPlane.Size = new System.Drawing.Size(103, 22);
-            this.nudYPlane.TabIndex = 20;
+            this.nudYPlane.TabIndex = 28;
             this.nudYPlane.ValueChanged += new System.EventHandler(this.nudYPlane_ValueChanged);
             // 
             // nudXPlane
@@ -868,7 +868,7 @@ namespace KimeraCS
             -2147483648});
             this.nudXPlane.Name = "nudXPlane";
             this.nudXPlane.Size = new System.Drawing.Size(103, 22);
-            this.nudXPlane.TabIndex = 19;
+            this.nudXPlane.TabIndex = 27;
             this.nudXPlane.ValueChanged += new System.EventHandler(this.nudXPlane_ValueChanged);
             // 
             // nudBetaPlane
@@ -882,7 +882,7 @@ namespace KimeraCS
             0});
             this.nudBetaPlane.Name = "nudBetaPlane";
             this.nudBetaPlane.Size = new System.Drawing.Size(103, 22);
-            this.nudBetaPlane.TabIndex = 24;
+            this.nudBetaPlane.TabIndex = 31;
             this.nudBetaPlane.ValueChanged += new System.EventHandler(this.nudBetaPlane_ValueChanged);
             // 
             // lblAlphaPO
@@ -971,7 +971,7 @@ namespace KimeraCS
             this.txtRotateBeta.Margin = new System.Windows.Forms.Padding(4);
             this.txtRotateBeta.Name = "txtRotateBeta";
             this.txtRotateBeta.Size = new System.Drawing.Size(36, 22);
-            this.txtRotateBeta.TabIndex = 35;
+            this.txtRotateBeta.TabIndex = 24;
             this.txtRotateBeta.Text = "0";
             this.txtRotateBeta.TextChanged += new System.EventHandler(this.txtRotateBeta_TextChanged);
             // 
@@ -982,7 +982,7 @@ namespace KimeraCS
             this.hsbRotateAlpha.Maximum = 360;
             this.hsbRotateAlpha.Name = "hsbRotateAlpha";
             this.hsbRotateAlpha.Size = new System.Drawing.Size(120, 19);
-            this.hsbRotateAlpha.TabIndex = 32;
+            this.hsbRotateAlpha.TabIndex = 21;
             this.hsbRotateAlpha.ValueChanged += new System.EventHandler(this.hsbRotateAlpha_ValueChanged);
             // 
             // txtRotateGamma
@@ -991,7 +991,7 @@ namespace KimeraCS
             this.txtRotateGamma.Margin = new System.Windows.Forms.Padding(4);
             this.txtRotateGamma.Name = "txtRotateGamma";
             this.txtRotateGamma.Size = new System.Drawing.Size(36, 22);
-            this.txtRotateGamma.TabIndex = 37;
+            this.txtRotateGamma.TabIndex = 26;
             this.txtRotateGamma.Text = "0";
             this.txtRotateGamma.TextChanged += new System.EventHandler(this.txtRotateGamma_TextChanged);
             // 
@@ -1002,7 +1002,7 @@ namespace KimeraCS
             this.hsbRotateGamma.Maximum = 360;
             this.hsbRotateGamma.Name = "hsbRotateGamma";
             this.hsbRotateGamma.Size = new System.Drawing.Size(120, 19);
-            this.hsbRotateGamma.TabIndex = 36;
+            this.hsbRotateGamma.TabIndex = 25;
             this.hsbRotateGamma.ValueChanged += new System.EventHandler(this.hsbRotateGamma_ValueChanged);
             // 
             // lblRotateGamma
@@ -1021,7 +1021,7 @@ namespace KimeraCS
             this.hsbRotateBeta.Maximum = 360;
             this.hsbRotateBeta.Name = "hsbRotateBeta";
             this.hsbRotateBeta.Size = new System.Drawing.Size(120, 19);
-            this.hsbRotateBeta.TabIndex = 34;
+            this.hsbRotateBeta.TabIndex = 23;
             this.hsbRotateBeta.ValueChanged += new System.EventHandler(this.hsbRotateBeta_ValueChanged);
             // 
             // lblRotateBeta
@@ -1048,7 +1048,7 @@ namespace KimeraCS
             this.txtRotateAlpha.Margin = new System.Windows.Forms.Padding(4);
             this.txtRotateAlpha.Name = "txtRotateAlpha";
             this.txtRotateAlpha.Size = new System.Drawing.Size(36, 22);
-            this.txtRotateAlpha.TabIndex = 33;
+            this.txtRotateAlpha.TabIndex = 22;
             this.txtRotateAlpha.Text = "0";
             this.txtRotateAlpha.TextChanged += new System.EventHandler(this.txtRotateAlpha_TextChanged);
             // 
@@ -1079,7 +1079,7 @@ namespace KimeraCS
             this.txtRepositionZ.Margin = new System.Windows.Forms.Padding(4);
             this.txtRepositionZ.Name = "txtRepositionZ";
             this.txtRepositionZ.Size = new System.Drawing.Size(36, 22);
-            this.txtRepositionZ.TabIndex = 17;
+            this.txtRepositionZ.TabIndex = 20;
             this.txtRepositionZ.Text = "0";
             this.txtRepositionZ.TextChanged += new System.EventHandler(this.txtRepositionZ_TextChanged);
             // 
@@ -1091,7 +1091,7 @@ namespace KimeraCS
             this.hsbRepositionZ.Minimum = -500;
             this.hsbRepositionZ.Name = "hsbRepositionZ";
             this.hsbRepositionZ.Size = new System.Drawing.Size(104, 19);
-            this.hsbRepositionZ.TabIndex = 16;
+            this.hsbRepositionZ.TabIndex = 19;
             this.hsbRepositionZ.ValueChanged += new System.EventHandler(this.hsbRepositionZ_ValueChanged);
             // 
             // lblRepositionZ
@@ -1109,7 +1109,7 @@ namespace KimeraCS
             this.txtRepositionY.Margin = new System.Windows.Forms.Padding(4);
             this.txtRepositionY.Name = "txtRepositionY";
             this.txtRepositionY.Size = new System.Drawing.Size(36, 22);
-            this.txtRepositionY.TabIndex = 14;
+            this.txtRepositionY.TabIndex = 18;
             this.txtRepositionY.Text = "0";
             this.txtRepositionY.TextChanged += new System.EventHandler(this.txtRepositionY_TextChanged);
             // 
@@ -1121,7 +1121,7 @@ namespace KimeraCS
             this.hsbRepositionY.Minimum = -500;
             this.hsbRepositionY.Name = "hsbRepositionY";
             this.hsbRepositionY.Size = new System.Drawing.Size(104, 19);
-            this.hsbRepositionY.TabIndex = 13;
+            this.hsbRepositionY.TabIndex = 17;
             this.hsbRepositionY.ValueChanged += new System.EventHandler(this.hsbRepositionY_ValueChanged);
             // 
             // lblRepositionY
@@ -1148,7 +1148,7 @@ namespace KimeraCS
             this.txtRepositionX.Margin = new System.Windows.Forms.Padding(4);
             this.txtRepositionX.Name = "txtRepositionX";
             this.txtRepositionX.Size = new System.Drawing.Size(36, 22);
-            this.txtRepositionX.TabIndex = 10;
+            this.txtRepositionX.TabIndex = 16;
             this.txtRepositionX.Text = "0";
             this.txtRepositionX.TextChanged += new System.EventHandler(this.txtRepositionX_TextChanged);
             // 
@@ -1160,7 +1160,7 @@ namespace KimeraCS
             this.hsbRepositionX.Minimum = -500;
             this.hsbRepositionX.Name = "hsbRepositionX";
             this.hsbRepositionX.Size = new System.Drawing.Size(104, 19);
-            this.hsbRepositionX.TabIndex = 9;
+            this.hsbRepositionX.TabIndex = 15;
             this.hsbRepositionX.ValueChanged += new System.EventHandler(this.hsbRepositionX_ValueChanged);
             // 
             // gbResize
@@ -1191,7 +1191,7 @@ namespace KimeraCS
             this.txtResizeZ.Margin = new System.Windows.Forms.Padding(4);
             this.txtResizeZ.Name = "txtResizeZ";
             this.txtResizeZ.Size = new System.Drawing.Size(36, 22);
-            this.txtResizeZ.TabIndex = 17;
+            this.txtResizeZ.TabIndex = 14;
             this.txtResizeZ.Text = "100";
             this.txtResizeZ.TextChanged += new System.EventHandler(this.txtResizeZ_TextChanged);
             // 
@@ -1199,10 +1199,10 @@ namespace KimeraCS
             // 
             this.hsbResizeZ.LargeChange = 1;
             this.hsbResizeZ.Location = new System.Drawing.Point(25, 73);
-            this.hsbResizeZ.Maximum = 400;
+            this.hsbResizeZ.Maximum = 500;
             this.hsbResizeZ.Name = "hsbResizeZ";
             this.hsbResizeZ.Size = new System.Drawing.Size(104, 19);
-            this.hsbResizeZ.TabIndex = 16;
+            this.hsbResizeZ.TabIndex = 13;
             this.hsbResizeZ.Value = 100;
             this.hsbResizeZ.ValueChanged += new System.EventHandler(this.hsbResizeZ_ValueChanged);
             // 
@@ -1221,7 +1221,7 @@ namespace KimeraCS
             this.txtResizeY.Margin = new System.Windows.Forms.Padding(4);
             this.txtResizeY.Name = "txtResizeY";
             this.txtResizeY.Size = new System.Drawing.Size(36, 22);
-            this.txtResizeY.TabIndex = 14;
+            this.txtResizeY.TabIndex = 12;
             this.txtResizeY.Text = "100";
             this.txtResizeY.TextChanged += new System.EventHandler(this.txtResizeY_TextChanged);
             // 
@@ -1229,10 +1229,10 @@ namespace KimeraCS
             // 
             this.hsbResizeY.LargeChange = 1;
             this.hsbResizeY.Location = new System.Drawing.Point(25, 48);
-            this.hsbResizeY.Maximum = 400;
+            this.hsbResizeY.Maximum = 500;
             this.hsbResizeY.Name = "hsbResizeY";
             this.hsbResizeY.Size = new System.Drawing.Size(104, 19);
-            this.hsbResizeY.TabIndex = 13;
+            this.hsbResizeY.TabIndex = 11;
             this.hsbResizeY.Value = 100;
             this.hsbResizeY.ValueChanged += new System.EventHandler(this.hsbResizeY_ValueChanged);
             // 
@@ -1268,7 +1268,7 @@ namespace KimeraCS
             // 
             this.hsbResizeX.LargeChange = 1;
             this.hsbResizeX.Location = new System.Drawing.Point(25, 23);
-            this.hsbResizeX.Maximum = 400;
+            this.hsbResizeX.Maximum = 500;
             this.hsbResizeX.Name = "hsbResizeX";
             this.hsbResizeX.Size = new System.Drawing.Size(104, 19);
             this.hsbResizeX.TabIndex = 9;
@@ -1320,7 +1320,7 @@ namespace KimeraCS
             this.rbNewPolygon.Margin = new System.Windows.Forms.Padding(4);
             this.rbNewPolygon.Name = "rbNewPolygon";
             this.rbNewPolygon.Size = new System.Drawing.Size(64, 59);
-            this.rbNewPolygon.TabIndex = 7;
+            this.rbNewPolygon.TabIndex = 40;
             this.rbNewPolygon.TabStop = true;
             this.rbNewPolygon.Text = "0/3";
             this.rbNewPolygon.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -1338,7 +1338,7 @@ namespace KimeraCS
             this.rbPanning.Margin = new System.Windows.Forms.Padding(4);
             this.rbPanning.Name = "rbPanning";
             this.rbPanning.Size = new System.Drawing.Size(64, 59);
-            this.rbPanning.TabIndex = 6;
+            this.rbPanning.TabIndex = 39;
             this.rbPanning.TabStop = true;
             this.rbPanning.UseVisualStyleBackColor = false;
             this.rbPanning.MouseDown += new System.Windows.Forms.MouseEventHandler(this.rbPanning_MouseDown);
@@ -1353,7 +1353,7 @@ namespace KimeraCS
             this.rbZoomInOut.Margin = new System.Windows.Forms.Padding(4);
             this.rbZoomInOut.Name = "rbZoomInOut";
             this.rbZoomInOut.Size = new System.Drawing.Size(64, 59);
-            this.rbZoomInOut.TabIndex = 5;
+            this.rbZoomInOut.TabIndex = 38;
             this.rbZoomInOut.TabStop = true;
             this.rbZoomInOut.UseVisualStyleBackColor = false;
             this.rbZoomInOut.MouseDown += new System.Windows.Forms.MouseEventHandler(this.rbZoomInOut_MouseDown);
@@ -1368,7 +1368,7 @@ namespace KimeraCS
             this.rbFreeRotate.Margin = new System.Windows.Forms.Padding(4);
             this.rbFreeRotate.Name = "rbFreeRotate";
             this.rbFreeRotate.Size = new System.Drawing.Size(64, 59);
-            this.rbFreeRotate.TabIndex = 4;
+            this.rbFreeRotate.TabIndex = 37;
             this.rbFreeRotate.TabStop = true;
             this.rbFreeRotate.UseVisualStyleBackColor = false;
             this.rbFreeRotate.MouseDown += new System.Windows.Forms.MouseEventHandler(this.rbFreeRotate_MouseDown);
@@ -1382,7 +1382,7 @@ namespace KimeraCS
             this.rbMoveVertex.Margin = new System.Windows.Forms.Padding(4);
             this.rbMoveVertex.Name = "rbMoveVertex";
             this.rbMoveVertex.Size = new System.Drawing.Size(64, 59);
-            this.rbMoveVertex.TabIndex = 3;
+            this.rbMoveVertex.TabIndex = 36;
             this.rbMoveVertex.TabStop = true;
             this.rbMoveVertex.UseVisualStyleBackColor = true;
             this.rbMoveVertex.MouseDown += new System.Windows.Forms.MouseEventHandler(this.rbMoveVertex_MouseDown);
@@ -1397,7 +1397,7 @@ namespace KimeraCS
             this.rbErasePolygon.Margin = new System.Windows.Forms.Padding(4);
             this.rbErasePolygon.Name = "rbErasePolygon";
             this.rbErasePolygon.Size = new System.Drawing.Size(64, 59);
-            this.rbErasePolygon.TabIndex = 2;
+            this.rbErasePolygon.TabIndex = 35;
             this.rbErasePolygon.TabStop = true;
             this.rbErasePolygon.UseVisualStyleBackColor = false;
             this.rbErasePolygon.MouseDown += new System.Windows.Forms.MouseEventHandler(this.rbErasePolygon_MouseDown);
@@ -1412,7 +1412,7 @@ namespace KimeraCS
             this.rbCutEdge.Margin = new System.Windows.Forms.Padding(4);
             this.rbCutEdge.Name = "rbCutEdge";
             this.rbCutEdge.Size = new System.Drawing.Size(64, 59);
-            this.rbCutEdge.TabIndex = 1;
+            this.rbCutEdge.TabIndex = 34;
             this.rbCutEdge.TabStop = true;
             this.rbCutEdge.UseVisualStyleBackColor = false;
             this.rbCutEdge.MouseDown += new System.Windows.Forms.MouseEventHandler(this.rbCutEdge_MouseDown);
@@ -1427,7 +1427,7 @@ namespace KimeraCS
             this.rbPaintPolygon.Margin = new System.Windows.Forms.Padding(4);
             this.rbPaintPolygon.Name = "rbPaintPolygon";
             this.rbPaintPolygon.Size = new System.Drawing.Size(64, 59);
-            this.rbPaintPolygon.TabIndex = 0;
+            this.rbPaintPolygon.TabIndex = 33;
             this.rbPaintPolygon.TabStop = true;
             this.rbPaintPolygon.UseVisualStyleBackColor = false;
             this.rbPaintPolygon.MouseDown += new System.Windows.Forms.MouseEventHandler(this.rbPaintPolygon_MouseDown);
@@ -1458,7 +1458,7 @@ namespace KimeraCS
             this.btnDuplicateGroup.Margin = new System.Windows.Forms.Padding(4);
             this.btnDuplicateGroup.Name = "btnDuplicateGroup";
             this.btnDuplicateGroup.Size = new System.Drawing.Size(132, 28);
-            this.btnDuplicateGroup.TabIndex = 6;
+            this.btnDuplicateGroup.TabIndex = 4;
             this.btnDuplicateGroup.Text = "Duplicate group";
             this.btnDuplicateGroup.UseVisualStyleBackColor = true;
             this.btnDuplicateGroup.Click += new System.EventHandler(this.btnDuplicateGroup_Click);
@@ -1482,7 +1482,7 @@ namespace KimeraCS
             this.btnGroupProperties.Margin = new System.Windows.Forms.Padding(4);
             this.btnGroupProperties.Name = "btnGroupProperties";
             this.btnGroupProperties.Size = new System.Drawing.Size(132, 28);
-            this.btnGroupProperties.TabIndex = 4;
+            this.btnGroupProperties.TabIndex = 5;
             this.btnGroupProperties.Text = "Group properties";
             this.btnGroupProperties.UseVisualStyleBackColor = true;
             this.btnGroupProperties.Click += new System.EventHandler(this.btnGroupProperties_Click);
@@ -1494,7 +1494,7 @@ namespace KimeraCS
             this.btnHideShowGroup.Margin = new System.Windows.Forms.Padding(4);
             this.btnHideShowGroup.Name = "btnHideShowGroup";
             this.btnHideShowGroup.Size = new System.Drawing.Size(132, 28);
-            this.btnHideShowGroup.TabIndex = 5;
+            this.btnHideShowGroup.TabIndex = 6;
             this.btnHideShowGroup.Text = "Hide/Show group";
             this.btnHideShowGroup.UseVisualStyleBackColor = true;
             this.btnHideShowGroup.Click += new System.EventHandler(this.btnHideShowGroup_Click);
@@ -1629,7 +1629,7 @@ namespace KimeraCS
             this.chkEnableLighting.Margin = new System.Windows.Forms.Padding(4);
             this.chkEnableLighting.Name = "chkEnableLighting";
             this.chkEnableLighting.Size = new System.Drawing.Size(143, 30);
-            this.chkEnableLighting.TabIndex = 0;
+            this.chkEnableLighting.TabIndex = 7;
             this.chkEnableLighting.Text = "Enable lighting";
             this.chkEnableLighting.UseVisualStyleBackColor = true;
             this.chkEnableLighting.CheckedChanged += new System.EventHandler(this.chkEnableLighting_CheckedChanged);

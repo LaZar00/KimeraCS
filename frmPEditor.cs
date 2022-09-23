@@ -23,7 +23,9 @@ namespace KimeraCS
     using static FF7FieldSkeleton;
     using static FF7FieldRSDResource;
     using static FF7BattleSkeleton;
+
     using static FF7PModel;
+    using static Model_3DS;
 
     using static ModelDrawing;
 
@@ -688,7 +690,7 @@ namespace KimeraCS
 
             if (Int32.TryParse(txtResizeX.Text, out iResizeX))
             {
-                if (iResizeX < 0 || iResizeX > 400)
+                if (iResizeX < 0 || iResizeX > 500)
                 {
                     iResizeX = 100;
                 }
@@ -710,7 +712,7 @@ namespace KimeraCS
 
             if (Int32.TryParse(txtResizeY.Text, out iResizeY))
             {
-                if (iResizeY < 0 || iResizeY > 400)
+                if (iResizeY < 0 || iResizeY > 500)
                 {
                     iResizeY = 100;
                 }
@@ -732,7 +734,7 @@ namespace KimeraCS
 
             if (Int32.TryParse(txtResizeZ.Text, out iResizeZ))
             {
-                if (iResizeZ < 0 || iResizeZ > 400)
+                if (iResizeZ < 0 || iResizeZ > 500)
                 {
                     iResizeZ = 100;
                 }
@@ -1484,12 +1486,22 @@ namespace KimeraCS
                         strGlobalPModelNamePE = Path.GetFileName(openFile.FileName).ToUpper();
                         WriteCFGFile();
 
-                        // Load the Model
+                        // Load the Model (We need to check if we have a .3DS or a .P file
                         tmpFileName = EditedPModel.fileName;
+
+                        Model3DS[] tmpModel3DS;
                         EditedPModel = new PModel();
 
-                        LoadPModel(ref EditedPModel, strGlobalPathPModelFolderPE,
-                                   Path.GetFileName(strGlobalPModelNamePE));
+                        if (Path.GetExtension(openFile.FileName) == ".3DS")
+                        {
+                            Load3DS(openFile.FileName, out tmpModel3DS);
+                            ConvertModels3DSToPModel(tmpModel3DS, ref EditedPModel);
+                        }
+                        else
+                        {
+                            LoadPModel(ref EditedPModel, strGlobalPathPModelFolderPE,
+                                       Path.GetFileName(strGlobalPModelNamePE));
+                        }
 
                         // Assign old filename to the PModel
                         EditedPModel.fileName = tmpFileName.ToUpper();
@@ -1557,10 +1569,20 @@ namespace KimeraCS
                         strGlobalPModelNamePE = Path.GetFileName(openFile.FileName).ToUpper();
                         WriteCFGFile();
 
-                        // Load the Model
+                        // Load the Model (We need to check if we have a .3DS or a .P file
+                        Model3DS[] tmpModel3DS;
                         GroupModel = new PModel();
-                        LoadPModel(ref GroupModel, strGlobalPathPModelFolderPE,
-                                   Path.GetFileName(strGlobalPModelNamePE));
+
+                        if (Path.GetExtension(openFile.FileName) == ".3DS")
+                        {
+                            Load3DS(openFile.FileName, out tmpModel3DS);
+                            ConvertModels3DSToPModel(tmpModel3DS, ref GroupModel);
+                        }
+                        else
+                        {
+                            LoadPModel(ref GroupModel, strGlobalPathPModelFolderPE,
+                                       Path.GetFileName(strGlobalPModelNamePE));
+                        }                     
 
                         if (GroupModel.Header.numVerts > 0)
                         {
@@ -1570,12 +1592,21 @@ namespace KimeraCS
 
                             foreach (PGroup itmGroup in GroupModel.Groups)
                             {
-                                AddGroup(ref EditedPModel, 
-                                         GroupModel.Verts.Skip(itmGroup.offsetVert).Take(itmGroup.numVert).ToArray(),
-                                         GroupModel.Polys.Skip(itmGroup.offsetPoly).Take(itmGroup.numPoly).ToArray(),
-                                         GroupModel.TexCoords.Skip(itmGroup.offsetTex).Take(itmGroup.numVert).ToArray(), 
-                                         GroupModel.Vcolors.Skip(itmGroup.offsetVert).Take(itmGroup.numVert).ToArray(), 
-                                         GroupModel.Pcolors.Skip(itmGroup.offsetPoly).Take(itmGroup.numPoly).ToArray());
+                                // We will add the group having in mind if it has texFlag or not
+                                if (itmGroup.texFlag == 0)
+                                    AddGroup(ref EditedPModel, 
+                                             GroupModel.Verts.Skip(itmGroup.offsetVert).Take(itmGroup.numVert).ToArray(),
+                                             GroupModel.Polys.Skip(itmGroup.offsetPoly).Take(itmGroup.numPoly).ToArray(),
+                                             null, 
+                                             GroupModel.Vcolors.Skip(itmGroup.offsetVert).Take(itmGroup.numVert).ToArray(), 
+                                             GroupModel.Pcolors.Skip(itmGroup.offsetPoly).Take(itmGroup.numPoly).ToArray());
+                                else
+                                    AddGroup(ref EditedPModel,
+                                             GroupModel.Verts.Skip(itmGroup.offsetVert).Take(itmGroup.numVert).ToArray(),
+                                             GroupModel.Polys.Skip(itmGroup.offsetPoly).Take(itmGroup.numPoly).ToArray(),
+                                             GroupModel.TexCoords.Skip(itmGroup.offsetTex).Take(itmGroup.numVert).ToArray(),
+                                             GroupModel.Vcolors.Skip(itmGroup.offsetVert).Take(itmGroup.numVert).ToArray(),
+                                             GroupModel.Pcolors.Skip(itmGroup.offsetPoly).Take(itmGroup.numPoly).ToArray());
                             }
 
                             DestroyPModelResources(ref GroupModel);
