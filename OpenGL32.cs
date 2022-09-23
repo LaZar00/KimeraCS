@@ -276,7 +276,7 @@ namespace KimeraCS
         }
 
         [Flags()]
-        public enum FrontFaceDirection : uint
+        public enum glFrontFaceDirection : uint
         {
             GL_CW = 0x0900,
             GL_CCW = 0x0901,
@@ -1700,7 +1700,7 @@ namespace KimeraCS
         public static extern void glFogiv(glCapability pname, glTextureMagFilter[] @params); // 
 
         [DllImport(DLLName)]
-        public static extern void glFrontFace(uint mode);
+        public static extern void glFrontFace(glFrontFaceDirection mode);
         [DllImport(DLLName)]
         public static extern void glFrustum(double left, double right, double bottom, double top, double zNear, double zFar);
         [DllImport(DLLName)]
