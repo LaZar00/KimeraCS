@@ -1528,6 +1528,7 @@ namespace KimeraCS
             int gi, pi, vi;
 
             glShadeModel(glShadingModel.GL_FLAT);
+
             glPolygonMode(glFace.GL_FRONT, glPolygon.GL_LINE);
             glPolygonMode(glFace.GL_BACK, glPolygon.GL_FILL);
             glEnable(glCapability.GL_COLOR_MATERIAL);
