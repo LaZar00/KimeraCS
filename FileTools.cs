@@ -80,9 +80,11 @@ namespace KimeraCS
 
         public static string strCharLGPPathSrc = "", strBattleLGPPathSrc = "", strMagicLGPPathSrc = "";
         public static string strCharLGPPathDest = "", strBattleLGPPathDest = "", strMagicLGPPathDest = "";
+        public static string strGlobalPathTEX2PNGBatch = "";
 
         public static string strGlobalPath = "";
         public static string strGlobalPathPModelFolder = "", strGlobalPModelName = "";
+        public static string strGlobalPathTMDModelFolder = "", strGlobalTMDModelName = "";
         public static string strGlobalPath3DSModelFolder = "", strGlobal3DSModelName = "";
         public static string strGlobalPathFieldSkeletonFolder = "", strGlobalFieldSkeletonFileName = "", strGlobalFieldSkeletonName = "", 
                              strGlobalPathFieldAnimationFolder = "", strGlobalFieldAnimationName = "";
@@ -92,7 +94,8 @@ namespace KimeraCS
                              strGlobalPathMagicAnimationFolder = "", strGlobalMagicAnimationName = "";
         public static string strGlobalPathTextureFolder = "", strGlobalTextureName = "";
         public static string strGlobalPathPartModelFolder = "", strGlobalPartModelName = "";
-        public static string strGlobalPathSaveSkeletonFolder = "", strGlobalPathSaveAnimationFolder = "", strGlobalPathSaveModelFolder = "";
+        public static string strGlobalPathSaveSkeletonFolder = "", strGlobalPathSaveAnimationFolder = "", 
+                             strGlobalPathSaveModelFolder = "", strGlobalPathSaveTMDFolder = "";
 
         // PEditor
         public static int isizeWindowWidthPE = 736;
@@ -125,12 +128,15 @@ namespace KimeraCS
             lstCFGKeys.Add("PATH_MAGICANIMATION_FOLDER", "");
             lstCFGKeys.Add("PATH_PARTMODEL_FOLDER", "");
             lstCFGKeys.Add("PATH_PMODEL_FOLDER", "");
+            lstCFGKeys.Add("PATH_TMDMODEL_FOLDER", "");
             lstCFGKeys.Add("PATH_PMODEL_FOLDERPE", "");
             lstCFGKeys.Add("PATH_SAVESKELETON_FOLDER", "");
             lstCFGKeys.Add("PATH_SAVEANIMATION_FOLDER", "");
             lstCFGKeys.Add("PATH_SAVEMODEL_FOLDER", "");
+            lstCFGKeys.Add("PATH_SAVETMDMODEL_FOLDER", "");
             lstCFGKeys.Add("PATH_SAVEMODEL_FOLDERPE", "");
             lstCFGKeys.Add("PATH_TEXTURE_FOLDER", "");
+            lstCFGKeys.Add("PATH_TEX2PNGBATCH_FOLDER", "");
 
             lstCFGKeys.Add("WINDOW_POSX", "");
             lstCFGKeys.Add("WINDOW_POSY", "");
@@ -202,6 +208,10 @@ namespace KimeraCS
                 strGlobalPathSaveAnimationFolder = lstCFGKeys["PATH_SAVEANIMATION_FOLDER"].ToString();
                 strGlobalPathSaveModelFolder = lstCFGKeys["PATH_SAVEMODEL_FOLDER"].ToString();
                 strGlobalPathSaveModelFolderPE = lstCFGKeys["PATH_SAVEMODEL_FOLDERPE"].ToString();
+                strGlobalPathTMDModelFolder = lstCFGKeys["PATH_TMDMODEL_FOLDER"].ToString();
+                strGlobalPathSaveTMDFolder = lstCFGKeys["PATH_SAVETMDMODEL_FOLDER"].ToString();
+                strGlobalPathTEX2PNGBatch = lstCFGKeys["PATH_TEX2PNGBATCH_FOLDER"].ToString();
+                
 
                 if (!Int32.TryParse(lstCFGKeys["UNDO_BUFFER_CAPACITY"].ToString(), out iUndoBufferCapacity)) iUndoBufferCapacity = 10;
                 if (!Int32.TryParse(lstCFGKeys["UNDO_BUFFERPE_CAPACITY"].ToString(), out iUndoBufferPECapacity)) iUndoBufferPECapacity = 20;
@@ -243,6 +253,7 @@ namespace KimeraCS
             lstCFGKeys["PATH_MAGICSKELETON_FOLDER"] = strGlobalPathMagicSkeletonFolder;
             lstCFGKeys["PATH_MAGICANIMATION_FOLDER"] = strGlobalPathMagicAnimationFolder;
             lstCFGKeys["PATH_PMODEL_FOLDER"] = strGlobalPathPModelFolder;
+            lstCFGKeys["PATH_TMDMODEL_FOLDER"] = strGlobalPathTMDModelFolder;
             lstCFGKeys["PATH_PMODEL_FOLDERPE"] = strGlobalPathPModelFolderPE;
             lstCFGKeys["PATH_3DSMODEL_FOLDER"] = strGlobalPath3DSModelFolder;
             lstCFGKeys["PATH_TEXTURE_FOLDER"] = strGlobalPathTextureFolder;
@@ -250,7 +261,11 @@ namespace KimeraCS
             lstCFGKeys["PATH_SAVESKELETON_FOLDER"] = strGlobalPathSaveSkeletonFolder;
             lstCFGKeys["PATH_SAVEANIMATION_FOLDER"] = strGlobalPathSaveAnimationFolder;
             lstCFGKeys["PATH_SAVEMODEL_FOLDER"] = strGlobalPathSaveModelFolder;
+            lstCFGKeys["PATH_SAVETMDMODEL_FOLDER"] = strGlobalPathSaveTMDFolder;
             lstCFGKeys["PATH_SAVEMODEL_FOLDERPE"] = strGlobalPathSaveModelFolderPE;
+            lstCFGKeys["PATH_TEX2PNGBATCH_FOLDER"] = strGlobalPathTEX2PNGBatch;
+
+
             lstCFGKeys["UNDO_BUFFER_CAPACITY"] = iUndoBufferCapacity;
             lstCFGKeys["UNDO_BUFFERPE_CAPACITY"] = iUndoBufferPECapacity;
 
