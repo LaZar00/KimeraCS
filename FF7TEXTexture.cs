@@ -371,10 +371,10 @@ namespace KimeraCS
                 pictureInfo.bmiHeader.biHeight = inTEXTexture.height;
                 pictureInfo.bmiHeader.biPlanes = 1;
 
-                if (inTEXTexture.hasPal == 1)
-                    pictureInfo.bmiHeader.biBitCount = (BitCount)(byte)(Math.Log(inTEXTexture.paletteSize) / Math.Log(2));
-                else
-                    pictureInfo.bmiHeader.biBitCount = (BitCount)(byte)inTEXTexture.bitDepth;
+                //if (inTEXTexture.hasPal == 1)
+                //    pictureInfo.bmiHeader.biBitCount = (BitCount)(byte)(Math.Log(inTEXTexture.paletteSize) / Math.Log(2));
+                //else
+                pictureInfo.bmiHeader.biBitCount = (BitCount)(byte)inTEXTexture.bitDepth;
 
                 pictureInfo.bmiHeader.biCompression = BitmapCompression.BI_RGB;
 
@@ -397,7 +397,7 @@ namespace KimeraCS
 
                 if (pictureInfo.bmiHeader.biBitCount <= BitCount.BitPerPixel8BPP)
                 {
-                    pictureInfo.bmiColors = new RGBQuad[256];
+                    pictureInfo.bmiColors = new RgbQuad[256];
 
                     for (i = 0; i < inTEXTexture.paletteSize; i++)
                     {
@@ -555,7 +555,7 @@ namespace KimeraCS
                 outTEX.version = 1;
                 outTEX.unk1 = 0;
 
-                outTEX.ColorKeyFlag = 0;
+                if (bHasAlpha) outTEX.ColorKeyFlag = 1;
 
                 outTEX.unk2 = bHasAlpha ? 1 : 0;
                 outTEX.unk3 = 0;
