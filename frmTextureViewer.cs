@@ -46,6 +46,7 @@ namespace KimeraCS
 
         public PModel TexViewModel;
 
+        public int iTCWidth, iTCHeight;
 
         // UV Coordinates movement with mouse structs
         public List<STUVXYCoord> lstUVXYCoords;
@@ -233,6 +234,9 @@ namespace KimeraCS
             PrepareUVXYCoords();
             DrawUVs();
 
+            lblHeight.Text = "H: " + iTCWidth.ToString();
+            lblWidth.Text = "W: " + iTCHeight.ToString();
+
             bLoadingTextureViewer = false;
         }
 
@@ -249,18 +253,35 @@ namespace KimeraCS
             {
                 case K_HRC_SKELETON:
                     hTmpBMP = fSkeleton.bones[SelectedBone].fRSDResources[SelectedBonePiece].textures[iTexID].HBMP;
+
+                    iTCWidth = fSkeleton.bones[SelectedBone].fRSDResources[SelectedBonePiece].textures[iTexID].width;
+                    iTCHeight = fSkeleton.bones[SelectedBone].fRSDResources[SelectedBonePiece].textures[iTexID].height;
                     break;
 
                 case K_AA_SKELETON:
                     if (bSkeleton.wpModels.Count > 0 && SelectedBone == bSkeleton.nBones)
+                    {
                         hTmpBMP = bSkeleton.textures[bSkeleton.wpModels[frmSkelEdit.cbWeapon.SelectedIndex].Groups[0].texID].HBMP;
+
+                        iTCWidth = bSkeleton.textures[bSkeleton.wpModels[frmSkelEdit.cbWeapon.SelectedIndex].Groups[0].texID].width;
+                        iTCHeight = bSkeleton.textures[bSkeleton.wpModels[frmSkelEdit.cbWeapon.SelectedIndex].Groups[0].texID].height;
+                    }
                     else
+                    {
                         hTmpBMP = bSkeleton.textures[iTexID].HBMP;
+
+                        iTCWidth = bSkeleton.textures[iTexID].width;
+                        iTCHeight = bSkeleton.textures[iTexID].height;
+                    }
+
 
                     break;
 
                 case K_MAGIC_SKELETON:
                     hTmpBMP = bSkeleton.textures[iTexID].HBMP;
+
+                    iTCWidth = bSkeleton.textures[iTexID].width;
+                    iTCHeight = bSkeleton.textures[iTexID].height;
                     break;
             }
 
@@ -283,66 +304,69 @@ namespace KimeraCS
 
                 for (iGroupIdx = 0; iGroupIdx < TexViewModel.Header.numGroups; iGroupIdx++)
                 {
-                    if (TexViewModel.TexCoords.Length > 0 &&
-                        TexViewModel.Groups[iGroupIdx].texFlag == 1 && 
-                        TexViewModel.Groups[iGroupIdx].texID == iTexID)
+                    if (TexViewModel.TexCoords != null)
                     {
-                        for (iPolyIdx = TexViewModel.Groups[iGroupIdx].offsetPoly; 
-                             iPolyIdx < TexViewModel.Groups[iGroupIdx].offsetPoly +
-                                        TexViewModel.Groups[iGroupIdx].numPoly; iPolyIdx++)
+                        if (TexViewModel.TexCoords.Length > 0 &&
+                            TexViewModel.Groups[iGroupIdx].texFlag == 1 &&
+                            TexViewModel.Groups[iGroupIdx].texID == iTexID)
                         {
-                            // Get the 2D point (X,Y pos) of each of the points of the poly and draw the UV coordiantes with triangle shape
-                            for (iVertCounter = 0; iVertCounter < 3; iVertCounter++)
+                            for (iPolyIdx = TexViewModel.Groups[iGroupIdx].offsetPoly;
+                                 iPolyIdx < TexViewModel.Groups[iGroupIdx].offsetPoly +
+                                            TexViewModel.Groups[iGroupIdx].numPoly; iPolyIdx++)
                             {
-                                 // Draw the texture coordinates
-                                using (Brush tmpBrush = new SolidBrush(btnGreen.BackColor))
+                                // Get the 2D point (X,Y pos) of each of the points of the poly and draw the UV coordiantes with triangle shape
+                                for (iVertCounter = 0; iVertCounter < 3; iVertCounter++)
                                 {
-                                    g.FillEllipse(tmpBrush,
-                                                  Convert.ToInt32(lstUVXYCoords[iGroupIdx].XYCoords[TexViewModel.Polys[iPolyIdx].Verts[iVertCounter]].x) - I_RADIUS,
-                                                  Convert.ToInt32(lstUVXYCoords[iGroupIdx].XYCoords[TexViewModel.Polys[iPolyIdx].Verts[iVertCounter]].y) - I_RADIUS,
-                                                  2 * I_RADIUS, 2 * I_RADIUS);
-
-                                    switch (iVertCounter)
+                                    // Draw the texture coordinates
+                                    using (Brush tmpBrush = new SolidBrush(btnGreen.BackColor))
                                     {
-                                        case 0:
+                                        g.FillEllipse(tmpBrush,
+                                                      Convert.ToInt32(lstUVXYCoords[iGroupIdx].XYCoords[TexViewModel.Polys[iPolyIdx].Verts[iVertCounter]].x) - I_RADIUS,
+                                                      Convert.ToInt32(lstUVXYCoords[iGroupIdx].XYCoords[TexViewModel.Polys[iPolyIdx].Verts[iVertCounter]].y) - I_RADIUS,
+                                                      2 * I_RADIUS, 2 * I_RADIUS);
 
-                                            pointTriPoly[0].X = Convert.ToInt32(lstUVXYCoords[iGroupIdx].XYCoords[TexViewModel.Polys[iPolyIdx].Verts[iVertCounter]].x);
-                                            pointTriPoly[0].Y = Convert.ToInt32(lstUVXYCoords[iGroupIdx].XYCoords[TexViewModel.Polys[iPolyIdx].Verts[iVertCounter]].y);
+                                        switch (iVertCounter)
+                                        {
+                                            case 0:
 
-                                            if (pointTriPoly[0].X >= iWidth) pointTriPoly[0].X--;
-                                            if (pointTriPoly[0].Y >= iHeight) pointTriPoly[0].Y--;
+                                                pointTriPoly[0].X = Convert.ToInt32(lstUVXYCoords[iGroupIdx].XYCoords[TexViewModel.Polys[iPolyIdx].Verts[iVertCounter]].x);
+                                                pointTriPoly[0].Y = Convert.ToInt32(lstUVXYCoords[iGroupIdx].XYCoords[TexViewModel.Polys[iPolyIdx].Verts[iVertCounter]].y);
 
-                                            pointTriPoly[3].X = pointTriPoly[0].X;
-                                            pointTriPoly[3].Y = pointTriPoly[0].Y;
+                                                if (pointTriPoly[0].X >= iWidth) pointTriPoly[0].X--;
+                                                if (pointTriPoly[0].Y >= iHeight) pointTriPoly[0].Y--;
 
-                                            break;
+                                                pointTriPoly[3].X = pointTriPoly[0].X;
+                                                pointTriPoly[3].Y = pointTriPoly[0].Y;
 
-                                        case 1:
+                                                break;
 
-                                            pointTriPoly[1].X = Convert.ToInt32(lstUVXYCoords[iGroupIdx].XYCoords[TexViewModel.Polys[iPolyIdx].Verts[iVertCounter]].x);
-                                            pointTriPoly[1].Y = Convert.ToInt32(lstUVXYCoords[iGroupIdx].XYCoords[TexViewModel.Polys[iPolyIdx].Verts[iVertCounter]].y);
+                                            case 1:
 
-                                            if (pointTriPoly[1].X >= iWidth) pointTriPoly[1].X--;
-                                            if (pointTriPoly[1].Y >= iHeight) pointTriPoly[1].Y--;
+                                                pointTriPoly[1].X = Convert.ToInt32(lstUVXYCoords[iGroupIdx].XYCoords[TexViewModel.Polys[iPolyIdx].Verts[iVertCounter]].x);
+                                                pointTriPoly[1].Y = Convert.ToInt32(lstUVXYCoords[iGroupIdx].XYCoords[TexViewModel.Polys[iPolyIdx].Verts[iVertCounter]].y);
 
-                                            break;
+                                                if (pointTriPoly[1].X >= iWidth) pointTriPoly[1].X--;
+                                                if (pointTriPoly[1].Y >= iHeight) pointTriPoly[1].Y--;
 
-                                        case 2:
-                                            using (Pen tmpPen = new Pen(btnGreen.BackColor))
-                                            {
+                                                break;
 
-                                                tmpPen.Alignment = PenAlignment.Center;
+                                            case 2:
+                                                using (Pen tmpPen = new Pen(btnGreen.BackColor))
+                                                {
 
-                                                pointTriPoly[2].X = Convert.ToInt32(lstUVXYCoords[iGroupIdx].XYCoords[TexViewModel.Polys[iPolyIdx].Verts[iVertCounter]].x);
-                                                pointTriPoly[2].Y = Convert.ToInt32(lstUVXYCoords[iGroupIdx].XYCoords[TexViewModel.Polys[iPolyIdx].Verts[iVertCounter]].y);
+                                                    tmpPen.Alignment = PenAlignment.Center;
 
-                                                if (pointTriPoly[2].X >= iWidth) pointTriPoly[2].X--;
-                                                if (pointTriPoly[2].Y >= iHeight) pointTriPoly[2].Y--;
+                                                    pointTriPoly[2].X = Convert.ToInt32(lstUVXYCoords[iGroupIdx].XYCoords[TexViewModel.Polys[iPolyIdx].Verts[iVertCounter]].x);
+                                                    pointTriPoly[2].Y = Convert.ToInt32(lstUVXYCoords[iGroupIdx].XYCoords[TexViewModel.Polys[iPolyIdx].Verts[iVertCounter]].y);
 
-                                                g.DrawLines(tmpPen, pointTriPoly);
-                                            }
+                                                    if (pointTriPoly[2].X >= iWidth) pointTriPoly[2].X--;
+                                                    if (pointTriPoly[2].Y >= iHeight) pointTriPoly[2].Y--;
 
-                                            break;
+                                                    g.DrawLines(tmpPen, pointTriPoly);
+                                                }
+
+                                                break;
+                                        }
                                     }
                                 }
                             }
