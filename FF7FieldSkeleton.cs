@@ -69,6 +69,7 @@ namespace KimeraCS
 
                 while (i < hrcString.Length)
                 {
+                    hrcString[i] = hrcString[i].Trim();
 
                     if (hrcString[i] != "" && hrcString[i][0] != '#' && hrcString[i][0] != ' ')
                     {
@@ -128,6 +129,7 @@ namespace KimeraCS
                              ref List<TEX> texturesPool, bool loadgeometryQ, string strFolderName)
             {
                 string[] rsdRes = inRSDLine.Split();
+                int i;
 
                 len = Double.Parse(inLen, CultureInfo.InvariantCulture);
 
@@ -157,7 +159,9 @@ namespace KimeraCS
                     // Populate resources (RSD files)
                     if (nResources > 0)
                     {
-                        for (var i = 0; i < nResources; i++)
+                        if (nResources > rsdRes.Length - 1) nResources = rsdRes.Length - 1;
+
+                        for (i = 0; i < nResources && rsdRes[i + 1] != null; i++)
                         {
                             fRSDResources.Add(new FieldRSDResource(rsdRes[i + 1], ref texturesPool, strFolderName));
                         }
