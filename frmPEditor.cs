@@ -1217,6 +1217,7 @@ namespace KimeraCS
         private void btnCommitChanges_Click(object sender, EventArgs e)
         {
             // Apply changes to the actual EditedPModel local PEditor variable.
+            // Apply Normals
             CommitContextualizedPChanges(false);
 
             // Apply changes to the Skeleton in frmSkeletonEditor (fSkeleton, bSkeleton, fPModel)
@@ -2786,8 +2787,6 @@ namespace KimeraCS
         {
             Point3D p_min = new Point3D();
             Point3D p_max = new Point3D();
-            float modelDiameterNormalized;
-            float tmpDist;
 
             AddStateToBufferPE(this);
 
