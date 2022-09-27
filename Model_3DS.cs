@@ -680,39 +680,42 @@ namespace KimeraCS
 
             for (mei = 0; mei < numMeshes; mei++)
             {
-                numFaceMatGroups = Model.meshesV[mei].faceMaterialsV.Length;
-
-                Array.Resize(ref Model.meshesV[mei].faceMaterialIndicesV, Model.meshesV[mei].numFaces);
-
-                for (mfi = 0; mfi < numFaceMatGroups; mfi++)
+                if (Model.meshesV[mei].faceMaterialsV != null)
                 {
-                    mai = 0;
-                    foundQ = false;
+                    numFaceMatGroups = Model.meshesV[mei].faceMaterialsV.Length;
 
-                    do
+                    Array.Resize(ref Model.meshesV[mei].faceMaterialIndicesV, Model.meshesV[mei].numFaces);
+
+                    for (mfi = 0; mfi < numFaceMatGroups; mfi++)
                     {
-                        ci = 0;
+                        mai = 0;
+                        foundQ = false;
 
-                        while (Model.meshesV[mei].faceMaterialsV[mfi].materialName[ci] == Model.materialsV[mai].materialName[ci] &&
-                               Model.meshesV[mei].faceMaterialsV[mfi].materialName[ci] != 0 &&
-                               Model.materialsV[mai].materialName[ci] != 0)
+                        do
                         {
-                            ci++;
+                            ci = 0;
+
+                            while (Model.meshesV[mei].faceMaterialsV[mfi].materialName[ci] == Model.materialsV[mai].materialName[ci] &&
+                                   Model.meshesV[mei].faceMaterialsV[mfi].materialName[ci] != 0 &&
+                                   Model.materialsV[mai].materialName[ci] != 0)
+                            {
+                                ci++;
+                            }
+
+                            foundQ = Model.meshesV[mei].faceMaterialsV[mfi].materialName[ci] == Model.materialsV[mai].materialName[ci];
+
+                            mai++;
+
+                        } while (!foundQ && mai == numMaterials);
+
+                        mai--;
+
+                        numFaces = Model.meshesV[mei].faceMaterialsV[mfi].numEntries;
+
+                        for (fi = 0; fi < numFaces; fi++)
+                        {
+                            Model.meshesV[mei].faceMaterialIndicesV[Model.meshesV[mei].faceMaterialsV[mfi].facesV[fi]] = mai;
                         }
-
-                        foundQ = Model.meshesV[mei].faceMaterialsV[mfi].materialName[ci] == Model.materialsV[mai].materialName[ci];
-
-                        mai++;
-
-                    } while (!foundQ && mai == numMaterials);
-
-                    mai--;
-
-                    numFaces = Model.meshesV[mei].faceMaterialsV[mfi].numEntries;
-
-                    for (fi = 0; fi < numFaces; fi++)
-                    {
-                        Model.meshesV[mei].faceMaterialIndicesV[Model.meshesV[mei].faceMaterialsV[mfi].facesV[fi]] = mai;
                     }
                 }
             }
@@ -864,9 +867,12 @@ namespace KimeraCS
 
                 for (fi = 0; fi < faces_per_vert[ci].length; fi++)
                 {
-                    temp_r = temp_r + materialsV[mesh.faceMaterialIndicesV[faces_per_vert[ci].vector[fi]]].diffuse.red;
-                    temp_g = temp_g + materialsV[mesh.faceMaterialIndicesV[faces_per_vert[ci].vector[fi]]].diffuse.green;
-                    temp_b = temp_b + materialsV[mesh.faceMaterialIndicesV[faces_per_vert[ci].vector[fi]]].diffuse.blue;
+                    if (mesh.faceMaterialIndicesV != null)
+                    {
+                        temp_r = temp_r + materialsV[mesh.faceMaterialIndicesV[faces_per_vert[ci].vector[fi]]].diffuse.red;
+                        temp_g = temp_g + materialsV[mesh.faceMaterialIndicesV[faces_per_vert[ci].vector[fi]]].diffuse.green;
+                        temp_b = temp_b + materialsV[mesh.faceMaterialIndicesV[faces_per_vert[ci].vector[fi]]].diffuse.blue;
+                    }
                 }
 
                 if (faces_per_vert[ci].length != 0)
@@ -887,9 +893,12 @@ namespace KimeraCS
 
             for (ci = 0; ci < mesh.numFaces; ci++)
             {
-                pcolorsV[ci] = Color.FromArgb(pcolorsV[ci].R + materialsV[mesh.faceMaterialIndicesV[ci]].diffuse.red,
-                                              pcolorsV[ci].G + materialsV[mesh.faceMaterialIndicesV[ci]].diffuse.green,
-                                              pcolorsV[ci].B + materialsV[mesh.faceMaterialIndicesV[ci]].diffuse.blue);
+                if (mesh.faceMaterialIndicesV != null)
+                {
+                    pcolorsV[ci] = Color.FromArgb(pcolorsV[ci].R + materialsV[mesh.faceMaterialIndicesV[ci]].diffuse.red,
+                                                  pcolorsV[ci].G + materialsV[mesh.faceMaterialIndicesV[ci]].diffuse.green,
+                                                  pcolorsV[ci].B + materialsV[mesh.faceMaterialIndicesV[ci]].diffuse.blue);
+                }
             }
         }
 
