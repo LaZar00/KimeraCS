@@ -85,7 +85,7 @@ namespace KimeraCS
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        public struct RGBQuad
+        public struct RgbQuad
         {
             public byte rgbBlue;
             public byte rgbGreen;
@@ -97,13 +97,14 @@ namespace KimeraCS
         public struct BitmapInfo
         {
             public BitmapInfoHeader bmiHeader;
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 256, ArraySubType = UnmanagedType.Struct)]
-            public RGBQuad[] bmiColors;
+            [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 256, ArraySubType = UnmanagedType.Struct)]
+            public RgbQuad[] bmiColors;
         }
 
         [Flags]
         public enum DIBColorTable : uint
         {
+            DIB_PAL_INDICES = 2,
             DIB_PAL_COLORS = 1,
             DIB_RGB_COLORS = 0
         }
