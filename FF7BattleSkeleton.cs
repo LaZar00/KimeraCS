@@ -900,7 +900,7 @@ namespace KimeraCS
                     glScalef(bBone.resizeX, bBone.resizeY, bBone.resizeZ);
 
                     tmpModel = bBone.Models[mi];
-                    ApplyPChanges(ref tmpModel, true);
+                    ApplyPChanges(ref tmpModel, false);
                     bBone.Models[mi] = tmpModel;
 
                     glMatrixMode(glMatrixModeList.GL_MODELVIEW);
