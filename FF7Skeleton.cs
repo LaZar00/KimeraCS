@@ -20,8 +20,11 @@ namespace KimeraCS
     using static FF7BattleAnimationsPack;
     using static FF7BattleAnimation;
 
+    using static FF7FieldRSDResource;
     using static FF7PModel;
     using static FF7TMDModel;
+
+    using static FF7TEXTexture;
 
     using static Lighting;
 
@@ -69,6 +72,7 @@ namespace KimeraCS
         public static TMDModel mTMDModel;
 
         public static bool IsTMDModel;
+        public static bool IsRSDResource;
 
 
         //
@@ -418,11 +422,65 @@ namespace KimeraCS
             return isaveModelResult;
         }
 
+        public static int LoadRSDResourceModel(string strRSDFolder, string strRSDName)
+        {
+            int iLoadRSDResourceModelResult = 0;
+            string strfAnimation = "";
+
+            FieldBone tmpfBone;
+            FieldRSDResource tmpfRSDResource;
+            List<TEX> textures_pool = new List<TEX>();
+
+            try
+            {
+                // Create fSkeleton with 1 bone
+                fSkeleton = new FieldSkeleton();
+
+                fSkeleton.nBones = 1;
+                fSkeleton.fileName = strRSDName;
+                fSkeleton.name = strRSDName;
+                fSkeleton.bones = new List<FieldBone>();
+
+                // Load RSD Resource
+                tmpfBone = new FieldBone();
+                tmpfBone.len = 1;
+                tmpfBone.joint_f = "null";
+                tmpfBone.joint_i = "root";
+                tmpfBone.nResources = 1;
+                tmpfBone.fRSDResources = new List<FieldRSDResource>();
+
+                tmpfBone.resizeX = 1;
+                tmpfBone.resizeY = 1;
+                tmpfBone.resizeZ = 1;
+
+                tmpfRSDResource = new FieldRSDResource(strRSDName, ref textures_pool, strRSDFolder);
+                tmpfBone.fRSDResources.Add(tmpfRSDResource);
+
+                fSkeleton.bones.Add(tmpfBone);
+
+                // Create the Dummy animation (normally individual RSD Resource has not own animation)
+                fAnimation = new FieldAnimation(fSkeleton,
+                                                strRSDFolder + "\\" + strfAnimation,
+                                                false);
+
+                modelType = K_HRC_SKELETON;
+                IsRSDResource = true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("There has been some error loading RSD Resource: " + strRSDName + ".", "Error");
+                
+                iLoadRSDResourceModelResult = -1;
+            }
+
+            return iLoadRSDResourceModelResult;
+        }
 
 
-        //
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////
         // Global Animation functions/procedures
-        //
+        ////////////////////////////////////////////////////////////////////////////////////////////////
         public static int WriteAnimation(string strFileName)
         {
             int isaveAnimationResult = 0;
@@ -524,6 +582,7 @@ namespace KimeraCS
 
             return ioutputFrameData;
         }
+
 
 
 
