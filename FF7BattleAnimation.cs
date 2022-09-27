@@ -861,6 +861,9 @@ namespace KimeraCS
                         c1 = (float)(bSkeleton.bones[bi + 1].len - (bSkeleton.bones[bi].len * 0.01));
                         c2 = (float)(Math.Sqrt(Math.Pow(bSkeleton.bones[bi + 1].len, 2) - Math.Pow(c1, 2)));
                         hipArmAngle = (float)(Math.Atan(c2 / c1) / PI_180);
+
+                        if (hipArmAngle != hipArmAngle) hipArmAngle = 0;
+
                         tmpbFrameBone.alpha = 0;
                         tmpbFrameBone.beta = hipArmAngle;
                         tmpbFrameBone.gamma = 0;
