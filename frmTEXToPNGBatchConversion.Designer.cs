@@ -36,6 +36,7 @@ namespace KimeraCS
             this.progBarTEXBatch = new System.Windows.Forms.ProgressBar();
             this.btnCancel = new System.Windows.Forms.Button();
             this.gbSettings = new System.Windows.Forms.GroupBox();
+            this.chkRecursiveSearch = new System.Windows.Forms.CheckBox();
             this.btnSaveLog = new System.Windows.Forms.Button();
             this.chkShowOnlyNoProcessed = new System.Windows.Forms.CheckBox();
             this.lblPath = new System.Windows.Forms.Label();
@@ -102,13 +103,14 @@ namespace KimeraCS
             this.btnCancel.Margin = new System.Windows.Forms.Padding(2);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(60, 24);
-            this.btnCancel.TabIndex = 26;
+            this.btnCancel.TabIndex = 8;
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = true;
             this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
             // 
             // gbSettings
             // 
+            this.gbSettings.Controls.Add(this.chkRecursiveSearch);
             this.gbSettings.Controls.Add(this.btnSaveLog);
             this.gbSettings.Controls.Add(this.chkShowOnlyNoProcessed);
             this.gbSettings.Controls.Add(this.lblPath);
@@ -125,6 +127,17 @@ namespace KimeraCS
             this.gbSettings.TabStop = false;
             this.gbSettings.Text = "Settings";
             // 
+            // chkRecursiveSearch
+            // 
+            this.chkRecursiveSearch.Checked = true;
+            this.chkRecursiveSearch.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkRecursiveSearch.Location = new System.Drawing.Point(389, 53);
+            this.chkRecursiveSearch.Name = "chkRecursiveSearch";
+            this.chkRecursiveSearch.Size = new System.Drawing.Size(160, 24);
+            this.chkRecursiveSearch.TabIndex = 7;
+            this.chkRecursiveSearch.Text = "Recursive search in folders";
+            this.chkRecursiveSearch.UseVisualStyleBackColor = true;
+            // 
             // btnSaveLog
             // 
             this.btnSaveLog.ForeColor = System.Drawing.SystemColors.ControlText;
@@ -132,17 +145,17 @@ namespace KimeraCS
             this.btnSaveLog.Margin = new System.Windows.Forms.Padding(2);
             this.btnSaveLog.Name = "btnSaveLog";
             this.btnSaveLog.Size = new System.Drawing.Size(79, 28);
-            this.btnSaveLog.TabIndex = 26;
+            this.btnSaveLog.TabIndex = 4;
             this.btnSaveLog.Text = "Save log";
             this.btnSaveLog.UseVisualStyleBackColor = true;
             this.btnSaveLog.Click += new System.EventHandler(this.btnSaveLog_Click);
             // 
             // chkShowOnlyNoProcessed
             // 
-            this.chkShowOnlyNoProcessed.Location = new System.Drawing.Point(403, 53);
+            this.chkShowOnlyNoProcessed.Location = new System.Drawing.Point(11, 53);
             this.chkShowOnlyNoProcessed.Name = "chkShowOnlyNoProcessed";
             this.chkShowOnlyNoProcessed.Size = new System.Drawing.Size(146, 24);
-            this.chkShowOnlyNoProcessed.TabIndex = 25;
+            this.chkShowOnlyNoProcessed.TabIndex = 6;
             this.chkShowOnlyNoProcessed.Text = "Log only not processed";
             this.chkShowOnlyNoProcessed.UseVisualStyleBackColor = true;
             // 
@@ -165,7 +178,7 @@ namespace KimeraCS
             this.btnClose.Margin = new System.Windows.Forms.Padding(2);
             this.btnClose.Name = "btnClose";
             this.btnClose.Size = new System.Drawing.Size(124, 28);
-            this.btnClose.TabIndex = 20;
+            this.btnClose.TabIndex = 5;
             this.btnClose.Text = "Close";
             this.btnClose.UseVisualStyleBackColor = true;
             this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
@@ -177,7 +190,7 @@ namespace KimeraCS
             this.btnSaveOptions.Margin = new System.Windows.Forms.Padding(2);
             this.btnSaveOptions.Name = "btnSaveOptions";
             this.btnSaveOptions.Size = new System.Drawing.Size(99, 28);
-            this.btnSaveOptions.TabIndex = 1;
+            this.btnSaveOptions.TabIndex = 3;
             this.btnSaveOptions.Text = "Save options";
             this.btnSaveOptions.UseVisualStyleBackColor = true;
             this.btnSaveOptions.Click += new System.EventHandler(this.btnSaveOptions_Click);
@@ -189,7 +202,7 @@ namespace KimeraCS
             this.btnGo.Margin = new System.Windows.Forms.Padding(2);
             this.btnGo.Name = "btnGo";
             this.btnGo.Size = new System.Drawing.Size(224, 28);
-            this.btnGo.TabIndex = 19;
+            this.btnGo.TabIndex = 2;
             this.btnGo.Text = "Go!";
             this.btnGo.UseVisualStyleBackColor = true;
             this.btnGo.Click += new System.EventHandler(this.btnGo_Click);
@@ -200,7 +213,7 @@ namespace KimeraCS
             this.txtTEX2PNGBatchPath.Margin = new System.Windows.Forms.Padding(2);
             this.txtTEX2PNGBatchPath.Name = "txtTEX2PNGBatchPath";
             this.txtTEX2PNGBatchPath.Size = new System.Drawing.Size(471, 20);
-            this.txtTEX2PNGBatchPath.TabIndex = 2;
+            this.txtTEX2PNGBatchPath.TabIndex = 0;
             // 
             // btnPath
             // 
@@ -209,7 +222,7 @@ namespace KimeraCS
             this.btnPath.Margin = new System.Windows.Forms.Padding(2);
             this.btnPath.Name = "btnPath";
             this.btnPath.Size = new System.Drawing.Size(30, 20);
-            this.btnPath.TabIndex = 3;
+            this.btnPath.TabIndex = 1;
             this.btnPath.Text = "...";
             this.btnPath.UseVisualStyleBackColor = true;
             this.btnPath.Click += new System.EventHandler(this.btnPath_Click);
@@ -258,5 +271,6 @@ namespace KimeraCS
         private System.Windows.Forms.TextBox txtTEX2PNGBatchPath;
         private System.Windows.Forms.Button btnPath;
         private System.Windows.Forms.SaveFileDialog saveFile;
+        private System.Windows.Forms.CheckBox chkRecursiveSearch;
     }
 }

@@ -85,16 +85,23 @@ namespace KimeraCS
 
         private void btnGo_Click(object sender, EventArgs e)
         {
-            bCancelPressed = false;
-            btnCancel.Enabled = true;
 
             lblProcessingT2P.Text = "Processing 0000 / 0000";
-            gbProgress.Enabled = true;
-            gbSettings.Enabled = false;
 
             try
             {
-                ProcessTEX2PNGBatch(txtTEX2PNGBatchPath.Text);
+                if (Directory.Exists(txtTEX2PNGBatchPath.Text))
+                {
+                    bCancelPressed = false;
+                    btnCancel.Enabled = true;
+
+                    gbProgress.Enabled = true;
+                    gbSettings.Enabled = false;
+
+                    ProcessTEX2PNGBatch(txtTEX2PNGBatchPath.Text);
+                }
+                else
+                    MessageBox.Show("The selected folder does not exists.", "Warning");
             }
             catch (Exception ex)
             {
@@ -125,10 +132,12 @@ namespace KimeraCS
             {
                 for (i = 0; i < iBMPByteLength; i++)
                 {
-                    iR = inTEX.palette[inTEX.pixelData[i] * 4];
+                    iB = inTEX.palette[inTEX.pixelData[i] * 4];
                     iG = inTEX.palette[inTEX.pixelData[i] * 4 + 1];
-                    iB = inTEX.palette[inTEX.pixelData[i] * 4 + 2];
+                    iR = inTEX.palette[inTEX.pixelData[i] * 4 + 2];
                     iA = inTEX.palette[inTEX.pixelData[i] * 4 + 3];
+
+                    if (inTEX.ColorKeyFlag == 1 && iR == 0 && iG == 0 && iB == 0) iA = 0;
 
                     iBMPValue = (iA << 24) | (iR << 16) | (iG << 8) | iB;
 
@@ -142,9 +151,11 @@ namespace KimeraCS
                     iB = inTEX.pixelData[i * inTEX.bytesPerPixel];
                     iG = inTEX.pixelData[i * inTEX.bytesPerPixel + 1];
                     iR = inTEX.pixelData[i * inTEX.bytesPerPixel + 2];
+                    iA = 255;
 
-                    if (iR == 0 && iG == 0 && iB == 0) iA = 0;
-                    else iA = 255;
+                    if (inTEX.bitsPerPixel == 32) iA = inTEX.pixelData[i * inTEX.bytesPerPixel + 3];
+
+                    if (inTEX.ColorKeyFlag == 1 && iR == 0 && iG == 0 && iB == 0) iA = 0;
 
                     iBMPValue = (iA << 24) | (iR << 16) | (iG << 8) | iB;
 
@@ -152,22 +163,30 @@ namespace KimeraCS
                 }
             }
 
+            //tmpDBMP.Bitmap.RotateFlip(RotateFlipType.RotateNoneFlipY);
+
             return tmpDBMP.Bitmap;
         }
 
-        public void ProcessTEX2PNGBatch(string strMainPath)
+        public async void ProcessTEX2PNGBatch(string strMainPath)
         {
             int iCounter;
             TEX tmpTEX;
             Bitmap tmpBMP;
+            SearchOption soRecursive;
 
             string[] strTEXFilesList;
             string strSavePNGFileName;
 
             try
             {
+                if (chkRecursiveSearch.Checked)
+                    soRecursive = SearchOption.AllDirectories;
+                else
+                    soRecursive = SearchOption.TopDirectoryOnly;
+
                 strTEXFilesList = Directory
-                    .EnumerateFiles(strMainPath, "*.*", SearchOption.AllDirectories)
+                    .EnumerateFiles(strMainPath, "*.*", soRecursive)
                     .Where(s => Regex.IsMatch(s.Substring(s.Length - 4, 4).ToUpper(), @".T\d{2}$") ||       // Summon models textures
                                 s.ToUpper().EndsWith("AC") || s.ToUpper().EndsWith("AD") ||                 // Battle models textures
                                 s.ToUpper().EndsWith("AE") || s.ToUpper().EndsWith("AF") ||
@@ -176,6 +195,7 @@ namespace KimeraCS
                                 s.ToUpper().EndsWith("AK") || s.ToUpper().EndsWith("AL") ||
                                 s.ToUpper().EndsWith("TEX")                                                 // Field/World models textures
                     ).ToArray();
+
 
                 // Init progressBar
                 iCounter = 1;
@@ -219,8 +239,9 @@ namespace KimeraCS
                         tmpBMP.Dispose();
                         UnloadTexture(ref tmpTEX);
 
-                        rtbLog.AppendText("PROCESSED. TEX File: " + strTEXFile +
-                                          ", Entry: " + iCounter.ToString("0000") + ".\n");
+                        if (!chkShowOnlyNoProcessed.Checked)
+                            rtbLog.AppendText("PROCESSED. TEX File: " + strTEXFile +
+                                              ", Entry: " + iCounter.ToString("0000") + ".\n");
                     }
                     else
                     {
@@ -240,7 +261,7 @@ namespace KimeraCS
 
                     rtbLog.ScrollToCaret();
 
-                    //await Task.Delay(150);
+                    await Task.Delay(5);
                 }
 
                 rtbLog.AppendText("===== Job Finished =====");
@@ -251,6 +272,8 @@ namespace KimeraCS
             {
                 MessageBox.Show("There has been some exception while doing the TEX2PNG Batch Conversion.",
                                 "Error");
+
+                ActivateSettings();
             }
         }
 
