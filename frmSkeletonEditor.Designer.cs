@@ -42,7 +42,7 @@ namespace KimeraCS
             this.btnFlipHorizontal = new System.Windows.Forms.Button();
             this.btnFlipVertical = new System.Windows.Forms.Button();
             this.btnRotate = new System.Windows.Forms.Button();
-            this.chkZeroAsTransparent = new System.Windows.Forms.CheckBox();
+            this.chkColorKeyFlag = new System.Windows.Forms.CheckBox();
             this.cbTextureSelect = new System.Windows.Forms.ComboBox();
             this.pbTextureViewer = new System.Windows.Forms.PictureBox();
             this.gbAnimationOptionsFrame = new System.Windows.Forms.GroupBox();
@@ -144,6 +144,7 @@ namespace KimeraCS
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadFieldSkeletonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadBattleMagicSkeletonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadRSDResourceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadPModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.load3DSToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
@@ -163,6 +164,8 @@ namespace KimeraCS
             this.tsUIOpacity75 = new System.Windows.Forms.ToolStripMenuItem();
             this.tsUIOpacity50 = new System.Windows.Forms.ToolStripMenuItem();
             this.tsUIOpacity25 = new System.Windows.Forms.ToolStripMenuItem();
+            this.textureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.TEXToPNGBatchConversionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.animationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadFieldAnimationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadBattleMagicLimitsAnimationStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -184,8 +187,6 @@ namespace KimeraCS
             this.showMagiclgpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveFile = new System.Windows.Forms.SaveFileDialog();
             this.panelModel = new System.Windows.Forms.PictureBox();
-            this.textureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.TEXToPNGBatchConversionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1.SuspendLayout();
             this.gbTexturesFrame.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUDMoveTextureUpDown)).BeginInit();
@@ -236,7 +237,7 @@ namespace KimeraCS
             this.gbTexturesFrame.Controls.Add(this.btnFlipHorizontal);
             this.gbTexturesFrame.Controls.Add(this.btnFlipVertical);
             this.gbTexturesFrame.Controls.Add(this.btnRotate);
-            this.gbTexturesFrame.Controls.Add(this.chkZeroAsTransparent);
+            this.gbTexturesFrame.Controls.Add(this.chkColorKeyFlag);
             this.gbTexturesFrame.Controls.Add(this.cbTextureSelect);
             this.gbTexturesFrame.Controls.Add(this.pbTextureViewer);
             this.gbTexturesFrame.Enabled = false;
@@ -342,17 +343,18 @@ namespace KimeraCS
             this.btnRotate.UseVisualStyleBackColor = true;
             this.btnRotate.Click += new System.EventHandler(this.btnRotate_Click);
             // 
-            // chkZeroAsTransparent
+            // chkColorKeyFlag
             // 
-            this.chkZeroAsTransparent.AutoSize = true;
-            this.chkZeroAsTransparent.Location = new System.Drawing.Point(26, 144);
-            this.chkZeroAsTransparent.Margin = new System.Windows.Forms.Padding(2);
-            this.chkZeroAsTransparent.Name = "chkZeroAsTransparent";
-            this.chkZeroAsTransparent.Size = new System.Drawing.Size(102, 17);
-            this.chkZeroAsTransparent.TabIndex = 2;
-            this.chkZeroAsTransparent.Text = "0 as transparent";
-            this.chkZeroAsTransparent.UseVisualStyleBackColor = true;
-            this.chkZeroAsTransparent.Click += new System.EventHandler(this.chkZeroAsTransparent_Click);
+            this.chkColorKeyFlag.AutoSize = true;
+            this.chkColorKeyFlag.Enabled = false;
+            this.chkColorKeyFlag.Location = new System.Drawing.Point(16, 144);
+            this.chkColorKeyFlag.Margin = new System.Windows.Forms.Padding(2);
+            this.chkColorKeyFlag.Name = "chkColorKeyFlag";
+            this.chkColorKeyFlag.Size = new System.Drawing.Size(127, 17);
+            this.chkColorKeyFlag.TabIndex = 2;
+            this.chkColorKeyFlag.Text = "Black is transparency";
+            this.chkColorKeyFlag.UseVisualStyleBackColor = true;
+            this.chkColorKeyFlag.Click += new System.EventHandler(this.chkZeroAsTransparent_Click);
             // 
             // cbTextureSelect
             // 
@@ -1590,6 +1592,7 @@ namespace KimeraCS
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.loadFieldSkeletonToolStripMenuItem,
             this.loadBattleMagicSkeletonToolStripMenuItem,
+            this.loadRSDResourceToolStripMenuItem,
             this.loadPModelToolStripMenuItem,
             this.load3DSToolStripMenuItem,
             this.toolStripSeparator1,
@@ -1604,42 +1607,49 @@ namespace KimeraCS
             // loadFieldSkeletonToolStripMenuItem
             // 
             this.loadFieldSkeletonToolStripMenuItem.Name = "loadFieldSkeletonToolStripMenuItem";
-            this.loadFieldSkeletonToolStripMenuItem.Size = new System.Drawing.Size(219, 22);
-            this.loadFieldSkeletonToolStripMenuItem.Text = "Load Field Skeleton";
+            this.loadFieldSkeletonToolStripMenuItem.Size = new System.Drawing.Size(236, 22);
+            this.loadFieldSkeletonToolStripMenuItem.Text = "Load Field/World Skeleton";
             this.loadFieldSkeletonToolStripMenuItem.Click += new System.EventHandler(this.loadFieldSkeletonToolStripMenuItem_Click);
             // 
             // loadBattleMagicSkeletonToolStripMenuItem
             // 
             this.loadBattleMagicSkeletonToolStripMenuItem.Name = "loadBattleMagicSkeletonToolStripMenuItem";
-            this.loadBattleMagicSkeletonToolStripMenuItem.Size = new System.Drawing.Size(219, 22);
+            this.loadBattleMagicSkeletonToolStripMenuItem.Size = new System.Drawing.Size(236, 22);
             this.loadBattleMagicSkeletonToolStripMenuItem.Text = "Load Battle/Magic Skeleton";
             this.loadBattleMagicSkeletonToolStripMenuItem.Click += new System.EventHandler(this.loadBattleMagicSkeletonToolStripMenuItem_Click);
+            // 
+            // loadRSDResourceToolStripMenuItem
+            // 
+            this.loadRSDResourceToolStripMenuItem.Name = "loadRSDResourceToolStripMenuItem";
+            this.loadRSDResourceToolStripMenuItem.Size = new System.Drawing.Size(236, 22);
+            this.loadRSDResourceToolStripMenuItem.Text = "Load RSD Resource";
+            this.loadRSDResourceToolStripMenuItem.Click += new System.EventHandler(this.loadRSDResourceToolStripMenuItem_Click);
             // 
             // loadPModelToolStripMenuItem
             // 
             this.loadPModelToolStripMenuItem.Name = "loadPModelToolStripMenuItem";
-            this.loadPModelToolStripMenuItem.Size = new System.Drawing.Size(219, 22);
+            this.loadPModelToolStripMenuItem.Size = new System.Drawing.Size(236, 22);
             this.loadPModelToolStripMenuItem.Text = "Load Model";
             this.loadPModelToolStripMenuItem.Click += new System.EventHandler(this.loadPModelToolStripMenuItem_Click);
             // 
             // load3DSToolStripMenuItem
             // 
             this.load3DSToolStripMenuItem.Name = "load3DSToolStripMenuItem";
-            this.load3DSToolStripMenuItem.Size = new System.Drawing.Size(219, 22);
+            this.load3DSToolStripMenuItem.Size = new System.Drawing.Size(236, 22);
             this.load3DSToolStripMenuItem.Text = "Load 3DS";
             this.load3DSToolStripMenuItem.Click += new System.EventHandler(this.load3DSToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(216, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(233, 6);
             // 
             // saveSkeletonToolStripMenuItem
             // 
             this.saveSkeletonToolStripMenuItem.Enabled = false;
             this.saveSkeletonToolStripMenuItem.Name = "saveSkeletonToolStripMenuItem";
             this.saveSkeletonToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.saveSkeletonToolStripMenuItem.Size = new System.Drawing.Size(219, 22);
+            this.saveSkeletonToolStripMenuItem.Size = new System.Drawing.Size(236, 22);
             this.saveSkeletonToolStripMenuItem.Text = "Save Skeleton";
             this.saveSkeletonToolStripMenuItem.Click += new System.EventHandler(this.saveSkeletonToolStripMenuItem_Click);
             // 
@@ -1647,19 +1657,19 @@ namespace KimeraCS
             // 
             this.saveSkeletonAsToolStripMenuItem.Enabled = false;
             this.saveSkeletonAsToolStripMenuItem.Name = "saveSkeletonAsToolStripMenuItem";
-            this.saveSkeletonAsToolStripMenuItem.Size = new System.Drawing.Size(219, 22);
-            this.saveSkeletonAsToolStripMenuItem.Text = "Save Skeleton/Model As...";
+            this.saveSkeletonAsToolStripMenuItem.Size = new System.Drawing.Size(236, 22);
+            this.saveSkeletonAsToolStripMenuItem.Text = "Save Skeleton/RSD/Model As...";
             this.saveSkeletonAsToolStripMenuItem.Click += new System.EventHandler(this.saveSkeletonAsToolStripMenuItem_Click);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(216, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(233, 6);
             // 
             // extiToolStripMenuItem
             // 
             this.extiToolStripMenuItem.Name = "extiToolStripMenuItem";
-            this.extiToolStripMenuItem.Size = new System.Drawing.Size(219, 22);
+            this.extiToolStripMenuItem.Size = new System.Drawing.Size(236, 22);
             this.extiToolStripMenuItem.Text = "Exit";
             this.extiToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -1759,6 +1769,21 @@ namespace KimeraCS
             this.tsUIOpacity25.Size = new System.Drawing.Size(102, 22);
             this.tsUIOpacity25.Text = "25%";
             this.tsUIOpacity25.Click += new System.EventHandler(this.tsUIOpacity25_Click);
+            // 
+            // textureToolStripMenuItem
+            // 
+            this.textureToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.TEXToPNGBatchConversionToolStripMenuItem});
+            this.textureToolStripMenuItem.Name = "textureToolStripMenuItem";
+            this.textureToolStripMenuItem.Size = new System.Drawing.Size(57, 20);
+            this.textureToolStripMenuItem.Text = "Texture";
+            // 
+            // TEXToPNGBatchConversionToolStripMenuItem
+            // 
+            this.TEXToPNGBatchConversionToolStripMenuItem.Name = "TEXToPNGBatchConversionToolStripMenuItem";
+            this.TEXToPNGBatchConversionToolStripMenuItem.Size = new System.Drawing.Size(236, 22);
+            this.TEXToPNGBatchConversionToolStripMenuItem.Text = ".TEX to .PNG Batch Conversion";
+            this.TEXToPNGBatchConversionToolStripMenuItem.Click += new System.EventHandler(this.TEXToPNGBatchConversionToolStripMenuItem_Click);
             // 
             // animationToolStripMenuItem
             // 
@@ -1931,21 +1956,6 @@ namespace KimeraCS
             this.panelModel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.panelModel_MouseMove);
             this.panelModel.MouseUp += new System.Windows.Forms.MouseEventHandler(this.panelModel_MouseUp);
             // 
-            // textureToolStripMenuItem
-            // 
-            this.textureToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.TEXToPNGBatchConversionToolStripMenuItem});
-            this.textureToolStripMenuItem.Name = "textureToolStripMenuItem";
-            this.textureToolStripMenuItem.Size = new System.Drawing.Size(57, 20);
-            this.textureToolStripMenuItem.Text = "Texture";
-            // 
-            // TEXToPNGBatchConversionToolStripMenuItem
-            // 
-            this.TEXToPNGBatchConversionToolStripMenuItem.Name = "TEXToPNGBatchConversionToolStripMenuItem";
-            this.TEXToPNGBatchConversionToolStripMenuItem.Size = new System.Drawing.Size(236, 22);
-            this.TEXToPNGBatchConversionToolStripMenuItem.Text = ".TEX to .PNG Batch Conversion";
-            this.TEXToPNGBatchConversionToolStripMenuItem.Click += new System.EventHandler(this.TEXToPNGBatchConversionToolStripMenuItem_Click);
-            // 
             // frmSkeletonEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -2061,7 +2071,7 @@ namespace KimeraCS
         private System.Windows.Forms.NumericUpDown nUDXAnimationFramePart;
         private System.Windows.Forms.Button btnRemovePiece;
         private System.Windows.Forms.Button btnAddPiece;
-        private System.Windows.Forms.CheckBox chkZeroAsTransparent;
+        private System.Windows.Forms.CheckBox chkColorKeyFlag;
         private System.Windows.Forms.Button btnChangeTexture;
         private System.Windows.Forms.Button btnFlipHorizontal;
         private System.Windows.Forms.Button btnFlipVertical;
@@ -2169,6 +2179,7 @@ namespace KimeraCS
         public System.Windows.Forms.GroupBox gbTexturesFrame;
         private System.Windows.Forms.ToolStripMenuItem textureToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem TEXToPNGBatchConversionToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem loadRSDResourceToolStripMenuItem;
     }
 }
 

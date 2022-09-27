@@ -56,7 +56,7 @@ namespace KimeraCS
     public partial class frmSkeletonEditor : Form
     {
 
-        public const string STR_APPNAME = "KimeraCS 1.5f";
+        public const string STR_APPNAME = "KimeraCS 1.5j";
 
         public static int modelWidth;
         public static int modelHeight;
@@ -595,7 +595,11 @@ namespace KimeraCS
 
             // TMD vars
             IsTMDModel = false;
-                                            if (frmTMDOL != null) frmTMDOL.Dispose();
+            if (frmTMDOL != null) frmTMDOL.Dispose();
+
+
+            // RSD vars
+            IsRSDResource = false;
 
             //SetOGLContext(panelModelDC, OGLContext);
             //SetOGLSettings();
@@ -624,8 +628,10 @@ namespace KimeraCS
                     break;
 
                 case K_HRC_SKELETON:
-                    Text = Text + " - Model: " + strGlobalFieldSkeletonFileName.ToUpper() +
-                                  " / Anim: " + strGlobalFieldAnimationName.ToUpper();
+                    if (IsRSDResource) Text = Text + " - Model: " + strGlobalRSDResourceName.ToUpper();
+                    else
+                        Text = Text + " - Model: " + strGlobalFieldSkeletonFileName.ToUpper() +
+                                      " / Anim: " + strGlobalFieldAnimationName.ToUpper();
 
                     lblBoneSelector.Visible = true;
                     cbBoneSelector.Visible = true;
@@ -851,16 +857,20 @@ namespace KimeraCS
                 switch (modelType)
                 {
                     case K_HRC_SKELETON:
+                        if (fSkeleton.bones[SelectedBone].fRSDResources[SelectedBonePiece].textures[cbTextureSelect.SelectedIndex].width == 0 ||
+                            fSkeleton.bones[SelectedBone].fRSDResources[SelectedBonePiece].textures[cbTextureSelect.SelectedIndex].height == 0)
+                            return;
+
                         if (SelectedBone > -1 && SelectedBonePiece > -1)
                         {
                             if (fSkeleton.bones[SelectedBone].fRSDResources[SelectedBonePiece].textures[cbTextureSelect.SelectedIndex].texID != 0xFFFFFFFF)
                             {
-                                chkZeroAsTransparent.Enabled = true;
+                                //chkColorKeyFlag.Enabled = true;
 
                                 if (fSkeleton.bones[SelectedBone].fRSDResources[SelectedBonePiece].textures[cbTextureSelect.SelectedIndex].ColorKeyFlag == 1)
-                                    chkZeroAsTransparent.Checked = true;
+                                    chkColorKeyFlag.Checked = true;
                                 else
-                                    chkZeroAsTransparent.Checked = false;
+                                    chkColorKeyFlag.Checked = false;
 
                                 // Let's get maximum size for texture (I do this for simplify the printing)
                                 // Some textures can have different width/height sizes.
@@ -877,10 +887,10 @@ namespace KimeraCS
                                 //           fSkeleton.bones[SelectedBone].fRSDResources[SelectedBonePiece].textures[cbTextureSelect.SelectedIndex].height,
                                 //           TernaryRasterOperations.SRCCOPY);
                             }
-                            else
-                            {
-                                chkZeroAsTransparent.Enabled = false;
-                            }
+                            //else
+                            //{
+                            //    chkColorKeyFlag.Enabled = false;
+                            //}
                         }
                         break;
 
@@ -888,9 +898,9 @@ namespace KimeraCS
                     case K_MAGIC_SKELETON:
                         if (bSkeleton.textures[cbTextureSelect.SelectedIndex].texID != 0xFFFFFFFF)
                         {
-                            chkZeroAsTransparent.Enabled = true;
-                            if (bSkeleton.textures[cbTextureSelect.SelectedIndex].ColorKeyFlag == 1) chkZeroAsTransparent.Checked = true;
-                            else chkZeroAsTransparent.Checked = false;
+                            //chkColorKeyFlag.Enabled = true;
+                            if (bSkeleton.textures[cbTextureSelect.SelectedIndex].ColorKeyFlag == 1) chkColorKeyFlag.Checked = true;
+                            else chkColorKeyFlag.Checked = false;
 
                             // Let's get maximum size for texture (I do this for simplify the printing)
                             // Some textures can have different width/height sizes.
@@ -905,14 +915,14 @@ namespace KimeraCS
                             //           bSkeleton.textures[cbTextureSelect.SelectedIndex].width, bSkeleton.textures[cbTextureSelect.SelectedIndex].height,
                             //           TernaryRasterOperations.SRCCOPY);
                         }
-                        else
-                        {
-                            chkZeroAsTransparent.Enabled = false;
-                        }
+                        //else
+                        //{
+                        //    chkColorKeyFlag.Enabled = false;
+                        //}
                         break;
 
                     default:
-                        chkZeroAsTransparent.Enabled = false;
+                        //chkColorKeyFlag.Enabled = false;
                         pbTextureViewer.Image = null;
                         pbTextureViewer.Update();
                         //BitBlt(textureViewerDC, 
@@ -923,7 +933,7 @@ namespace KimeraCS
             }
             else
             {
-                chkZeroAsTransparent.Enabled = false;
+                //chkColorKeyFlag.Enabled = false;
                 pbTextureViewer.Image = null;
                 pbTextureViewer.Update();
                 //BitBlt(textureViewerDC,
@@ -1658,13 +1668,13 @@ namespace KimeraCS
                 switch (modelType)
                 {
                     case K_HRC_SKELETON:
-                        if (SelectedBonePiece > -1)
+                        if (SelectedBone > -1 && SelectedBonePiece > -1)
                             tmpPModel = CopyPModel(fSkeleton.bones[SelectedBone].fRSDResources[SelectedBonePiece].Model);
                         break;
 
                     case K_AA_SKELETON:
                     case K_MAGIC_SKELETON:
-                        if (SelectedBonePiece > -1)
+                        if (SelectedBone > -1 && SelectedBonePiece > -1)
                             tmpPModel = CopyPModel(bSkeleton.bones[SelectedBone].Models[SelectedBonePiece]);
                         else
                         {
@@ -1958,6 +1968,94 @@ namespace KimeraCS
             }
         }
 
+        private void loadRSDResourceToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Point3D p_min = new Point3D();
+            Point3D p_max = new Point3D();
+
+            // Set filter options and filter index.
+            openFile.Title = "Open RSD Resource";
+            openFile.Filter = "FF7 RSD Resource|*.RSD|All files|*.*";
+            openFile.FilterIndex = 1;
+            openFile.FileName = null;
+
+            // Check Initial Directory
+            if (strGlobalPathRSDResourceFolder != null)
+            {
+                openFile.InitialDirectory = strGlobalPathRSDResourceFolder;
+            }
+            else
+            {
+                openFile.InitialDirectory = strGlobalPath;
+            }
+
+            try
+            {
+                // Process input if the user clicked OK.
+                if (openFile.ShowDialog() == DialogResult.OK)
+                {
+                    if (File.Exists(openFile.FileName) && Path.GetExtension(openFile.FileName).ToUpper() == ".RSD")
+                    {
+                        // We load the Model into memory.
+                        // But first we destroy the previous loaded Skeleton.
+                        if (loaded)
+                        {
+                            if (DestroySkeleton() != 1)
+                            {
+                                MessageBox.Show("Error Destroying Skeleton file " + openFile.FileName.ToUpper() + ".",
+                                                "Error");
+                                return;
+                            }
+                            else
+                            {
+                                loaded = false;
+                            }
+                        }
+
+                        // Close frmPEditor if opened
+                        if (FindWindowOpened("frmPEditor")) frmPEdit.Close();
+
+                        // Disable/Make Invisible in Forms Data controls
+                        InitializeWinFormsDataControls();
+
+                        // Set Global Paths
+                        strGlobalPathRSDResourceFolder = Path.GetDirectoryName(openFile.FileName);
+                        strGlobalRSDResourceName = Path.GetFileName(openFile.FileName).ToUpper();
+
+                        // Load the RSD Resource
+                        // We need to prepare some type of "FAKE" or RSD only fSkeleton
+                        LoadRSDResourceModel(strGlobalPathRSDResourceFolder, 
+                                             Path.GetFileNameWithoutExtension(strGlobalRSDResourceName));
+
+                        // Enable/Make Visible Win Forms Data controls
+                        EnableWinFormsDataControls();
+
+                        // ComputeBoundingBoxes
+                        ComputeFieldBoundingBox(fSkeleton, fAnimation.frames[0], ref p_min, ref p_max);
+                        diameter = ComputeFieldDiameter(fSkeleton);
+
+                        // Set frame values in frame editor groupbox...
+                        SetFrameEditorFields();
+
+                        // Set texture values in texture editor groupbox...
+                        SetTextureEditorFields();
+
+                        // PostLoadModelPreparations
+                        PostLoadModelPreparations(ref p_min, ref p_max);
+
+                        // We can draw the model in panel
+                        panelModel_Paint(null, null);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error opening Model file " + openFile.FileName.ToUpper() + ".",
+                                "Error");
+                return;
+            }
+        }
+
         private void loadPModelToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Point3D p_min = new Point3D();
@@ -2246,14 +2344,29 @@ namespace KimeraCS
             switch (modelType)
             {
                 case K_HRC_SKELETON:
-                    saveFile.Title = "Save Field Skeleton As...";
-                    saveFile.Filter = "Field Skeleton|*.HRC|All files|*.*";
+                    if (IsRSDResource)
+                    {
+                        saveFile.Title = "Save RSD Resource As...";
+                        saveFile.Filter = "RSD Resource|*.RSD|All files|*.*";
 
-                    if (strGlobalPathSaveSkeletonFolder == "")
-                        strGlobalPathSaveSkeletonFolder = strGlobalPathFieldSkeletonFolder;
-                    saveFile.FileName = strGlobalFieldSkeletonName.ToUpper();
+                        if (strGlobalPathRSDResourceFolder == "")
+                            strGlobalPathSaveSkeletonFolder = strGlobalPathRSDResourceFolder;
+                        saveFile.FileName = strGlobalRSDResourceName.ToUpper();
 
-                    modelTypeStr = "Field Skeleton";
+                        modelTypeStr = "RSD Resource";
+                    }
+                    else
+                    {
+                        saveFile.Title = "Save Field Skeleton As...";
+                        saveFile.Filter = "Field Skeleton|*.HRC|All files|*.*";
+
+                        if (strGlobalPathSaveSkeletonFolder == "")
+                            strGlobalPathSaveSkeletonFolder = strGlobalPathFieldSkeletonFolder;
+                        saveFile.FileName = strGlobalFieldSkeletonName.ToUpper();
+
+                        modelTypeStr = "Field Skeleton";
+                    }
+
                     //if (strGlobalFieldAnimationName == "") saveAnimationFileName = "dummy_animation.a";
                     //else saveAnimationFileName = strGlobalFieldAnimationName;
                     break;
@@ -2332,8 +2445,17 @@ namespace KimeraCS
                             case K_HRC_SKELETON:
                             case K_AA_SKELETON:
                             case K_MAGIC_SKELETON:
-                                // We save the Field Skeleton.
-                                iSaveResult = WriteSkeleton(saveFile.FileName);
+                                // We have a different process for RSD Resource
+                                if (IsRSDResource)
+                                {
+                                    // We save the RSD Resource.
+                                    iSaveResult = WriteFullRSDResource(fSkeleton.bones[0], saveFile.FileName);
+                                }
+                                else
+                                {
+                                    // We save the Field Skeleton.
+                                    iSaveResult = WriteSkeleton(saveFile.FileName);
+                                }
 
                                 if (iSaveResult == 1)
                                 {
@@ -2830,6 +2952,8 @@ namespace KimeraCS
             switch (modelType)
             {
                 case K_HRC_SKELETON:
+                    if (IsRSDResource) SelectedBonePiece = 0;
+
                     if (SelectedBone > -1 && SelectedBonePiece > -1)
                     {
                         gbTexturesFrame.Enabled = true;
@@ -3612,7 +3736,7 @@ namespace KimeraCS
 
             int newZeroTransparentValue;
 
-            newZeroTransparentValue = chkZeroAsTransparent.Checked ? 1 : 0;
+            newZeroTransparentValue = chkColorKeyFlag.Checked ? 1 : 0;
 
             switch (modelType)
             {
