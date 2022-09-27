@@ -164,5 +164,6 @@ namespace KimeraCS
             Bitmap.Dispose();
             BitsHandle.Free();
         }
+
     }
 }
