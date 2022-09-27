@@ -11,6 +11,7 @@ namespace KimeraCS
 
     using Defines;
 
+    using static FF7FieldSkeleton;
     using static FF7PModel;
 
     using static FF7TEXTexture;
@@ -67,7 +68,7 @@ namespace KimeraCS
                     rsdString = File.ReadAllLines(rsdFileName);
 
                     // Let's read PLY
-                    while (rsdString[rsdNTEXpos][0] != 'P') rsdNTEXpos++;
+                    while (rsdString[rsdNTEXpos].Length == 0 || rsdString[rsdNTEXpos][0] != 'P') rsdNTEXpos++;
 
                     // Let's read the P model
                     //polyFileName = (rsdString[rsdNTEXpos].Split('=')[1]).Substring(0, (rsdString[rsdNTEXpos].Split('=')[1]).IndexOf('.')) + ".P";
@@ -99,7 +100,7 @@ namespace KimeraCS
 
 
                     // Let's read NTEX
-                    while (rsdString[rsdNTEXpos][0] != 'N') rsdNTEXpos++;
+                    while (rsdString[rsdNTEXpos].Length == 0 || rsdString[rsdNTEXpos][0] != 'N') rsdNTEXpos++;
 
                     // Let's get the num textures
                     numTextures = Int32.Parse(rsdString[rsdNTEXpos].Split('=')[1]);
@@ -110,7 +111,7 @@ namespace KimeraCS
                     for (ti = 0; ti < numTextures; ti++)
                     {
                         // Position to the "TEX[n]" line (check comments or lines not needed)
-                        while (rsdString[rsdNTEXpos][0] != 'T') rsdNTEXpos++;
+                        while (rsdString[rsdNTEXpos].Length == 0 || rsdString[rsdNTEXpos][0] != 'T') rsdNTEXpos++;
 
                         // Prepare itmTextureTEX var
                         itmTextureTEX = new TEX();
@@ -169,9 +170,9 @@ namespace KimeraCS
             fRSDResourceOut.numTextures += fRSDResourceIn.numTextures;
         }
 
-        public static void WriteRSDResource(FieldRSDResource fRSDResource, string fileName)
+        public static int WriteRSDResource(FieldRSDResource fRSDResource, string fileName)
         {
-            int ti;
+            int ti, iWriteRSDResourceResult;
             string nameP;
             StringBuilder strRSDContent = new StringBuilder();
 
@@ -194,11 +195,47 @@ namespace KimeraCS
                 }
 
                 File.WriteAllText(fileName, strRSDContent.ToString());
+
+                iWriteRSDResourceResult = 1;
             }
             catch
             {
                 MessageBox.Show("Error saving RSD file " + fileName, "Error", MessageBoxButtons.OK);
+
+                iWriteRSDResourceResult = -1;
             }
+
+            return iWriteRSDResourceResult;
+        }
+
+        public static int WriteFullRSDResource(FieldBone infBone, string strFullFileName)
+        {
+            int iWriteRSDResourceResult;
+            PModel tmpPModel;
+
+            try
+            {
+                if (infBone.fRSDResources.Count > 0)
+                {
+                    // Write RSD Resource
+                    WriteRSDResource(infBone.fRSDResources[0], strFullFileName);
+
+                    if (infBone.fRSDResources[0].Model.Polys != null)
+                    {
+                        tmpPModel = infBone.fRSDResources[0].Model;
+                        WriteGlobalPModel(ref tmpPModel, 
+                            strGlobalPathSaveSkeletonFolder + "\\" + tmpPModel.fileName.ToUpper());
+                    }
+                }
+
+                iWriteRSDResourceResult = 1;
+            }
+            catch (Exception ex)
+            {
+                iWriteRSDResourceResult = -1;
+            }
+
+            return iWriteRSDResourceResult;
         }
 
         public static void CreateDListsFromRSDResource(ref FieldRSDResource Resource)
