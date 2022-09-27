@@ -670,14 +670,23 @@ namespace KimeraCS
                 {
                     memReader.BaseStream.Position = pos;
 
-                    BoundingBox.unknown4bytes = memReader.ReadInt32();           // It seems that there are 4bytes before BoundingBox. This 4 bytes are unknown.
+                    // There are .P models, like magic/bari_a1 and magic/bari_a2 that
+                    // does not seem to have this unknown4bytes.
+                    if (memReader.BaseStream.Length - memReader.BaseStream.Position - 24 > 0)
+                        BoundingBox.unknown4bytes = memReader.ReadInt32();           // It seems that there are 4bytes before BoundingBox. This 4 bytes are unknown.
 
                     BoundingBox.max_x = memReader.ReadSingle();
                     BoundingBox.max_y = memReader.ReadSingle();
                     BoundingBox.max_z = memReader.ReadSingle();
-                    BoundingBox.min_x = memReader.ReadSingle();
-                    BoundingBox.min_y = memReader.ReadSingle();
-                    BoundingBox.min_z = memReader.ReadSingle();
+
+                    // There are .P models, like magic/bari_a2 that
+                    // does not seem to have min_x.
+                    if (memReader.BaseStream.Length - memReader.BaseStream.Position - 12 > 0)
+                    {
+                        BoundingBox.min_x = memReader.ReadSingle();
+                        BoundingBox.min_y = memReader.ReadSingle();
+                        BoundingBox.min_z = memReader.ReadSingle();
+                    }
 
                     pos = memReader.BaseStream.Position;
                 }
