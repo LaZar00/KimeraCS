@@ -84,6 +84,7 @@ namespace KimeraCS
 
         public static string strGlobalPath = "";
         public static string strGlobalPathPModelFolder = "", strGlobalPModelName = "";
+        public static string strGlobalPathRSDResourceFolder = "", strGlobalRSDResourceName = "";
         public static string strGlobalPathTMDModelFolder = "", strGlobalTMDModelName = "";
         public static string strGlobalPath3DSModelFolder = "", strGlobal3DSModelName = "";
         public static string strGlobalPathFieldSkeletonFolder = "", strGlobalFieldSkeletonFileName = "", strGlobalFieldSkeletonName = "", 
@@ -129,6 +130,7 @@ namespace KimeraCS
             lstCFGKeys.Add("PATH_PARTMODEL_FOLDER", "");
             lstCFGKeys.Add("PATH_PMODEL_FOLDER", "");
             lstCFGKeys.Add("PATH_TMDMODEL_FOLDER", "");
+            lstCFGKeys.Add("PATH_RSDRESOURCE_FOLDER", "");
             lstCFGKeys.Add("PATH_PMODEL_FOLDERPE", "");
             lstCFGKeys.Add("PATH_SAVESKELETON_FOLDER", "");
             lstCFGKeys.Add("PATH_SAVEANIMATION_FOLDER", "");
@@ -200,6 +202,7 @@ namespace KimeraCS
                 strGlobalPathMagicSkeletonFolder = lstCFGKeys["PATH_MAGICSKELETON_FOLDER"].ToString();
                 strGlobalPathMagicAnimationFolder = lstCFGKeys["PATH_MAGICANIMATION_FOLDER"].ToString();
                 strGlobalPathPModelFolder = lstCFGKeys["PATH_PMODEL_FOLDER"].ToString();
+                strGlobalPathRSDResourceFolder = lstCFGKeys["PATH_RSDRESOURCE_FOLDER"].ToString();
                 strGlobalPathPModelFolderPE = lstCFGKeys["PATH_PMODEL_FOLDERPE"].ToString();
                 strGlobalPath3DSModelFolder = lstCFGKeys["PATH_3DSMODEL_FOLDER"].ToString();
                 strGlobalPathTextureFolder = lstCFGKeys["PATH_TEXTURE_FOLDER"].ToString();
@@ -253,6 +256,7 @@ namespace KimeraCS
             lstCFGKeys["PATH_MAGICSKELETON_FOLDER"] = strGlobalPathMagicSkeletonFolder;
             lstCFGKeys["PATH_MAGICANIMATION_FOLDER"] = strGlobalPathMagicAnimationFolder;
             lstCFGKeys["PATH_PMODEL_FOLDER"] = strGlobalPathPModelFolder;
+            lstCFGKeys["PATH_RSDRESOURCE_FOLDER"] = strGlobalPathRSDResourceFolder;
             lstCFGKeys["PATH_TMDMODEL_FOLDER"] = strGlobalPathTMDModelFolder;
             lstCFGKeys["PATH_PMODEL_FOLDERPE"] = strGlobalPathPModelFolderPE;
             lstCFGKeys["PATH_3DSMODEL_FOLDER"] = strGlobalPath3DSModelFolder;
