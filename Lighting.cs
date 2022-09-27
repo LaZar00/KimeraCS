@@ -57,6 +57,7 @@ namespace KimeraCS
                     break;
 
                 case K_AA_SKELETON:
+                case K_MAGIC_SKELETON:
                     //ComputeAABoundingBox aa_sk, DAAnims.BodyAnimations(anim_index).Frames(CurrentFrameScroll.value), p_min, p_max
                     ComputeBattleBoundingBox(bSkeleton, bAnimationsPack.SkeletonAnimations[ianimIndex].frames[iCurrentFrameScroll],
                                              ref p_min, ref p_max);
