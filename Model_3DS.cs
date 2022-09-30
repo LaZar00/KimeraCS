@@ -752,7 +752,8 @@ namespace KimeraCS
 
                 for (mi = 0; mi < numModels; mi++)
                 {
-                    BuildFaceMaterialList(ref modelsV[mi]);
+                    if (modelsV[mi].meshesV != null)
+                        BuildFaceMaterialList(ref modelsV[mi]);
                 }
 
                 iLoad3DSResult = 1;
@@ -923,11 +924,14 @@ namespace KimeraCS
         {
             int mi, numMeshes;
 
-            numMeshes = Model.meshesV.Length;
-
-            for (mi = 0; mi < numMeshes; mi++)
+            if (Model.meshesV != null)
             {
-                ConvertMesh3DSToPModel(Model.meshesV[mi], Model.materialsV, ref outModel);
+                numMeshes = Model.meshesV.Length;
+
+                for (mi = 0; mi < numMeshes; mi++)
+                {
+                    ConvertMesh3DSToPModel(Model.meshesV[mi], Model.materialsV, ref outModel);
+                }
             }
         }
 
