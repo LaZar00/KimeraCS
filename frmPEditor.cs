@@ -153,7 +153,7 @@ namespace KimeraCS
             this.frmSkelEdit = frmSkelEdit;
             Owner = frmSkelEdit;
 
-            EditedPModel = ModelIn;
+            EditedPModel = CopyPModel(ModelIn);
         }
 
 
@@ -1240,7 +1240,7 @@ namespace KimeraCS
 
                     if (EditedBone == bSkeleton.nBones)
                     {
-                        bSkeleton.wpModels[ianimWeaponIndex] = EditedPModel;
+                        bSkeleton.wpModels[ianimWeaponIndex] = CopyPModel(EditedPModel);
 
                         tmpPModel = bSkeleton.wpModels[ianimWeaponIndex];
                         CreateDListsFromPModel(ref tmpPModel);
@@ -1248,7 +1248,7 @@ namespace KimeraCS
                     }
                     else
                     {
-                        bSkeleton.bones[EditedBone].Models[EditedBonePiece] = EditedPModel;
+                        bSkeleton.bones[EditedBone].Models[EditedBonePiece] = CopyPModel(EditedPModel);
                         CreateDListsFromBattleSkeleton(ref bSkeleton);
                     }
                     break;
@@ -1257,7 +1257,7 @@ namespace KimeraCS
                 case K_P_FIELD_MODEL:
                 case K_P_MAGIC_MODEL:
                 case K_3DS_MODEL:
-                    fPModel = EditedPModel;
+                    fPModel = CopyPModel(EditedPModel);
                     CreateDListsFromPModel(ref fPModel);
 
                     break;
