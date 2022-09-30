@@ -2123,7 +2123,8 @@ namespace KimeraCS
             modelOut.Header = modelIn.Header;
 
             modelOut.Verts = new Point3D[modelIn.Verts.Length];
-            modelIn.Verts.CopyTo(modelOut.Verts, 0);
+            for (iCounter = 0; iCounter < modelIn.Verts.Length; iCounter++)
+                modelOut.Verts[iCounter] = modelIn.Verts[iCounter];
 
             modelOut.Polys = new PPolygon[modelIn.Polys.Length];
             iCounter = 0;
@@ -2134,22 +2135,26 @@ namespace KimeraCS
             }
 
             modelOut.Normals = new Point3D[modelIn.Normals.Length];
-            modelIn.Normals.CopyTo(modelOut.Normals, 0);
+            for (iCounter = 0; iCounter < modelIn.Normals.Length; iCounter++)
+                modelOut.Normals[iCounter] = modelIn.Normals[iCounter];
 
             if (modelIn.TexCoords != null)
             {
                 if (modelIn.TexCoords.Length > 0)
                 {
                     modelOut.TexCoords = new Point2D[modelIn.TexCoords.Length];
-                    modelIn.TexCoords.CopyTo(modelOut.TexCoords, 0);
+                    for (iCounter = 0; iCounter < modelIn.TexCoords.Length; iCounter++)
+                        modelOut.TexCoords[iCounter] = modelIn.TexCoords[iCounter];
                 }
             }
 
             modelOut.Vcolors = new Color[modelIn.Vcolors.Length];
-            modelIn.Vcolors.CopyTo(modelOut.Vcolors, 0);
+            for (iCounter = 0; iCounter < modelIn.Vcolors.Length; iCounter++)
+                modelOut.Vcolors[iCounter] = modelIn.Vcolors[iCounter];
 
             modelOut.Pcolors = new Color[modelIn.Pcolors.Length];
-            modelIn.Pcolors.CopyTo(modelOut.Pcolors, 0);
+            for (iCounter = 0; iCounter < modelIn.Pcolors.Length; iCounter++)
+                modelOut.Pcolors[iCounter] = modelIn.Pcolors[iCounter];
 
             modelOut.Edges = new PEdge[modelIn.Edges.Length];
             iCounter = 0;
@@ -2160,15 +2165,18 @@ namespace KimeraCS
             }
 
             modelOut.Hundrets = new PHundret[modelIn.Hundrets.Length];
-            modelIn.Hundrets.CopyTo(modelOut.Hundrets, 0);
+            for (iCounter = 0; iCounter < modelIn.Hundrets.Length; iCounter++)
+                modelOut.Hundrets[iCounter] = modelIn.Hundrets[iCounter];
 
             modelOut.Groups = new PGroup[modelIn.Groups.Length];
-            modelIn.Groups.CopyTo(modelOut.Groups, 0);
+            for (iCounter = 0; iCounter < modelIn.Groups.Length; iCounter++)
+                modelOut.Groups[iCounter] = modelIn.Groups[iCounter];
 
             modelOut.BoundingBox = modelIn.BoundingBox;
 
             modelOut.NormalIndex = new int[modelIn.NormalIndex.Length];
-            modelIn.NormalIndex.CopyTo(modelOut.NormalIndex, 0);
+            for (iCounter = 0; iCounter < modelIn.NormalIndex.Length; iCounter++)
+                modelOut.NormalIndex[iCounter] = modelIn.NormalIndex[iCounter];
 
             modelOut.repositionX = modelIn.repositionX;
             modelOut.repositionY = modelIn.repositionY;
