@@ -222,6 +222,7 @@ namespace KimeraCS
             frmPEdit.FillGroupsList();
 
             frmPEdit.ChangeGroupEnable(false);
+            frmPEdit.panelEditorPModel_Paint(null, null);
 
             Close();
 
