@@ -56,7 +56,7 @@ namespace KimeraCS
     public partial class frmSkeletonEditor : Form
     {
 
-        public const string STR_APPNAME = "KimeraCS 1.5j";
+        public const string STR_APPNAME = "KimeraCS 1.5l";
 
         public static int modelWidth;
         public static int modelHeight;
@@ -1669,17 +1669,17 @@ namespace KimeraCS
                 {
                     case K_HRC_SKELETON:
                         if (SelectedBone > -1 && SelectedBonePiece > -1)
-                            tmpPModel = CopyPModel(fSkeleton.bones[SelectedBone].fRSDResources[SelectedBonePiece].Model);
+                            tmpPModel = fSkeleton.bones[SelectedBone].fRSDResources[SelectedBonePiece].Model;
                         break;
 
                     case K_AA_SKELETON:
                     case K_MAGIC_SKELETON:
                         if (SelectedBone > -1 && SelectedBonePiece > -1)
-                            tmpPModel = CopyPModel(bSkeleton.bones[SelectedBone].Models[SelectedBonePiece]);
+                            tmpPModel = bSkeleton.bones[SelectedBone].Models[SelectedBonePiece];
                         else
                         {
                             if (SelectedBone == bSkeleton.nBones)
-                                tmpPModel = CopyPModel(bSkeleton.wpModels[ianimWeaponIndex]);
+                                tmpPModel = bSkeleton.wpModels[ianimWeaponIndex];
                         }                         
                         break;
 
@@ -1687,7 +1687,7 @@ namespace KimeraCS
                     case K_P_FIELD_MODEL:
                     case K_P_MAGIC_MODEL:
                     case K_3DS_MODEL:
-                        tmpPModel = CopyPModel(fPModel);
+                        tmpPModel = fPModel;
                         break;
                 }
 
@@ -3028,20 +3028,7 @@ namespace KimeraCS
                 // Set filter options and filter index.
                 openFile.Title = "Add Texture";
 
-                switch (modelType)
-                {
-                    case K_HRC_SKELETON:
-                        openFile.Filter = "Any Image file|*.bmp;*.jpg;*.gif;*.png;*.ico;*.rle;*.wmf;*.emf|Field TEX texture|*.TEX";
-                        break;
-
-                    case K_AA_SKELETON:
-                        openFile.Filter = "Any Image file|*.bmp;*.jpg;*.gif;*.png;*.ico;*.rle;*.wmf;*.emf|Battle TEX texture|*AC;*AD;*AE;*AF;*AG;*AH;*AI;*AJ;AK*;AL*";
-                        break;
-
-                    case K_MAGIC_SKELETON:
-                        openFile.Filter = "Any Image file|*.bmp;*.jpg;*.gif;*.png;*.ico;*.rle;*.wmf;*.emf|Magic TEX texture|*.t*";
-                        break;
-                }
+                openFile.Filter = "Any Image file|*.bmp;*.jpg;*.gif;*.png;*.ico;*.rle;*.wmf;*.emf|TEX texture|*.TEX;*AC;*AD;*AE;*AF;*AG;*AH;*AI;*AJ;AK*;AL*;*.T??|All files|*.*";
 
                 openFile.FilterIndex = 1;
                 openFile.FileName = null;
@@ -3065,7 +3052,7 @@ namespace KimeraCS
                         strGlobalTextureName = Path.GetFileName(openFile.FileName).ToUpper();
                         strGlobalPathTextureFolder = Path.GetDirectoryName(openFile.FileName);
 
-                        LoadImageAsTexTexture(openFile.FileName, ref tex);
+                        LoadImageAsTEXTexture(openFile.FileName, ref tex);
 
                         switch (modelType)
                         {
@@ -3207,20 +3194,7 @@ namespace KimeraCS
                 // Set filter options and filter index.
                 openFile.Title = "Change Texture";
 
-                switch (modelType)
-                {
-                    case K_HRC_SKELETON:
-                        openFile.Filter = "Any Image file|*.bmp;*.jpg;*.gif;*.png;*.ico;*.rle;*.wmf;*.emf|Field TEX texture|*.TEX";
-                        break;
-
-                    case K_AA_SKELETON:
-                        openFile.Filter = "Any Image file|*.bmp;*.jpg;*.gif;*.png;*.ico;*.rle;*.wmf;*.emf|Battle TEX texture|*AC;*AD;*AE;*AF;*AG;*AH;*AI;*AJ;AK*;AL*";
-                        break;
-
-                    case K_MAGIC_SKELETON:
-                        openFile.Filter = "Any Image file|*.bmp;*.jpg;*.gif;*.png;*.ico;*.rle;*.wmf;*.emf|Magic TEX texture|*.T*";
-                        break;
-                }
+                openFile.Filter = "Any Image file|*.bmp;*.jpg;*.gif;*.png;*.ico;*.rle;*.wmf;*.emf|TEX texture|*.TEX;*AC;*AD;*AE;*AF;*AG;*AH;*AI;*AJ;AK*;AL*;*.T??|All files|*.*";
 
                 openFile.FilterIndex = 1;
                 openFile.FileName = null;
@@ -3244,7 +3218,7 @@ namespace KimeraCS
                         strGlobalTextureName = Path.GetFileName(openFile.FileName).ToUpper();
                         strGlobalPathTextureFolder = Path.GetDirectoryName(openFile.FileName);
 
-                        LoadImageAsTexTexture(openFile.FileName, ref tex);
+                        LoadImageAsTEXTexture(openFile.FileName, ref tex);
 
                         switch (modelType)
                         {
