@@ -121,7 +121,7 @@ namespace KimeraCS
             gbProgress.Enabled = false;
         }
 
-        public static Bitmap PutPixelDataIntoBitmap32ARGB(TEX inTEX)
+        public static Bitmap PutPixelDataIntoBitmap32ARGB(TEX inTEX, bool bFlipVert)
         {
             DirectBitmap tmpDBMP = new DirectBitmap(inTEX.width, inTEX.height);
             int i, iBMPValue, iBMPByteLength, iR, iG, iB, iA;
@@ -163,9 +163,54 @@ namespace KimeraCS
                 }
             }
 
-            //tmpDBMP.Bitmap.RotateFlip(RotateFlipType.RotateNoneFlipY);
+            if (bFlipVert)
+                tmpDBMP.Bitmap.RotateFlip(RotateFlipType.RotateNoneFlipY);
 
             return tmpDBMP.Bitmap;
+        }
+
+        public string GetOutputPNGFileName(string strTEXFile, bool chkFFNXAALINaming)
+        {
+            string strGetPNGFileNameResult;
+
+            if (chkFFNXAALINaming)
+            {
+                if (Path.GetExtension(strTEXFile).Length > 2 &&
+                    Path.GetExtension(strTEXFile) != ".TEX")
+                {
+                    // Case for .T??
+                    strGetPNGFileNameResult = Path.GetFileNameWithoutExtension(strTEXFile) + "_" +
+                                              Path.GetExtension(strTEXFile).Substring(1, 3) + "_00";
+                }
+                else
+                {
+                    // Other cases
+                    if (Path.GetExtension(strTEXFile).Length > 0)
+                    {
+                        // Case for .TEX
+                        strGetPNGFileNameResult = Path.GetFileNameWithoutExtension(strTEXFile) + "_00";
+                    }
+                    else
+                    {
+                        // Case for Battle Texture ??AC-??AL
+                        int c0, c1, c3;
+                        string strFileName = Path.GetFileName(strTEXFile);
+
+                        c0 = 26 * (Convert.ToChar(strFileName.Substring(0, 1)) - 'A');
+                        c1 = Convert.ToChar(strFileName.Substring(1, 1)) - 'A';
+                        c3 = Convert.ToChar(strFileName.Substring(3, 1)) - 'C';
+
+                        strGetPNGFileNameResult = "ENEMY" + Convert.ToInt32(c0 + c1).ToString("000") + "_" +
+                                                  "T" + Convert.ToInt32(c3).ToString("00") + "_00";
+                    }
+                }
+            }
+            else
+            {
+                strGetPNGFileNameResult = Path.GetFileNameWithoutExtension(strTEXFile);
+            }
+
+            return strGetPNGFileNameResult;
         }
 
         public async void ProcessTEX2PNGBatch(string strMainPath)
@@ -213,26 +258,18 @@ namespace KimeraCS
                     if (bCancelPressed) break;
 
                     tmpTEX = new TEX();
+
                     // Load TEX file into variable
                     if (ReadTEXTexture(ref tmpTEX, strTEXFile) == 0)
                     {
                         // Convert to bitmap
-                        tmpBMP = PutPixelDataIntoBitmap32ARGB(tmpTEX);
+                        tmpBMP = PutPixelDataIntoBitmap32ARGB(tmpTEX, chkFlipVertical.Checked);
 
                         // Save to .png
-                        if (Path.GetExtension(strTEXFile).Length > 2 &&
-                            Path.GetExtension(strTEXFile).ToUpper() != ".TEX")
-                        {
-                            // Case for .T00
-                            strSavePNGFileName = strTEXFile + ".png";
-                        }
-                        else
-                        {
-                            // Other cases
-                            strSavePNGFileName = Path.GetDirectoryName(strTEXFile) + "\\" +
-                                                 Path.GetFileNameWithoutExtension(strTEXFile) +
-                                                 ".png";
-                        }
+                        strSavePNGFileName = GetOutputPNGFileName(Path.GetFileName(strTEXFile).ToUpper(), chkFFNXAALINaming.Checked);
+                        strSavePNGFileName = Path.GetDirectoryName(strTEXFile) + "\\" +
+                                             strSavePNGFileName + ".png";
+
                         tmpBMP.Save(strSavePNGFileName, ImageFormat.Png);
 
                         // Dispose

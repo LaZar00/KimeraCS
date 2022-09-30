@@ -36,6 +36,7 @@ namespace KimeraCS
             this.progBarTEXBatch = new System.Windows.Forms.ProgressBar();
             this.btnCancel = new System.Windows.Forms.Button();
             this.gbSettings = new System.Windows.Forms.GroupBox();
+            this.chkFlipVertical = new System.Windows.Forms.CheckBox();
             this.chkRecursiveSearch = new System.Windows.Forms.CheckBox();
             this.btnSaveLog = new System.Windows.Forms.Button();
             this.chkShowOnlyNoProcessed = new System.Windows.Forms.CheckBox();
@@ -46,6 +47,7 @@ namespace KimeraCS
             this.txtTEX2PNGBatchPath = new System.Windows.Forms.TextBox();
             this.btnPath = new System.Windows.Forms.Button();
             this.saveFile = new System.Windows.Forms.SaveFileDialog();
+            this.chkFFNXAALINaming = new System.Windows.Forms.CheckBox();
             this.gbProgress.SuspendLayout();
             this.gbSettings.SuspendLayout();
             this.SuspendLayout();
@@ -110,6 +112,8 @@ namespace KimeraCS
             // 
             // gbSettings
             // 
+            this.gbSettings.Controls.Add(this.chkFFNXAALINaming);
+            this.gbSettings.Controls.Add(this.chkFlipVertical);
             this.gbSettings.Controls.Add(this.chkRecursiveSearch);
             this.gbSettings.Controls.Add(this.btnSaveLog);
             this.gbSettings.Controls.Add(this.chkShowOnlyNoProcessed);
@@ -127,11 +131,20 @@ namespace KimeraCS
             this.gbSettings.TabStop = false;
             this.gbSettings.Text = "Settings";
             // 
+            // chkFlipVertical
+            // 
+            this.chkFlipVertical.Location = new System.Drawing.Point(308, 53);
+            this.chkFlipVertical.Name = "chkFlipVertical";
+            this.chkFlipVertical.Size = new System.Drawing.Size(85, 24);
+            this.chkFlipVertical.TabIndex = 8;
+            this.chkFlipVertical.Text = "Flip Vertical";
+            this.chkFlipVertical.UseVisualStyleBackColor = true;
+            // 
             // chkRecursiveSearch
             // 
             this.chkRecursiveSearch.Checked = true;
             this.chkRecursiveSearch.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkRecursiveSearch.Location = new System.Drawing.Point(389, 53);
+            this.chkRecursiveSearch.Location = new System.Drawing.Point(397, 53);
             this.chkRecursiveSearch.Name = "chkRecursiveSearch";
             this.chkRecursiveSearch.Size = new System.Drawing.Size(160, 24);
             this.chkRecursiveSearch.TabIndex = 7;
@@ -227,6 +240,15 @@ namespace KimeraCS
             this.btnPath.UseVisualStyleBackColor = true;
             this.btnPath.Click += new System.EventHandler(this.btnPath_Click);
             // 
+            // chkFFNXAALINaming
+            // 
+            this.chkFFNXAALINaming.Location = new System.Drawing.Point(188, 53);
+            this.chkFFNXAALINaming.Name = "chkFFNXAALINaming";
+            this.chkFFNXAALINaming.Size = new System.Drawing.Size(116, 24);
+            this.chkFFNXAALINaming.TabIndex = 9;
+            this.chkFFNXAALINaming.Text = "FFNx/Aali naming";
+            this.chkFFNXAALINaming.UseVisualStyleBackColor = true;
+            // 
             // frmTEXToPNGBatchConversion
             // 
             this.AcceptButton = this.btnGo;
@@ -272,5 +294,7 @@ namespace KimeraCS
         private System.Windows.Forms.Button btnPath;
         private System.Windows.Forms.SaveFileDialog saveFile;
         private System.Windows.Forms.CheckBox chkRecursiveSearch;
+        private System.Windows.Forms.CheckBox chkFlipVertical;
+        private System.Windows.Forms.CheckBox chkFFNXAALINaming;
     }
 }
