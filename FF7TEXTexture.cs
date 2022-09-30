@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Text.RegularExpressions;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
@@ -477,14 +478,14 @@ namespace KimeraCS
             }
         }
 
-        public static void LoadImageAsTexTexture(string fileName, ref TEX tex)
+        public static void LoadImageAsTEXTexture(string fileName, ref TEX tex)
         {
             DirectBitmap tmpDirectBitmap;
 
-            if (Path.GetExtension(fileName).ToUpper() == ".TEX" || Path.GetExtension(fileName).Length <= 0)
+            if (IsTEXTexture(fileName.ToUpper()))
             {
                 // This is a tex texture file
-                ReadTEXTexture(ref tex, fileName);               
+                ReadTEXTexture(ref tex, fileName);
             }
             else
             {
@@ -850,7 +851,21 @@ namespace KimeraCS
             }
         }
 
+        public static bool IsTEXTexture(string strTEXFileName)
+        {
+            string strExtension = Path.GetExtension(strTEXFileName);
 
+            if (strExtension == ".TEX" ||
+                ((strTEXFileName.EndsWith("AC") || strTEXFileName.EndsWith("AD") ||
+                  strTEXFileName.EndsWith("AE") || strTEXFileName.EndsWith("AF") ||
+                  strTEXFileName.EndsWith("AG") || strTEXFileName.EndsWith("AH") ||
+                  strTEXFileName.EndsWith("AI") || strTEXFileName.EndsWith("AJ") ||
+                  strTEXFileName.EndsWith("AK") || strTEXFileName.EndsWith("AL")) && strExtension.Length == 0) ||
+                Regex.IsMatch(strExtension, @".T\d{2}$"))
+                return true;
+
+            return false;
+        }
 
 
 
