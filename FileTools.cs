@@ -53,7 +53,7 @@ namespace KimeraCS
 
         public struct STLimitsRegister
         {
-            public string strModelName;
+            public List<string> lstModelNames;
             public List<string> lstLimitsAnimations;
         }
 
@@ -437,7 +437,9 @@ namespace KimeraCS
 
             // AERITH
             stcLimitsRegister = new STLimitsRegister();
-            stcLimitsRegister.strModelName = "RVAA";
+
+            stcLimitsRegister.lstModelNames = new List<string>();
+            stcLimitsRegister.lstModelNames.Add("RVAA");
 
             stcLimitsRegister.lstLimitsAnimations = new List<string>();
             stcLimitsRegister.lstLimitsAnimations.Add("LIMEA2.A00");
@@ -454,7 +456,13 @@ namespace KimeraCS
 
             // BARRET
             stcLimitsRegister = new STLimitsRegister();
-            stcLimitsRegister.strModelName = "SEAA";
+
+            stcLimitsRegister.lstModelNames = new List<string>();
+            stcLimitsRegister.lstModelNames.Add("SBAA");
+            stcLimitsRegister.lstModelNames.Add("SCAA");
+            stcLimitsRegister.lstModelNames.Add("SDAA");
+            stcLimitsRegister.lstModelNames.Add("SEAA");
+
 
             stcLimitsRegister.lstLimitsAnimations = new List<string>();
             stcLimitsRegister.lstLimitsAnimations.Add("LIMBR2.A00");
@@ -470,7 +478,9 @@ namespace KimeraCS
 
             // CAIT SITH
             stcLimitsRegister = new STLimitsRegister();
-            stcLimitsRegister.strModelName = "RYAA";
+
+            stcLimitsRegister.lstModelNames = new List<string>();
+            stcLimitsRegister.lstModelNames.Add("RYAA");
 
             stcLimitsRegister.lstLimitsAnimations = new List<string>();
             stcLimitsRegister.lstLimitsAnimations.Add("DICE.A00");
@@ -480,7 +490,9 @@ namespace KimeraCS
 
             // CID
             stcLimitsRegister = new STLimitsRegister();
-            stcLimitsRegister.strModelName = "RZAA";
+
+            stcLimitsRegister.lstModelNames = new List<string>();
+            stcLimitsRegister.lstModelNames.Add("RZAA");
 
             stcLimitsRegister.lstLimitsAnimations = new List<string>();
             stcLimitsRegister.lstLimitsAnimations.Add("LIMCD2.A00");
@@ -494,7 +506,9 @@ namespace KimeraCS
 
             // CLOUD
             stcLimitsRegister = new STLimitsRegister();
-            stcLimitsRegister.strModelName = "RTAA";
+
+            stcLimitsRegister.lstModelNames = new List<string>();
+            stcLimitsRegister.lstModelNames.Add("RTAA");
 
             stcLimitsRegister.lstLimitsAnimations = new List<string>();
             stcLimitsRegister.lstLimitsAnimations.Add("LIMCL2.A00");
@@ -510,7 +524,9 @@ namespace KimeraCS
 
             // RED XIII
             stcLimitsRegister = new STLimitsRegister();
-            stcLimitsRegister.strModelName = "RWAA";
+
+            stcLimitsRegister.lstModelNames = new List<string>();
+            stcLimitsRegister.lstModelNames.Add("RWAA");
 
             stcLimitsRegister.lstLimitsAnimations = new List<string>();
             stcLimitsRegister.lstLimitsAnimations.Add("LIMRD3.A00");
@@ -525,7 +541,9 @@ namespace KimeraCS
 
             // TIFA
             stcLimitsRegister = new STLimitsRegister();
-            stcLimitsRegister.strModelName = "RUAA";
+
+            stcLimitsRegister.lstModelNames = new List<string>();
+            stcLimitsRegister.lstModelNames.Add("RUAA");
 
             stcLimitsRegister.lstLimitsAnimations = new List<string>();
             stcLimitsRegister.lstLimitsAnimations.Add("LIMFAST.A00");
@@ -535,7 +553,9 @@ namespace KimeraCS
 
             // YUFFIE
             stcLimitsRegister = new STLimitsRegister();
-            stcLimitsRegister.strModelName = "RXAA";
+
+            stcLimitsRegister.lstModelNames = new List<string>();
+            stcLimitsRegister.lstModelNames.Add("RXAA");
 
             stcLimitsRegister.lstLimitsAnimations = new List<string>();
             stcLimitsRegister.lstLimitsAnimations.Add("LIMYF1.A00");
@@ -551,7 +571,7 @@ namespace KimeraCS
 
         public static bool CanHaveLimitBreak(string strModelName)
         {
-            return lstBattleLimitsAnimations.Exists(x => x.strModelName == strModelName);
+            return lstBattleLimitsAnimations.Exists(x => x.lstModelNames.Contains(strModelName));
         }
 
 
