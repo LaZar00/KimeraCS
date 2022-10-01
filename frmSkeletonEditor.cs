@@ -56,7 +56,7 @@ namespace KimeraCS
     public partial class frmSkeletonEditor : Form
     {
 
-        public const string STR_APPNAME = "KimeraCS 1.5l";
+        public const string STR_APPNAME = "KimeraCS 1.5m";
 
         public static int modelWidth;
         public static int modelHeight;
@@ -2583,13 +2583,13 @@ namespace KimeraCS
             {
                 case K_AA_SKELETON:
                     // We will check if the model loaded can have Limit Breaks.
-                    openFile.Filter = "Battle Animation|*DA";
+                    openFile.Filter = "Battle/Limit Animation|*DA;";
 
                     if (bSkeleton.CanHaveLimitBreak)
                     {
-                        openFile.Filter = openFile.Filter + "|Limit Animation|";
+                        //openFile.Filter = openFile.Filter + "|Limit Animation|";
 
-                        STLimitsRegister lstLimits = lstBattleLimitsAnimations.Find(x => x.strModelName == strGlobalBattleSkeletonName);
+                        STLimitsRegister lstLimits = lstBattleLimitsAnimations.Find(x => x.lstModelNames.Contains(strGlobalBattleSkeletonName));
 
                         foreach (string itmLimitBrk in lstLimits.lstLimitsAnimations)
                             openFile.Filter = openFile.Filter + itmLimitBrk.ToString() + ";";
