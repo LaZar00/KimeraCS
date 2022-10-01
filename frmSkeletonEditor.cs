@@ -56,7 +56,7 @@ namespace KimeraCS
     public partial class frmSkeletonEditor : Form
     {
 
-        public const string STR_APPNAME = "KimeraCS 1.5m";
+        public const string STR_APPNAME = "KimeraCS 1.5n";
 
         public static int modelWidth;
         public static int modelHeight;
@@ -748,6 +748,8 @@ namespace KimeraCS
 
                         gbAnimationOptionsFrame.Visible = true;
 
+                        btnComputeGroundHeight.Visible = true;
+
                         // Menu Strip
                         loadBattleMagicLimitsAnimationStripMenuItem.Enabled = true;
 
@@ -822,6 +824,8 @@ namespace KimeraCS
                     btnInterpolateAnimation.Visible = true;
 
                     gbAnimationOptionsFrame.Visible = true;
+
+                    btnComputeGroundHeight.Visible = true;
 
                     // Menu Strip
                     loadBattleMagicLimitsAnimationStripMenuItem.Enabled = true;
