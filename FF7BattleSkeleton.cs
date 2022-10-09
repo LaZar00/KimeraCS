@@ -936,7 +936,7 @@ namespace KimeraCS
         public static void ApplyBattleChanges(ref BattleSkeleton bSkeleton, BattleFrame bFrame, BattleFrame bwpFrame)
         {
             int bi, wi, jsp;
-            int[] joint_stack = new int[bSkeleton.nBones];
+            int[] joint_stack = new int[bSkeleton.nBones + 1];
             double[] rot_mat = new double[16];
             BattleBone tmpbBone;
 
