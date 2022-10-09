@@ -56,7 +56,7 @@ namespace KimeraCS
     public partial class frmSkeletonEditor : Form
     {
 
-        public const string STR_APPNAME = "KimeraCS 1.5n";
+        public const string STR_APPNAME = "KimeraCS 1.5o";
 
         public static int modelWidth;
         public static int modelHeight;
@@ -2457,7 +2457,7 @@ namespace KimeraCS
                                 }
                                 else
                                 {
-                                    // We save the Field Skeleton.
+                                    // We save the Skeleton.
                                     iSaveResult = WriteSkeleton(saveFile.FileName);
                                 }
 
