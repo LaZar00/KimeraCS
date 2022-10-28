@@ -56,7 +56,7 @@ namespace KimeraCS
     public partial class frmSkeletonEditor : Form
     {
 
-        public const string STR_APPNAME = "KimeraCS 1.5o";
+        public const string STR_APPNAME = "KimeraCS 1.5q";
 
         public static int modelWidth;
         public static int modelHeight;
@@ -6025,12 +6025,18 @@ namespace KimeraCS
         private void cbBattleAnimation_SelectedIndexChanged(object sender, EventArgs e)
         {
             ianimIndex = Int32.Parse(cbBattleAnimation.Text);
+
             bDontRefreshPicture = true;
+
             iCurrentFrameScroll = 0;
             txtAnimationFrame.Text = iCurrentFrameScroll.ToString();
             tbCurrentFrameScroll.Value = iCurrentFrameScroll;
             tbCurrentFrameScroll.Maximum = bAnimationsPack.SkeletonAnimations[ianimIndex].numFramesShort - 1;
+
             bDontRefreshPicture = false;
+
+            SetFrameEditorFields();
+
             panelModel_Paint(null, null);
         }
 
