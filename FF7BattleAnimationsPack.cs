@@ -142,6 +142,19 @@ namespace KimeraCS
                     using (var memReader = new BinaryReader(fileMemory))
                     {
                         bAnimationsPack.nAnimations = memReader.ReadInt32();
+
+                        if (nsSkeletonAnims > bAnimationsPack.nAnimations)
+                        {
+                            MessageBox.Show("Warning. The number of animations of the Battle Animation Pack " +
+                                            "is lower than the number of animations of the Battle Skeleton " +
+                                            "header. FIXING.", "Warning", MessageBoxButtons.OK);
+
+                            nsSkeletonAnims = bAnimationsPack.nAnimations;
+
+                            if (!bAnimationsPack.IsLimit) bSkeleton.nsSkeletonAnims = nsSkeletonAnims;
+                        }
+
+
                         bAnimationsPack.nbSkeletonAnims = nsSkeletonAnims;
                         bAnimationsPack.nbWeaponAnims = nsWeaponsAnims;
 
@@ -149,7 +162,7 @@ namespace KimeraCS
                         bAnimationsPack.WeaponAnimations = new List<BattleAnimation>();
                         //  Debug.Print "Loading "; .NumAnimations; " animations."
 
-                        for (ai = 0; ai < nsSkeletonAnims; ai++)
+                        for (ai = 0; ai < bAnimationsPack.nbSkeletonAnims; ai++)
                         {
                             //  Debug.Print "anim "; ai
                             //  Debug.Print "Body Animation "; Str$(ai)
@@ -159,7 +172,7 @@ namespace KimeraCS
                             bAnimationsPack.SkeletonAnimations.Add(new BattleAnimation(memReader, nsSkeletonBones));
                         }
 
-                        for (ai = 0; ai < nsWeaponsAnims; ai++)
+                        for (ai = 0; ai < bAnimationsPack.nbWeaponAnims; ai++)
                         {
                             //  Debug.Print "anim "; ai
                             //  Debug.Print "Weapon Animation "; Str$(ai)
