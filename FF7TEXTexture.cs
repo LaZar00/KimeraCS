@@ -853,7 +853,7 @@ namespace KimeraCS
 
         public static bool IsTEXTexture(string strTEXFileName)
         {
-            string strExtension = Path.GetExtension(strTEXFileName);
+            string strExtension = Path.GetExtension(strTEXFileName).ToUpper();
 
             if (strExtension == ".TEX" ||
                 ((strTEXFileName.EndsWith("AC") || strTEXFileName.EndsWith("AD") ||

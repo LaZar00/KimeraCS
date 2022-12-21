@@ -2203,7 +2203,7 @@ namespace KimeraCS
         //  ---------------------------------------------------------------------------------------------------
         public static int GetPModelType(string strGlobalPModelName)
         {
-            string strExt = Path.GetExtension(strGlobalPModelName);
+            string strExt = Path.GetExtension(strGlobalPModelName).ToUpper();
 
             if (strExt.Length <= 0) return K_P_BATTLE_MODEL;
             else if (strExt == ".P" && strExt.Length < 3) return K_P_FIELD_MODEL;

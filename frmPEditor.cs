@@ -1493,7 +1493,7 @@ namespace KimeraCS
                         Model3DS[] tmpModel3DS;
                         EditedPModel = new PModel();
 
-                        if (Path.GetExtension(openFile.FileName) == ".3DS")
+                        if (Path.GetExtension(openFile.FileName).ToUpper() == ".3DS")
                         {
                             Load3DS(openFile.FileName, out tmpModel3DS);
                             ConvertModels3DSToPModel(tmpModel3DS, ref EditedPModel);
@@ -1574,7 +1574,7 @@ namespace KimeraCS
                         Model3DS[] tmpModel3DS;
                         GroupModel = new PModel();
 
-                        if (Path.GetExtension(openFile.FileName) == ".3DS")
+                        if (Path.GetExtension(openFile.FileName).ToUpper() == ".3DS")
                         {
                             Load3DS(openFile.FileName, out tmpModel3DS);
                             ConvertModels3DSToPModel(tmpModel3DS, ref GroupModel);
