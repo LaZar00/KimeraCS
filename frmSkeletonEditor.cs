@@ -56,7 +56,7 @@ namespace KimeraCS
     public partial class frmSkeletonEditor : Form
     {
 
-        public const string STR_APPNAME = "KimeraCS 1.5r";
+        public const string STR_APPNAME = "KimeraCS 1.5s";
 
         public static int modelWidth;
         public static int modelHeight;
@@ -585,6 +585,7 @@ namespace KimeraCS
             saveAnimationAsToolStripMenuItem.Enabled = false;
             outputFramesDataTXTToolStripMenuItem.Enabled = false;
             inputFramesDataTXTToolStripMenuItem.Enabled = false;
+            inputFramesDataTXTToolSelectiveStripMenuItem.Enabled = false;
 
             saveSkeletonToolStripMenuItem.Enabled = false;
             saveSkeletonAsToolStripMenuItem.Enabled = false;
@@ -677,6 +678,7 @@ namespace KimeraCS
                     saveAnimationAsToolStripMenuItem.Enabled = true;
                     outputFramesDataTXTToolStripMenuItem.Enabled = true;
                     inputFramesDataTXTToolStripMenuItem.Enabled = true;
+                    inputFramesDataTXTToolSelectiveStripMenuItem.Enabled = true;
 
                     saveSkeletonToolStripMenuItem.Enabled = true;
                     saveSkeletonAsToolStripMenuItem.Enabled = true;
@@ -2882,65 +2884,6 @@ namespace KimeraCS
             {
                 MessageBox.Show("Error exception saving the Frame Data to file " +
                                 Path.GetFileName(saveFile.FileName).ToUpper() + ".",
-                                "Error");
-                return;
-            }
-        }
-
-        private void inputFramesDataTXTToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            int iOpenResult;
-
-            // Set filter options and filter index depending on modelType
-            openFile.Title = "Input Frame Data from TXT";
-            openFile.Filter = "Frame Data|*.txt|All files|*.*";
-
-            // Check Initial Directory
-            openFile.FileName = Path.GetFileNameWithoutExtension(strGlobalFieldAnimationName) + ".TXT";
-            openFile.FilterIndex = 1;
-            openFile.InitialDirectory = strGlobalPathFieldAnimationFolder;
-
-            try
-            {
-                // Process input if the user clicked OK.
-                if (openFile.ShowDialog() == DialogResult.OK)
-                {
-                    // Let's save state to buffer
-                    AddStateToBuffer(this);
-
-                    // We load the Frames Data
-                    iOpenResult = ReadFrameData(openFile.FileName);
-
-                    if (iOpenResult == -1)
-                    {
-                        MessageBox.Show("It has been some problem while loading the Frame Data from file " +
-                                        Path.GetFileName(openFile.FileName).ToUpper() + ".",
-                                        "Error");
-                    }
-
-                    strGlobalFieldAnimationName = fAnimation.strFieldAnimationFile;
-
-                    // Let's stop the Animation
-                    btnPlayStopAnim.Checked = false;
-
-                    iCurrentFrameScroll = 0;
-                    tbCurrentFrameScroll.Value = 0;
-                    txtAnimationFrame.Text = iCurrentFrameScroll.ToString();
-
-                    tbCurrentFrameScroll.Maximum = fAnimation.nFrames - 1;
-
-                    SetFrameEditorFields();
-
-                    Text = STR_APPNAME + " - Model: " + strGlobalFieldSkeletonName +
-                                         " / Anim: " + strGlobalFieldAnimationName;
-
-                    panelModel_Paint(null, null);
-                }
-            }
-            catch
-            {
-                MessageBox.Show("Error exception loading the Frame Data from file " +
-                                Path.GetFileName(openFile.FileName).ToUpper() + ".",
                                 "Error");
                 return;
             }
@@ -6022,6 +5965,7 @@ namespace KimeraCS
             panelModel_Paint(null, null);
         }
 
+
         private void cbBattleAnimation_SelectedIndexChanged(object sender, EventArgs e)
         {
             ianimIndex = Int32.Parse(cbBattleAnimation.Text);
@@ -6322,6 +6266,126 @@ namespace KimeraCS
                 frmTexViewer.ShowDialog();
             }
         }
+
+
+        private void inputFramesDataTXTToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            int iOpenResult;
+
+            // Set filter options and filter index depending on modelType
+            openFile.Title = "Input Frame Data from TXT";
+            openFile.Filter = "Frame Data|*.txt|All files|*.*";
+
+            // Check Initial Directory
+            openFile.FileName = Path.GetFileNameWithoutExtension(strGlobalFieldAnimationName) + ".TXT";
+            openFile.FilterIndex = 1;
+            openFile.InitialDirectory = strGlobalPathFieldAnimationFolder;
+
+            try
+            {
+                // Process input if the user clicked OK.
+                if (openFile.ShowDialog() == DialogResult.OK)
+                {
+                    // Let's save state to buffer
+                    AddStateToBuffer(this);
+
+                    // We load the Frames Data
+                    iOpenResult = ReadFrameData(openFile.FileName);
+
+                    if (iOpenResult == -1)
+                    {
+                        MessageBox.Show("It has been some problem while loading the Frame Data from file " +
+                                        Path.GetFileName(openFile.FileName).ToUpper() + ".",
+                                        "Error");
+                    }
+
+                    strGlobalFieldAnimationName = fAnimation.strFieldAnimationFile;
+
+                    // Let's stop the Animation
+                    btnPlayStopAnim.Checked = false;
+
+                    iCurrentFrameScroll = 0;
+                    tbCurrentFrameScroll.Value = 0;
+                    txtAnimationFrame.Text = iCurrentFrameScroll.ToString();
+
+                    tbCurrentFrameScroll.Maximum = fAnimation.nFrames - 1;
+
+                    SetFrameEditorFields();
+
+                    Text = STR_APPNAME + " - Model: " + strGlobalFieldSkeletonName.ToUpper() +
+                                         " / Anim: " + strGlobalFieldAnimationName.ToUpper();
+
+                    panelModel_Paint(null, null);
+                }
+            }
+            catch
+            {
+                MessageBox.Show("Error exception loading the Frame Data from file " +
+                                Path.GetFileName(openFile.FileName).ToUpper() + ".",
+                                "Error");
+                return;
+            }
+        }
+
+        private void inputFramesDataFromTXTOnlyFieldModelsSelectiveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            int iOpenResult;
+
+            // Set filter options and filter index depending on modelType
+            openFile.Title = "Input Frame Data from TXT (Selective)";
+            openFile.Filter = "Frame Data|*.txt|All files|*.*";
+
+            // Check Initial Directory
+            openFile.FileName = Path.GetFileNameWithoutExtension(strGlobalFieldAnimationName) + ".TXT";
+            openFile.FilterIndex = 1;
+            openFile.InitialDirectory = strGlobalPathFieldAnimationFolder;
+
+            try
+            {
+                // Process input if the user clicked OK.
+                if (openFile.ShowDialog() == DialogResult.OK)
+                {
+                    // Let's save state to buffer
+                    AddStateToBuffer(this);
+
+                    // We load the Frames Data
+                    iOpenResult = ReadFrameDataSelective(openFile.FileName);
+
+                    if (iOpenResult == -1)
+                    {
+                        MessageBox.Show("It has been some problem while loading the Frame Data from file (Selective) " +
+                                        Path.GetFileName(openFile.FileName).ToUpper() + ".",
+                                        "Error");
+                    }
+
+                    strGlobalFieldAnimationName = fAnimation.strFieldAnimationFile;
+
+                    // Let's stop the Animation
+                    btnPlayStopAnim.Checked = false;
+
+                    iCurrentFrameScroll = 0;
+                    tbCurrentFrameScroll.Value = 0;
+                    txtAnimationFrame.Text = iCurrentFrameScroll.ToString();
+
+                    tbCurrentFrameScroll.Maximum = fAnimation.nFrames - 1;
+
+                    SetFrameEditorFields();
+
+                    Text = STR_APPNAME + " - Model: " + strGlobalFieldSkeletonName.ToUpper() +
+                                         " / Anim: " + strGlobalFieldAnimationName.ToUpper();
+
+                    panelModel_Paint(null, null);
+                }
+            }
+            catch
+            {
+                MessageBox.Show("Error exception loading the Frame Data from file (Selective) " +
+                                Path.GetFileName(openFile.FileName).ToUpper() + ".",
+                                "Error");
+                return;
+            }
+        }
+
 
 
 

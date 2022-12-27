@@ -174,6 +174,7 @@ namespace KimeraCS
             this.saveAnimationAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.outputFramesDataTXTToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.inputFramesDataTXTToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.inputFramesDataTXTToolSelectiveStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripFPS15 = new System.Windows.Forms.ToolStripMenuItem();
@@ -1795,6 +1796,7 @@ namespace KimeraCS
             this.saveAnimationAsToolStripMenuItem,
             this.outputFramesDataTXTToolStripMenuItem,
             this.inputFramesDataTXTToolStripMenuItem,
+            this.inputFramesDataTXTToolSelectiveStripMenuItem,
             this.toolStripSeparator4,
             this.toolStripMenuItem1,
             this.toolStripSeparator5,
@@ -1807,7 +1809,7 @@ namespace KimeraCS
             // 
             this.loadFieldAnimationToolStripMenuItem.Enabled = false;
             this.loadFieldAnimationToolStripMenuItem.Name = "loadFieldAnimationToolStripMenuItem";
-            this.loadFieldAnimationToolStripMenuItem.Size = new System.Drawing.Size(288, 22);
+            this.loadFieldAnimationToolStripMenuItem.Size = new System.Drawing.Size(382, 22);
             this.loadFieldAnimationToolStripMenuItem.Text = "Load Field Animation";
             this.loadFieldAnimationToolStripMenuItem.Click += new System.EventHandler(this.loadFieldAnimationToolStripMenuItem_Click);
             // 
@@ -1815,21 +1817,21 @@ namespace KimeraCS
             // 
             this.loadBattleMagicLimitsAnimationStripMenuItem.Enabled = false;
             this.loadBattleMagicLimitsAnimationStripMenuItem.Name = "loadBattleMagicLimitsAnimationStripMenuItem";
-            this.loadBattleMagicLimitsAnimationStripMenuItem.Size = new System.Drawing.Size(288, 22);
+            this.loadBattleMagicLimitsAnimationStripMenuItem.Size = new System.Drawing.Size(382, 22);
             this.loadBattleMagicLimitsAnimationStripMenuItem.Text = "Load Battle/Magic/Limits Animations";
             this.loadBattleMagicLimitsAnimationStripMenuItem.Click += new System.EventHandler(this.loadBattleMagicLimitAnimationsStripMenuItem_Click);
             // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(285, 6);
+            this.toolStripSeparator3.Size = new System.Drawing.Size(379, 6);
             // 
             // saveAnimationToolStripMenuItem
             // 
             this.saveAnimationToolStripMenuItem.Enabled = false;
             this.saveAnimationToolStripMenuItem.Name = "saveAnimationToolStripMenuItem";
             this.saveAnimationToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.W)));
-            this.saveAnimationToolStripMenuItem.Size = new System.Drawing.Size(288, 22);
+            this.saveAnimationToolStripMenuItem.Size = new System.Drawing.Size(382, 22);
             this.saveAnimationToolStripMenuItem.Text = "Save Animation";
             this.saveAnimationToolStripMenuItem.Click += new System.EventHandler(this.saveAnimationToolStripMenuItem_Click);
             // 
@@ -1837,7 +1839,7 @@ namespace KimeraCS
             // 
             this.saveAnimationAsToolStripMenuItem.Enabled = false;
             this.saveAnimationAsToolStripMenuItem.Name = "saveAnimationAsToolStripMenuItem";
-            this.saveAnimationAsToolStripMenuItem.Size = new System.Drawing.Size(288, 22);
+            this.saveAnimationAsToolStripMenuItem.Size = new System.Drawing.Size(382, 22);
             this.saveAnimationAsToolStripMenuItem.Text = "Save Animation As...";
             this.saveAnimationAsToolStripMenuItem.Click += new System.EventHandler(this.saveAnimationAsToolStripMenuItem_Click);
             // 
@@ -1845,22 +1847,30 @@ namespace KimeraCS
             // 
             this.outputFramesDataTXTToolStripMenuItem.Enabled = false;
             this.outputFramesDataTXTToolStripMenuItem.Name = "outputFramesDataTXTToolStripMenuItem";
-            this.outputFramesDataTXTToolStripMenuItem.Size = new System.Drawing.Size(288, 22);
-            this.outputFramesDataTXTToolStripMenuItem.Text = "Output Frames Data to .TXT (Only Field)";
+            this.outputFramesDataTXTToolStripMenuItem.Size = new System.Drawing.Size(382, 22);
+            this.outputFramesDataTXTToolStripMenuItem.Text = "Output Frames Data to .TXT (Only Field Models)";
             this.outputFramesDataTXTToolStripMenuItem.Click += new System.EventHandler(this.outputFramesDataAsToolStripMenuItem_Click);
             // 
             // inputFramesDataTXTToolStripMenuItem
             // 
             this.inputFramesDataTXTToolStripMenuItem.Enabled = false;
             this.inputFramesDataTXTToolStripMenuItem.Name = "inputFramesDataTXTToolStripMenuItem";
-            this.inputFramesDataTXTToolStripMenuItem.Size = new System.Drawing.Size(288, 22);
-            this.inputFramesDataTXTToolStripMenuItem.Text = "Input Frames Data from .TXT (Only Field)";
+            this.inputFramesDataTXTToolStripMenuItem.Size = new System.Drawing.Size(382, 22);
+            this.inputFramesDataTXTToolStripMenuItem.Text = "Input Frames Data from .TXT (Only Field Models)";
             this.inputFramesDataTXTToolStripMenuItem.Click += new System.EventHandler(this.inputFramesDataTXTToolStripMenuItem_Click);
+            // 
+            // inputFramesDataTXTToolSelectiveStripMenuItem
+            // 
+            this.inputFramesDataTXTToolSelectiveStripMenuItem.Enabled = false;
+            this.inputFramesDataTXTToolSelectiveStripMenuItem.Name = "inputFramesDataTXTToolSelectiveStripMenuItem";
+            this.inputFramesDataTXTToolSelectiveStripMenuItem.Size = new System.Drawing.Size(382, 22);
+            this.inputFramesDataTXTToolSelectiveStripMenuItem.Text = "Input Frames Data from .TXT (Only Field Models, Selective)";
+            this.inputFramesDataTXTToolSelectiveStripMenuItem.Click += new System.EventHandler(this.inputFramesDataFromTXTOnlyFieldModelsSelectiveToolStripMenuItem_Click);
             // 
             // toolStripSeparator4
             // 
             this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(285, 6);
+            this.toolStripSeparator4.Size = new System.Drawing.Size(379, 6);
             // 
             // toolStripMenuItem1
             // 
@@ -1869,7 +1879,7 @@ namespace KimeraCS
             this.toolStripFPS30,
             this.toolStripFPS60});
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(288, 22);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(382, 22);
             this.toolStripMenuItem1.Text = "FPS for Play Animation";
             // 
             // toolStripFPS15
@@ -1898,12 +1908,12 @@ namespace KimeraCS
             // toolStripSeparator5
             // 
             this.toolStripSeparator5.Name = "toolStripSeparator5";
-            this.toolStripSeparator5.Size = new System.Drawing.Size(285, 6);
+            this.toolStripSeparator5.Size = new System.Drawing.Size(379, 6);
             // 
             // interpolateAllAnimationsToolStripMenuItem
             // 
             this.interpolateAllAnimationsToolStripMenuItem.Name = "interpolateAllAnimationsToolStripMenuItem";
-            this.interpolateAllAnimationsToolStripMenuItem.Size = new System.Drawing.Size(288, 22);
+            this.interpolateAllAnimationsToolStripMenuItem.Size = new System.Drawing.Size(382, 22);
             this.interpolateAllAnimationsToolStripMenuItem.Text = "Interpolate All Animations";
             this.interpolateAllAnimationsToolStripMenuItem.Click += new System.EventHandler(this.interpolateAllAnimationsToolStripMenuItem_Click);
             // 
@@ -2180,6 +2190,7 @@ namespace KimeraCS
         private System.Windows.Forms.ToolStripMenuItem textureToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem TEXToPNGBatchConversionToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem loadRSDResourceToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem inputFramesDataTXTToolSelectiveStripMenuItem;
     }
 }
 
