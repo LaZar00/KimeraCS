@@ -101,6 +101,12 @@
     <Compile Include="FF7BattleAnimationsPack.cs" />
     <Compile Include="FF7BattleAnimation.cs" />
     <Compile Include="FF7BattleSkeleton.cs" />
+    <Compile Include="frmFF7IDFJointsBonesSelection.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmFF7IDFJointsBonesSelection.Designer.cs">
+      <DependentUpon>frmFF7IDFJointsBonesSelection.cs</DependentUpon>
+    </Compile>
     <Compile Include="FF7TMDModel.cs" />
     <Compile Include="FolderBrowserDialogObject.cs" />
     <Compile Include="frmBattleDB.cs">
@@ -193,6 +199,9 @@
     <Compile Include="UndoRedoPE.cs" />
     <Compile Include="User32.cs" />
     <Compile Include="Utils.cs" />
+    <EmbeddedResource Include="frmFF7IDFJointsBonesSelection.resx">
+      <DependentUpon>frmFF7IDFJointsBonesSelection.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="frmBattleDB.resx">
       <DependentUpon>frmBattleDB.cs</DependentUpon>
     </EmbeddedResource>
@@ -336,6 +345,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="KimeraCS.ico" />
+    <Content Include="resources\checkbox.png" />
+    <Content Include="resources\checkbox_unchecked.png" />
     <Content Include="resources\hand.cur" />
     <Content Include="resources\handplus.cur" />
     <None Include="resources\UV_zoomout.png" />

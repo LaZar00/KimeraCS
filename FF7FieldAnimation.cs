@@ -19,6 +19,8 @@ namespace KimeraCS
     public class FF7FieldAnimation
     {
 
+        public static frmFF7IDFJointsBonesSelection frmFF7IDFJBS;
+
         public struct FieldRotation
         {
             public float alpha;
@@ -100,7 +102,7 @@ namespace KimeraCS
                     if (bDirectProcessing)
                     {
                         // Case were we have found a compatible animation for the opened model.
-                        strFieldAnimationFile = Path.GetFileName(strFullFileName);
+                        strFieldAnimationFile = Path.GetFileName(strFullFileName).ToUpper();
                         strGlobalFieldAnimationName = strFieldAnimationFile;
 
                         ReadFieldAnimation(strFullFileName);
@@ -112,7 +114,7 @@ namespace KimeraCS
                         strFieldAnimationFile = "DUMMY.A";
                         strGlobalFieldAnimationName = strFieldAnimationFile;
 
-                        if (Path.GetFileName(strFullFileName) == strFieldAnimationFile)
+                        if (Path.GetFileName(strFullFileName).ToUpper() == strFieldAnimationFile)
                             MessageBox.Show("There is no animation file that fits the model in the same folder.", "Info");
 
                         CreateCompatibleFieldAnimation();
@@ -697,7 +699,7 @@ namespace KimeraCS
                             break;
 
                         case "FILENAME":
-                            tmpfAnimation.strFieldAnimationFile = strSplitKeyData[1];
+                            tmpfAnimation.strFieldAnimationFile = strSplitKeyData[1].ToUpper();
 
                             break;
 
@@ -793,6 +795,206 @@ namespace KimeraCS
             fAnimation = tmpfAnimation;
         }
 
+        public static bool JointBoneStatus(int iBonePosition)
+        {
+            int iJointPosition = 0;
+            bool bFoundJoint = false;
+
+            while (iJointPosition < frmFF7IDFJBS.chklbJointsBones.Items.Count &&
+                   !bFoundJoint)
+            {
+                if (fSkeleton.bones[iBonePosition].joint_i ==
+                            frmFF7IDFJBS.chklbJointsBones.Items[iJointPosition].ToString().Split('-')[0] &&
+                    fSkeleton.bones[iBonePosition].joint_f ==
+                            frmFF7IDFJBS.chklbJointsBones.Items[iJointPosition].ToString().Split('-')[1] &&
+                    frmFF7IDFJBS.chklbJointsBones.GetItemChecked(iJointPosition))
+                {
+                    bFoundJoint = true;
+                }
+                else iJointPosition++;
+            }
+
+            return bFoundJoint;
+        }
+
+        public static void ReadFieldFrameDataSelective(FieldSkeleton fSkeleton, ref FieldAnimation fAnimation, string strFileName)
+        {
+ 
+            int iBonePosition, iFrameCounter;
+            bool bFoundBone;
+            string[] strSplitKeyData;
+            List<string> strJointsList;
+            FieldFrame fFrame;
+            FieldRotation fRotation;
+            FieldAnimation tmpfAnimation;
+
+            iBonePosition = 0;
+            iFrameCounter = 0;
+            bFoundBone = false;
+
+            string[] strInputFrameData = File.ReadAllLines(strFileName);
+
+            if (strInputFrameData.Length <= 0) return;
+
+            // Let's create the list of joints/bones that can be selected
+            // We will count also the number of frames.
+            bool bBonesAdded = false;
+            strJointsList = new List<string>();
+            foreach (string strLine in strInputFrameData)
+            {
+                strSplitKeyData = strLine.Split(':');
+
+                if (!bBonesAdded)
+                {
+                    // Let's check if we have a bone
+                    if (strSplitKeyData[0] == "BONE")
+                    {
+                        // Let's check if this joint/bone exists in main animation
+                        iBonePosition = 0;
+                        bFoundBone = false;
+
+                        while (iBonePosition < fAnimation.nBones && !bFoundBone)
+                        {
+                            if (fSkeleton.bones[iBonePosition].joint_i == strSplitKeyData[1].Split('-')[0] &&
+                                fSkeleton.bones[iBonePosition].joint_f == strSplitKeyData[1].Split('-')[1])
+                            {
+                                bFoundBone = true;
+                            }
+                            else iBonePosition++;
+                        }
+
+                        strJointsList.Add(strSplitKeyData[1]);
+                    }
+
+                    // We will break the loop when found "ROTAT_TRANS"
+                    if (strSplitKeyData[0] == "ROTAT_TRANS") bBonesAdded = true;
+                }
+
+                // Add 1 to frame counter.
+                if (strSplitKeyData[0] == "FRAME") iFrameCounter++;
+            }
+
+            // Let's check number of frames among animations.
+            if (iFrameCounter != fAnimation.nFrames)
+            {
+                MessageBox.Show("Warning. The number of frames of both animations is different.",
+                                "Warning", MessageBoxButtons.OK);
+                return;
+            }
+
+            // Now, let's make that the user decide which joints/bones wants to import.
+            frmFF7IDFJBS = new frmFF7IDFJointsBonesSelection(strJointsList);
+            frmFF7IDFJBS.ShowDialog();
+
+            if (frmFF7IDFJBS.chklbJointsBones.Items.Count > 0)
+            {
+                tmpfAnimation = CopyfAnimation(fAnimation);
+
+                foreach (string strLine in strInputFrameData)
+                {
+                    if (strLine != "")
+                    {
+                        strSplitKeyData = strLine.Split(':');
+
+                        switch (strSplitKeyData[0])
+                        {
+                            case "MODEL_TYPE":
+                                if (strSplitKeyData[1] != "3")
+                                {
+                                    MessageBox.Show("This is very odd, but you have loaded a file with an unsupported Model Type.",
+                                                    "Warning");
+                                    return;
+                                }
+                                break;
+
+                            //case "FILENAME":
+                            //    tmpfAnimation.strFieldAnimationFile = strSplitKeyData[1].ToUpper();
+
+                            //    break;
+
+                            //case "RUNTIME_DATA":
+                            //    tmpfAnimation.runtime_data = new int[5];
+
+                            //    tmpfAnimation.runtime_data[0] = int.Parse(strSplitKeyData[1].Split('_')[0]);
+                            //    tmpfAnimation.runtime_data[1] = int.Parse(strSplitKeyData[1].Split('_')[1]);
+                            //    tmpfAnimation.runtime_data[2] = int.Parse(strSplitKeyData[1].Split('_')[2]);
+                            //    tmpfAnimation.runtime_data[3] = int.Parse(strSplitKeyData[1].Split('_')[3]);
+                            //    tmpfAnimation.runtime_data[4] = int.Parse(strSplitKeyData[1].Split('_')[4]);
+                            //    break;
+
+                            case "FRAME":
+                                iFrameCounter = int.Parse(strSplitKeyData[1]);
+
+                                break;
+
+                            case "BONE":
+                                iBonePosition = 0;
+                                bFoundBone = false;
+
+                                while (iBonePosition < fAnimation.nBones && !bFoundBone)
+                                {
+
+                                    if (fSkeleton.bones[iBonePosition].joint_i == strSplitKeyData[1].Split('-')[0] &&
+                                        fSkeleton.bones[iBonePosition].joint_f == strSplitKeyData[1].Split('-')[1])
+                                    {
+                                        // Here we will check also if the joint/bones are checked in checkedlist
+                                        if (JointBoneStatus(iBonePosition)) bFoundBone = true;
+                                        else iBonePosition++;
+                                    }
+                                    else iBonePosition++;
+                                }
+
+                                break;
+
+                            case "BONEROT":
+                                if (bFoundBone)
+                                {
+                                    //fRotation = new FieldRotation();
+                                    fRotation = tmpfAnimation.frames[iFrameCounter].rotations[iBonePosition];
+
+                                    fRotation.alpha = float.Parse(strSplitKeyData[1].Split('_')[0], CultureInfo.InvariantCulture.NumberFormat);
+                                    fRotation.beta = float.Parse(strSplitKeyData[1].Split('_')[1], CultureInfo.InvariantCulture.NumberFormat);
+                                    fRotation.gamma = float.Parse(strSplitKeyData[1].Split('_')[2], CultureInfo.InvariantCulture.NumberFormat);
+
+                                    tmpfAnimation.frames[iFrameCounter].rotations[iBonePosition] = fRotation;
+                                }
+
+                                break;
+
+                            //case "ROTAT_TRANS":
+                            //    fFrame.rootRotationAlpha = float.Parse(strSplitKeyData[1].Split('_')[0], CultureInfo.InvariantCulture.NumberFormat);
+                            //    fFrame.rootRotationBeta = float.Parse(strSplitKeyData[1].Split('_')[1], CultureInfo.InvariantCulture.NumberFormat);
+                            //    fFrame.rootRotationGamma = float.Parse(strSplitKeyData[1].Split('_')[2], CultureInfo.InvariantCulture.NumberFormat);
+
+                            //    fFrame.rootTranslationX = float.Parse(strSplitKeyData[1].Split('_')[3], CultureInfo.InvariantCulture.NumberFormat);
+                            //    fFrame.rootTranslationY = float.Parse(strSplitKeyData[1].Split('_')[4], CultureInfo.InvariantCulture.NumberFormat);
+                            //    fFrame.rootTranslationZ = float.Parse(strSplitKeyData[1].Split('_')[5], CultureInfo.InvariantCulture.NumberFormat);
+
+                            //    tmpfAnimation.frames.Add(fFrame);
+
+                            //    break;
+                        }
+                    }
+                }
+
+                //// Update last values
+                //tmpfAnimation.nBones = fSkeleton.nBones;
+                //tmpfAnimation.nFrames = iFrameCounter + 1;
+
+                //tmpfAnimation.rotationOrder = new byte[3];
+                //tmpfAnimation.rotationOrder[0] = 1;
+                //tmpfAnimation.rotationOrder[1] = 0;
+                //tmpfAnimation.rotationOrder[2] = 2;
+
+                //tmpfAnimation.version = 1;
+                //tmpfAnimation.unused = 0;
+
+                fAnimation = tmpfAnimation;
+            }
+
+            // Dispose of joints bones selection form after being used.
+            frmFF7IDFJBS.Dispose();
+        }
 
 
         //  ---------------------------------------------------------------------------------------------------

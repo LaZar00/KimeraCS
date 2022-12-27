@@ -583,6 +583,33 @@ namespace KimeraCS
             return ioutputFrameData;
         }
 
+        public static int ReadFrameDataSelective(string strFileName)
+        {
+            int iinputFrameData = 0;
+
+            try
+            {
+                switch (modelType)
+                {
+                    case K_HRC_SKELETON:
+                        ReadFieldFrameDataSelective(fSkeleton, ref fAnimation, strFileName);
+
+                        iinputFrameData = 1;
+                        break;
+
+                    case K_AA_SKELETON:
+                    case K_MAGIC_SKELETON:
+                        //iinputFrameData = WriteBattleFrameDataPack(ref bAnimationsPack, strFileName);
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                iinputFrameData = -1;
+            }
+
+            return iinputFrameData;
+        }
 
 
 
