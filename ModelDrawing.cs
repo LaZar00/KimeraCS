@@ -661,7 +661,7 @@ namespace KimeraCS
                 glPushMatrix();
 
                 BuildRotationMatrixWithQuaternions(fFrame.rotations[bi].alpha, fFrame.rotations[bi].beta, fFrame.rotations[bi].gamma, 
-                                                         ref rot_mat);
+                                                   ref rot_mat);
 
                 glMultMatrixd(rot_mat);
 
@@ -1199,9 +1199,6 @@ namespace KimeraCS
                             glColorMask(GL_Boolean.GL_TRUE, GL_Boolean.GL_TRUE, GL_Boolean.GL_TRUE, GL_Boolean.GL_TRUE);
                         }
 
-                        SelectFieldBoneAndPiece(fSkeleton, fAnimation.frames[iCurrentFrameScroll], 
-                                                SelectedBone, SelectedBonePiece);
-
                         if (bShowBones)
                         {                        
                             glDisable(glCapability.GL_DEPTH_TEST);
@@ -1212,6 +1209,9 @@ namespace KimeraCS
 
                             glEnable(glCapability.GL_DEPTH_TEST);
                         }
+
+                        SelectFieldBoneAndPiece(fSkeleton, fAnimation.frames[iCurrentFrameScroll],
+                                                SelectedBone, SelectedBonePiece);
                         break;
 
                     case K_AA_SKELETON:
@@ -1260,9 +1260,6 @@ namespace KimeraCS
                             glColorMask(GL_Boolean.GL_TRUE, GL_Boolean.GL_TRUE, GL_Boolean.GL_TRUE, GL_Boolean.GL_TRUE);
                         }
 
-                        SelectBattleBoneAndModel(bSkeleton, bAnimationsPack.SkeletonAnimations[ianimIndex].frames[iCurrentFrameScroll],
-                                                 tmpbFrame, ianimWeaponIndex, SelectedBone, SelectedBonePiece);
-
                         if (bShowBones)
                         {
                             glDisable(glCapability.GL_DEPTH_TEST);
@@ -1272,6 +1269,8 @@ namespace KimeraCS
                             glEnable(glCapability.GL_DEPTH_TEST);
                         }
 
+                        SelectBattleBoneAndModel(bSkeleton, bAnimationsPack.SkeletonAnimations[ianimIndex].frames[iCurrentFrameScroll],
+                                                 tmpbFrame, ianimWeaponIndex, SelectedBone, SelectedBonePiece);
                         break;
                 }
             }
