@@ -35,13 +35,15 @@ namespace KimeraCS
             public string fileName;
             public string name;
             public int nBones;
+
             public List<FieldBone> bones;
+            public List<TEX> textures_pool;
 
             public FieldSkeleton(string strfileName, bool loadGeometryQ)
             {
                 string strFileDirectoryName = Path.GetDirectoryName(strfileName);
 
-                List<TEX> textures_pool = new List<TEX>();
+                textures_pool = new List<TEX>();
 
                 fileName = Path.GetFileName(strfileName).ToUpper();
 
