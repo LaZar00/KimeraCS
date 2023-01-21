@@ -145,6 +145,12 @@
     <Compile Include="frmPEditor.Designer.cs">
       <DependentUpon>frmPEditor.cs</DependentUpon>
     </Compile>
+    <Compile Include="frmSkeletonJoints.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmSkeletonJoints.Designer.cs">
+      <DependentUpon>frmSkeletonJoints.cs</DependentUpon>
+    </Compile>
     <Compile Include="frmTEXToPNGBatchConversion.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -201,12 +207,15 @@
     <Compile Include="Utils.cs" />
     <EmbeddedResource Include="frmFF7IDFJointsBonesSelection.resx">
       <DependentUpon>frmFF7IDFJointsBonesSelection.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="frmBattleDB.resx">
       <DependentUpon>frmBattleDB.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="frmFieldDB.resx">
       <DependentUpon>frmFieldDB.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="frmGroupProperties.resx">
       <DependentUpon>frmGroupProperties.cs</DependentUpon>
@@ -223,6 +232,9 @@
     <EmbeddedResource Include="frmSkeletonEditor.resx">
       <DependentUpon>frmSkeletonEditor.cs</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmSkeletonJoints.resx">
+      <DependentUpon>frmSkeletonJoints.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="frmTEXToPNGBatchConversion.resx">
       <DependentUpon>frmTEXToPNGBatchConversion.cs</DependentUpon>
