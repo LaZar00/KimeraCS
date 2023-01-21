@@ -39,6 +39,8 @@ namespace KimeraCS
             // 
             // chklbJointsBones
             // 
+            this.chklbJointsBones.BackColor = System.Drawing.SystemColors.AppWorkspace;
+            this.chklbJointsBones.ForeColor = System.Drawing.SystemColors.WindowText;
             this.chklbJointsBones.FormattingEnabled = true;
             this.chklbJointsBones.Location = new System.Drawing.Point(6, 6);
             this.chklbJointsBones.Name = "chklbJointsBones";
@@ -95,6 +97,7 @@ namespace KimeraCS
             this.AcceptButton = this.btnOk;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.CancelButton = this.btnCancel;
             this.ClientSize = new System.Drawing.Size(218, 464);
             this.Controls.Add(this.btnUnselectAll);
