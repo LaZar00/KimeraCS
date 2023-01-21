@@ -164,6 +164,9 @@ namespace KimeraCS
             this.tsUIOpacity75 = new System.Windows.Forms.ToolStripMenuItem();
             this.tsUIOpacity50 = new System.Windows.Forms.ToolStripMenuItem();
             this.tsUIOpacity25 = new System.Windows.Forms.ToolStripMenuItem();
+            this.skeletonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.addJointToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.editJointToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.textureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.TEXToPNGBatchConversionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.animationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -608,7 +611,7 @@ namespace KimeraCS
             this.gbSelectedBoneFrame.Size = new System.Drawing.Size(152, 150);
             this.gbSelectedBoneFrame.TabIndex = 13;
             this.gbSelectedBoneFrame.TabStop = false;
-            this.gbSelectedBoneFrame.Text = "Bone options";
+            this.gbSelectedBoneFrame.Text = "Joint options";
             this.gbSelectedBoneFrame.Visible = false;
             // 
             // txtBoneOptionsLength
@@ -629,7 +632,7 @@ namespace KimeraCS
             this.btnRemovePiece.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnRemovePiece.Size = new System.Drawing.Size(146, 21);
             this.btnRemovePiece.TabIndex = 9;
-            this.btnRemovePiece.Text = "Remove part from the bone";
+            this.btnRemovePiece.Text = "Remove part from the Joint";
             this.btnRemovePiece.UseVisualStyleBackColor = true;
             this.btnRemovePiece.Click += new System.EventHandler(this.btnRemovePiece_Click);
             // 
@@ -642,7 +645,7 @@ namespace KimeraCS
             this.btnAddPiece.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnAddPiece.Size = new System.Drawing.Size(146, 21);
             this.btnAddPiece.TabIndex = 8;
-            this.btnAddPiece.Text = "Add part to the bone";
+            this.btnAddPiece.Text = "Add part to the Joint";
             this.btnAddPiece.UseVisualStyleBackColor = true;
             this.btnAddPiece.Click += new System.EventHandler(this.btnAddPiece_Click);
             // 
@@ -770,9 +773,9 @@ namespace KimeraCS
             this.lblBoneSelector.Location = new System.Drawing.Point(3, 2);
             this.lblBoneSelector.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblBoneSelector.Name = "lblBoneSelector";
-            this.lblBoneSelector.Size = new System.Drawing.Size(79, 13);
+            this.lblBoneSelector.Size = new System.Drawing.Size(77, 13);
             this.lblBoneSelector.TabIndex = 12;
-            this.lblBoneSelector.Text = "Selected bone:";
+            this.lblBoneSelector.Text = "Selected Joint:";
             this.lblBoneSelector.Visible = false;
             // 
             // cbBoneSelector
@@ -1578,6 +1581,7 @@ namespace KimeraCS
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
             this.editToolStripMenuItem2,
+            this.skeletonToolStripMenuItem,
             this.textureToolStripMenuItem,
             this.animationToolStripMenuItem,
             this.databaseToolStripMenuItem});
@@ -1770,6 +1774,31 @@ namespace KimeraCS
             this.tsUIOpacity25.Size = new System.Drawing.Size(102, 22);
             this.tsUIOpacity25.Text = "25%";
             this.tsUIOpacity25.Click += new System.EventHandler(this.tsUIOpacity25_Click);
+            // 
+            // skeletonToolStripMenuItem
+            // 
+            this.skeletonToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.addJointToolStripMenuItem,
+            this.editJointToolStripMenuItem});
+            this.skeletonToolStripMenuItem.Enabled = false;
+            this.skeletonToolStripMenuItem.Name = "skeletonToolStripMenuItem";
+            this.skeletonToolStripMenuItem.Size = new System.Drawing.Size(64, 20);
+            this.skeletonToolStripMenuItem.Text = "Skeleton";
+            // 
+            // addJointToolStripMenuItem
+            // 
+            this.addJointToolStripMenuItem.Name = "addJointToolStripMenuItem";
+            this.addJointToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
+            this.addJointToolStripMenuItem.Text = "Add Joint";
+            this.addJointToolStripMenuItem.Click += new System.EventHandler(this.addJointToolStripMenuItem_Click);
+            // 
+            // editJointToolStripMenuItem
+            // 
+            this.editJointToolStripMenuItem.Enabled = false;
+            this.editJointToolStripMenuItem.Name = "editJointToolStripMenuItem";
+            this.editJointToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
+            this.editJointToolStripMenuItem.Text = "Edit Joint";
+            this.editJointToolStripMenuItem.Click += new System.EventHandler(this.editJointToolStripMenuItem_Click);
             // 
             // textureToolStripMenuItem
             // 
@@ -2191,6 +2220,9 @@ namespace KimeraCS
         private System.Windows.Forms.ToolStripMenuItem TEXToPNGBatchConversionToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem loadRSDResourceToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem inputFramesDataTXTToolSelectiveStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem skeletonToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem addJointToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem editJointToolStripMenuItem;
     }
 }
 

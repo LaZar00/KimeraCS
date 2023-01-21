@@ -56,7 +56,7 @@ namespace KimeraCS
     public partial class frmSkeletonEditor : Form
     {
 
-        public const string STR_APPNAME = "KimeraCS 1.5s";
+        public const string STR_APPNAME = "KimeraCS 1.6a";
 
         public static int modelWidth;
         public static int modelHeight;
@@ -132,6 +132,7 @@ namespace KimeraCS
         frmMagicDB frmMagicDatabase;
         frmInterpolateAll frmInterpAll;
         frmTEXToPNGBatchConversion frmTEX2PNGBC;
+        frmSkeletonJoints frmSJ;
 
         // StopWatch
         Stopwatch swPlayAnimation;
@@ -561,6 +562,7 @@ namespace KimeraCS
             cbBoneSelector.Visible = false;
             cbBoneSelector.SelectedIndex = -1;
             cbBoneSelector.Items.Clear();
+            editJointToolStripMenuItem.Enabled = false;
 
             gbSelectedBoneFrame.Visible = false;
             gbTexturesFrame.Visible = false;
@@ -578,6 +580,7 @@ namespace KimeraCS
             btnComputeWeaponPosition.Visible = false;
 
             // Menu Strip
+            skeletonToolStripMenuItem.Enabled = false;
             loadFieldAnimationToolStripMenuItem.Enabled = false;
             loadBattleMagicLimitsAnimationStripMenuItem.Enabled = false;
 
@@ -672,6 +675,7 @@ namespace KimeraCS
                     btnComputeGroundHeight.Visible = true;
 
                     // Menu Strip
+                    skeletonToolStripMenuItem.Enabled = true;
                     loadFieldAnimationToolStripMenuItem.Enabled = true;
 
                     saveAnimationToolStripMenuItem.Enabled = true;
@@ -1053,9 +1057,15 @@ namespace KimeraCS
                     SetBoneModifiers();
                     gbSelectedBoneFrame.Enabled = true;
                     //if (modelType == K_AA_SKELETON) SetTextureEditorFields();
+
+                    editJointToolStripMenuItem.Enabled = true;
                 }
                 else
+                {
                     gbSelectedBoneFrame.Enabled = false;
+                    editJointToolStripMenuItem.Enabled = false;
+                }
+
 
                 SetTextureEditorFields();
 
@@ -6046,7 +6056,6 @@ namespace KimeraCS
             DoNotAddStateQ = false;
         }
 
-
         public void loadSkeletonFromDB()
         {
             Point3D p_min = new Point3D();
@@ -6386,8 +6395,54 @@ namespace KimeraCS
             }
         }
 
+        public void UpdateBones(string strBoneSelected)
+        {
+            cbBoneSelector.Items.Clear();
+            FillBoneSelector(cbBoneSelector);
 
+            cbBoneSelector.SelectedItem = strBoneSelected;
 
+            // We can redraw the model in panel
+            panelModel.Update();
+            panelModel_Paint(null, null);
+        }
+
+        private void addJointToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string tmpText = "";
+            if (fAnimation.nFrames > 1)
+            {
+                MessageBox.Show("You can Add/Edit Joints when the loaded animation has only 1 frame.",
+                                "Information");
+                return;
+            }
+
+            if (cbBoneSelector.SelectedIndex != -1) tmpText = cbBoneSelector.Text;
+
+            frmSJ = new frmSkeletonJoints(this, 0, tmpText);
+            frmSJ.ShowDialog();
+            frmSJ.Dispose();
+        }
+
+        private void editJointToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (fAnimation.nFrames > 1)
+            {
+                MessageBox.Show("You can Add/Edit Joints when the loaded animation has only 1 frame.",
+                                "Information");
+                return;
+            }
+
+            if (cbBoneSelector.SelectedIndex >= 0)
+            {
+                frmSJ = new frmSkeletonJoints(this, 1, cbBoneSelector.Text);
+                frmSJ.ShowDialog();
+                frmSJ.Dispose();
+            }
+            else
+                MessageBox.Show("If you want to Edit Joints you need to select a Bone in Selected Bone combobox.",
+                                "Information");
+        }
 
 
     }
