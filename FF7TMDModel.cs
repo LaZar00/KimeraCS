@@ -1023,18 +1023,18 @@ namespace KimeraCS
         public static void ConvertPModel2TMD(PModel inPModel, int iModelIdx)
         {
             int iCounter, iSizeAccum, iVertexIndexDuplicated;
-            //PModel tmpPModel;
+            PModel tmpPModel;
             TMD_OBJECT newTMDObj = new TMD_OBJECT();
 
             // Before create the TMD Object, as it does not uses Groups,
             // we need to merge all the groups of the PModel we want to convert into
             // one unique Group if needed.
-            //if (inPModel.Header.numGroups > 1)
-            //{
-            //    MergeGroupsIntoOne(inPModel, out tmpPModel);
+            if (inPModel.Header.numGroups > 1)
+            {
+                MergeGroupsIntoOne(inPModel, out tmpPModel);
 
-            //    inPModel = tmpPModel;
-            //}
+                inPModel = tmpPModel;
+            }
 
             // First we will create the new TMD Object in a new struct.
             newTMDObj.offsetVerts = 0;

@@ -889,6 +889,22 @@ namespace KimeraCS
             outPModel.Groups[0].numPoly = inPModel.Header.numPolys;
             outPModel.Groups[0].numEdge = inPModel.Header.numEdges;
             outPModel.Groups[0].DListNum = 1;
+
+            // Recalculate tris with the new vertex/polys/edges/normals indexes
+            for (int iGroupCounter = 1; iGroupCounter < inPModel.Groups.Length; iGroupCounter++)
+            {
+                // Polys
+                for (int iPolyCounter = inPModel.Groups[iGroupCounter].offsetPoly; 
+                         iPolyCounter < inPModel.Groups[iGroupCounter].numPoly + inPModel.Groups[iGroupCounter].offsetPoly; 
+                         iPolyCounter++)
+                {
+                    outPModel.Polys[iPolyCounter].Verts[0] += (short)inPModel.Groups[iGroupCounter].offsetVert;
+                    outPModel.Polys[iPolyCounter].Verts[1] += (short)inPModel.Groups[iGroupCounter].offsetVert;
+                    outPModel.Polys[iPolyCounter].Verts[2] += (short)inPModel.Groups[iGroupCounter].offsetVert;
+                }
+
+
+            }
         }
 
 
@@ -2375,10 +2391,15 @@ namespace KimeraCS
                 {
                     ti2 = Model.Groups[iGroupIdx].offsetTex;
 
-                    for (ti = Model.Groups[iNextGroup].offsetTex; ti < Model.Header.numTexCs; ti++)
+                    // Let's check if is the last array Tex Coords to move. Then there is no need to
+                    // do the moving.
+                    if (ti2 + Model.Groups[iGroupIdx].numVert < Model.Header.numTexCs)
                     {
-                        Model.TexCoords[ti2] = Model.TexCoords[ti];
-                        ti2++;
+                        for (ti = Model.Groups[iNextGroup].offsetTex; ti < Model.Header.numTexCs; ti++)
+                        {
+                            Model.TexCoords[ti2] = Model.TexCoords[ti];
+                            ti2++;
+                        }
                     }
                 }
             }
@@ -2442,8 +2463,21 @@ namespace KimeraCS
                 RemoveGroupPolys(ref Model, iGroupIdx);
                 RemoveGroupEdges(ref Model, iGroupIdx);
 
-                if (Model.Groups[iGroupIdx].texFlag == 1 || Model.Groups[iGroupIdx].offsetTex > 0)
+//                if (Model.Groups[iGroupIdx].texFlag == 1 || Model.Groups[iGroupIdx].offsetTex > 0)
+//                        RemoveGroupTexCoords(ref Model, iGroupIdx);
+                if (Model.Groups[iGroupIdx].texFlag == 1)
                         RemoveGroupTexCoords(ref Model, iGroupIdx);
+                else
+                {
+                    if  (Model.Groups[iGroupIdx].offsetTex > 0)
+                        if (MessageBox.Show("Group " + iGroupIdx.ToString("00") + " seems to have Texture " +
+                                            "Coordinates assigned, but it has not any Texture assigned.\nDo you " +
+                                            "want -Reset to 0- the Texture Coordinates?", 
+                                            "Question", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                        {
+                            Model.Groups[iGroupIdx].offsetTex = 0;
+                        }
+                }
             }
             else
             {
