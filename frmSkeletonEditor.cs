@@ -56,7 +56,7 @@ namespace KimeraCS
     public partial class frmSkeletonEditor : Form
     {
 
-        public const string STR_APPNAME = "KimeraCS 1.6a";
+        public const string STR_APPNAME = "KimeraCS 1.6c";
 
         public static int modelWidth;
         public static int modelHeight;
@@ -2079,8 +2079,8 @@ namespace KimeraCS
 
             // Set filter options and filter index.
             openFile.Title = "Open Model";
-            openFile.Filter = "FF7 Field Model|*.P|FF7 Battle Model (*.*)|*.*|FF7 Magic Model|*.P??|FF7 TMD Model|*.TMD|All files|*.*";
-            openFile.FilterIndex = 2;
+            openFile.Filter = "FF7 Field Model|*.P|FF7 Battle Model (*.*)|*.*|FF7 Magic Model|*.P??|All files|*.*";
+            openFile.FilterIndex = 4;
             openFile.FileName = null;
 
             // Check Initial Directory
@@ -2123,41 +2123,9 @@ namespace KimeraCS
                         }
 
                         // Load the Model
-                        if (Path.GetExtension(openFile.FileName).ToUpper() == ".TMD")
+                        if (Path.GetExtension(openFile.FileName).ToUpper() != ".TMD")
                         {
-                            // Set Global Paths
-                            strGlobalPathTMDModelFolder = Path.GetDirectoryName(openFile.FileName);
-                            strGlobalTMDModelName = Path.GetFileName(openFile.FileName).ToUpper();
-
-                            mTMDModel = new TMDModel();
-                            LoadTMDModel(ref mTMDModel, strGlobalPathTMDModelFolder,
-                                         Path.GetFileName(strGlobalTMDModelName));
-
-                            if (mTMDModel.TMDObjectList != null && mTMDModel.TMDObjectList.Length > 0)
-                            {
-                                // We have at least loaded the TMD_MODEL.
-                                IsTMDModel = true;
-
-                                // Now let's try to convert the TMD model into P model.
-                                fPModel = new PModel();
-
-                                fPModel.fileName = Path.GetFileNameWithoutExtension(strGlobalTMDModelName) + "_" + "001";
-
-                                ConvertTMD2PModel(ref fPModel, mTMDModel, 0);
-
-                                //for (int i = 0; i < 15; i++)
-                                //{
-                                //    ConvertTMD2PModel(ref fPModel, mTMDModel, i);
-                                //}
-
-                                frmTMDOL = new frmTMDObjList(this);
-                                frmTMDOL.PopulateTMDObjList();
-                                frmTMDOL.Show();
-                            }
-                        }
-                        else
-                        {
-                            // Set Global Paths
+                                    // Set Global Paths
                             strGlobalPathPModelFolder = Path.GetDirectoryName(openFile.FileName);
                             strGlobalPModelName = Path.GetFileName(openFile.FileName).ToUpper();
 
@@ -2194,7 +2162,7 @@ namespace KimeraCS
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error opening Model file " + openFile.FileName.ToUpper() + ".",
+                MessageBox.Show("Error opening P Model file " + openFile.FileName.ToUpper() + ".",
                                 "Error");
                 return;
             }
@@ -2288,6 +2256,129 @@ namespace KimeraCS
             catch
             {
                 MessageBox.Show("Error opening .3DS file " + Path.GetFileName(openFile.FileName).ToUpper() + ".",
+                                "Error");
+                return;
+            }
+        }
+
+        private void loadTMDToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Point3D p_min = new Point3D();
+            Point3D p_max = new Point3D();
+
+            // Set filter options and filter index.
+            openFile.Title = "Open Model";
+            openFile.Filter = "FF7 TMD Model|*.TMD|All files|*.*";
+            openFile.FilterIndex = 1;
+            openFile.FileName = null;
+
+            // Check Initial Directory
+            if (strGlobalPathTMDModelFolder != null)
+            {
+                openFile.InitialDirectory = strGlobalPathTMDModelFolder;
+            }
+            else
+            {
+                openFile.InitialDirectory = strGlobalPath;
+            }
+
+            try
+            {
+                // Process input if the user clicked OK.
+                if (openFile.ShowDialog() == DialogResult.OK)
+                {
+                    if (File.Exists(openFile.FileName))
+                    {
+                        // Close frmPEditor if opened
+                        if (FindWindowOpened("frmPEditor")) frmPEdit.Close();
+
+                        // Disable/Make Invisible in Forms Data controls
+                        InitializeWinFormsDataControls();
+
+                        // We load the Model into memory.
+                        // But first we destroy the previous loaded Skeleton.
+                        if (loaded)
+                        {
+                            if (DestroySkeleton() != 1)
+                            {
+                                MessageBox.Show("Error Destroying Skeleton file " + openFile.FileName.ToUpper() + ".",
+                                                "Error");
+                                return;
+                            }
+                            else
+                            {
+                                loaded = false;
+                            }
+                        }
+
+                        // Load the Model
+                        if (Path.GetExtension(openFile.FileName).ToUpper() == ".TMD")
+                        {
+                            // Set Global Paths
+                            strGlobalPathTMDModelFolder = Path.GetDirectoryName(openFile.FileName);
+                            strGlobalTMDModelName = Path.GetFileName(openFile.FileName).ToUpper();
+
+                            mTMDModel = new TMDModel();
+                            LoadTMDModel(ref mTMDModel, strGlobalPathTMDModelFolder,
+                                         Path.GetFileName(strGlobalTMDModelName));
+
+                            if (mTMDModel.TMDObjectList != null && mTMDModel.TMDObjectList.Length > 0)
+                            {
+                                // We have at least loaded the TMD_MODEL.
+                                IsTMDModel = true;
+
+                                // Now let's try to convert the TMD model into P model.
+                                fPModel = new PModel();
+
+                                fPModel.fileName = Path.GetFileNameWithoutExtension(strGlobalTMDModelName) + "_" + "001";
+
+                                ConvertTMD2PModel(ref fPModel, mTMDModel, 0);
+
+                                //for (int i = 0; i < 15; i++)
+                                //{
+                                //    ConvertTMD2PModel(ref fPModel, mTMDModel, i);
+                                //}
+
+                                frmTMDOL = new frmTMDObjList(this);
+                                frmTMDOL.PopulateTMDObjList();
+                                frmTMDOL.Show();
+                            }
+                        }
+                        else
+                        {
+                            MessageBox.Show("The selected file is not a .TMD file.", "Information");
+                            return;
+                        }
+
+                        // Decide the modelType
+                        if (fPModel.Header.numVerts > 0)
+                        {
+                            modelType = GetPModelType(strGlobalTMDModelName);
+                        }
+
+                        // Enable/Make Visible Win Forms Data controls
+                        EnableWinFormsDataControls();
+
+                        ComputePModelBoundingBox(fPModel, ref p_min, ref p_max);
+                        diameter = ComputeDiameter(fPModel.BoundingBox);
+
+                        // Set frame values in frame editor groupbox...
+                        SetFrameEditorFields();
+
+                        // Set texture values in texture editor groupbox...
+                        SetTextureEditorFields();
+
+                        // PostLoadModelPreparations
+                        PostLoadModelPreparations(ref p_min, ref p_max);
+
+                        // We can draw the model in panel
+                        panelModel_Paint(null, null);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error opening TMD file " + openFile.FileName.ToUpper() + ".",
                                 "Error");
                 return;
             }
