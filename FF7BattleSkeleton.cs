@@ -1077,7 +1077,11 @@ namespace KimeraCS
                     memWriter.Write(bSkeleton.skeletonType);
                     memWriter.Write(bSkeleton.unk1);
                     memWriter.Write(bSkeleton.unk2);
-                    memWriter.Write(bSkeleton.nBones);
+
+                    if (bSkeleton.IsBattleLocation)
+                        memWriter.Write((int)0);
+                    else
+                        memWriter.Write(bSkeleton.nBones);
 
                     memWriter.Write(bSkeleton.unk3);
                     memWriter.Write(bSkeleton.nJoints);
