@@ -1023,6 +1023,7 @@ namespace KimeraCS
         public static void ConvertPModel2TMD(PModel inPModel, int iModelIdx)
         {
             int iCounter, iSizeAccum, iVertexIndexDuplicated;
+
             PModel tmpPModel;
             TMD_OBJECT newTMDObj = new TMD_OBJECT();
 
@@ -1195,6 +1196,7 @@ namespace KimeraCS
                 iSizeAccum += mTMDModel.TMDObjectList[iCounter].nNormals * 8;
             }
 
+            // Check vertex winding of the object polys
             MessageBox.Show("The P Model has been converted to TMD Object.", "Info");
         }
 

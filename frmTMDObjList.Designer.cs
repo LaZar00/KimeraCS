@@ -44,7 +44,7 @@ namespace KimeraCS
             this.lbTMDObjectList.Location = new System.Drawing.Point(4, 3);
             this.lbTMDObjectList.Name = "lbTMDObjectList";
             this.lbTMDObjectList.Size = new System.Drawing.Size(98, 355);
-            this.lbTMDObjectList.TabIndex = 0;
+            this.lbTMDObjectList.TabIndex = 0;            
             this.lbTMDObjectList.DoubleClick += new System.EventHandler(this.lbTMDObjectList_DoubleClick);
             // 
             // btnClose

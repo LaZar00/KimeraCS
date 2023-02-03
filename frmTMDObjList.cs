@@ -194,6 +194,8 @@ namespace KimeraCS
             if (lbTMDObjectList.SelectedIndex > -1)
             {
                 ConvertPModel2TMD(fPModel, lbTMDObjectList.SelectedIndex);
+
+                lbTMDObjectList_DoubleClick(lbTMDObjectList, EventArgs.Empty);
             }
         }
     }
