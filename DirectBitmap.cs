@@ -11,6 +11,8 @@ namespace KimeraCS
 {
     public class DirectBitmap : IDisposable
     {
+        public const float fDefaultDPI = 96.0f;
+
         public Bitmap Bitmap { get; set; }
         public Int32[] Bits { get; private set; }
         public bool Disposed { get; private set; }
@@ -79,6 +81,16 @@ namespace KimeraCS
         public DirectBitmap(string filename)
         {
             Bitmap tmpBmp = new Bitmap(filename);
+
+            // Normalize DPI resolution of loaded image (default 96 dpi)
+            // I detected some .png files have different DPI than the created default bitmaps
+            // for .tex textures. Those .png have sometimes a DPI value of 72, then, when used
+            // in pictureboxes, the image is distorted.
+            // Normalizing the DPI value -horizontal & vertical- seems to fix that
+            tmpBmp.SetResolution(fDefaultDPI, fDefaultDPI);
+
+            // We rotate the image because .tex uses different x/y coordiantes
+            tmpBmp.RotateFlip(RotateFlipType.Rotate180FlipX);
 
             Width = tmpBmp.Width;
             Height = tmpBmp.Height;
