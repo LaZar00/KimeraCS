@@ -27,12 +27,12 @@ namespace KimeraCS
 
         public struct PHeader
         {
-            public int off00;
+            public int version;
             public int off04;
             public int vertexColor;
             public int numVerts;
             public int numNormals;
-            public int off14;
+            public int numXYZ;
             public int numTexCs;
             public int numNormIdx;
             public int numEdges;
@@ -208,6 +208,7 @@ namespace KimeraCS
             public PHeader Header;
             public Point3D[] Verts;
             public Point3D[] Normals;
+            public Point3D[] XYZ;
             public Point2D[] TexCoords;
             public Color[] Vcolors;
             public Color[] Pcolors;
@@ -316,6 +317,18 @@ namespace KimeraCS
             Model.Normals = new Point3D[Model.Header.numNormals];
             ReadPNormals(fileBuffer, ref fileBufferPos, Model.Header.numNormals, ref Model.Normals, strPFullFileName);
 
+            // TryVerts
+            if (Model.Header.numXYZ > 0)
+            {
+                Model.XYZ = new Point3D[Model.Header.numXYZ];
+                ReadPXYZ(fileBuffer, ref fileBufferPos, Model.Header.numXYZ, ref Model.XYZ, strPFullFileName);
+            }
+            //else
+            //{
+            //    Model.Header.numXYZ = 200;
+            //    Model.XYZ = new Point3D[Model.Header.numXYZ];
+            //}
+
             // Texture Coordinates
             Model.TexCoords = new Point2D[Model.Header.numTexCs];
             ReadPTexCoords(fileBuffer, ref fileBufferPos, Model.Header.numTexCs, ref Model.TexCoords, strPFullFileName);
@@ -391,10 +404,10 @@ namespace KimeraCS
             {
                 using (var memReader = new BinaryReader(fileMemory))
                 {
-                    Header.off00 = memReader.ReadInt32();
+                    Header.version = memReader.ReadInt32();
                     Header.off04 = memReader.ReadInt32();
 
-                    if (Header.off00 != 1 || Header.off04 != 1)
+                    if (Header.version != 1 || Header.off04 != 1)
                     {
                         MessageBox.Show("The file header of the P file " + fileName + " is not correct.",
                                         "Error");
@@ -404,7 +417,7 @@ namespace KimeraCS
                     Header.vertexColor = memReader.ReadInt32();
                     Header.numVerts = memReader.ReadInt32();
                     Header.numNormals = memReader.ReadInt32();
-                    Header.off14 = memReader.ReadInt32();
+                    Header.numXYZ = memReader.ReadInt32();
                     Header.numTexCs = memReader.ReadInt32();
                     Header.numNormIdx = memReader.ReadInt32();
                     Header.numEdges = memReader.ReadInt32();
@@ -463,6 +476,26 @@ namespace KimeraCS
                             Normals[i].y = memReader.ReadSingle();
                             Normals[i].z = memReader.ReadSingle();
                         }
+                    }
+
+                    pos = memReader.BaseStream.Position;
+                }
+            }
+        }
+
+        public static void ReadPXYZ(byte[] fileBuffer, ref long pos, long numTryVerts, ref Point3D[] TryVerts, string fileName)
+        {
+            using (var fileMemory = new MemoryStream(fileBuffer))
+            {
+                using (var memReader = new BinaryReader(fileMemory))
+                {
+                    memReader.BaseStream.Position = pos;
+
+                    for (var i = 0; i < numTryVerts; i++)
+                    {
+                        TryVerts[i].x = memReader.ReadSingle();
+                        TryVerts[i].y = memReader.ReadSingle();
+                        TryVerts[i].z = memReader.ReadSingle();
                     }
 
                     pos = memReader.BaseStream.Position;
@@ -837,9 +870,9 @@ namespace KimeraCS
             outPModel.fileName = inPModel.fileName;
 
             // Header
-            outPModel.Header.off00 = inPModel.Header.off00;
+            outPModel.Header.version = inPModel.Header.version;
             outPModel.Header.off04 = inPModel.Header.off04;
-            outPModel.Header.off14 = inPModel.Header.off14;
+            outPModel.Header.numXYZ = inPModel.Header.numXYZ;
             outPModel.Header.off28 = inPModel.Header.off28;
             outPModel.Header.off2C = inPModel.Header.off2C;
             outPModel.Header.off3C = inPModel.Header.off3C;
@@ -1942,12 +1975,12 @@ namespace KimeraCS
                     using (BinaryWriter fileWriter = new BinaryWriter(writeStream))
                     {
                         // Write Header
-                        fileWriter.Write(Model.Header.off00);
+                        fileWriter.Write(Model.Header.version);
                         fileWriter.Write(Model.Header.off04);
                         fileWriter.Write(Model.Header.vertexColor);
                         fileWriter.Write(Model.Header.numVerts);
                         fileWriter.Write(Model.Header.numNormals);
-                        fileWriter.Write(Model.Header.off14);
+                        fileWriter.Write(Model.Header.numXYZ);
                         fileWriter.Write(Model.Header.numTexCs);
                         fileWriter.Write(Model.Header.numNormIdx);
                         fileWriter.Write(Model.Header.numEdges);
@@ -1976,6 +2009,25 @@ namespace KimeraCS
                                 fileWriter.Write(up3DNormal.y);
                                 fileWriter.Write(up3DNormal.z);
                             }
+
+                        // Write TryVerts
+                        if (Model.XYZ != null)
+                        {
+
+                            //for (int i = 0; i < Model.XYZ.Length; i++)
+                            //{
+                            //    Model.XYZ[i].x = 0.5f;
+                            //    Model.XYZ[i].y = 0.5f;
+                            //    Model.XYZ[i].z = 0.5f;
+                            //}
+
+                            foreach (Point3D up3DXYZ in Model.XYZ)
+                            {
+                                fileWriter.Write(up3DXYZ.x);
+                                fileWriter.Write(up3DXYZ.y);
+                                fileWriter.Write(up3DXYZ.z);
+                            }
+                        }
 
                         // Write Texture Coords
                         if (Model.TexCoords != null)
