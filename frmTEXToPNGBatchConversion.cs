@@ -60,13 +60,18 @@ namespace KimeraCS
             fbdTEXBatchPath.folderBrowser.RootFolder = Environment.SpecialFolder.MyComputer;
             fbdTEXBatchPath.folderBrowser.ShowNewFolderButton = false;
 
-            if (strGlobalPathTEX2PNGBatch != "")
-            {
-                fbdTEXBatchPath.folderBrowser.SelectedPath = strGlobalPathTEX2PNGBatch;
-            }
+            if (txtTEX2PNGBatchPath.Text != "")
+                fbdTEXBatchPath.folderBrowser.SelectedPath = txtTEX2PNGBatchPath.Text;
             else
             {
-                fbdTEXBatchPath.folderBrowser.SelectedPath = strGlobalPath;
+                if (strGlobalPathTEX2PNGBatch != "")
+                {
+                    fbdTEXBatchPath.folderBrowser.SelectedPath = strGlobalPathTEX2PNGBatch;
+                }
+                else
+                {
+                    fbdTEXBatchPath.folderBrowser.SelectedPath = strGlobalPath;
+                }
             }
 
             fbdTEXBatchPath.Tmr.Start();
@@ -193,15 +198,122 @@ namespace KimeraCS
                     else
                     {
                         // Case for Battle Texture ??AC-??AL
-                        int c0, c1, c3;
+                        int iModelNumber, iTextureIdx;
                         string strFileName = Path.GetFileName(strTEXFile);
 
-                        c0 = 26 * (Convert.ToChar(strFileName.Substring(0, 1)) - 'A');
-                        c1 = Convert.ToChar(strFileName.Substring(1, 1)) - 'A';
-                        c3 = Convert.ToChar(strFileName.Substring(3, 1)) - 'C';
+                        iModelNumber = 26 * (Convert.ToChar(strFileName.Substring(0, 1)) - 'A') + 
+                                             Convert.ToChar(strFileName.Substring(1, 1)) - 'A';
+                        iTextureIdx = Convert.ToChar(strFileName.Substring(3, 1)) - 'C';
 
-                        strGetPNGFileNameResult = "ENEMY" + Convert.ToInt32(c0 + c1).ToString("000") + "_" +
-                                                  "T" + Convert.ToInt32(c3).ToString("00") + "_00";
+                        // Check if we have ENEMY or STAGE or main (CLOUD, AERITH, etc...)
+                        if (iModelNumber < 370)
+                        {
+                            strGetPNGFileNameResult = "ENEMY" + Convert.ToInt32(iModelNumber).ToString("000") + "_" +
+                                                      "T" + Convert.ToInt32(iTextureIdx).ToString("00") + "_00";
+                        }
+                        else if (iModelNumber < 460)
+                        {
+                            iModelNumber -= 370;
+                            strGetPNGFileNameResult = "STAGE" + Convert.ToInt32(iModelNumber).ToString("00") + "_" +
+                                                      "T" + Convert.ToInt32(iTextureIdx).ToString("00") + "_00";
+                        }
+                        else
+                        {
+                            string strName = "WRONG";
+
+                            iModelNumber -= 460;
+
+                            switch(iModelNumber)
+                            {
+                                case 0:
+                                    strName = "FROG";
+                                    break;
+
+                                case 1:
+                                    strName = "CLOUD";
+                                    break;
+
+                                case 2:
+                                    strName = "TIFA";
+                                    break;
+
+                                case 3:
+                                    strName = "EARITH";
+                                    break;
+
+                                case 4:
+                                    strName = "RED13";
+                                    break;
+
+                                case 5:
+                                    strName = "YUFI";
+                                    break;
+
+                                case 6:
+                                    strName = "KETCY";
+                                    break;
+
+                                case 7:
+                                    strName = "CID1";
+                                    break;
+
+                                case 8:
+                                    strName = "SEFIROS";
+                                    break;
+
+                                case 9:
+                                    strName = "BARRETT";
+                                    break;
+
+                                case 10:
+                                    strName = "BARRETT2";
+                                    break;
+
+                                case 11:
+                                    strName = "BARRETT3";
+                                    break;
+
+                                case 12:
+                                    strName = "BARRETT4";
+                                    break;
+
+                                case 13:
+                                    strName = "VINSENT";
+                                    break;
+
+                                case 14:
+                                    strName = "VINSENT2";
+                                    break;
+
+                                case 15:
+                                    strName = "VINSENT3";
+                                    break;
+
+                                case 16:
+                                    strName = "HICLOUD";
+                                    break;
+
+                                case 17:
+                                    strName = "GALL";
+                                    break;
+
+                                case 18:
+                                    strName = "DEATHGIG";
+                                    break;
+
+                                case 19:
+                                    strName = "HELLMASK";
+                                    break;
+
+                                case 20:
+                                    strName = "CHAOS";
+                                    break;
+                            }
+
+                            strGetPNGFileNameResult = strName + "_" + "T" + 
+                                                      Convert.ToInt32(iTextureIdx).ToString("00") + "_00";
+                        }
+
                     }
                 }
             }

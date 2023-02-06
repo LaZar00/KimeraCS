@@ -946,7 +946,7 @@ namespace KimeraCS
                 ConvertModel3DSToPModel(modelsV[mi], ref outModel);
             }
 
-            outModel.Header.off00 = 1;
+            outModel.Header.version = 1;
             outModel.Header.off04 = 1;
 
             // Instantiate Header.unknown (in VB6 this is done directly, here we need to do it manually or when creating the PModel.
