@@ -937,7 +937,7 @@ namespace KimeraCS
 
         public static void ConvertTMD2PModel(ref PModel outPModel, TMDModel inTMDModel, int iModelIdx)
         {
-            outPModel.Header.off00 = 1;
+            outPModel.Header.version = 1;
             outPModel.Header.off04 = 1;
 
             // Instantiate Header.unknown (in VB6 this is done directly, here we need to do it manually or when creating the PModel.
