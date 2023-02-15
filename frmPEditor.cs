@@ -276,12 +276,24 @@ namespace KimeraCS
 
         private void chkEnableLighting_CheckedChanged(object sender, EventArgs e)
         {
-            // Change icon
+            // Change icon and enable scrolls
             if (chkEnableLighting.Checked)
+            {
                 chkEnableLighting.Image = new Bitmap(Properties.Resources.lightbulb_on16);
+
+                hsbLightX.Enabled = true;
+                hsbLightY.Enabled = true;
+                hsbLightZ.Enabled = true;
+            }               
             else
+            {
                 chkEnableLighting.Image = new Bitmap(Properties.Resources.lightbulb_off16);
 
+                hsbLightX.Enabled = false;
+                hsbLightY.Enabled = false;
+                hsbLightZ.Enabled = false;
+            }
+                
             // Do processing
             if (chkEnableLighting.Checked && loadedPModel)
             {
@@ -2783,56 +2795,58 @@ namespace KimeraCS
             ComputeCurrentEquations();
         }
 
-         public void CommitContextualizedPChanges(bool bDNormals)
+        public void CommitContextualizedPChanges(bool bDNormals)
         {
             Point3D p_min = new Point3D();
             Point3D p_max = new Point3D();
 
+            float tmpDist, modelDiameterNormalized;
+
             AddStateToBufferPE(this);
 
-            //SetCameraModelViewQuat(repXPE, repYPE, repZPE,
-            //                       EditedPModel.rotationQuaternion,
-            //                       rszXPE, rszYPE, rszZPE);
+            SetCameraModelViewQuat(repXPE, repYPE, repZPE,
+                                   EditedPModel.rotationQuaternion,
+                                   rszXPE, rszYPE, rszZPE);
 
-            //glMatrixMode(glMatrixModeList.GL_MODELVIEW);
-            //glPushMatrix();
+            glMatrixMode(glMatrixModeList.GL_MODELVIEW);
+            glPushMatrix();
 
-            //ComputeCurrentBoundingBox(ref EditedPModel);
-            //ComputePModelBoundingBox(EditedPModel, ref p_min, ref p_max);
-            //tmpDist = -2 * ComputeSceneRadius(p_min, p_max);
-            //ComputeNormals(ref EditedPModel);
+            ComputeCurrentBoundingBox(ref EditedPModel);
+            ComputePModelBoundingBox(EditedPModel, ref p_min, ref p_max);
+            tmpDist = -2 * ComputeSceneRadius(p_min, p_max);
+            ComputeNormals(ref EditedPModel);
 
-            //if (chkEnableLighting.Checked)
-            //{
-            //    glViewport(0, 0, panelEditorPModel.ClientRectangle.Width, panelEditorPModel.ClientRectangle.Height);
-            //    glClear(glBufferMask.GL_COLOR_BUFFER_BIT | glBufferMask.GL_DEPTH_BUFFER_BIT);
+            if (chkEnableLighting.Checked)
+            {
+                glViewport(0, 0, panelEditorPModel.ClientRectangle.Width, panelEditorPModel.ClientRectangle.Height);
+                glClear(glBufferMask.GL_COLOR_BUFFER_BIT | glBufferMask.GL_DEPTH_BUFFER_BIT);
 
-            //    SetCameraAroundModelQuat(ref p_min, ref p_max, repXPE, repYPE, repZPE + tmpDist,
-            //                             EditedPModel.rotationQuaternion,
-            //                             rszXPE, rszYPE, rszZPE);
+                SetCameraAroundModelQuat(ref p_min, ref p_max, repXPE, repYPE, repZPE + tmpDist,
+                                         EditedPModel.rotationQuaternion,
+                                         rszXPE, rszYPE, rszZPE);
 
-            //    glDisable(glCapability.GL_LIGHT0);
-            //    glDisable(glCapability.GL_LIGHT1);
-            //    glDisable(glCapability.GL_LIGHT2);
-            //    glDisable(glCapability.GL_LIGHT3);
+                glDisable(glCapability.GL_LIGHT0);
+                glDisable(glCapability.GL_LIGHT1);
+                glDisable(glCapability.GL_LIGHT2);
+                glDisable(glCapability.GL_LIGHT3);
 
-            //    ComputePModelBoundingBox(EditedPModel, ref p_min, ref p_max);
-            //    modelDiameterNormalized = (-2 * ComputeSceneRadius(p_min, p_max)) / LIGHT_STEPS;
+                ComputePModelBoundingBox(EditedPModel, ref p_min, ref p_max);
+                modelDiameterNormalized = (-2 * ComputeSceneRadius(p_min, p_max)) / LIGHT_STEPS;
 
-            //    SetLighting(glCapability.GL_LIGHT0, modelDiameterNormalized * hsbLightX.Value,
-            //                                        modelDiameterNormalized * hsbLightY.Value,
-            //                                        modelDiameterNormalized * hsbLightZ.Value,
-            //                                        1, 1, 1, false);
-            //    ApplyColorTable(ref EditedPModel, colorTable, translationTableVertex, translationTablePolys);
-            //    //CommitCurrentVColors(ref EditedPModel);
-            //}
+                SetLighting(glCapability.GL_LIGHT0, modelDiameterNormalized * hsbLightX.Value,
+                                                    modelDiameterNormalized * hsbLightY.Value,
+                                                    modelDiameterNormalized * hsbLightZ.Value,
+                                                    1, 1, 1, false);
 
-            //glMatrixMode(glMatrixModeList.GL_MODELVIEW);
-            //glPopMatrix();
+                ApplyCurrentVColors(ref EditedPModel);
+            }
 
-            //SetCameraModelViewQuat(repXPE, repYPE, repZPE,
-            //                       EditedPModel.rotationQuaternion,
-            //                       rszXPE, rszYPE, rszZPE);
+            glMatrixMode(glMatrixModeList.GL_MODELVIEW);
+            glPopMatrix();
+
+            SetCameraModelViewQuat(repXPE, repYPE, repZPE,
+                                   EditedPModel.rotationQuaternion,
+                                   rszXPE, rszYPE, rszZPE);
 
 
             ApplyPChangesPE(ref EditedPModel, bDNormals);
@@ -2894,6 +2908,118 @@ namespace KimeraCS
             panelEditorPModel_Paint(null, null);
             pbPalette_Paint(null, null);
         }
+
+        // public void CommitContextualizedPChanges(bool bDNormals)
+        //{
+        //    Point3D p_min = new Point3D();
+        //    Point3D p_max = new Point3D();
+
+        //    AddStateToBufferPE(this);
+
+        //    //SetCameraModelViewQuat(repXPE, repYPE, repZPE,
+        //    //                       EditedPModel.rotationQuaternion,
+        //    //                       rszXPE, rszYPE, rszZPE);
+
+        //    //glMatrixMode(glMatrixModeList.GL_MODELVIEW);
+        //    //glPushMatrix();
+
+        //    //ComputeCurrentBoundingBox(ref EditedPModel);
+        //    //ComputePModelBoundingBox(EditedPModel, ref p_min, ref p_max);
+        //    //tmpDist = -2 * ComputeSceneRadius(p_min, p_max);
+        //    //ComputeNormals(ref EditedPModel);
+
+        //    //if (chkEnableLighting.Checked)
+        //    //{
+        //    //    glViewport(0, 0, panelEditorPModel.ClientRectangle.Width, panelEditorPModel.ClientRectangle.Height);
+        //    //    glClear(glBufferMask.GL_COLOR_BUFFER_BIT | glBufferMask.GL_DEPTH_BUFFER_BIT);
+
+        //    //    SetCameraAroundModelQuat(ref p_min, ref p_max, repXPE, repYPE, repZPE + tmpDist,
+        //    //                             EditedPModel.rotationQuaternion,
+        //    //                             rszXPE, rszYPE, rszZPE);
+
+        //    //    glDisable(glCapability.GL_LIGHT0);
+        //    //    glDisable(glCapability.GL_LIGHT1);
+        //    //    glDisable(glCapability.GL_LIGHT2);
+        //    //    glDisable(glCapability.GL_LIGHT3);
+
+        //    //    ComputePModelBoundingBox(EditedPModel, ref p_min, ref p_max);
+        //    //    modelDiameterNormalized = (-2 * ComputeSceneRadius(p_min, p_max)) / LIGHT_STEPS;
+
+        //    //    SetLighting(glCapability.GL_LIGHT0, modelDiameterNormalized * hsbLightX.Value,
+        //    //                                        modelDiameterNormalized * hsbLightY.Value,
+        //    //                                        modelDiameterNormalized * hsbLightZ.Value,
+        //    //                                        1, 1, 1, false);
+        //    //    ApplyColorTable(ref EditedPModel, colorTable, translationTableVertex, translationTablePolys);
+        //    //    //CommitCurrentVColors(ref EditedPModel);
+        //    //}
+
+        //    //glMatrixMode(glMatrixModeList.GL_MODELVIEW);
+        //    //glPopMatrix();
+
+        //    //SetCameraModelViewQuat(repXPE, repYPE, repZPE,
+        //    //                       EditedPModel.rotationQuaternion,
+        //    //                       rszXPE, rszYPE, rszZPE);
+
+
+        //    ApplyPChangesPE(ref EditedPModel, bDNormals);
+
+        //    loadingModifiersQ = true;
+        //    hsbResizeX.Value = 100;
+        //    hsbResizeY.Value = 100;
+        //    hsbResizeZ.Value = 100;
+        //    hsbRepositionX.Value = 0;
+        //    hsbRepositionY.Value = 0;
+        //    hsbRepositionZ.Value = 0;
+        //    hsbRotateAlpha.Value = 0;
+        //    hsbRotateBeta.Value = 0;
+        //    hsbRotateGamma.Value = 0;
+
+        //    txtRepositionX.Text = "0";
+        //    txtRepositionY.Text = "0";
+        //    txtRepositionZ.Text = "0";
+        //    txtResizeX.Text = "100";
+        //    txtResizeY.Text = "100";
+        //    txtResizeZ.Text = "100";
+        //    txtRotateAlpha.Text = "0";
+        //    txtRotateBeta.Text = "0";
+        //    txtRotateGamma.Text = "0";
+
+        //    EditedPModel.rotationQuaternion.x = 0;
+        //    EditedPModel.rotationQuaternion.y = 0;
+        //    EditedPModel.rotationQuaternion.z = 0;
+        //    EditedPModel.rotationQuaternion.w = 1;
+
+        //    //for (int iGroupIdx = 0; iGroupIdx < EditedPModel.Header.numGroups; iGroupIdx++)
+        //    //{
+        //    //    EditedPModel.Groups[iGroupIdx].rotationQuaternionGroup.x = 0;
+        //    //    EditedPModel.Groups[iGroupIdx].rotationQuaternionGroup.y = 0;
+        //    //    EditedPModel.Groups[iGroupIdx].rotationQuaternionGroup.z = 0;
+        //    //    EditedPModel.Groups[iGroupIdx].rotationQuaternionGroup.w = 1;
+        //    //}
+
+        //    rszXPE = 1;
+        //    rszYPE = 1;
+        //    rszZPE = 1;
+        //    repXPE = 0;
+        //    repYPE = 0;
+        //    repZPE = 0;
+
+        //    rszGroupXPE = 1;
+        //    rszGroupYPE = 1;
+        //    rszGroupZPE = 1;
+        //    repGroupXPE = 0;
+        //    repGroupYPE = 0;
+        //    repGroupZPE = 0;
+        //    loadingModifiersQ = false;
+
+        //    CopyModelColors2VP(EditedPModel, ref vcolorsOriginal, ref pcolorsOriginal);
+        //    FillColorTable(EditedPModel, ref colorTable,
+        //                   ref translationTableVertex, ref translationTablePolys, (byte)iThreshold);
+        //    ApplyColorTable(ref EditedPModel, colorTable, translationTableVertex, translationTablePolys);
+
+        //    panelEditorPModel_Paint(null, null);
+        //    pbPalette_Paint(null, null);
+        //}
 
         public void SetFunctionButtonColors()
         {
