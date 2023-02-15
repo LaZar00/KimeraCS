@@ -2583,24 +2583,24 @@ namespace KimeraCS
 
             glGetIntegerv((uint)glCapability.GL_VIEWPORT, vp0);
             glViewport(0, 0, 3, 3);
-            glGetIntegerv((uint)glCapability.GL_VIEWPORT, vp);
+            //glGetIntegerv((uint)glCapability.GL_VIEWPORT, vp);
             
             glMatrixMode(glMatrixModeList.GL_PROJECTION);
             glPushMatrix();
 
             //  Debug.Print p.X, p.Y, p.z, .X, .Y, c.r, c.g, c.b
-            glGetDoublev((uint)glCapability.GL_PROJECTION_MATRIX, P_matrix);
-            glLoadIdentity();
-            gluPickMatrix(GetProjectedCoords(p).x - 1, GetProjectedCoords(p).y - 1, 3, 3, vp);
+            //glGetDoublev((uint)glCapability.GL_PROJECTION_MATRIX, P_matrix);
+            //glLoadIdentity();
+            //gluPickMatrix(GetProjectedCoords(p).x - 1, GetProjectedCoords(p).y - 1, 3, 3, vp);
             // gluPerspective(60, 1, 0.1, diameter);
-            glMultMatrixd(P_matrix);
+            //glMultMatrixd(P_matrix);
 
             glClear(glBufferMask.GL_COLOR_BUFFER_BIT | glBufferMask.GL_DEPTH_BUFFER_BIT);
 
             glPointSize(100f);
 
             glBegin(glDrawMode.GL_POINTS);
-                glColor4f(c.R / 255, c.G / 255, c.B / 255, 1);
+                glColor4f(c.R / 255f, c.G / 255f, c.B / 255f, 1f);
                 glColorMaterial(glFace.GL_FRONT_AND_BACK, glMaterialParameter.GL_AMBIENT_AND_DIFFUSE);
 
                 glNormal3f(n.x, n.y, n.z);
