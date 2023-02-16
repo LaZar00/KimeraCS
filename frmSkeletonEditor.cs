@@ -56,7 +56,7 @@ namespace KimeraCS
     public partial class frmSkeletonEditor : Form
     {
 
-        public const string STR_APPNAME = "KimeraCS 1.6g";
+        public const string STR_APPNAME = "KimeraCS 1.6h";
 
         public static int modelWidth;
         public static int modelHeight;
@@ -589,6 +589,7 @@ namespace KimeraCS
             outputFramesDataTXTToolStripMenuItem.Enabled = false;
             inputFramesDataTXTToolStripMenuItem.Enabled = false;
             inputFramesDataTXTToolSelectiveStripMenuItem.Enabled = false;
+            mergeFramesDataTXTToolStripMenuItem.Enabled = false;
 
             saveSkeletonToolStripMenuItem.Enabled = false;
             saveSkeletonAsToolStripMenuItem.Enabled = false;
@@ -683,6 +684,7 @@ namespace KimeraCS
                     outputFramesDataTXTToolStripMenuItem.Enabled = true;
                     inputFramesDataTXTToolStripMenuItem.Enabled = true;
                     inputFramesDataTXTToolSelectiveStripMenuItem.Enabled = true;
+                    mergeFramesDataTXTToolStripMenuItem.Enabled = true;
 
                     saveSkeletonToolStripMenuItem.Enabled = true;
                     saveSkeletonAsToolStripMenuItem.Enabled = true;
@@ -6390,11 +6392,11 @@ namespace KimeraCS
                     AddStateToBuffer(this);
 
                     // We load the Frames Data
-                    iOpenResult = ReadFrameData(openFile.FileName);
+                    iOpenResult = ReadFrameData(openFile.FileName, false);
 
                     if (iOpenResult == -1)
                     {
-                        MessageBox.Show("It has been some problem while loading the Frame Data from file " +
+                        MessageBox.Show("It has been some problem [input] while loading the Frame Data from file " +
                                         Path.GetFileName(openFile.FileName).ToUpper() + ".",
                                         "Error");
                     }
@@ -6420,7 +6422,7 @@ namespace KimeraCS
             }
             catch
             {
-                MessageBox.Show("Error exception loading the Frame Data from file " +
+                MessageBox.Show("Error exception [input] loading the Frame Data from file " +
                                 Path.GetFileName(openFile.FileName).ToUpper() + ".",
                                 "Error");
                 return;
@@ -6485,6 +6487,66 @@ namespace KimeraCS
                 return;
             }
         }
+
+        private void mergeFramesDataTXTOnlyFieldModelsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            int iOpenResult;
+
+            // Set filter options and filter index depending on modelType
+            openFile.Title = "Merge Frame Data from TXT";
+            openFile.Filter = "Frame Data|*.txt|All files|*.*";
+
+            // Check Initial Directory
+            openFile.FileName = Path.GetFileNameWithoutExtension(strGlobalFieldAnimationName) + ".TXT";
+            openFile.FilterIndex = 1;
+            openFile.InitialDirectory = strGlobalPathFieldAnimationFolder;
+
+            try
+            {
+                // Process input if the user clicked OK.
+                if (openFile.ShowDialog() == DialogResult.OK)
+                {
+                    // Let's save state to buffer
+                    AddStateToBuffer(this);
+
+                    // We load the Frames Data
+                    iOpenResult = ReadFrameData(openFile.FileName, true);
+
+                    if (iOpenResult == -1)
+                    {
+                        MessageBox.Show("It has been some problem [merge] while loading the Frame Data from file " +
+                                        Path.GetFileName(openFile.FileName).ToUpper() + ".",
+                                        "Error");
+                    }
+
+                    strGlobalFieldAnimationName = fAnimation.strFieldAnimationFile;
+
+                    // Let's stop the Animation
+                    btnPlayStopAnim.Checked = false;
+
+                    iCurrentFrameScroll = 0;
+                    tbCurrentFrameScroll.Value = 0;
+                    txtAnimationFrame.Text = iCurrentFrameScroll.ToString();
+
+                    tbCurrentFrameScroll.Maximum = fAnimation.nFrames - 1;
+
+                    SetFrameEditorFields();
+
+                    Text = STR_APPNAME + " - Model: " + strGlobalFieldSkeletonName.ToUpper() +
+                                         " / Anim: " + strGlobalFieldAnimationName.ToUpper();
+
+                    panelModel_Paint(null, null);
+                }
+            }
+            catch
+            {
+                MessageBox.Show("Error exception [merge] loading the Frame Data from file " +
+                                Path.GetFileName(openFile.FileName).ToUpper() + ".",
+                                "Error");
+                return;
+            }
+        }
+
 
         public void UpdateBones(string strBoneSelected)
         {
