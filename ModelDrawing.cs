@@ -1693,9 +1693,9 @@ namespace KimeraCS
                 ComputePModelBoundingBox(EditedPModel, ref p_min, ref p_max);
                 modelDiameterNormalized = (-2 * ComputeSceneRadius(p_min, p_max)) / frmPEditor.LIGHT_STEPS;
 
-                SetLighting(glCapability.GL_LIGHT0, modelDiameterNormalized * iLightX,
-                                                    modelDiameterNormalized * iLightY,
-                                                    modelDiameterNormalized * iLightZ,
+                SetLighting(glCapability.GL_LIGHT0, modelDiameterNormalized * frmPEditor.iLightX,
+                                                    modelDiameterNormalized * frmPEditor.iLightY,
+                                                    modelDiameterNormalized * frmPEditor.iLightZ,
                                                     1, 1, 1, false);
             }
             else glDisable(glCapability.GL_LIGHTING);

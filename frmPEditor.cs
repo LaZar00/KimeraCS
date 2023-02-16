@@ -2619,10 +2619,10 @@ namespace KimeraCS
             DISTPE = -2 * ComputeSceneRadius(p_min, p_max);
 
             hsbLightX.Value = 0;
-            hsbLightY.Value = 0;
+            hsbLightY.Value = 1;
             hsbLightZ.Value = 0;
             iLightX = 0;
-            iLightY = 0;
+            iLightY = 1;
             iLightZ = 0;
 
             // Load modifiers

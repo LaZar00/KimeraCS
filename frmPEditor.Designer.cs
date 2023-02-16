@@ -454,7 +454,7 @@ namespace KimeraCS
             this.pbPaletteColor.BackColor = System.Drawing.Color.Black;
             this.pbPaletteColor.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.pbPaletteColor.Location = new System.Drawing.Point(96, 183);
-            this.pbPaletteColor.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.pbPaletteColor.Margin = new System.Windows.Forms.Padding(2);
             this.pbPaletteColor.Name = "pbPaletteColor";
             this.pbPaletteColor.Size = new System.Drawing.Size(42, 20);
             this.pbPaletteColor.TabIndex = 30;
@@ -655,7 +655,7 @@ namespace KimeraCS
             this.pbPalette.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.pbPalette.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.pbPalette.Location = new System.Drawing.Point(6, 31);
-            this.pbPalette.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.pbPalette.Margin = new System.Windows.Forms.Padding(2);
             this.pbPalette.Name = "pbPalette";
             this.pbPalette.Size = new System.Drawing.Size(132, 148);
             this.pbPalette.TabIndex = 0;
@@ -681,7 +681,7 @@ namespace KimeraCS
             this.chkShowAxes.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkShowAxes.ForeColor = System.Drawing.SystemColors.Control;
             this.chkShowAxes.Location = new System.Drawing.Point(40, 121);
-            this.chkShowAxes.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.chkShowAxes.Margin = new System.Windows.Forms.Padding(2);
             this.chkShowAxes.Name = "chkShowAxes";
             this.chkShowAxes.Size = new System.Drawing.Size(93, 24);
             this.chkShowAxes.TabIndex = 27;
@@ -767,9 +767,9 @@ namespace KimeraCS
             this.gbPlaneOperations.Controls.Add(this.lblXPO);
             this.gbPlaneOperations.ForeColor = System.Drawing.SystemColors.Control;
             this.gbPlaneOperations.Location = new System.Drawing.Point(6, 363);
-            this.gbPlaneOperations.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.gbPlaneOperations.Margin = new System.Windows.Forms.Padding(2);
             this.gbPlaneOperations.Name = "gbPlaneOperations";
-            this.gbPlaneOperations.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.gbPlaneOperations.Padding = new System.Windows.Forms.Padding(2);
             this.gbPlaneOperations.Size = new System.Drawing.Size(132, 154);
             this.gbPlaneOperations.TabIndex = 2;
             this.gbPlaneOperations.TabStop = false;
@@ -780,7 +780,7 @@ namespace KimeraCS
             this.chkShowPlane.Checked = true;
             this.chkShowPlane.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkShowPlane.Location = new System.Drawing.Point(28, 125);
-            this.chkShowPlane.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.chkShowPlane.Margin = new System.Windows.Forms.Padding(2);
             this.chkShowPlane.Name = "chkShowPlane";
             this.chkShowPlane.Size = new System.Drawing.Size(88, 24);
             this.chkShowPlane.TabIndex = 32;
@@ -791,7 +791,7 @@ namespace KimeraCS
             // nudZPlane
             // 
             this.nudZPlane.Location = new System.Drawing.Point(45, 62);
-            this.nudZPlane.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.nudZPlane.Margin = new System.Windows.Forms.Padding(2);
             this.nudZPlane.Maximum = new decimal(new int[] {
             200,
             0,
@@ -810,7 +810,7 @@ namespace KimeraCS
             // nudAlphaPlane
             // 
             this.nudAlphaPlane.Location = new System.Drawing.Point(45, 83);
-            this.nudAlphaPlane.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.nudAlphaPlane.Margin = new System.Windows.Forms.Padding(2);
             this.nudAlphaPlane.Maximum = new decimal(new int[] {
             360,
             0,
@@ -824,7 +824,7 @@ namespace KimeraCS
             // nudYPlane
             // 
             this.nudYPlane.Location = new System.Drawing.Point(45, 41);
-            this.nudYPlane.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.nudYPlane.Margin = new System.Windows.Forms.Padding(2);
             this.nudYPlane.Maximum = new decimal(new int[] {
             200,
             0,
@@ -843,7 +843,7 @@ namespace KimeraCS
             // nudXPlane
             // 
             this.nudXPlane.Location = new System.Drawing.Point(45, 20);
-            this.nudXPlane.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.nudXPlane.Margin = new System.Windows.Forms.Padding(2);
             this.nudXPlane.Maximum = new decimal(new int[] {
             200,
             0,
@@ -862,7 +862,7 @@ namespace KimeraCS
             // nudBetaPlane
             // 
             this.nudBetaPlane.Location = new System.Drawing.Point(45, 104);
-            this.nudBetaPlane.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.nudBetaPlane.Margin = new System.Windows.Forms.Padding(2);
             this.nudBetaPlane.Maximum = new decimal(new int[] {
             360,
             0,
@@ -1587,12 +1587,14 @@ namespace KimeraCS
             this.chkEnableLighting.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.chkEnableLighting.ForeColor = System.Drawing.SystemColors.ControlText;
             this.chkEnableLighting.Image = global::KimeraCS.Properties.Resources.lightbulb_off16;
-            this.chkEnableLighting.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.chkEnableLighting.Location = new System.Drawing.Point(6, 75);
             this.chkEnableLighting.Name = "chkEnableLighting";
+            this.chkEnableLighting.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.chkEnableLighting.Size = new System.Drawing.Size(107, 24);
             this.chkEnableLighting.TabIndex = 7;
             this.chkEnableLighting.Text = "Enable lighting";
+            this.chkEnableLighting.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.chkEnableLighting.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
             this.chkEnableLighting.UseVisualStyleBackColor = true;
             this.chkEnableLighting.CheckedChanged += new System.EventHandler(this.chkEnableLighting_CheckedChanged);
             // 
@@ -1634,7 +1636,7 @@ namespace KimeraCS
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
             this.MainMenuStrip = this.menuStrip1;
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.MinimumSize = new System.Drawing.Size(734, 575);
             this.Name = "frmPEditor";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
