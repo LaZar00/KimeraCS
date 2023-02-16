@@ -147,6 +147,7 @@ namespace KimeraCS
             this.loadRSDResourceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadPModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.load3DSToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadTMDToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.saveSkeletonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveSkeletonAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -178,6 +179,7 @@ namespace KimeraCS
             this.outputFramesDataTXTToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.inputFramesDataTXTToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.inputFramesDataTXTToolSelectiveStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.mergeFramesDataTXTToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripFPS15 = new System.Windows.Forms.ToolStripMenuItem();
@@ -191,7 +193,6 @@ namespace KimeraCS
             this.showMagiclgpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveFile = new System.Windows.Forms.SaveFileDialog();
             this.panelModel = new System.Windows.Forms.PictureBox();
-            this.loadTMDToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1.SuspendLayout();
             this.gbTexturesFrame.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUDMoveTextureUpDown)).BeginInit();
@@ -1646,6 +1647,13 @@ namespace KimeraCS
             this.load3DSToolStripMenuItem.Text = "Load 3DS";
             this.load3DSToolStripMenuItem.Click += new System.EventHandler(this.load3DSToolStripMenuItem_Click);
             // 
+            // loadTMDToolStripMenuItem
+            // 
+            this.loadTMDToolStripMenuItem.Name = "loadTMDToolStripMenuItem";
+            this.loadTMDToolStripMenuItem.Size = new System.Drawing.Size(236, 22);
+            this.loadTMDToolStripMenuItem.Text = "Load TMD";
+            this.loadTMDToolStripMenuItem.Click += new System.EventHandler(this.loadTMDToolStripMenuItem_Click);
+            // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
@@ -1698,7 +1706,7 @@ namespace KimeraCS
             this.undoToolStripMenuItem.Enabled = false;
             this.undoToolStripMenuItem.Name = "undoToolStripMenuItem";
             this.undoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.U)));
-            this.undoToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.undoToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
             this.undoToolStripMenuItem.Text = "Undo";
             this.undoToolStripMenuItem.Click += new System.EventHandler(this.undoToolStripMenuItem_Click);
             // 
@@ -1707,26 +1715,26 @@ namespace KimeraCS
             this.redoToolStripMenuItem.Enabled = false;
             this.redoToolStripMenuItem.Name = "redoToolStripMenuItem";
             this.redoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R)));
-            this.redoToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.redoToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
             this.redoToolStripMenuItem.Text = "Redo";
             this.redoToolStripMenuItem.Click += new System.EventHandler(this.redoToolStripMenuItem_Click);
             // 
             // toolStripSeparator6
             // 
             this.toolStripSeparator6.Name = "toolStripSeparator6";
-            this.toolStripSeparator6.Size = new System.Drawing.Size(177, 6);
+            this.toolStripSeparator6.Size = new System.Drawing.Size(142, 6);
             // 
             // resetCameraToolStripMenuItem
             // 
             this.resetCameraToolStripMenuItem.Name = "resetCameraToolStripMenuItem";
-            this.resetCameraToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.resetCameraToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
             this.resetCameraToolStripMenuItem.Text = "Reset camera";
             this.resetCameraToolStripMenuItem.Click += new System.EventHandler(this.resetCameraToolStripMenuItem_Click);
             // 
             // toolStripSeparator7
             // 
             this.toolStripSeparator7.Name = "toolStripSeparator7";
-            this.toolStripSeparator7.Size = new System.Drawing.Size(177, 6);
+            this.toolStripSeparator7.Size = new System.Drawing.Size(142, 6);
             // 
             // uIOpacityToolStripMenuItem
             // 
@@ -1737,7 +1745,7 @@ namespace KimeraCS
             this.tsUIOpacity50,
             this.tsUIOpacity25});
             this.uIOpacityToolStripMenuItem.Name = "uIOpacityToolStripMenuItem";
-            this.uIOpacityToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.uIOpacityToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
             this.uIOpacityToolStripMenuItem.Text = "UI Opacity";
             // 
             // tsUIOpacity100
@@ -1828,6 +1836,7 @@ namespace KimeraCS
             this.outputFramesDataTXTToolStripMenuItem,
             this.inputFramesDataTXTToolStripMenuItem,
             this.inputFramesDataTXTToolSelectiveStripMenuItem,
+            this.mergeFramesDataTXTToolStripMenuItem,
             this.toolStripSeparator4,
             this.toolStripMenuItem1,
             this.toolStripSeparator5,
@@ -1897,6 +1906,14 @@ namespace KimeraCS
             this.inputFramesDataTXTToolSelectiveStripMenuItem.Size = new System.Drawing.Size(382, 22);
             this.inputFramesDataTXTToolSelectiveStripMenuItem.Text = "Input Frames Data from .TXT (Only Field Models, Selective)";
             this.inputFramesDataTXTToolSelectiveStripMenuItem.Click += new System.EventHandler(this.inputFramesDataFromTXTOnlyFieldModelsSelectiveToolStripMenuItem_Click);
+            // 
+            // mergeFramesDataTXTToolStripMenuItem
+            // 
+            this.mergeFramesDataTXTToolStripMenuItem.Enabled = false;
+            this.mergeFramesDataTXTToolStripMenuItem.Name = "mergeFramesDataTXTToolStripMenuItem";
+            this.mergeFramesDataTXTToolStripMenuItem.Size = new System.Drawing.Size(382, 22);
+            this.mergeFramesDataTXTToolStripMenuItem.Text = "Merge Frames Data from .TXT (Only Field Models)";
+            this.mergeFramesDataTXTToolStripMenuItem.Click += new System.EventHandler(this.mergeFramesDataTXTOnlyFieldModelsToolStripMenuItem_Click);
             // 
             // toolStripSeparator4
             // 
@@ -1996,13 +2013,6 @@ namespace KimeraCS
             this.panelModel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.panelModel_MouseDown);
             this.panelModel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.panelModel_MouseMove);
             this.panelModel.MouseUp += new System.Windows.Forms.MouseEventHandler(this.panelModel_MouseUp);
-            // 
-            // loadTMDToolStripMenuItem
-            // 
-            this.loadTMDToolStripMenuItem.Name = "loadTMDToolStripMenuItem";
-            this.loadTMDToolStripMenuItem.Size = new System.Drawing.Size(236, 22);
-            this.loadTMDToolStripMenuItem.Text = "Load TMD";
-            this.loadTMDToolStripMenuItem.Click += new System.EventHandler(this.loadTMDToolStripMenuItem_Click);
             // 
             // frmSkeletonEditor
             // 
@@ -2233,6 +2243,7 @@ namespace KimeraCS
         private System.Windows.Forms.ToolStripMenuItem addJointToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem editJointToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem loadTMDToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem mergeFramesDataTXTToolStripMenuItem;
     }
 }
 

@@ -660,7 +660,9 @@ namespace KimeraCS
             }
         }
 
-        public static void ReadFieldFrameData(FieldSkeleton fSkeleton, ref FieldAnimation fAnimation, string strFileName)
+        public static void ReadFieldFrameData(FieldSkeleton fSkeleton, 
+                                              ref FieldAnimation fAnimation, 
+                                              string strFileName, bool bMerge)
         {
             int iBonePosition, iFrameCounter;
             bool bFoundBone;
@@ -677,9 +679,14 @@ namespace KimeraCS
 
             if (strInputFrameData.Length <= 0) return;
 
+            if (bMerge) tmpfAnimation = CopyfAnimation(fAnimation);
+            else
+            {
+                tmpfAnimation = new FieldAnimation();
+                tmpfAnimation.frames = new List<FieldFrame>();
+            }
+
             fFrame.rotations = new List<FieldRotation>();
-            tmpfAnimation = new FieldAnimation();
-            tmpfAnimation.frames = new List<FieldFrame>();
 
             foreach (string strLine in strInputFrameData)
             {
@@ -690,6 +697,8 @@ namespace KimeraCS
                     switch(strSplitKeyData[0])
                     {
                         case "MODEL_TYPE":
+                            if (bMerge) break;
+
                             if (strSplitKeyData[1] != "3")
                             {
                                 MessageBox.Show("This is very odd, but you have loaded a file with an unsupported Model Type.",
@@ -699,11 +708,15 @@ namespace KimeraCS
                             break;
 
                         case "FILENAME":
+                            if (bMerge) break;
+
                             tmpfAnimation.strFieldAnimationFile = strSplitKeyData[1].ToUpper();
 
                             break;
 
                         case "RUNTIME_DATA":
+                            if (bMerge) break;
+
                             tmpfAnimation.runtime_data = new int[5];
 
                             tmpfAnimation.runtime_data[0] = int.Parse(strSplitKeyData[1].Split('_')[0]);
@@ -715,6 +728,8 @@ namespace KimeraCS
 
                         case "FRAME":
                             iFrameCounter = int.Parse(strSplitKeyData[1]);
+
+                            if (bMerge) iFrameCounter += fAnimation.frames.Count;
 
                             fFrame = new FieldFrame();
                             fFrame.rotations = new List<FieldRotation>();
@@ -773,7 +788,11 @@ namespace KimeraCS
                             fFrame.rootTranslationY = float.Parse(strSplitKeyData[1].Split('_')[4], CultureInfo.InvariantCulture.NumberFormat);
                             fFrame.rootTranslationZ = float.Parse(strSplitKeyData[1].Split('_')[5], CultureInfo.InvariantCulture.NumberFormat);
 
-                            tmpfAnimation.frames.Add(fFrame);
+                            if (bMerge)
+                            {
+                                tmpfAnimation.frames.Add(fFrame);
+                            }
+                            else tmpfAnimation.frames.Add(fFrame);
 
                             break;
                     }

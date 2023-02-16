@@ -527,7 +527,7 @@ namespace KimeraCS
             return iNumAnimFramesIsOneResult;
         }
 
-        public static int ReadFrameData(string strFileName)
+        public static int ReadFrameData(string strFileName, bool bMerge)
         {
             int iinputFrameData = 0;
 
@@ -536,7 +536,7 @@ namespace KimeraCS
                 switch (modelType)
                 {
                     case K_HRC_SKELETON:
-                        ReadFieldFrameData(fSkeleton, ref fAnimation, strFileName);
+                        ReadFieldFrameData(fSkeleton, ref fAnimation, strFileName, bMerge);
 
                         iinputFrameData = 1;
                         break;
