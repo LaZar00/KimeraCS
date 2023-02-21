@@ -141,6 +141,7 @@ namespace KimeraCS
         public static float rszGroupXPE, rszGroupYPE, rszGroupZPE;
         public static float repGroupXPE, repGroupYPE, repGroupZPE;
         public static float alphaGroupPE, betaGroupPE, gammaGroupPE;
+        public static bool bGlobalChangeGroup;
 
         // GroupPropierties vars
         public frmGroupProperties frmGroupProp;
@@ -926,17 +927,17 @@ namespace KimeraCS
 
         private void hsbRotateAlpha_ValueChanged(object sender, EventArgs e)
         {
-            RotationModifiersChanged();
+            if (!bGlobalChangeGroup) RotationModifiersChanged();
         }
 
         private void hsbRotateBeta_ValueChanged(object sender, EventArgs e)
         {
-            RotationModifiersChanged();
+            if (!bGlobalChangeGroup) RotationModifiersChanged();
         }
 
         private void hsbRotateGamma_ValueChanged(object sender, EventArgs e)
         {
-            RotationModifiersChanged();
+            if (!bGlobalChangeGroup) RotationModifiersChanged();
         }
 
         private void txtRotateAlpha_TextChanged(object sender, EventArgs e)
@@ -2903,7 +2904,10 @@ namespace KimeraCS
             CopyModelColors2VP(EditedPModel, ref vcolorsOriginal, ref pcolorsOriginal);
             FillColorTable(EditedPModel, ref colorTable,
                            ref translationTableVertex, ref translationTablePolys, (byte)iThreshold);
-            ApplyColorTable(ref EditedPModel, colorTable, translationTableVertex, translationTablePolys);
+            //ApplyColorTable(ref EditedPModel, colorTable, translationTableVertex, translationTablePolys);
+
+            iSelectedColor = -1;
+            iBrightnessFactor = 0;
 
             panelEditorPModel_Paint(null, null);
             pbPalette_Paint(null, null);
@@ -3384,9 +3388,14 @@ namespace KimeraCS
                 hsbResizeZ.Value = Convert.ToInt32(EditedPModel.Groups[SelectedGroup].rszGroupZ * 100);
 
                 // ///////// Rotation
-                hsbRotateAlpha.Value = Convert.ToInt32(EditedPModel.Groups[SelectedGroup].rotGroupAlpha);
-                hsbRotateBeta.Value = Convert.ToInt32(EditedPModel.Groups[SelectedGroup].rotGroupBeta);
-                hsbRotateGamma.Value = Convert.ToInt32(EditedPModel.Groups[SelectedGroup].rotGroupGamma);
+                bGlobalChangeGroup = true;               
+                //hsbRotateAlpha.Value = Convert.ToInt32(EditedPModel.Groups[SelectedGroup].rotGroupAlpha);
+                txtRotateAlpha.Text = Convert.ToInt32(EditedPModel.Groups[SelectedGroup].rotGroupAlpha).ToString();
+                //hsbRotateBeta.Value = Convert.ToInt32(EditedPModel.Groups[SelectedGroup].rotGroupBeta);
+                txtRotateBeta.Text = Convert.ToInt32(EditedPModel.Groups[SelectedGroup].rotGroupBeta).ToString();
+                //hsbRotateGamma.Value = Convert.ToInt32(EditedPModel.Groups[SelectedGroup].rotGroupGamma);
+                txtRotateGamma.Text = Convert.ToInt32(EditedPModel.Groups[SelectedGroup].rotGroupGamma).ToString();
+                bGlobalChangeGroup = false;
             }
             else
             {
@@ -3407,9 +3416,14 @@ namespace KimeraCS
                 hsbResizeZ.Value = Convert.ToInt32(EditedPModel.resizeZ * 100);
 
                 // ///////// Rotation
-                hsbRotateAlpha.Value = Convert.ToInt32(EditedPModel.rotateAlpha);
-                hsbRotateBeta.Value = Convert.ToInt32(EditedPModel.rotateBeta);
-                hsbRotateGamma.Value = Convert.ToInt32(EditedPModel.rotateGamma);
+                bGlobalChangeGroup = true;
+                //hsbRotateAlpha.Value = Convert.ToInt32(EditedPModel.rotateAlpha);
+                txtRotateAlpha.Text = Convert.ToInt32(EditedPModel.rotateAlpha).ToString();
+                //hsbRotateBeta.Value = Convert.ToInt32(EditedPModel.rotateBeta);
+                txtRotateBeta.Text = Convert.ToInt32(EditedPModel.rotateBeta).ToString();
+                //hsbRotateGamma.Value = Convert.ToInt32(EditedPModel.rotateGamma);
+                txtRotateGamma.Text = Convert.ToInt32(EditedPModel.rotateGamma).ToString();
+                bGlobalChangeGroup = false;
             }
         }
 
