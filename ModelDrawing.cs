@@ -1859,7 +1859,7 @@ namespace KimeraCS
                     tmpColor = Color.FromArgb(255, bR, bG, bB);
 
                     if (bTextured)
-                        tmpTexCoord = Model.TexCoords[Model.Groups[iGroupIdx].offsetTex + iVertIdx];
+                        tmpTexCoord = Model.TexCoords[iVertIdx + Model.Groups[iGroupIdx].offsetTex];
 
                     iPaintVertexResult = AddVertex(ref Model, iGroupIdx, tmpVert, tmpColor) - Model.Groups[iGroupIdx].offsetVert;
 
@@ -1911,10 +1911,14 @@ namespace KimeraCS
 
             for (vi = 0; vi < 3; vi++)
             {
-                tmpA = (byte)(tmpA + Model.Vcolors[Model.Polys[iPolyIdx].Verts[vi] + Model.Groups[iGroupIdx].offsetVert].A);
-                tmpR = (byte)(tmpR + Model.Vcolors[Model.Polys[iPolyIdx].Verts[vi] + Model.Groups[iGroupIdx].offsetVert].R);
-                tmpG = (byte)(tmpG + Model.Vcolors[Model.Polys[iPolyIdx].Verts[vi] + Model.Groups[iGroupIdx].offsetVert].G);
-                tmpB = (byte)(tmpB + Model.Vcolors[Model.Polys[iPolyIdx].Verts[vi] + Model.Groups[iGroupIdx].offsetVert].B);
+                //tmpA = (byte)(tmpA + Model.Vcolors[Model.Polys[iPolyIdx].Verts[vi] + Model.Groups[iGroupIdx].offsetVert].A);
+                //tmpR = (byte)(tmpR + Model.Vcolors[Model.Polys[iPolyIdx].Verts[vi] + Model.Groups[iGroupIdx].offsetVert].R);
+                //tmpG = (byte)(tmpG + Model.Vcolors[Model.Polys[iPolyIdx].Verts[vi] + Model.Groups[iGroupIdx].offsetVert].G);
+                //tmpB = (byte)(tmpB + Model.Vcolors[Model.Polys[iPolyIdx].Verts[vi] + Model.Groups[iGroupIdx].offsetVert].B);
+                tmpA += Model.Vcolors[Model.Polys[iPolyIdx].Verts[vi] + Model.Groups[iGroupIdx].offsetVert].A;
+                tmpR += Model.Vcolors[Model.Polys[iPolyIdx].Verts[vi] + Model.Groups[iGroupIdx].offsetVert].R;
+                tmpG += Model.Vcolors[Model.Polys[iPolyIdx].Verts[vi] + Model.Groups[iGroupIdx].offsetVert].G;
+                tmpB += Model.Vcolors[Model.Polys[iPolyIdx].Verts[vi] + Model.Groups[iGroupIdx].offsetVert].B;
             }
 
             return Color.FromArgb(tmpA / 3, tmpR / 3, tmpG / 3, tmpB / 3);

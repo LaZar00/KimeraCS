@@ -3564,7 +3564,8 @@ namespace KimeraCS
 
                         if (pi > -1)
                         {
-                            AddStateToBufferPE(this);
+                            if (iEvent != K_CLICK_SHIFT)
+                                AddStateToBufferPE(this);
 
                             if (chkPaletteMode.Checked)
                             {
@@ -3610,7 +3611,8 @@ namespace KimeraCS
                             }
 
                             // Apply color arrays of the model to P Editor dynamic arrays.
-                            CopyModelColors2VP(EditedPModel, ref vcolorsOriginal, ref pcolorsOriginal);
+                            if (iEvent != K_CLICK_SHIFT)
+                                CopyModelColors2VP(EditedPModel, ref vcolorsOriginal, ref pcolorsOriginal);
                             
                             //  -- Commented in KimeraVB6
                             //  if (glIsEnabled(glCapability.GL_LIGHTING)) ComputeNormals(ref EditedPModel);
