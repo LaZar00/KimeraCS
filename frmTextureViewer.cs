@@ -423,6 +423,10 @@ namespace KimeraCS
                     break;
             }
 
+            // Update main title window
+            bChangesDone = true;
+            frmSkelEdit.UpdateMainSkeletonWindowTitle();
+
             frmSkelEdit.panelModel_Paint(null, null);
         }
 
