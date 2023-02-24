@@ -726,7 +726,7 @@ namespace KimeraCS
 
             //int animIndex;
 
-            if (loaded)
+            if (bLoaded)
             {
                 switch (modelType)
                 {

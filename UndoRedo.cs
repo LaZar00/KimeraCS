@@ -87,7 +87,7 @@ namespace KimeraCS
                 return;
             }
 
-            if (loaded)
+            if (bLoaded)
             {
                 if (RedoCursor > 0)
                 {
@@ -127,7 +127,7 @@ namespace KimeraCS
                 return;
             }
 
-            if (loaded)
+            if (bLoaded)
             {
                 if (UndoCursor > 0)
                 {
