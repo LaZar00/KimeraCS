@@ -56,7 +56,7 @@ namespace KimeraCS
     public partial class frmSkeletonEditor : Form
     {
 
-        public const string STR_APPNAME = "KimeraCS 1.6j";
+        public const string STR_APPNAME = "KimeraCS 1.6m";
 
         public static int modelWidth;
         public static int modelHeight;
@@ -70,7 +70,7 @@ namespace KimeraCS
         public static double DIST;
         public static float panX, panY, panZ;
 
-        public static bool loaded;
+        public static bool bLoaded, bChangesDone;
         public static bool selectBoneForWeaponAttachmentQ;
         public static int nWeapons;
 
@@ -395,7 +395,7 @@ namespace KimeraCS
             
             textureViewerDC = GetDC(pbTextureViewer.Handle);
 
-            loaded = false;
+            bLoaded = false;
 
             cbBoneSelector.Items.Add("None");
 
@@ -621,11 +621,6 @@ namespace KimeraCS
                 case K_P_BATTLE_MODEL:
                 case K_P_MAGIC_MODEL:
                 case K_3DS_MODEL:
-                    if (modelType == K_3DS_MODEL) Text = Text + " - Model: " + Path.GetFileNameWithoutExtension(strGlobal3DSModelName).ToUpper() + ".P";
-                    else if (IsTMDModel) Text = Text + " - Model: " + strGlobalTMDModelName.ToUpper();
-                    else Text = Text + " - Model: " + strGlobalPModelName.ToUpper();
-
-
                     gbSelectedPieceFrame.Enabled = true;
 
                     // Menu Strip
@@ -633,11 +628,6 @@ namespace KimeraCS
                     break;
 
                 case K_HRC_SKELETON:
-                    if (IsRSDResource) Text = Text + " - Model: " + strGlobalRSDResourceName.ToUpper();
-                    else
-                        Text = Text + " - Model: " + strGlobalFieldSkeletonFileName.ToUpper() +
-                                      " / Anim: " + strGlobalFieldAnimationName.ToUpper();
-
                     lblBoneSelector.Visible = true;
                     cbBoneSelector.Visible = true;
 
@@ -691,9 +681,6 @@ namespace KimeraCS
                     break;
 
                 case K_AA_SKELETON:
-                    Text = Text + " - Model: " + strGlobalBattleSkeletonFileName.ToUpper() +
-                                  " / Anim: " + strGlobalBattleAnimationName.ToUpper();
-
                     lblBoneSelector.Visible = true;
                     cbBoneSelector.Visible = true;
 
@@ -780,9 +767,6 @@ namespace KimeraCS
                     break;
 
                 case K_MAGIC_SKELETON:
-                    Text = Text + " - Model: " + strGlobalMagicSkeletonFileName.ToUpper() +
-                                  " / Anim: " + strGlobalMagicAnimationName.ToUpper();
-
                     lblBoneSelector.Visible = true;
                     cbBoneSelector.Visible = true;
 
@@ -853,6 +837,12 @@ namespace KimeraCS
                     saveSkeletonAsToolStripMenuItem.Enabled = true;
                     break;
             }
+
+            bChangesDone = false;
+            UpdateMainSkeletonWindowTitle();
+
+            // Close previous P Editor if any.
+            if (FindWindowOpened("frmPEditor")) frmPEdit.Close();
 
             WriteCFGFile();
         }
@@ -956,7 +946,7 @@ namespace KimeraCS
 
         public void panelModel_Paint(object sender, PaintEventArgs e)
         {
-            if (loaded)
+            if (bLoaded)
             {
                 //if (Application.OpenForms.Count > 1 && bPEditorOpened() && !pbIsMinimized)
                 //{
@@ -985,7 +975,7 @@ namespace KimeraCS
         // BACKUP
         //public void panelModel_Paint(object sender, PaintEventArgs e)
         //{
-        //    if (loaded)
+        //    if (bLoaded)
         //    {
 
         //        glViewport(0, 0, panelModel.ClientRectangle.Width, panelModel.ClientRectangle.Height);
@@ -1018,7 +1008,7 @@ namespace KimeraCS
             // Fill combobox with list of bones
             FillBoneSelector(cbBoneSelector);
 
-            loaded = true;
+            bLoaded = true;
 
             alpha = 200;
             beta = 45;
@@ -1049,7 +1039,7 @@ namespace KimeraCS
 
         private void cbBoneSelector_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (loaded)
+            if (bLoaded)
             {
                 SelectedBone = cbBoneSelector.SelectedIndex;
                 SelectedBonePiece = -1;
@@ -1371,7 +1361,7 @@ namespace KimeraCS
 
             pbMouseIsDown = true;
 
-            if (loaded)
+            if (bLoaded)
             {               
 
                 //glClearColor(0.4f, 0.4f, 0.65f, 0);
@@ -1515,7 +1505,7 @@ namespace KimeraCS
                 float aux_alpha, aux_y, aux_dist;
                 bool wasValidQ;
 
-                if (loaded && e.Button != MouseButtons.None)
+                if (bLoaded && e.Button != MouseButtons.None)
                 {
                     if (chkShowGround.Checked)
                     {
@@ -1626,7 +1616,7 @@ namespace KimeraCS
 
             if (ActiveForm != this) return;
 
-            if (loaded)
+            if (bLoaded)
             {
                 if (chkShowGround.Checked)
                 {
@@ -1678,7 +1668,7 @@ namespace KimeraCS
         {
             PModel tmpPModel = new PModel();
 
-            if (loaded)
+            if (bLoaded)
             {
                 EditedBone = SelectedBone;
                 EditedBonePiece = SelectedBonePiece;
@@ -1791,6 +1781,9 @@ namespace KimeraCS
             Point3D p_min = new Point3D();
             Point3D p_max = new Point3D();
 
+            // Check if changes has been commited in PEditor
+            if (CheckChangesCommittedPEditor()) return;
+
             // Set filter options and filter index.
             openFile.Title = "Load Field Skeleton";
             openFile.Filter = "Field Skeleton|*.HRC|All files|*.*";
@@ -1883,6 +1876,9 @@ namespace KimeraCS
             int iLoadResult; //, animIndex;
             Point3D p_min = new Point3D();
             Point3D p_max = new Point3D();
+
+            // Check if changes has been commited in PEditor
+            if (CheckChangesCommittedPEditor()) return;
 
             // Set filter options and filter index.
             openFile.Title = "Load Battle/Magic Skeleton";
@@ -1991,6 +1987,9 @@ namespace KimeraCS
             Point3D p_min = new Point3D();
             Point3D p_max = new Point3D();
 
+            // Check if changes has been commited in PEditor
+            if (CheckChangesCommittedPEditor()) return;
+
             // Set filter options and filter index.
             openFile.Title = "Open RSD Resource";
             openFile.Filter = "FF7 RSD Resource|*.RSD|All files|*.*";
@@ -2016,7 +2015,7 @@ namespace KimeraCS
                     {
                         // We load the Model into memory.
                         // But first we destroy the previous loaded Skeleton.
-                        if (loaded)
+                        if (bLoaded)
                         {
                             if (DestroySkeleton() != 1)
                             {
@@ -2026,7 +2025,7 @@ namespace KimeraCS
                             }
                             else
                             {
-                                loaded = false;
+                                bLoaded = false;
                             }
                         }
 
@@ -2079,6 +2078,9 @@ namespace KimeraCS
             Point3D p_min = new Point3D();
             Point3D p_max = new Point3D();
 
+            // Check if changes has been commited in PEditor
+            if (CheckChangesCommittedPEditor()) return;
+
             // Set filter options and filter index.
             openFile.Title = "Open Model";
             openFile.Filter = "FF7 Field Model|*.P|FF7 Battle Model (*.*)|*.*|FF7 Magic Model|*.P??|All files|*.*";
@@ -2110,7 +2112,7 @@ namespace KimeraCS
 
                         // We load the Model into memory.
                         // But first we destroy the previous loaded Skeleton.
-                        if (loaded)
+                        if (bLoaded)
                         {
                             if (DestroySkeleton() != 1)
                             {
@@ -2120,7 +2122,7 @@ namespace KimeraCS
                             }
                             else
                             {
-                                loaded = false;
+                                bLoaded = false;
                             }
                         }
 
@@ -2175,6 +2177,9 @@ namespace KimeraCS
             Point3D p_min = new Point3D();
             Point3D p_max = new Point3D();
 
+            // Check if changes has been commited in PEditor
+            if (CheckChangesCommittedPEditor()) return;
+
             // Set filter options and filter index.
             openFile.Title = "Load 3DS Model";
             openFile.Filter = "FF7 3DS Model|*.3DS|All files|*.*";
@@ -2206,7 +2211,7 @@ namespace KimeraCS
 
                         // We load the Model into memory.
                         // But first we destroy the previous loaded Skeleton.
-                        if (loaded)
+                        if (bLoaded)
                         {
                             if (DestroySkeleton() != 1)
                             {
@@ -2216,7 +2221,7 @@ namespace KimeraCS
                             }
                             else
                             {
-                                loaded = false;
+                                bLoaded = false;
                             }
                         }
                         // Set Global Paths
@@ -2268,6 +2273,9 @@ namespace KimeraCS
             Point3D p_min = new Point3D();
             Point3D p_max = new Point3D();
 
+            // Check if changes has been commited in PEditor
+            if (CheckChangesCommittedPEditor()) return;
+
             // Set filter options and filter index.
             openFile.Title = "Open Model";
             openFile.Filter = "FF7 TMD Model|*.TMD|All files|*.*";
@@ -2299,7 +2307,7 @@ namespace KimeraCS
 
                         // We load the Model into memory.
                         // But first we destroy the previous loaded Skeleton.
-                        if (loaded)
+                        if (bLoaded)
                         {
                             if (DestroySkeleton() != 1)
                             {
@@ -2309,7 +2317,7 @@ namespace KimeraCS
                             }
                             else
                             {
-                                loaded = false;
+                                bLoaded = false;
                             }
                         }
 
@@ -2394,7 +2402,7 @@ namespace KimeraCS
 
             try
             {
-                if (loaded)
+                if (bLoaded)
                 {
                     switch (modelType)
                     {
@@ -2429,6 +2437,9 @@ namespace KimeraCS
                                         "Information");
 
                         WriteCFGFile();
+
+                        bChangesDone = false;
+                        UpdateMainSkeletonWindowTitle();
                     }
 
                 }
@@ -2541,7 +2552,7 @@ namespace KimeraCS
                 // Process input if the user clicked OK.
                 if (saveFile.ShowDialog() == DialogResult.OK)
                 {
-                    if (loaded)
+                    if (bLoaded)
                     {
                         // I don't think it is needed when saving
                         //AddStateToBuffer(this);
@@ -2596,6 +2607,9 @@ namespace KimeraCS
                     }
 
                     WriteCFGFile();
+
+                    bChangesDone = false;
+                    UpdateMainSkeletonWindowTitle();
                 }
             }
             catch
@@ -2662,8 +2676,8 @@ namespace KimeraCS
 
                         SetFrameEditorFields();
 
-                        Text = STR_APPNAME + " - Model: " + strGlobalFieldSkeletonName +
-                                             " / Anim: " + strGlobalFieldAnimationName;
+                        UpdateMainSkeletonWindowTitle();
+
                         WriteCFGFile();
                     }
 
@@ -2757,18 +2771,14 @@ namespace KimeraCS
                         {
                             strGlobalBattleAnimationName = Path.GetFileName(openFile.FileName).ToUpper();
                             strGlobalPathBattleAnimationFolder = Path.GetDirectoryName(openFile.FileName);
-
-                            Text = STR_APPNAME + " - Model: " + strGlobalBattleSkeletonName +
-                                                 " / Anim: " + strGlobalBattleAnimationName;
                         }
                         else
                         {
                             strGlobalMagicAnimationName = Path.GetFileName(openFile.FileName).ToUpper();
                             strGlobalPathMagicAnimationFolder = Path.GetDirectoryName(openFile.FileName);
-
-                            Text = STR_APPNAME + " - Model: " + strGlobalMagicSkeletonName +
-                                                 " / Anim: " + strGlobalMagicAnimationName;
                         }
+
+                        UpdateMainSkeletonWindowTitle();
 
                         // Let's stop the Animation
                         btnPlayStopAnim.Checked = false;                      
@@ -2821,7 +2831,7 @@ namespace KimeraCS
 
             try
             {
-                if (loaded)
+                if (bLoaded)
                 {
                     // Prepare direct filename Folder+Name
                     switch (modelType)
@@ -3149,6 +3159,10 @@ namespace KimeraCS
                                 }
                                 break;
                         }
+
+                        // Update main title window
+                        bChangesDone = true;
+                        UpdateMainSkeletonWindowTitle();
                     }
 
                     panelModel_Paint(null, null);
@@ -3214,8 +3228,11 @@ namespace KimeraCS
                         break;
                 }
 
-                panelModel_Paint(null, null);
+                // Update main title window
+                bChangesDone = true;
+                UpdateMainSkeletonWindowTitle();
 
+                panelModel_Paint(null, null);
             }
             catch
             {
@@ -3302,6 +3319,10 @@ namespace KimeraCS
                         }
 
                         WriteCFGFile();
+
+                        // Update main title window
+                        bChangesDone = true;
+                        UpdateMainSkeletonWindowTitle();
                     }
                 }
 
@@ -6156,6 +6177,9 @@ namespace KimeraCS
 
             int iLoadResult = 0;
 
+            // Check if changes has been commited in PEditor
+            if (CheckChangesCommittedPEditor()) return;
+
             try
             {
                 // Set Global Paths
@@ -6163,9 +6187,12 @@ namespace KimeraCS
                         Path.GetDirectoryName(frmFieldDB.strFieldFile) + "\\" + Path.GetFileName(frmFieldDB.strFieldFile).ToUpper();
                 strGlobalFieldAnimationName = 
                         Path.GetDirectoryName(frmFieldDB.strAnimFile) + "\\" + Path.GetFileName(frmFieldDB.strAnimFile).ToUpper();
-                
+
                 // Initialize OpenGL Context;
                 //InitOpenGLContext();
+
+                // Close frmPEditor if opened
+                if (FindWindowOpened("frmPEditor")) frmPEdit.Close();
 
                 // Disable/Make Invisible in Forms Data controls
                 InitializeWinFormsDataControls();
@@ -6194,13 +6221,13 @@ namespace KimeraCS
                     return;
                 }
 
+                // Enable/Make Visible Win Forms Data controls
+                EnableWinFormsDataControls();
+
                 // ComputeBoundingBoxes
                 ComputeFieldBoundingBox(fSkeleton, fAnimation.frames[0], ref p_min, ref p_max);
 
                 diameter = ComputeFieldDiameter(fSkeleton);
-
-                // Enable/Make Visible Win Forms Data controls
-                EnableWinFormsDataControls();
 
                 // Set frame values in frame editor groupbox...
                 SetFrameEditorFields();
@@ -6228,6 +6255,9 @@ namespace KimeraCS
 
             int iLoadResult = 0;
 
+            // Check if changes has been commited in PEditor
+            if (CheckChangesCommittedPEditor()) return;
+
             try
             {
                 // Set Global Paths
@@ -6238,6 +6268,9 @@ namespace KimeraCS
 
                 // Initialize OpenGL Context;
                 //InitOpenGLContext();
+
+                // Close frmPEditor if opened
+                if (FindWindowOpened("frmPEditor")) frmPEdit.Close();
 
                 // Disable/Make Invisible in Forms Data controls
                 InitializeWinFormsDataControls();
@@ -6414,8 +6447,7 @@ namespace KimeraCS
 
                     SetFrameEditorFields();
 
-                    Text = STR_APPNAME + " - Model: " + strGlobalFieldSkeletonName.ToUpper() +
-                                         " / Anim: " + strGlobalFieldAnimationName.ToUpper();
+                    UpdateMainSkeletonWindowTitle();
 
                     panelModel_Paint(null, null);
                 }
@@ -6473,8 +6505,7 @@ namespace KimeraCS
 
                     SetFrameEditorFields();
 
-                    Text = STR_APPNAME + " - Model: " + strGlobalFieldSkeletonName.ToUpper() +
-                                         " / Anim: " + strGlobalFieldAnimationName.ToUpper();
+                    UpdateMainSkeletonWindowTitle();
 
                     panelModel_Paint(null, null);
                 }
@@ -6532,8 +6563,7 @@ namespace KimeraCS
 
                     SetFrameEditorFields();
 
-                    Text = STR_APPNAME + " - Model: " + strGlobalFieldSkeletonName.ToUpper() +
-                                         " / Anim: " + strGlobalFieldAnimationName.ToUpper();
+                    UpdateMainSkeletonWindowTitle();
 
                     panelModel_Paint(null, null);
                 }
@@ -6596,6 +6626,64 @@ namespace KimeraCS
                 MessageBox.Show("If you want to Edit Joints you need to select a Bone in Selected Bone combobox.",
                                 "Information");
         }
+
+        public void UpdateMainSkeletonWindowTitle()
+        {
+            switch(modelType)
+            {
+                case K_HRC_SKELETON:
+
+                    if (IsRSDResource) Text = STR_APPNAME + " - Model: " + strGlobalRSDResourceName.ToUpper();
+                    else
+                        Text = STR_APPNAME + " - Model: " + strGlobalFieldSkeletonFileName.ToUpper() + 
+                                             " / Anim: " + strGlobalFieldAnimationName.ToUpper();
+                    break;
+
+                case K_AA_SKELETON:
+                    Text = STR_APPNAME + " - Model: " + strGlobalBattleSkeletonFileName.ToUpper() +
+                                         " / Anim: " + strGlobalBattleAnimationName.ToUpper();
+                    break;
+
+                case K_MAGIC_SKELETON:
+                    Text = STR_APPNAME + " - Model: " + strGlobalMagicSkeletonFileName.ToUpper() +
+                                         " / Anim: " + strGlobalMagicAnimationName.ToUpper();
+                    break;
+
+                case K_3DS_MODEL:
+                    Text = Text + " - Model: " + Path.GetFileNameWithoutExtension(strGlobal3DSModelName).ToUpper() + ".P";
+                    break;
+
+                default:
+
+                    if (IsTMDModel) Text = Text + " - Model: " + strGlobalTMDModelName.ToUpper();
+                    else Text = Text + " - Model: " + strGlobalPModelName.ToUpper();
+                    break;
+            }
+
+            if (bChangesDone)
+                    Text += "  *";
+        }
+        
+        // This function asks to the user (as remember) what wants to do with
+        // the changes committed in the PEditor in case he pushes Load options
+        // without saving.
+        public bool CheckChangesCommittedPEditor()
+        {
+            DialogResult mbbYesNo;
+            bool bCheckChangesCommittedPEditor = false;
+
+            if (bChangesDone)
+            {
+                mbbYesNo = MessageBox.Show("You have performed some changes to the model in the PEditor. " +
+                                           "Do you want to cancel this changes?", "Warning",
+                                           MessageBoxButtons.YesNo);
+
+                if (mbbYesNo == DialogResult.No) bCheckChangesCommittedPEditor = true;
+            }
+
+            return bCheckChangesCommittedPEditor;
+        }
+
 
 
     }
