@@ -86,7 +86,7 @@ namespace KimeraCS
             {
 
                 // First we destroy the previous loaded Field Skeleton.
-                if (loaded && (modelType >= 3 && modelType <= 5))
+                if (bLoaded && (modelType >= 3 && modelType <= 5))
                 {
                     if (DestroySkeleton() != 1) iloadSkeletonResult = -2;
                 }
@@ -164,7 +164,7 @@ namespace KimeraCS
             {
 
                 // First we destroy the previous loaded Field Skeleton.
-                if (loaded && (modelType >= 3 && modelType <= 5))
+                if (bLoaded && (modelType >= 3 && modelType <= 5))
                 {
                     if (DestroySkeleton() != 1) iloadSkeletonResult = -2;
                 }
@@ -316,7 +316,7 @@ namespace KimeraCS
                 }
 
                 // Clear PanelModel PictureBox
-                loaded = false;
+                bLoaded = false;
                 ClearPanel();
                 glFlush();
                 SwapBuffers(panelModelDC);
