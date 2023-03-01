@@ -1820,6 +1820,102 @@ namespace KimeraCS
             return lstVerts.Count;
         }
 
+        public static int AddPaintVertex(ref PModel Model, int iGroupIdx, Point3D vPoint3D, Color vColor)
+        {
+            int iAddVertexResult = -1;
+            //  -------- Warning! Causes the Normals to be inconsistent if lights are disabled.------------------
+            //  --------------------------------Must call ComputeNormals ----------------------------------------
+            int vi, ni, tci, baseVerts, baseNormals, baseTexCoords;
+            int iNextGroup;
+
+            Model.Header.numVerts++;
+            Array.Resize(ref Model.Verts, Model.Header.numVerts);
+            Array.Resize(ref Model.Vcolors, Model.Header.numVerts);
+
+            if (Model.Groups[iGroupIdx].texFlag == 1 || Model.Groups[iGroupIdx].offsetTex > 0)
+            {
+                Model.Header.numTexCs++;
+                Array.Resize(ref Model.TexCoords, Model.Header.numTexCs);
+            }
+
+            Model.Header.numNormals = Model.Header.numVerts;
+            Array.Resize(ref Model.Normals, Model.Header.numNormals);
+            Model.Header.numNormIdx = Model.Header.numVerts;
+            Array.Resize(ref Model.NormalIndex, Model.Header.numNormIdx);
+            Model.NormalIndex[Model.Header.numNormIdx - 1] = Model.Header.numNormIdx - 1;
+
+            iNextGroup = GetNextGroup(Model, iGroupIdx);
+            //if (iGroupIdx < Model.Header.numGroups - 1)
+            if (iNextGroup != -1)
+            {
+                //baseVerts = Model.Groups[iGroupIdx + 1].offsetVert;
+                baseVerts = Model.Groups[iNextGroup].offsetVert;
+
+                for (vi = Model.Header.numVerts - 1; vi >= baseVerts; vi--)
+                {
+                    Model.Verts[vi] = Model.Verts[vi - 1];
+                    Model.Vcolors[vi] = Model.Vcolors[vi - 1];
+                }
+
+                if (Model.Groups[iGroupIdx].texFlag == 1 || Model.Groups[iGroupIdx].offsetTex > 0)
+                {
+                    baseTexCoords = Model.Groups[iGroupIdx].offsetTex + Model.Groups[iGroupIdx].numVert;
+
+                    for (tci = Model.Header.numTexCs - 1; tci >= baseTexCoords; tci--)
+                    {
+                        Model.TexCoords[tci] = Model.TexCoords[tci - 1];
+                    }
+                }
+
+                if (glIsEnabled(glCapability.GL_LIGHTING))
+                {
+                    if (Model.Groups[iGroupIdx].texFlag == 1 || Model.Groups[iGroupIdx].offsetTex > 0)
+                    {
+                        //baseNormals = Model.Groups[iGroupIdx + 1].offsetVert;
+                        baseNormals = Model.Groups[iNextGroup].offsetVert;
+
+                        for (ni = Model.Header.numNormals - 1; ni >= baseNormals; ni--)
+                        {
+                            Model.Normals[ni] = Model.Normals[ni - 1];
+                        }
+                    }
+                }
+
+                while (iNextGroup != -1)
+                {
+                    Model.Groups[iNextGroup].offsetVert++;
+
+                    if ((Model.Groups[iGroupIdx].texFlag == 1 || Model.Groups[iGroupIdx].offsetTex > 0) &&
+                        (Model.Groups[iNextGroup].texFlag == 1 || Model.Groups[iNextGroup].offsetTex > 0))
+                    {
+                        Model.Groups[iNextGroup].offsetTex++;
+                    }
+
+                    iNextGroup = GetNextGroup(Model, iNextGroup);
+                }
+                //for (gi = iGroupIdx + 1; gi < Model.Header.numGroups; gi++)
+                //{
+                //    Model.Groups[gi].offsetVert++;
+
+                //    if (Model.Groups[iGroupIdx].texFlag == 1 && Model.Groups[gi].texFlag == 1)
+                //    {
+                //        Model.Groups[gi].offsetTex++;
+                //    }
+
+                //}
+            }
+
+            if (iGroupIdx < Model.Header.numGroups)
+            {
+                Model.Verts[Model.Groups[iGroupIdx].offsetVert + Model.Groups[iGroupIdx].numVert] = vPoint3D;
+                Model.Vcolors[Model.Groups[iGroupIdx].offsetVert + Model.Groups[iGroupIdx].numVert] = vColor;
+                iAddVertexResult = Model.Groups[iGroupIdx].offsetVert + Model.Groups[iGroupIdx].numVert;
+                Model.Groups[iGroupIdx].numVert++;
+            }
+
+            return iAddVertexResult;
+        }
+
         public static int PaintVertex(ref PModel Model, int iGroupIdx, int iVertIdx, 
                                       byte bR, byte bG, byte bB, bool bTextured)
         {
@@ -1827,7 +1923,6 @@ namespace KimeraCS
             int iPaintVertexResult = -1;
 
             Point3D tmpVert;
-            Point2D tmpTexCoord = new Point2D();
             Color tmpColor;
 
             if (Model.Vcolors[iVertIdx + Model.Groups[iGroupIdx].offsetVert].R == bR &&
@@ -1837,45 +1932,48 @@ namespace KimeraCS
 
             if (iPaintVertexResult == -1)
             {
-                GetEqualGroupVertices(Model, iVertIdx + Model.Groups[iGroupIdx].offsetVert, ref lstVerts);
-                foreach (int itmVert in lstVerts)
-                {
-                    //Debug.Print "Found("; vi; ")"; v_list(vi)
-                    if (Model.Vcolors[itmVert].R == bR &&
-                        Model.Vcolors[itmVert].G == bG &&
-                        Model.Vcolors[itmVert].B == bB)
-                    {
-                        iPaintVertexResult = itmVert - Model.Groups[iGroupIdx].offsetVert;
-                        break;
-                    }
-                }
+                //GetEqualGroupVertices(Model, iVertIdx + Model.Groups[iGroupIdx].offsetVert, ref lstVerts);
+                //foreach (int itmVert in lstVerts)
+                //{
+                //    //Debug.Print "Found("; vi; ")"; v_list(vi)
+                //    if (Model.Vcolors[itmVert].R == bR &&
+                //        Model.Vcolors[itmVert].G == bG &&
+                //        Model.Vcolors[itmVert].B == bB)
+                //    {
+                //        iPaintVertexResult = itmVert - Model.Groups[iGroupIdx].offsetVert;
+                //        break;
+                //    }
+                //}
 
-                if (iPaintVertexResult == -1)
-                {
+                //if (iPaintVertexResult == -1)
+                //{
                     tmpVert.x = Model.Verts[iVertIdx + Model.Groups[iGroupIdx].offsetVert].x;
                     tmpVert.y = Model.Verts[iVertIdx + Model.Groups[iGroupIdx].offsetVert].y;
                     tmpVert.z = Model.Verts[iVertIdx + Model.Groups[iGroupIdx].offsetVert].z;
 
                     tmpColor = Color.FromArgb(255, bR, bG, bB);
 
+                    iPaintVertexResult = AddPaintVertex(ref Model, iGroupIdx, tmpVert, tmpColor) - Model.Groups[iGroupIdx].offsetVert;
+
+                    Model.Normals[iPaintVertexResult] = 
+                        new Point3D(Model.Normals[iVertIdx + Model.Groups[iGroupIdx].offsetVert].x,
+                                    Model.Normals[iVertIdx + Model.Groups[iGroupIdx].offsetVert].y,
+                                    Model.Normals[iVertIdx + Model.Groups[iGroupIdx].offsetVert].z);
+
                     if (bTextured)
-                        tmpTexCoord = Model.TexCoords[iVertIdx + Model.Groups[iGroupIdx].offsetTex];
+                    {
+                        Model.TexCoords[Model.Groups[iGroupIdx].offsetTex + iPaintVertexResult] = 
+                            new Point2D(Model.TexCoords[iVertIdx + Model.Groups[iGroupIdx].offsetTex].x,
+                                        Model.TexCoords[iVertIdx + Model.Groups[iGroupIdx].offsetTex].y);
+                    }
 
-                    iPaintVertexResult = AddVertex(ref Model, iGroupIdx, tmpVert, tmpColor) - Model.Groups[iGroupIdx].offsetVert;
-
-                    if (glIsEnabled(glCapability.GL_LIGHTING))
-                        Model.Normals[iPaintVertexResult] = Model.Normals[Model.Groups[iGroupIdx].offsetVert + iVertIdx];
-
-                    if (bTextured)
-                        Model.TexCoords[Model.Groups[iGroupIdx].offsetTex + iPaintVertexResult] = tmpTexCoord;
-
-                    // -- Commented in KimeraVB6
-                    // Model.Normals[iPaintVertexResult + Model.Groups[iGroupIdx].offsetVert] = Model.Normals[iVertIdx];
-                }
-                else
-                {
-                    // Debug.Print "Substituido por: " + Str$(PaintVertex);
-                }
+                //    // -- Commented in KimeraVB6
+                //    // Model.Normals[iPaintVertexResult + Model.Groups[iGroupIdx].offsetVert] = Model.Normals[iVertIdx];
+                //}
+                //else
+                //{
+                //    // Debug.Print "Substituido por: " + Str$(PaintVertex);
+                //}
             }
             
             return iPaintVertexResult;
@@ -1893,13 +1991,14 @@ namespace KimeraCS
 
             for (vi = 0; vi < 3; vi++)
             {
-                Model.Polys[pIndex].Verts[vi] = (short)PaintVertex(ref Model, iGroupIdx, Model.Polys[pIndex].Verts[vi], 
-                                                                   bR, bG, bB, 
-                                                                   Model.Groups[iGroupIdx].texFlag == 1 || Model.Groups[iGroupIdx].offsetTex > 0);
+                Model.Polys[pIndex].Verts[vi] = (short)PaintVertex(ref Model, iGroupIdx, Model.Polys[pIndex].Verts[vi],
+                                                                   bR, bG, bB,
+                                                                   Model.Groups[iGroupIdx].texFlag == 1);
                 //  'Debug.Print "Vert(:", .Verts(vi), ",", Group, ")", obj.Verts(.Verts(vi) + obj.Groups(Group).offVert).x, obj.Verts(.Verts(vi) + obj.Groups(Group).offVert).y, obj.Verts(.Verts(vi) + obj.Groups(Group).offVert).z
-
-                Model.Pcolors[pIndex] = Color.FromArgb(255, bR, bG, bB);
             }
+
+            //Model.Pcolors[pIndex] = Color.FromArgb(255, bR, bG, bB);
+            Model.Pcolors[pIndex] = Color.FromArgb(Model.Pcolors[pIndex].A, bR, bG, bB);
         }
 
         public static Color ComputePolyColor(PModel Model, int iPolyIdx)
