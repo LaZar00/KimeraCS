@@ -357,7 +357,7 @@ namespace KimeraCS
                 if (chkEnableLighting.Checked) glEnable(glCapability.GL_LIGHTING);
 
                 //glClearColor(0.4f, 0.4f, 0.65f, 0);
-                //glViewport(0, 0, panelEditorPModel.ClientRectangle.Width, panelEditorPModel.ClientRectangle.Height);
+                glViewport(0, 0, panelEditorPModel.ClientRectangle.Width, panelEditorPModel.ClientRectangle.Height);
                 //glClear(glBufferMask.GL_COLOR_BUFFER_BIT | glBufferMask.GL_DEPTH_BUFFER_BIT);
 
                 SetCameraPModel(EditedPModel, panXPE, panYPE, panZPE + DISTPE,
@@ -3578,20 +3578,29 @@ namespace KimeraCS
                                     iSelectedColor = translationTableVertex[EditedPModel.Polys[pi].Verts[0] +
                                                                             EditedPModel.Groups[GetPolygonGroup(EditedPModel, pi)].offsetVert].I;
 
+                                    loadingColorModifiersQ = true;
                                     hsbSelectedColorR.Value = colorTable[iSelectedColor].R;
                                     hsbSelectedColorG.Value = colorTable[iSelectedColor].G;
                                     hsbSelectedColorB.Value = colorTable[iSelectedColor].B;
+
+                                    txtSelectedColorR.Text = hsbSelectedColorR.Value.ToString();
+                                    txtSelectedColorG.Text = hsbSelectedColorG.Value.ToString();
+                                    txtSelectedColorB.Text = hsbSelectedColorB.Value.ToString();
+                                    loadingColorModifiersQ = false;
                                 }
                                 else
                                 {
                                     //if (iSelectedColor > -1)
                                     //{
-                                        PaintPolygon(ref EditedPModel, pi, pbPaletteColor.BackColor.R,
-                                                                           pbPaletteColor.BackColor.G,
-                                                                           pbPaletteColor.BackColor.B);
-
+                                    PaintPolygon(ref EditedPModel, pi, pbPaletteColor.BackColor.R,
+                                                                       pbPaletteColor.BackColor.G,
+                                                                       pbPaletteColor.BackColor.B);
+                                        
+                                    if (iSelectedColor > -1)
+                                    {
                                         UpdateTranslationTable(ref translationTableVertex, EditedPModel, pi, iSelectedColor);
                                         bColorsChanged = true;
+                                    }
                                     //}
                                 }
                             }
@@ -3601,9 +3610,15 @@ namespace KimeraCS
                                 {
                                     tmpColor = ComputePolyColor(EditedPModel, pi);
 
+                                    loadingColorModifiersQ = true;
                                     hsbSelectedColorR.Value = tmpColor.R;
                                     hsbSelectedColorG.Value = tmpColor.G;
                                     hsbSelectedColorB.Value = tmpColor.B;
+
+                                    txtSelectedColorR.Text = hsbSelectedColorR.Value.ToString();
+                                    txtSelectedColorG.Text = hsbSelectedColorG.Value.ToString();
+                                    txtSelectedColorB.Text = hsbSelectedColorB.Value.ToString();
+                                    loadingColorModifiersQ = false;
 
                                 }
                                 else
@@ -3611,13 +3626,14 @@ namespace KimeraCS
                                     PaintPolygon(ref EditedPModel, pi, (byte)hsbSelectedColorR.Value,
                                                                        (byte)hsbSelectedColorG.Value,
                                                                        (byte)hsbSelectedColorB.Value);
+
                                 }
                             }
 
                             // Apply color arrays of the model to P Editor dynamic arrays.
                             if (iEvent != K_CLICK_SHIFT)
                                 CopyModelColors2VP(EditedPModel, ref vcolorsOriginal, ref pcolorsOriginal);
-                            
+
                             //  -- Commented in KimeraVB6
                             //  if (glIsEnabled(glCapability.GL_LIGHTING)) ComputeNormals(ref EditedPModel);
                         }
