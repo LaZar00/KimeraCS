@@ -56,7 +56,7 @@ namespace KimeraCS
     public partial class frmSkeletonEditor : Form
     {
 
-        public const string STR_APPNAME = "KimeraCS 1.6m";
+        public const string STR_APPNAME = "KimeraCS 1.6p";
 
         public static int modelWidth;
         public static int modelHeight;
@@ -2440,6 +2440,8 @@ namespace KimeraCS
 
                         bChangesDone = false;
                         UpdateMainSkeletonWindowTitle();
+
+                        panelModel_Paint(null, null);
                     }
 
                 }
@@ -2610,6 +2612,8 @@ namespace KimeraCS
 
                     bChangesDone = false;
                     UpdateMainSkeletonWindowTitle();
+
+                    panelModel_Paint(null, null);
                 }
             }
             catch
