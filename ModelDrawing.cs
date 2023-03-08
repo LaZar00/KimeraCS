@@ -170,20 +170,67 @@ namespace KimeraCS
                     }
                 }
 
+                //  V_DEPTH_TEST
+                //glDisable(glCapability.GL_DEPTH_TEST);
+                //glDepthMask(0);
+
+                //if ((Model.Hundrets[gi].field_8 & 0x8000) == 0x8000 &&
+                //    (Model.Hundrets[gi].field_C & 0x8000) == 0x8000)
+                //{
+                //    glEnable(glCapability.GL_DEPTH_TEST);
+
+                //    if ((Model.Hundrets[gi].field_8 & 0x10000) == 0x10000 &&
+                //        (Model.Hundrets[gi].field_C & 0x10000) == 0x10000)
+                //    {
+                //            glDepthMask(1);
+                //    }
+                //}
+
+
                 //  Now let's set the blending state
-                switch(Model.Hundrets[gi].blend_mode)
+                switch (Model.Hundrets[gi].blend_mode)
                 {
                     case 0:
                         //  Average
                         glEnable(glCapability.GL_BLEND);
-                        GLExt.glBlendEquation(glBlendEquationMode.GL_FUNC_ADD);
-                        
+
                         if ((texEnabled && !(set_v_textured && !v_textured)) || (set_v_textured && v_textured))
                         {
-                            glBlendFunc(glBlendFuncFactor.GL_SRC_ALPHA, glBlendFuncFactor.GL_ONE_MINUS_SRC_ALPHA);
+                            if (((Model.Hundrets[gi].field_8 & 0x400) == 0 &&
+                                 (Model.Hundrets[gi].field_C & 0x400) == 0))
+                            {
+                                GLExt.glBlendEquation(glBlendEquationMode.GL_FUNC_ADD);
+                                glBlendFunc(glBlendFuncFactor.GL_SRC_ALPHA, glBlendFuncFactor.GL_ONE_MINUS_SRC_ALPHA);
+                            }
+                            else
+                            {
+                                switch(modelType)
+                                {
+                                    case K_AA_SKELETON:
+                                        if (bSkeleton.IsBattleLocation || bSkeleton.skeletonType == 2)
+                                        {
+                                            GLExt.glBlendEquation(glBlendEquationMode.GL_FUNC_ADD);
+                                            glBlendFunc(glBlendFuncFactor.GL_SRC_ALPHA, glBlendFuncFactor.GL_ONE_MINUS_SRC_ALPHA);
+                                        }
+                                        else
+                                        {
+                                            GLExt.glBlendEquation(glBlendEquationMode.GL_FUNC_ADD);
+                                            glBlendFunc(glBlendFuncFactor.GL_DST_COLOR, glBlendFuncFactor.GL_ONE_MINUS_DST_COLOR);
+                                        }
+
+                                        break;
+
+                                    default:
+                                        GLExt.glBlendEquation(glBlendEquationMode.GL_FUNC_ADD);
+                                        glBlendFunc(glBlendFuncFactor.GL_SRC_ALPHA, glBlendFuncFactor.GL_ONE_MINUS_SRC_ALPHA);
+
+                                        break;
+                                }
+                            }
                         }
                         else
                         {
+                            GLExt.glBlendEquation(glBlendEquationMode.GL_FUNC_ADD);
                             glBlendFunc(glBlendFuncFactor.GL_SRC_ALPHA, glBlendFuncFactor.GL_SRC_ALPHA);
                         }
 
@@ -209,16 +256,37 @@ namespace KimeraCS
                         break;
 
                     case 4:
-                        //  No blending
+                        //  None. No blending with exceptions,
+                        //  like if this is a texture or even we have alphablend flags enabled
                         glDisable(glCapability.GL_BLEND);
 
-                        if (!((Model.Hundrets[gi].field_8 & 0x400) == 0))
+                        if (set_v_textured)
                         {
-                            if (!((Model.Hundrets[gi].field_C & 0x400) == 0))
+                            if ((Model.Hundrets[gi].field_8 & 0x400) == 0 &&
+                                (Model.Hundrets[gi].field_C & 0x400) == 0)
                             {
                                 glEnable(glCapability.GL_BLEND);
                                 GLExt.glBlendEquation(glBlendEquationMode.GL_FUNC_ADD);
                                 glBlendFunc(glBlendFuncFactor.GL_SRC_ALPHA, glBlendFuncFactor.GL_ONE_MINUS_SRC_ALPHA);
+
+                                //GLExt.glBlendEquation(glBlendEquationMode.GL_FUNC_ADD);
+                                //glBlendFunc(glBlendFuncFactor.GL_SRC_COLOR, glBlendFuncFactor.GL_ONE_MINUS_DST_ALPHA);
+                            }
+                        }
+                        else
+                        {
+                            if (((Model.Hundrets[gi].field_8 & 0x400) == 0 &&
+                                 (Model.Hundrets[gi].field_C & 0x400) == 0))
+                            {
+                                glEnable(glCapability.GL_BLEND);
+                                GLExt.glBlendEquation(glBlendEquationMode.GL_FUNC_ADD);
+                                glBlendFunc(glBlendFuncFactor.GL_SRC_ALPHA, glBlendFuncFactor.GL_ONE_MINUS_SRC_ALPHA);
+                            }
+                            else
+                            {
+                                glEnable(glCapability.GL_BLEND);
+                                GLExt.glBlendEquation(glBlendEquationMode.GL_FUNC_ADD);
+                                glBlendFunc(glBlendFuncFactor.GL_SRC_COLOR, glBlendFuncFactor.GL_ONE_MINUS_DST_ALPHA);
                             }
                         }
 
@@ -1199,6 +1267,8 @@ namespace KimeraCS
                             glColorMask(GL_Boolean.GL_TRUE, GL_Boolean.GL_TRUE, GL_Boolean.GL_TRUE, GL_Boolean.GL_TRUE);
                         }
 
+                        glDisable(glCapability.GL_LIGHTING);
+
                         if (bShowBones)
                         {                        
                             glDisable(glCapability.GL_DEPTH_TEST);
@@ -1259,6 +1329,8 @@ namespace KimeraCS
 
                             glColorMask(GL_Boolean.GL_TRUE, GL_Boolean.GL_TRUE, GL_Boolean.GL_TRUE, GL_Boolean.GL_TRUE);
                         }
+
+                        glDisable(glCapability.GL_LIGHTING);
 
                         if (bShowBones)
                         {
@@ -1405,6 +1477,10 @@ namespace KimeraCS
             Point3D p2 = new Point3D();
             Point3D p3 = new Point3D();
             Point3D p4 = new Point3D();
+
+            glEnable(glCapability.GL_BLEND);
+            GLExt.glBlendEquation(glBlendEquationMode.GL_FUNC_ADD);
+            glBlendFunc(glBlendFuncFactor.GL_SRC_ALPHA, glBlendFuncFactor.GL_ONE_MINUS_SRC_ALPHA);
 
             MultiplyPoint3DByOGLMatrix(planeTransformation, planeOriginalPoint1, ref p1);
             MultiplyPoint3DByOGLMatrix(planeTransformation, planeOriginalPoint2, ref p2);
