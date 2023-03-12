@@ -50,7 +50,6 @@ namespace KimeraCS
             Text = "Editing Group " + SelectedGroup.ToString("00");
 
             nudTextureID.Enabled = (EditedPModel.Groups[SelectedGroup].texFlag == 1);
-
             nudTextureID.Value = EditedPModel.Groups[SelectedGroup].texID;
 
             switch (EditedPModel.Hundrets[SelectedGroup].blend_mode)
