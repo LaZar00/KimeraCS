@@ -806,6 +806,7 @@ namespace KimeraCS
             this.nudZPlane.Size = new System.Drawing.Size(77, 20);
             this.nudZPlane.TabIndex = 29;
             this.nudZPlane.ValueChanged += new System.EventHandler(this.nudZPlane_ValueChanged);
+            this.nudZPlane.TextChanged += new System.EventHandler(this.nudZPlane_TextChanged);
             // 
             // nudAlphaPlane
             // 
@@ -820,6 +821,7 @@ namespace KimeraCS
             this.nudAlphaPlane.Size = new System.Drawing.Size(77, 20);
             this.nudAlphaPlane.TabIndex = 30;
             this.nudAlphaPlane.ValueChanged += new System.EventHandler(this.nudAlphaPlane_ValueChanged);
+            this.nudAlphaPlane.TextChanged += new System.EventHandler(this.nudAlphaPlane_TextChanged);
             // 
             // nudYPlane
             // 
@@ -839,6 +841,7 @@ namespace KimeraCS
             this.nudYPlane.Size = new System.Drawing.Size(77, 20);
             this.nudYPlane.TabIndex = 28;
             this.nudYPlane.ValueChanged += new System.EventHandler(this.nudYPlane_ValueChanged);
+            this.nudYPlane.TextChanged += new System.EventHandler(this.nudYPlane_TextChanged);
             // 
             // nudXPlane
             // 
@@ -858,6 +861,7 @@ namespace KimeraCS
             this.nudXPlane.Size = new System.Drawing.Size(77, 20);
             this.nudXPlane.TabIndex = 27;
             this.nudXPlane.ValueChanged += new System.EventHandler(this.nudXPlane_ValueChanged);
+            this.nudXPlane.TextChanged += new System.EventHandler(this.nudXPlane_TextChanged);
             // 
             // nudBetaPlane
             // 
@@ -872,6 +876,7 @@ namespace KimeraCS
             this.nudBetaPlane.Size = new System.Drawing.Size(77, 20);
             this.nudBetaPlane.TabIndex = 31;
             this.nudBetaPlane.ValueChanged += new System.EventHandler(this.nudBetaPlane_ValueChanged);
+            this.nudBetaPlane.TextChanged += new System.EventHandler(this.nudBetaPlane_TextChanged);
             // 
             // lblAlphaPO
             // 
