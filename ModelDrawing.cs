@@ -47,7 +47,10 @@ namespace KimeraCS
             if (Group.HiddenQ && HideHiddenQ) return;
 
             long pi = 0, vi = 0;
+            bool texEnabled;
             float x, y, z;
+
+            texEnabled = glIsEnabled(glCapability.GL_TEXTURE_2D);
 
             try
             {
@@ -58,29 +61,32 @@ namespace KimeraCS
                 {
                     for (vi = 0; vi < 3; vi++)
                     {
-                        if (Hundret.blend_mode == 0 && !(Hundret.shademode == 1) && !(bSkeleton.IsBattleLocation))
+                        if (Hundret.blend_mode == 0 && !texEnabled)
+                        {
                             glColor4f(Vcolors[Polys[pi].Verts[vi] + Group.offsetVert].R / 255.0f,
                                       Vcolors[Polys[pi].Verts[vi] + Group.offsetVert].G / 255.0f,
                                       Vcolors[Polys[pi].Verts[vi] + Group.offsetVert].B / 255.0f,
                                       0.5f);
+                        }
                         else
+                        {
                             glColor4f(Vcolors[Polys[pi].Verts[vi] + Group.offsetVert].R / 255.0f,
                                       Vcolors[Polys[pi].Verts[vi] + Group.offsetVert].G / 255.0f,
                                       Vcolors[Polys[pi].Verts[vi] + Group.offsetVert].B / 255.0f,
-                                      1.0f);
+                                      1f);
+                        }
 
                         if (Normals.Length > 0)
                             glNormal3f(Normals[Polys[pi].Normals[vi]].x,
                                        Normals[Polys[pi].Normals[vi]].y,
                                        Normals[Polys[pi].Normals[vi]].z);
 
-                        if (TexCoords != null)
-                            if (Group.texFlag == 1 && TexCoords.Length > 0)
-                            {
-                                x = TexCoords[Group.offsetTex + Polys[pi].Verts[vi]].x;
-                                y = TexCoords[Group.offsetTex + Polys[pi].Verts[vi]].y;
-                                glTexCoord2f(x, y);
-                            }
+                        if (Group.texFlag == 1 && TexCoords.Length > 0)
+                        {
+                            x = TexCoords[Group.offsetTex + Polys[pi].Verts[vi]].x;
+                            y = TexCoords[Group.offsetTex + Polys[pi].Verts[vi]].y;
+                            glTexCoord2f(x, y);
+                        }
 
                         x = Verts[Polys[pi].Verts[vi] + Group.offsetVert].x;
                         y = Verts[Polys[pi].Verts[vi] + Group.offsetVert].y;
@@ -102,32 +108,6 @@ namespace KimeraCS
             }
         }
 
-        public static bool IsColorKey(PModel Model, int iGroupIdx)
-        {
-            bool bIsColorKey = false;
-
-            switch (modelType)
-            {
-                case K_HRC_SKELETON:
-                    if (fSkeleton.textures_pool != null)
-                        if (fSkeleton.textures_pool.Count > 0 && Model.Groups[iGroupIdx].texID >= 0)
-                            if (fSkeleton.textures_pool[Model.Groups[iGroupIdx].texID].ColorKeyFlag == 1)
-                                bIsColorKey = true;
-
-                    break;
-
-                case K_AA_SKELETON:
-                case K_MAGIC_SKELETON:
-                    if (bSkeleton.textures.Count > 0 && Model.Groups[iGroupIdx].texID >= 0)
-                        if (bSkeleton.textures[Model.Groups[iGroupIdx].texID].ColorKeyFlag == 1)
-                            bIsColorKey = true;
-
-                    break;
-            }
-
-            return bIsColorKey;
-        }
-
         public static void DrawPModel(ref PModel Model, ref uint[] tex_ids, bool HideHiddenGroupsQ)
         {
             int gi;
@@ -142,140 +122,177 @@ namespace KimeraCS
             {
                 //  Set the render states acording to the hundrets information
                 //  V_WIREFRAME
-                glPolygonMode(glFace.GL_FRONT, glPolygon.GL_FILL);
-                glPolygonMode(glFace.GL_BACK, glPolygon.GL_FILL);
-
-                if ((Model.Hundrets[gi].field_8 & 0x1) != 0)
+                if (!((Model.Hundrets[gi].field_8 & 0x1) == 0))
                 {
-                    if ((Model.Hundrets[gi].field_C & 0x1) != 0)
+                    if (!((Model.Hundrets[gi].field_C & 0x1) == 0))
                     {
                         glPolygonMode(glFace.GL_FRONT, glPolygon.GL_LINE);
                         glPolygonMode(glFace.GL_BACK, glPolygon.GL_LINE);
                     }
+                    else
+                    {
+                        glPolygonMode(glFace.GL_FRONT, glPolygon.GL_FILL);
+                        glPolygonMode(glFace.GL_BACK, glPolygon.GL_FILL);
+                    }
                 }
 
                 //  V_TEXTRED
-                set_v_textured = (Model.Hundrets[gi].field_8 & 0x2) != 0;
-                v_textured = (Model.Hundrets[gi].field_C & 0x2) != 0;
+                set_v_textured = !((Model.Hundrets[gi].field_8 & 0x2) == 0);
+                v_textured = !((Model.Hundrets[gi].field_C & 0x2) == 0);
 
                 //  V_LINEARFILTER
-                set_v_linearfilter = (Model.Hundrets[gi].field_8 & 0x4) != 0;
-                v_linearfilter = (Model.Hundrets[gi].field_C & 0x4) != 0;
+                set_v_linearfilter = !((Model.Hundrets[gi].field_8 & 0x4) == 0);
+                v_linearfilter = !((Model.Hundrets[gi].field_C & 0x4) == 0);
 
                 //  V_NOCULL
-                glDisable(glCapability.GL_CULL_FACE);
-
-                if ((Model.Hundrets[gi].field_8 & 0x4000) != 0)
+                if (!((Model.Hundrets[gi].field_8 & 0x4000) == 0))
                 {
-                    if ((Model.Hundrets[gi].field_C & 0x4000) != 0)
+                    if (!((Model.Hundrets[gi].field_C & 0x4000) == 0))
+                    {
+                        glDisable(glCapability.GL_CULL_FACE);
+                    }
+                    else
                     {
                         glEnable(glCapability.GL_CULL_FACE);
                     }
                 }
 
                 //  V_CULLFACE
-                glCullFace(glFace.GL_FRONT);
-
-                if ((Model.Hundrets[gi].field_8 & 0x2000) != 0)
+                if (!((Model.Hundrets[gi].field_8 & 0x2000) == 0))
                 {
-                    if ((Model.Hundrets[gi].field_C & 0x2000) != 0)
+                    if (!((Model.Hundrets[gi].field_C & 0x2000) == 0))
+                    {
+                        glCullFace(glFace.GL_FRONT);
+                    }
+                    else
                     {
                         glCullFace(glFace.GL_BACK);
                     }
                 }
 
-                // V_DEPTH_TEST
-                glDisable(glCapability.GL_DEPTH_TEST);
+                //  V_DEPTH_TEST
+                //glDisable(glCapability.GL_DEPTH_TEST);
+                //glDepthMask(0);
 
-                if ((Model.Hundrets[gi].field_8 & 0x8000) != 0)
-                {
-                    glEnable(glCapability.GL_DEPTH_TEST);
-
-                    if ((Model.Hundrets[gi].field_C & 0x8000) != 0)
-                    {
-                        //?
-                    }
-                }
-
-                // V_DEPTH_MASK
-                glDepthMask(0);
-
-                if ((Model.Hundrets[gi].field_8 & 0x10000) != 0)
-                {
-                    glDepthMask(1);
-
-                    if ((Model.Hundrets[gi].field_C & 0x10000) != 0)
-                    {
-                        //?
-                    }
-                }
-
-                //// V_DEPTH_TEST
-                //glEnable(glCapability.GL_DEPTH_TEST);
-                //glDepthMask(1);
-
-                if (bSkeleton.IsBattleLocation) 
-                {
-                    if (Model.fileName.Substring(Model.fileName.Length - 2, 2) == "AO")
-                        glDepthFunc(glFunc.GL_ALWAYS);
-                    else
-                        glDepthFunc(glFunc.GL_LESS);
-                }
-
-                //if ((Model.Hundrets[gi].field_8 & 0x8000) == 0 &&
-                //    (Model.Hundrets[gi].field_C & 0x8000) == 0)
+                //if ((Model.Hundrets[gi].field_8 & 0x8000) == 0x8000 &&
+                //    (Model.Hundrets[gi].field_C & 0x8000) == 0x8000)
                 //{
+                //    glEnable(glCapability.GL_DEPTH_TEST);
 
-
-                //    if ((Model.Hundrets[gi].field_8 & 0x10000) == 0 &&
-                //        (Model.Hundrets[gi].field_C & 0x10000) == 0)
+                //    if ((Model.Hundrets[gi].field_8 & 0x10000) == 0x10000 &&
+                //        (Model.Hundrets[gi].field_C & 0x10000) == 0x10000)
                 //    {
-                //        glDepthMask(0);
+                //            glDepthMask(1);
                 //    }
                 //}
 
 
                 //  Now let's set the blending state
-                if (((Model.Hundrets[gi].field_8 & 0x400) == 0x400 &&
-                     (Model.Hundrets[gi].field_C & 0x400) == 0x400) ||
-                      Model.Hundrets[gi].blend_mode == 0 ||
-                      IsColorKey(Model, gi))                     
+                switch (Model.Hundrets[gi].blend_mode)
                 {
-                    glEnable(glCapability.GL_BLEND);
+                    case 0:
+                        //  Average
+                        glEnable(glCapability.GL_BLEND);
 
-                    switch (Model.Hundrets[gi].blend_mode)
-                    {
-                        case 0:
-                            if (Model.Groups[gi].texFlag == 1)
+                        if ((texEnabled && !(set_v_textured && !v_textured)) || (set_v_textured && v_textured))
+                        {
+                            if (((Model.Hundrets[gi].field_8 & 0x400) == 0 &&
+                                 (Model.Hundrets[gi].field_C & 0x400) == 0))
                             {
                                 GLExt.glBlendEquation(glBlendEquationMode.GL_FUNC_ADD);
-
                                 glBlendFunc(glBlendFuncFactor.GL_SRC_ALPHA, glBlendFuncFactor.GL_ONE_MINUS_SRC_ALPHA);
                             }
+                            else
+                            {
+                                switch(modelType)
+                                {
+                                    case K_AA_SKELETON:
+                                        if (bSkeleton.IsBattleLocation || bSkeleton.skeletonType == 2)
+                                        {
+                                            GLExt.glBlendEquation(glBlendEquationMode.GL_FUNC_ADD);
+                                            glBlendFunc(glBlendFuncFactor.GL_SRC_ALPHA, glBlendFuncFactor.GL_ONE_MINUS_SRC_ALPHA);
+                                        }
+                                        else
+                                        {
+                                            GLExt.glBlendEquation(glBlendEquationMode.GL_FUNC_ADD);
+                                            glBlendFunc(glBlendFuncFactor.GL_DST_COLOR, glBlendFuncFactor.GL_ONE_MINUS_DST_COLOR);
+                                        }
 
-                            break;
+                                        break;
 
-                        case 1:
+                                    default:
+                                        GLExt.glBlendEquation(glBlendEquationMode.GL_FUNC_ADD);
+                                        glBlendFunc(glBlendFuncFactor.GL_SRC_ALPHA, glBlendFuncFactor.GL_ONE_MINUS_SRC_ALPHA);
+
+                                        break;
+                                }
+                            }
+                        }
+                        else
+                        {
                             GLExt.glBlendEquation(glBlendEquationMode.GL_FUNC_ADD);
-                            glBlendFunc(glBlendFuncFactor.GL_ONE, glBlendFuncFactor.GL_ONE);
+                            glBlendFunc(glBlendFuncFactor.GL_SRC_ALPHA, glBlendFuncFactor.GL_SRC_ALPHA);
+                        }
 
-                            break;
+                        break;
 
-                        case 2:
-                            GLExt.glBlendEquation(glBlendEquationMode.GL_FUNC_SUBTRACT);
-                            glBlendFunc(glBlendFuncFactor.GL_ONE, glBlendFuncFactor.GL_ONE);
+                    case 1:
+                        //  Additive
+                        glEnable(glCapability.GL_BLEND);
+                        GLExt.glBlendEquation(glBlendEquationMode.GL_FUNC_ADD);
+                        glBlendFunc(glBlendFuncFactor.GL_ONE, glBlendFuncFactor.GL_ONE);
+                        break;
 
-                            break;
+                    case 2:
+                        //  Subtractive
+                        glEnable(glCapability.GL_BLEND);
+                        GLExt.glBlendEquation(glBlendEquationMode.GL_FUNC_REVERSE_SUBTRACT);
+                        glBlendFunc(glBlendFuncFactor.GL_ONE, glBlendFuncFactor.GL_ONE);
+                        break;
 
-                        case 3:
-                            glDisable(glCapability.GL_BLEND);
+                    case 3:
+                        //  Unknown, let's disable blending
+                        glDisable(glCapability.GL_BLEND);
+                        break;
 
-                            break;
-                    }
+                    case 4:
+                        //  None. No blending with exceptions,
+                        //  like if this is a texture or even we have alphablend flags enabled
+                        glDisable(glCapability.GL_BLEND);
+
+                        if (set_v_textured)
+                        {
+                            if ((Model.Hundrets[gi].field_8 & 0x400) == 0 &&
+                                (Model.Hundrets[gi].field_C & 0x400) == 0)
+                            {
+                                glEnable(glCapability.GL_BLEND);
+                                GLExt.glBlendEquation(glBlendEquationMode.GL_FUNC_ADD);
+                                glBlendFunc(glBlendFuncFactor.GL_SRC_ALPHA, glBlendFuncFactor.GL_ONE_MINUS_SRC_ALPHA);
+
+                                //GLExt.glBlendEquation(glBlendEquationMode.GL_FUNC_ADD);
+                                //glBlendFunc(glBlendFuncFactor.GL_SRC_COLOR, glBlendFuncFactor.GL_ONE_MINUS_DST_ALPHA);
+                            }
+                        }
+                        else
+                        {
+                            if (((Model.Hundrets[gi].field_8 & 0x400) == 0 &&
+                                 (Model.Hundrets[gi].field_C & 0x400) == 0))
+                            {
+                                glEnable(glCapability.GL_BLEND);
+                                GLExt.glBlendEquation(glBlendEquationMode.GL_FUNC_ADD);
+                                glBlendFunc(glBlendFuncFactor.GL_SRC_ALPHA, glBlendFuncFactor.GL_ONE_MINUS_SRC_ALPHA);
+                            }
+                            else
+                            {
+                                glEnable(glCapability.GL_BLEND);
+                                GLExt.glBlendEquation(glBlendEquationMode.GL_FUNC_ADD);
+                                glBlendFunc(glBlendFuncFactor.GL_SRC_COLOR, glBlendFuncFactor.GL_ONE_MINUS_DST_ALPHA);
+                            }
+                        }
+
+                        break;
 
                 }
-                else glDisable(glCapability.GL_BLEND);
-
 
                 if (Model.Groups[gi].texFlag == 1 && tex_ids.Length > 0 && v_textured)
                 {
@@ -1728,15 +1745,10 @@ namespace KimeraCS
                              pbIn.ClientRectangle.Height);
             ClearPanel();
 
-            //SetCameraPModel(EditedPModel,
-            //                panXPE, panYPE, panZPE + DISTPE,
-            //                alphaPE, betaPE, gammaPE,
-            //                1, 1, 1);
-
             SetCameraPModel(EditedPModel,
                             panXPE, panYPE, panZPE + DISTPE,
                             alphaPE, betaPE, gammaPE,
-                            rszXPE, rszYPE, rszZPE);
+                            1, 1, 1);
 
             glMatrixMode(glMatrixModeList.GL_MODELVIEW);
             glPushMatrix();

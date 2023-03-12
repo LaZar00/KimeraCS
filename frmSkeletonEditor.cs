@@ -56,7 +56,7 @@ namespace KimeraCS
     public partial class frmSkeletonEditor : Form
     {
 
-        public const string STR_APPNAME = "KimeraCS 1.6z";
+        public const string STR_APPNAME = "KimeraCS 1.6s";
 
         public static int modelWidth;
         public static int modelHeight;
@@ -88,6 +88,7 @@ namespace KimeraCS
         public static HDC OGLContext;
 
         // This is for the Copy/Paste Frame feature
+        // NEW UPDATE L@ZAR0
         FieldFrame CopyfFieldFrame;
         BattleFrame CopybBattleFrame;
         BattleFrame CopybBattleWFrame;
@@ -445,25 +446,6 @@ namespace KimeraCS
             if (e.KeyCode == Keys.Delete && SelectedBone > -1)
                 btnRemovePiece.PerformClick();
 
-            if (e.KeyCode == Keys.Enter || e.KeyCode == Keys.Return)
-                if (cbBoneSelector.SelectedIndex >= 0)
-                {
-                    switch (modelType)
-                    {
-                        case K_HRC_SKELETON:
-                            if (fSkeleton.bones[SelectedBone].nResources > 0)
-                                SelectedBonePiece = 0;
-                            break;
-
-                        case K_AA_SKELETON:
-                        case K_MAGIC_SKELETON:
-                            if (bSkeleton.bones[SelectedBone].Models.Count > 0)
-                                SelectedBonePiece = 0;
-                            break;
-                    }
-                    panelModel_DoubleClick(sender, e);
-                }                   
-
             if (e.KeyCode == Keys.F2)
                 if (IsTMDModel) frmTMDOL.Show();
 
@@ -623,10 +605,6 @@ namespace KimeraCS
 
             // RSD vars
             IsRSDResource = false;
-
-
-            // Model intrinsic vars
-            bSkeleton.IsBattleLocation = false;
 
             //SetOGLContext(panelModelDC, OGLContext);
             //SetOGLSettings();
@@ -897,7 +875,7 @@ namespace KimeraCS
                                     chkColorKeyFlag.Checked = false;
 
                                 // Let's get maximum size for texture (I do this for simplify the printing)
-                                // Some textures can have different width/height sizes.                                
+                                // Some textures can have different width/height sizes.
                                 pbTextureViewer.Image =
                                     FitBitmapToPictureBox(pbTextureViewer,
                                          fSkeleton.bones[SelectedBone].fRSDResources[SelectedBonePiece].textures[cbTextureSelect.SelectedIndex].width,
@@ -1069,10 +1047,10 @@ namespace KimeraCS
                 if (SelectedBone > -1)
                 {
                     SetBoneModifiers();
-                    if (!FindWindowOpened("frmPEditor")) gbSelectedBoneFrame.Enabled = true;
+                    gbSelectedBoneFrame.Enabled = true;
                     //if (modelType == K_AA_SKELETON) SetTextureEditorFields();
 
-                    if (!FindWindowOpened("frmPEditor")) editJointToolStripMenuItem.Enabled = true;
+                    editJointToolStripMenuItem.Enabled = true;
                 }
                 else
                 {
@@ -1414,7 +1392,7 @@ namespace KimeraCS
                             if (pi > -1)
                             {
                                 SetBonePieceModifiers();
-                                if (!FindWindowOpened("frmPEditor")) gbSelectedPieceFrame.Enabled = true;
+                                gbSelectedPieceFrame.Enabled = true;
                             }
                             else
                             {
@@ -1422,7 +1400,7 @@ namespace KimeraCS
                             }
 
                             SetBoneModifiers();
-                            if (!FindWindowOpened("frmPEditor")) gbSelectedBoneFrame.Enabled = true;
+                            gbSelectedBoneFrame.Enabled = true;
                         }
                         else
                         {
@@ -1456,15 +1434,8 @@ namespace KimeraCS
                         {
                             if (selectBoneForWeaponAttachmentQ) SetWeaponAnimationAttachedToBone(e.Button == MouseButtons.Right, this);
 
-                            if (bSkeleton.IsBattleLocation)
-                            {
-                                pi = 0;
-                            }
-                            else
-                            {
-                                pi = GetClosestBattleBoneModel(bSkeleton, bAnimationsPack.SkeletonAnimations[ianimIndex].frames[tbCurrentFrameScroll.Value],
-                                                               bi, e.X, e.Y);                                
-                            }
+                            pi = GetClosestBattleBoneModel(bSkeleton, bAnimationsPack.SkeletonAnimations[ianimIndex].frames[tbCurrentFrameScroll.Value],
+                                                           bi, e.X, e.Y);
 
                             SelectedBonePiece = pi;
                             SetBoneModifiers();
@@ -1472,10 +1443,13 @@ namespace KimeraCS
                             if (pi > -1)
                             {
                                 SetBonePieceModifiers();
-                                if (!FindWindowOpened("frmPEditor")) gbSelectedPieceFrame.Enabled = true;
+                                gbSelectedPieceFrame.Enabled = true;
                             }
                             else gbSelectedPieceFrame.Enabled = false;
-                            if (!FindWindowOpened("frmPEditor")) gbSelectedBoneFrame.Enabled = true;
+                            gbSelectedBoneFrame.Enabled = true;
+
+                            if (bSkeleton.IsBattleLocation)
+                                cbTextureSelect.SelectedIndex = bSkeleton.bones[SelectedBone].Models[SelectedBonePiece].Groups[0].texID;
                         }
                         else
                         {
@@ -1483,11 +1457,9 @@ namespace KimeraCS
                             {
                                 SetBoneModifiers();
                                 SelectedBonePiece = -2;
-
-                                if (!FindWindowOpened("frmPEditor")) gbSelectedBoneFrame.Enabled = true;
+                                gbSelectedBoneFrame.Enabled = true;
                                 SetBonePieceModifiers();
-
-                                if (!FindWindowOpened("frmPEditor")) gbSelectedPieceFrame.Enabled = true;
+                                gbSelectedPieceFrame.Enabled = true;
 
                                 // Select the weapon texture
                                 if (bSkeleton.wpModels[cbWeapon.SelectedIndex].Groups[0].texFlag == 1)
@@ -1507,7 +1479,6 @@ namespace KimeraCS
                             }
                         }
 
-                        SetTextureEditorFields();
                         break;
                 }
 
@@ -1735,9 +1706,6 @@ namespace KimeraCS
 
                     // We will stop Play Animation if it is running
                     if (btnPlayStopAnim.Checked) btnPlayStopAnim.Checked = false;
-
-                    // Change sliders status
-                    ChangeGroupBoxesStatusPEditor(false);
 
                     frmPEdit = new frmPEditor(this, tmpPModel);
                     frmPEdit.Show();
@@ -3048,6 +3016,8 @@ namespace KimeraCS
             switch (modelType)
             {
                 case K_HRC_SKELETON:
+                    if (IsRSDResource) SelectedBonePiece = 0;
+
                     if (SelectedBone > -1 && SelectedBonePiece > -1)
                     {
                         gbTexturesFrame.Enabled = true;
@@ -3057,9 +3027,7 @@ namespace KimeraCS
                             cbTextureSelect.Items.Add(fSkeleton.bones[SelectedBone].fRSDResources[SelectedBonePiece].textures[ti].TEXfileName);
                         }
 
-                        if (fSkeleton.bones[SelectedBone].fRSDResources[SelectedBonePiece].numTextures > 0)
-                            cbTextureSelect.SelectedIndex = fSkeleton.bones[SelectedBone].fRSDResources[SelectedBonePiece].Model.Groups[0].texID;
-                        else cbTextureSelect.SelectedIndex = -1;
+                        if (fSkeleton.bones[SelectedBone].fRSDResources[SelectedBonePiece].numTextures > 0) cbTextureSelect.SelectedIndex = 0;
                     }
                     else gbTexturesFrame.Enabled = false;
 
@@ -3068,7 +3036,7 @@ namespace KimeraCS
 
                 case K_AA_SKELETON:
                 case K_MAGIC_SKELETON:
-                    if (SelectedBone > -1 && SelectedBonePiece > -1)
+                    if (SelectedBone > -1)
                     {
                         gbTexturesFrame.Enabled = true;
 
@@ -3077,18 +3045,17 @@ namespace KimeraCS
                             cbTextureSelect.Items.Add(ti);
                         }
 
-                        if (bSkeleton.nTextures > 0) 
+                        if (bSkeleton.nTextures > 0)
                         {
-                            if (bSkeleton.bones[SelectedBone].Models[SelectedBonePiece].Groups[0].texID >= 0 &&
-                                bSkeleton.bones[SelectedBone].Models[SelectedBonePiece].Groups[0].texFlag == 1)
-                                cbTextureSelect.SelectedIndex = 
-                                    bSkeleton.bones[SelectedBone].Models[SelectedBonePiece].Groups[0].texID;
-                            else cbTextureSelect.SelectedIndex = -1;
+                            cbTextureSelect.SelectedIndex = 0;
                         }
+                        else textureViewer_Paint(null, null);
                     }
-                    else gbTexturesFrame.Enabled = false;
-
-                    textureViewer_Paint(null, null);
+                    else
+                    {
+                        gbTexturesFrame.Enabled = false;
+                        textureViewer_Paint(null, null);
+                    }
 
                     break;
             }
@@ -4327,6 +4294,7 @@ namespace KimeraCS
 
         private void btnRotate_Click(object sender, EventArgs e)
         {
+            // NEW UDPATE: L@ZAR0
             TEX tex = new TEX();
             int texIndex;
 
@@ -4444,6 +4412,7 @@ namespace KimeraCS
 
         private void btnFlipVertical_Click(object sender, EventArgs e)
         {
+            //  NEW UDPATE: L@ZAR0
             TEX tex = new TEX();
             int texIndex;
 
@@ -4547,6 +4516,7 @@ namespace KimeraCS
 
         private void btnFlipHorizontal_Click(object sender, EventArgs e)
         {
+            //  NEW UDPATE: L@ZAR0
             TEX tex = new TEX();
             int texIndex;
 
@@ -5837,6 +5807,7 @@ namespace KimeraCS
 
         private void btnCopyFrame_Click(object sender, EventArgs e)
         {
+            //  NEW UDPATE: L@ZAR0
 
             switch(modelType)
             {
@@ -5872,7 +5843,7 @@ namespace KimeraCS
 
         private void btnPasteFrame_Click(object sender, EventArgs e)
         {
-
+            //  NEW UDPATE: L@ZAR0
             AddStateToBuffer(this);
 
             switch(modelType)
@@ -6696,29 +6667,7 @@ namespace KimeraCS
             if (bChangesDone)
                     Text += "  *";
         }
-
-        public void UpdateScrollBars(int rszX, int rszY, int rszZ,
-                                     int repX, int repY, int repZ,
-                                     int alpha, int beta, int gamma)
-        {
-            loadingBonePieceModifiersQ = true;
-
-            hsbResizePieceX.Value = rszX;
-            hsbResizePieceY.Value = rszY;
-            hsbResizePieceZ.Value = rszZ;
-
-            hsbRepositionX.Value = repX;
-            hsbRepositionY.Value = repY;
-            hsbRepositionZ.Value = repZ;
-
-            hsbRotateAlpha.Value = alpha;
-            hsbRotateBeta.Value = beta;
-            hsbRotateGamma.Value = gamma;
-
-            loadingBonePieceModifiersQ = false;
-        }
-
-
+        
         // This function asks to the user (as remember) what wants to do with
         // the changes committed in the PEditor in case he pushes Load options
         // without saving.
@@ -6739,68 +6688,7 @@ namespace KimeraCS
             return bCheckChangesCommittedPEditor;
         }
 
-        public void ChangeGroupBoxesStatusPEditor(bool bStatus)
-        {
-            // We will change some sliders status
-            gbSelectedPieceFrame.Enabled = bStatus;
-            gbSelectedBoneFrame.Enabled = bStatus;
-        }
 
-        public void SetBonePieceModifiersPEditor(int SelectedBone, int SelectedBonePiece)
-        {
-
-            loadingBonePieceModifiersQ = true;
-
-            hsbResizePieceX.Value = 100;
-            hsbResizePieceY.Value = 100;
-            hsbResizePieceZ.Value = 100;
-
-            hsbRepositionX.Value = 1;
-            hsbRepositionY.Value = 1;
-            hsbRepositionZ.Value = 1;
-
-            hsbRotateAlpha.Value = 0;
-            hsbRotateBeta.Value = 0;
-            hsbRotateGamma.Value = 0;
-
-            txtResizePieceX.Text = "100";
-            txtResizePieceY.Text = "100";
-            txtResizePieceZ.Text = "100";
-
-            txtRepositionX.Text = "1";
-            txtRepositionY.Text = "1";
-            txtRepositionZ.Text = "1";
-
-            txtRotateAlpha.Text = "0";
-            txtRotateBeta.Text = "0"; 
-            txtRotateGamma.Text = "0";
-
-            hsbResizePieceX.Refresh();
-            hsbResizePieceY.Refresh();
-            hsbResizePieceZ.Refresh();
-
-            txtResizePieceX.Refresh();
-            txtResizePieceY.Refresh();
-            txtResizePieceZ.Refresh();
-
-            hsbRepositionX.Refresh();
-            hsbRepositionY.Refresh();
-            hsbRepositionZ.Refresh();
-
-            txtRepositionX.Refresh();
-            txtRepositionY.Refresh();
-            txtRepositionZ.Refresh();
-
-            hsbRotateAlpha.Refresh();
-            hsbRotateBeta.Refresh();
-            hsbRotateGamma.Refresh();
-
-            txtRotateAlpha.Refresh();
-            txtRotateBeta.Refresh();
-            txtRotateGamma.Refresh();
-
-            loadingBonePieceModifiersQ = false;
-        }
 
     }
 }

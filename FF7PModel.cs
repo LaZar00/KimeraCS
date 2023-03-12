@@ -357,26 +357,6 @@ namespace KimeraCS
             Model.Groups = new PGroup[Model.Header.numGroups];
             ReadPGroups(fileBuffer, ref fileBufferPos, Model.Header.numGroups, ref Model.Groups, strPFullFileName);
 
-
-            // Let's check Texture flag of model Group and texture flag of Hundret
-            // and normalize value/flag in case they are change.
-            // If this happens it is probably for older kimera versions
-            int iGroupIdx = 0, iValue = 0;
-            foreach(PGroup itmGroup in Model.Groups)
-            {
-                if (itmGroup.texFlag == 1) iValue = 0x2;
-                else iValue = -0x2;
-
-                if (itmGroup.texFlag != ((Model.Hundrets[iGroupIdx].field_8 & 0x2) == 0 ? 0 : 1))
-                    Model.Hundrets[iGroupIdx].field_8 += iValue;
-
-                if (itmGroup.texFlag != ((Model.Hundrets[iGroupIdx].field_C & 0x2) == 0 ? 0 : 1))
-                    Model.Hundrets[iGroupIdx].field_C += iValue;
-
-                iGroupIdx++;
-            }
-
-
             // BoundingBox
             Model.BoundingBox = new PBoundingBox();
             ReadPBoundingBox(fileBuffer, ref fileBufferPos, ref Model.BoundingBox, strPFullFileName);
@@ -1318,22 +1298,12 @@ namespace KimeraCS
             Model.rotateGamma = gamma;
         }
 
-        private static void FillHundrestsDefaultValues(ref PHundret hundret, bool bHasTexCoords)
+        private static void FillHundrestsDefaultValues(ref PHundret hundret)
         {
             hundret.field_0 = 1;
             hundret.field_4 = 1;
-
-            if (bHasTexCoords)
-            {
-                hundret.field_8 = 229894; // V_TEXTURE = 1 && V_LINEARFILTER = 1
-                hundret.field_C = 131078; // V_TrueTEXTURE = 1 && V_LINEARFILTER = 1
-            }
-            else
-            {
-                hundret.field_8 = 229888; // V_TEXTURE = 0 && V_LINEARFIL   TER = 0
-                hundret.field_C = 131072; // V_TrueTEXTURE = 0 && V_LINEARFILTER = 0
-            }
-
+            hundret.field_8 = 246274;
+            hundret.field_C = 147458;
             hundret.texID = 0;
             hundret.texture_set_ptr = 0;
             hundret.field_18 = 0;
@@ -1471,7 +1441,7 @@ namespace KimeraCS
             // Increase Hundrets
             Model.Header.mirex_h += 1;
             Array.Resize(ref Model.Hundrets, Model.Header.mirex_h);
-            FillHundrestsDefaultValues(ref Model.Hundrets[Model.Header.mirex_h - 1], Model.Groups[groupIndex].texFlag == 1);
+            FillHundrestsDefaultValues(ref Model.Hundrets[Model.Header.mirex_h - 1]);
 
             if (Model.Header.mirex_h > 1)
                 Model.Hundrets[Model.Header.mirex_h - 1].texID = Model.Hundrets[Model.Header.mirex_h - 2].texID;
@@ -1914,12 +1884,12 @@ namespace KimeraCS
 
                 for (int iGroupIdx = 0; iGroupIdx < Model.Header.numGroups; iGroupIdx++)
                 {
-                    Model.Groups[iGroupIdx].rszGroupX = 1;
-                    Model.Groups[iGroupIdx].rszGroupY = 1;
-                    Model.Groups[iGroupIdx].rszGroupZ = 1;
                     Model.Groups[iGroupIdx].repGroupX = 0;
                     Model.Groups[iGroupIdx].repGroupY = 0;
                     Model.Groups[iGroupIdx].repGroupZ = 0;
+                    Model.Groups[iGroupIdx].rszGroupX = 1;
+                    Model.Groups[iGroupIdx].rszGroupY = 1;
+                    Model.Groups[iGroupIdx].rszGroupZ = 1;
                     Model.Groups[iGroupIdx].rotGroupAlpha = 0;
                     Model.Groups[iGroupIdx].rotGroupBeta = 0;
                     Model.Groups[iGroupIdx].rotGroupGamma = 0;
@@ -1928,19 +1898,6 @@ namespace KimeraCS
                     Model.Groups[iGroupIdx].rotationQuaternionGroup.z = 0;
                     Model.Groups[iGroupIdx].rotationQuaternionGroup.w = 1;
                 }
-
-                Model.resizeX = 1;
-                Model.resizeY = 1;
-                Model.resizeZ = 1;
-
-                Model.repositionX = 0;
-                Model.repositionY = 0;
-                Model.repositionZ = 0;
-
-                Model.rotateAlpha = 0;
-                Model.rotateBeta = 0;
-                Model.rotateGamma = 0;
-
             }
             catch
             {
@@ -2220,41 +2177,6 @@ namespace KimeraCS
         //  ---------------------------------------------------------------------------------------------------
         //  =========================================== COPY PMODEL ===========================================
         //  ---------------------------------------------------------------------------------------------------
-        public static PHundret CopyPHundret(PHundret hundretIn)
-        {
-            PHundret newPHundret = new PHundret();
-
-            newPHundret.alpharef = hundretIn.alpharef;
-            newPHundret.blend_mode = hundretIn.blend_mode;
-            newPHundret.destblend = hundretIn.destblend;
-
-            newPHundret.field_0 = hundretIn.field_0;
-            newPHundret.field_4 = hundretIn.field_4;
-            newPHundret.field_8 = hundretIn.field_8;
-            newPHundret.field_C = hundretIn.field_C;
-            newPHundret.field_18 = hundretIn.field_18;
-            newPHundret.field_1C = hundretIn.field_1C;
-            newPHundret.field_20 = hundretIn.field_20;
-            newPHundret.field_2C = hundretIn.field_2C;
-            newPHundret.field_3C = hundretIn.field_3C;
-            newPHundret.field_4C = hundretIn.field_4C;
-            newPHundret.field_50 = hundretIn.field_50;
-            newPHundret.field_54 = hundretIn.field_54;
-            newPHundret.field_58 = hundretIn.field_58;
-            newPHundret.field_60 = hundretIn.field_60;
-
-            newPHundret.lightstate_ambient = hundretIn.lightstate_ambient;
-            newPHundret.lightstate_material_ptr = hundretIn.lightstate_material_ptr;
-            newPHundret.shademode = hundretIn.shademode;
-            newPHundret.srcblend = hundretIn.srcblend;
-            newPHundret.texID = hundretIn.texID;
-            newPHundret.texture_set_ptr = hundretIn.texture_set_ptr;
-            newPHundret.vertex_alpha = hundretIn.vertex_alpha;
-            newPHundret.zSort = hundretIn.zSort;
-
-            return newPHundret;
-        }
-
         public static PModel CopyPModel(PModel modelIn)
         {
             PModel modelOut;
@@ -2498,15 +2420,12 @@ namespace KimeraCS
                     iCountEdgesGroups = GetNextGroup(Model, iCountEdgesGroups);
                 }
 
-                if (Model.Groups[iGroupIdx].offsetEdge < Model.Edges.Length)
-                {
-                    ei2 = Model.Groups[iGroupIdx].offsetEdge;
+                ei2 = Model.Groups[iGroupIdx].offsetEdge;
 
-                    for (ei = iCountNumEdges; ei < Model.Header.numEdges; ei++)
-                    {
-                        Model.Edges[ei2] = Model.Edges[ei];
-                        ei2++;
-                    }
+                for (ei = iCountNumEdges; ei < Model.Header.numEdges; ei++)
+                {
+                    Model.Edges[ei2] = Model.Edges[ei];
+                    ei2++;
                 }
             }
 
@@ -3112,7 +3031,6 @@ namespace KimeraCS
                 AddGroup(ref Model, vVerts, vFaces, vTexCoords, vVcolors, vPcolors);
 
                 Model.Groups[Model.Header.numGroups - 1].texID = Model.Groups[iGroupIdx].texID;
-                Model.Hundrets[Model.Header.numGroups - 1] = CopyPHundret(Model.Hundrets[iGroupIdx]);
 
                 iDuplicateGroupResult = true;
             }

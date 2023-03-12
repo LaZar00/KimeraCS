@@ -184,6 +184,7 @@ namespace KimeraCS
                             inTEXTexture.unk8 = memReader.ReadInt32();
                             inTEXTexture.unk9 = memReader.ReadInt32();
                             inTEXTexture.unk10 = memReader.ReadInt32();
+                            //inTEXTexture.unk11 = memReader.ReadInt32();
 
                             if (inTEXTexture.hasPal == 1)
                             {
@@ -340,8 +341,8 @@ namespace KimeraCS
             GetTEXTexturev(ref inTEXTexture, ref textureImg);
 
             // We need to create the IntPtr of textureImg because the glTexImag2D OPENGL function
-            // glTexImage2D(glTexture2DProxyTarget.GL_TEXTURE_2D, 0, internalformat,
-            //              inTEXTexture.width, inTEXTexture.height, 0, format, glPixelDataType.GL_UNSIGNED_BYTE, textureImg);
+            //glTexImage2D(glTexture2DProxyTarget.GL_TEXTURE_2D, 0, internalformat,
+            //             inTEXTexture.width, inTEXTexture.height, 0, format, glPixelDataType.GL_UNSIGNED_BYTE, textureImg);
 
             GCHandle pinnedArray = GCHandle.Alloc(textureImg, GCHandleType.Pinned);
             hTIPtr = pinnedArray.AddrOfPinnedObject();
