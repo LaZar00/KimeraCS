@@ -374,7 +374,7 @@ namespace KimeraCS
             // 
             // pbTextureViewer
             // 
-            this.pbTextureViewer.BackColor = System.Drawing.Color.White;
+            this.pbTextureViewer.BackColor = System.Drawing.Color.Transparent;
             this.pbTextureViewer.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.pbTextureViewer.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.pbTextureViewer.Location = new System.Drawing.Point(8, 16);
@@ -1301,7 +1301,7 @@ namespace KimeraCS
             // 
             this.hsbResizePieceZ.LargeChange = 1;
             this.hsbResizePieceZ.Location = new System.Drawing.Point(22, 60);
-            this.hsbResizePieceZ.Maximum = 400;
+            this.hsbResizePieceZ.Maximum = 500;
             this.hsbResizePieceZ.Name = "hsbResizePieceZ";
             this.hsbResizePieceZ.Size = new System.Drawing.Size(78, 19);
             this.hsbResizePieceZ.TabIndex = 7;
@@ -1331,7 +1331,7 @@ namespace KimeraCS
             // 
             this.hsbResizePieceY.LargeChange = 1;
             this.hsbResizePieceY.Location = new System.Drawing.Point(22, 40);
-            this.hsbResizePieceY.Maximum = 400;
+            this.hsbResizePieceY.Maximum = 500;
             this.hsbResizePieceY.Name = "hsbResizePieceY";
             this.hsbResizePieceY.Size = new System.Drawing.Size(78, 19);
             this.hsbResizePieceY.TabIndex = 4;
@@ -1371,7 +1371,7 @@ namespace KimeraCS
             // 
             this.hsbResizePieceX.LargeChange = 1;
             this.hsbResizePieceX.Location = new System.Drawing.Point(22, 20);
-            this.hsbResizePieceX.Maximum = 400;
+            this.hsbResizePieceX.Maximum = 500;
             this.hsbResizePieceX.Name = "hsbResizePieceX";
             this.hsbResizePieceX.Size = new System.Drawing.Size(78, 19);
             this.hsbResizePieceX.TabIndex = 0;
