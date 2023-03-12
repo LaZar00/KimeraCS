@@ -356,6 +356,7 @@
     <None Include="resources\refresh.png" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="doc\readme.txt" />
     <Content Include="KimeraCS.ico" />
     <Content Include="resources\checkbox.png" />
     <Content Include="resources\checkbox_unchecked.png" />
