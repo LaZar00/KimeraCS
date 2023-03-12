@@ -547,6 +547,11 @@ namespace KimeraCS
             panelEditorPModel_Paint(null, null);
         }
 
+        private void nudXPlane_TextChanged(object sender, EventArgs e)
+        {
+            nudXPlane_ValueChanged(sender, e);
+        }
+
         private void nudYPlane_ValueChanged(object sender, EventArgs e)
         {
             planeTransformation[13] = (float)nudYPlane.Value * EditedPModel.diameter / 100;
@@ -554,11 +559,21 @@ namespace KimeraCS
             panelEditorPModel_Paint(null, null);
         }
 
+        private void nudYPlane_TextChanged(object sender, EventArgs e)
+        {
+            nudYPlane_ValueChanged(sender, e);
+        }
+
         private void nudZPlane_ValueChanged(object sender, EventArgs e)
         {
             planeTransformation[14] = (float)nudZPlane.Value * EditedPModel.diameter / 100;
             ComputeCurrentEquations();
             panelEditorPModel_Paint(null, null);
+        }
+
+        private void nudZPlane_TextChanged(object sender, EventArgs e)
+        {
+            nudZPlane_ValueChanged(sender, e);
         }
 
         private void nudAlphaPlane_ValueChanged(object sender, EventArgs e)
@@ -583,6 +598,11 @@ namespace KimeraCS
             panelEditorPModel_Paint(null, null);
         }
 
+        private void nudAlphaPlane_TextChanged(object sender, EventArgs e)
+        {
+            nudAlphaPlane_ValueChanged(sender, e);
+        }
+
         private void nudBetaPlane_ValueChanged(object sender, EventArgs e)
         {
             float fDiff;
@@ -603,6 +623,11 @@ namespace KimeraCS
 
             ComputeCurrentEquations();
             panelEditorPModel_Paint(null, null);
+        }
+
+        private void nudBetaPlane_TextChanged(object sender, EventArgs e)
+        {
+            nudBetaPlane_ValueChanged(sender, e);
         }
 
         private void hsbLightX_ValueChanged(object sender, EventArgs e)
@@ -1121,6 +1146,7 @@ namespace KimeraCS
             if (lbGroups.Items.Count < 2)
             {
                 MessageBox.Show("A .P Model must have at least two groups for remove a group.", "Information", MessageBoxButtons.OK);
+                return;
             }
 
             AddStateToBufferPE(this);
@@ -1279,6 +1305,10 @@ namespace KimeraCS
             // Update main title window
             bChangesDone = true;
             frmSkelEdit.UpdateMainSkeletonWindowTitle();
+            frmSkelEdit.SetBonePieceModifiersPEditor(EditedBone, EditedBonePiece);
+            //frmSkelEdit.UpdateScrollBars(EditedPModel.resizeX, EditedPModel.resizeY, EditedPModel.resizeZ,
+            //                             EditedPModel.repositionX, EditedPModel.repositionY, EditedPModel.repositionZ,
+            //                             EditedPModel.rotateAlpha / 100 );
 
             frmSkelEdit.panelModel_Paint(null, null);
         }
@@ -1608,6 +1638,7 @@ namespace KimeraCS
 
                             VCountNewPoly = 0;
 
+                            int iGroupIdx = 0, iEditedPModelGroupIdx = EditedPModel.Groups.Length;
                             foreach (PGroup itmGroup in GroupModel.Groups)
                             {
                                 // We will add the group having in mind if it has texFlag or not
@@ -1619,12 +1650,20 @@ namespace KimeraCS
                                              GroupModel.Vcolors.Skip(itmGroup.offsetVert).Take(itmGroup.numVert).ToArray(), 
                                              GroupModel.Pcolors.Skip(itmGroup.offsetPoly).Take(itmGroup.numPoly).ToArray());
                                 else
+                                {
                                     AddGroup(ref EditedPModel,
                                              GroupModel.Verts.Skip(itmGroup.offsetVert).Take(itmGroup.numVert).ToArray(),
                                              GroupModel.Polys.Skip(itmGroup.offsetPoly).Take(itmGroup.numPoly).ToArray(),
                                              GroupModel.TexCoords.Skip(itmGroup.offsetTex).Take(itmGroup.numVert).ToArray(),
                                              GroupModel.Vcolors.Skip(itmGroup.offsetVert).Take(itmGroup.numVert).ToArray(),
                                              GroupModel.Pcolors.Skip(itmGroup.offsetPoly).Take(itmGroup.numPoly).ToArray());
+
+                                    EditedPModel.Groups[iEditedPModelGroupIdx].texID = GroupModel.Groups[iGroupIdx].texID;
+                                    EditedPModel.Hundrets[iEditedPModelGroupIdx] = CopyPHundret(GroupModel.Hundrets[iGroupIdx]);
+                                }
+
+                                iGroupIdx++;
+                                iEditedPModelGroupIdx++;
                             }
 
                             DestroyPModelResources(ref GroupModel);
@@ -2400,6 +2439,9 @@ namespace KimeraCS
             if (frmGroupProp != null) frmGroupProp.Dispose();
             this.Dispose();
 
+            // Change sliders status
+            frmSkelEdit.ChangeGroupBoxesStatusPEditor(true);
+
             frmSkelEdit.Activate();
             frmSkelEdit.panelModel_Paint(null, null);
         }
@@ -2589,23 +2631,23 @@ namespace KimeraCS
             Point3D p_min = new Point3D();
             Point3D p_max = new Point3D();
 
-            rszXPE = 1;
-            rszYPE = 1;
-            rszZPE = 1;
+            //rszXPE = 1;
+            //rszYPE = 1;
+            //rszZPE = 1;
             rszGroupXPE = 1;
             rszGroupYPE = 1;
             rszGroupZPE = 1;
 
-            repXPE = 0;
-            repYPE = 0;
-            repZPE = 0;
+            //repXPE = 0;
+            //repYPE = 0;
+            //repZPE = 0;
             repGroupXPE = 0;
             repGroupYPE = 0;
             repGroupZPE = 0;
 
-            alphaPE = 0;
-            betaPE = 0;
-            gammaPE = 0;
+            //alphaPE = 0;
+            //betaPE = 0;
+            //gammaPE = 0;
             alphaGroupPE = 0;
             betaGroupPE = 0;
             gammaGroupPE = 0;
@@ -2643,9 +2685,21 @@ namespace KimeraCS
             rszYPE = EditedPModel.resizeY;
             rszZPE = EditedPModel.resizeZ;
 
-            hsbRepositionX.Value = (int)(EditedPModel.repositionX / EditedPModel.diameter * 100);
-            hsbRepositionY.Value = (int)(EditedPModel.repositionY / EditedPModel.diameter * 100);
-            hsbRepositionZ.Value = (int)(EditedPModel.repositionZ / EditedPModel.diameter * 100);
+            if (EditedPModel.repositionX != 0)
+                hsbRepositionX.Value = (int)(EditedPModel.repositionX / EditedPModel.diameter * 100);
+            else
+                hsbRepositionX.Value = 0;
+
+            if (EditedPModel.repositionY != 0)
+                hsbRepositionY.Value = (int)(EditedPModel.repositionY / EditedPModel.diameter * 100);
+            else
+                hsbRepositionY.Value = 0;
+
+            if (EditedPModel.repositionY != 0)
+                hsbRepositionZ.Value = (int)(EditedPModel.repositionZ / EditedPModel.diameter * 100);
+            else
+                hsbRepositionZ.Value = 0;
+
             txtRepositionX.Text = hsbRepositionX.Value.ToString();
             txtRepositionY.Text = hsbRepositionY.Value.ToString();
             txtRepositionZ.Text = hsbRepositionZ.Value.ToString();
@@ -2867,12 +2921,12 @@ namespace KimeraCS
             hsbRotateBeta.Value = 0;
             hsbRotateGamma.Value = 0;
 
-            txtRepositionX.Text = "0";
-            txtRepositionY.Text = "0";
-            txtRepositionZ.Text = "0";
             txtResizeX.Text = "100";
             txtResizeY.Text = "100";
             txtResizeZ.Text = "100";
+            txtRepositionX.Text = "0";
+            txtRepositionY.Text = "0";
+            txtRepositionZ.Text = "0";
             txtRotateAlpha.Text = "0";
             txtRotateBeta.Text = "0";
             txtRotateGamma.Text = "0";
@@ -2881,14 +2935,6 @@ namespace KimeraCS
             EditedPModel.rotationQuaternion.y = 0;
             EditedPModel.rotationQuaternion.z = 0;
             EditedPModel.rotationQuaternion.w = 1;
-
-            //for (int iGroupIdx = 0; iGroupIdx < EditedPModel.Header.numGroups; iGroupIdx++)
-            //{
-            //    EditedPModel.Groups[iGroupIdx].rotationQuaternionGroup.x = 0;
-            //    EditedPModel.Groups[iGroupIdx].rotationQuaternionGroup.y = 0;
-            //    EditedPModel.Groups[iGroupIdx].rotationQuaternionGroup.z = 0;
-            //    EditedPModel.Groups[iGroupIdx].rotationQuaternionGroup.w = 1;
-            //}
 
             rszXPE = 1;
             rszYPE = 1;
@@ -2916,118 +2962,6 @@ namespace KimeraCS
             panelEditorPModel_Paint(null, null);
             pbPalette_Paint(null, null);
         }
-
-        // public void CommitContextualizedPChanges(bool bDNormals)
-        //{
-        //    Point3D p_min = new Point3D();
-        //    Point3D p_max = new Point3D();
-
-        //    AddStateToBufferPE(this);
-
-        //    //SetCameraModelViewQuat(repXPE, repYPE, repZPE,
-        //    //                       EditedPModel.rotationQuaternion,
-        //    //                       rszXPE, rszYPE, rszZPE);
-
-        //    //glMatrixMode(glMatrixModeList.GL_MODELVIEW);
-        //    //glPushMatrix();
-
-        //    //ComputeCurrentBoundingBox(ref EditedPModel);
-        //    //ComputePModelBoundingBox(EditedPModel, ref p_min, ref p_max);
-        //    //tmpDist = -2 * ComputeSceneRadius(p_min, p_max);
-        //    //ComputeNormals(ref EditedPModel);
-
-        //    //if (chkEnableLighting.Checked)
-        //    //{
-        //    //    glViewport(0, 0, panelEditorPModel.ClientRectangle.Width, panelEditorPModel.ClientRectangle.Height);
-        //    //    glClear(glBufferMask.GL_COLOR_BUFFER_BIT | glBufferMask.GL_DEPTH_BUFFER_BIT);
-
-        //    //    SetCameraAroundModelQuat(ref p_min, ref p_max, repXPE, repYPE, repZPE + tmpDist,
-        //    //                             EditedPModel.rotationQuaternion,
-        //    //                             rszXPE, rszYPE, rszZPE);
-
-        //    //    glDisable(glCapability.GL_LIGHT0);
-        //    //    glDisable(glCapability.GL_LIGHT1);
-        //    //    glDisable(glCapability.GL_LIGHT2);
-        //    //    glDisable(glCapability.GL_LIGHT3);
-
-        //    //    ComputePModelBoundingBox(EditedPModel, ref p_min, ref p_max);
-        //    //    modelDiameterNormalized = (-2 * ComputeSceneRadius(p_min, p_max)) / LIGHT_STEPS;
-
-        //    //    SetLighting(glCapability.GL_LIGHT0, modelDiameterNormalized * hsbLightX.Value,
-        //    //                                        modelDiameterNormalized * hsbLightY.Value,
-        //    //                                        modelDiameterNormalized * hsbLightZ.Value,
-        //    //                                        1, 1, 1, false);
-        //    //    ApplyColorTable(ref EditedPModel, colorTable, translationTableVertex, translationTablePolys);
-        //    //    //CommitCurrentVColors(ref EditedPModel);
-        //    //}
-
-        //    //glMatrixMode(glMatrixModeList.GL_MODELVIEW);
-        //    //glPopMatrix();
-
-        //    //SetCameraModelViewQuat(repXPE, repYPE, repZPE,
-        //    //                       EditedPModel.rotationQuaternion,
-        //    //                       rszXPE, rszYPE, rszZPE);
-
-
-        //    ApplyPChangesPE(ref EditedPModel, bDNormals);
-
-        //    loadingModifiersQ = true;
-        //    hsbResizeX.Value = 100;
-        //    hsbResizeY.Value = 100;
-        //    hsbResizeZ.Value = 100;
-        //    hsbRepositionX.Value = 0;
-        //    hsbRepositionY.Value = 0;
-        //    hsbRepositionZ.Value = 0;
-        //    hsbRotateAlpha.Value = 0;
-        //    hsbRotateBeta.Value = 0;
-        //    hsbRotateGamma.Value = 0;
-
-        //    txtRepositionX.Text = "0";
-        //    txtRepositionY.Text = "0";
-        //    txtRepositionZ.Text = "0";
-        //    txtResizeX.Text = "100";
-        //    txtResizeY.Text = "100";
-        //    txtResizeZ.Text = "100";
-        //    txtRotateAlpha.Text = "0";
-        //    txtRotateBeta.Text = "0";
-        //    txtRotateGamma.Text = "0";
-
-        //    EditedPModel.rotationQuaternion.x = 0;
-        //    EditedPModel.rotationQuaternion.y = 0;
-        //    EditedPModel.rotationQuaternion.z = 0;
-        //    EditedPModel.rotationQuaternion.w = 1;
-
-        //    //for (int iGroupIdx = 0; iGroupIdx < EditedPModel.Header.numGroups; iGroupIdx++)
-        //    //{
-        //    //    EditedPModel.Groups[iGroupIdx].rotationQuaternionGroup.x = 0;
-        //    //    EditedPModel.Groups[iGroupIdx].rotationQuaternionGroup.y = 0;
-        //    //    EditedPModel.Groups[iGroupIdx].rotationQuaternionGroup.z = 0;
-        //    //    EditedPModel.Groups[iGroupIdx].rotationQuaternionGroup.w = 1;
-        //    //}
-
-        //    rszXPE = 1;
-        //    rszYPE = 1;
-        //    rszZPE = 1;
-        //    repXPE = 0;
-        //    repYPE = 0;
-        //    repZPE = 0;
-
-        //    rszGroupXPE = 1;
-        //    rszGroupYPE = 1;
-        //    rszGroupZPE = 1;
-        //    repGroupXPE = 0;
-        //    repGroupYPE = 0;
-        //    repGroupZPE = 0;
-        //    loadingModifiersQ = false;
-
-        //    CopyModelColors2VP(EditedPModel, ref vcolorsOriginal, ref pcolorsOriginal);
-        //    FillColorTable(EditedPModel, ref colorTable,
-        //                   ref translationTableVertex, ref translationTablePolys, (byte)iThreshold);
-        //    ApplyColorTable(ref EditedPModel, colorTable, translationTableVertex, translationTablePolys);
-
-        //    panelEditorPModel_Paint(null, null);
-        //    pbPalette_Paint(null, null);
-        //}
 
         public void SetFunctionButtonColors()
         {
