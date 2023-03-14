@@ -24,7 +24,7 @@ CTRL+Home		->	Reset Camera
 CTRL+Up/Down	->	Rotate alpha with keyboard
 CTRL+Left/Right	->	Rotate beta with keyboard
 DELETE			->	Remove selected bone/piece
-RETURN/INTRO    ->  Open PEditor if any joint with bone is selected in Bones Selector list
+SPACE    		->  Open PEditor if any joint with bone is selected in Bones Selector list
 Double-click	->	Open Texture Coordinates (UVs) Viewer
 (Texture View)
 
