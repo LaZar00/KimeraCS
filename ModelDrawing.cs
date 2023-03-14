@@ -163,7 +163,7 @@ namespace KimeraCS
                 v_linearfilter = (Model.Hundrets[gi].field_C & 0x4) != 0;
 
                 //  V_NOCULL
-                glDisable(glCapability.GL_CULL_FACE);
+                glDisable(glCapability.GL_CULL_FACE); 
 
                 if ((Model.Hundrets[gi].field_8 & 0x4000) != 0)
                 {
@@ -184,35 +184,32 @@ namespace KimeraCS
                     }
                 }
 
-                // V_DEPTH_TEST
-                glDisable(glCapability.GL_DEPTH_TEST);
-
-                if ((Model.Hundrets[gi].field_8 & 0x8000) != 0)
-                {
-                    glEnable(glCapability.GL_DEPTH_TEST);
-
-                    if ((Model.Hundrets[gi].field_C & 0x8000) != 0)
-                    {
-                        //?
-                    }
-                }
-
-                // V_DEPTH_MASK
-                glDepthMask(0);
-
-                if ((Model.Hundrets[gi].field_8 & 0x10000) != 0)
-                {
-                    glDepthMask(1);
-
-                    if ((Model.Hundrets[gi].field_C & 0x10000) != 0)
-                    {
-                        //?
-                    }
-                }
-
                 //// V_DEPTH_TEST
-                //glEnable(glCapability.GL_DEPTH_TEST);
-                //glDepthMask(1);
+                //glDisable(glCapability.GL_DEPTH_TEST);
+
+                //if ((Model.Hundrets[gi].field_8 & 0x8000) != 0)
+                //{
+                //    glEnable(glCapability.GL_DEPTH_TEST);
+
+                //    if ((Model.Hundrets[gi].field_C & 0x8000) != 0)
+                //    {
+                //        //?
+                //    }
+                //}
+
+                //// V_DEPTH_MASK
+                //glDepthMask(0);
+
+                //if ((Model.Hundrets[gi].field_8 & 0x10000) != 0)
+                //{
+                //    glDepthMask(1);
+
+                //    if ((Model.Hundrets[gi].field_C & 0x10000) != 0)
+                //    {
+                //        //?
+                //    }
+                //}
+
 
                 if (bSkeleton.IsBattleLocation) 
                 {
@@ -221,18 +218,6 @@ namespace KimeraCS
                     else
                         glDepthFunc(glFunc.GL_LESS);
                 }
-
-                //if ((Model.Hundrets[gi].field_8 & 0x8000) == 0 &&
-                //    (Model.Hundrets[gi].field_C & 0x8000) == 0)
-                //{
-
-
-                //    if ((Model.Hundrets[gi].field_8 & 0x10000) == 0 &&
-                //        (Model.Hundrets[gi].field_C & 0x10000) == 0)
-                //    {
-                //        glDepthMask(0);
-                //    }
-                //}
 
 
                 //  Now let's set the blending state
@@ -271,6 +256,7 @@ namespace KimeraCS
                             glDisable(glCapability.GL_BLEND);
 
                             break;
+
                     }
 
                 }
@@ -367,22 +353,49 @@ namespace KimeraCS
 
             for (gi = 0; gi < Model.Header.numGroups; gi++)
             {
-                if (Model.Groups[gi].texFlag==1 && tex_ids[0] > 0)
+                if (tex_ids.Length > 0)
                 {
-                    if (Model.Groups[gi].texID <= tex_ids.Length)
+                    if (Model.Groups[gi].texFlag == 1 && tex_ids[0] > 0)
                     {
-                        if (glIsTexture(tex_ids[Model.Groups[gi].texID]))
+                        if (Model.Groups[gi].texID <= tex_ids.Length)
                         {
-                            glEnable(glCapability.GL_TEXTURE_2D);
+                            if (glIsTexture(tex_ids[Model.Groups[gi].texID]))
+                            {
+                                glEnable(glCapability.GL_TEXTURE_2D);
 
-                            glBindTexture(glTextureTarget.GL_TEXTURE_2D, tex_ids[Model.Groups[gi].texID]);
-                            glTexParameterf(glTextureTarget.GL_TEXTURE_2D, glTextureParameter.GL_TEXTURE_MAG_FILTER, (float)glTextureMagFilter.GL_LINEAR);
-                            glTexParameterf(glTextureTarget.GL_TEXTURE_2D, glTextureParameter.GL_TEXTURE_MIN_FILTER, (float)glTextureMagFilter.GL_LINEAR);
+                                glBindTexture(glTextureTarget.GL_TEXTURE_2D, tex_ids[Model.Groups[gi].texID]);
+                                glTexParameterf(glTextureTarget.GL_TEXTURE_2D, glTextureParameter.GL_TEXTURE_MAG_FILTER, (float)glTextureMagFilter.GL_LINEAR);
+                                glTexParameterf(glTextureTarget.GL_TEXTURE_2D, glTextureParameter.GL_TEXTURE_MIN_FILTER, (float)glTextureMagFilter.GL_LINEAR);
+                            }
                         }
-                    }                
+                    }
+                }
+                else
+                {
+                    if (Model.Groups[gi].texFlag == 1)
+                    {
+                        DialogResult drYesNo;
+                        drYesNo = 
+                            MessageBox.Show("The part: " + Model.fileName + " has not any texture assigned but it has " +
+                                            "the texture flags enabled in group: " + gi.ToString() + ".\n" +
+                                            "Do you want to disable the texture flags?", "Warning", 
+                                            MessageBoxButtons.YesNo);
+
+                        if (drYesNo == DialogResult.Yes)
+                        {
+                            Model.Groups[gi].texFlag = 0;
+
+                            if ((Model.Hundrets[gi].field_8 & 0x2) == 0x2)
+                                Model.Hundrets[gi].field_8 -= 0x2;
+
+                            if ((Model.Hundrets[gi].field_C & 0x2) == 0x2)
+                                Model.Hundrets[gi].field_C -= 0x2;
+                        }
+                    }
                 }
 
                 DrawGroupDList(ref Model.Groups[gi]);
+
                 glDisable(glCapability.GL_TEXTURE_2D);
             }
         }
@@ -632,7 +645,7 @@ namespace KimeraCS
             glPopMatrix();
         }
 
-        public static void DrawRSDResource(FieldRSDResource fRSDResource, bool UseDLists)
+        public static void DrawRSDResource(FieldRSDResource fRSDResource, bool bDListsEnable)
         {
             int ti;
             uint[] tex_ids;
@@ -655,13 +668,13 @@ namespace KimeraCS
 
             glScalef(fRSDResource.Model.resizeX, fRSDResource.Model.resizeY, fRSDResource.Model.resizeZ);
 
-            if (!UseDLists) DrawPModel(ref fRSDResource.Model, ref tex_ids, false);
+            if (!bDListsEnable) DrawPModel(ref fRSDResource.Model, ref tex_ids, false);
             else DrawPModelDLists(ref fRSDResource.Model, ref tex_ids);
 
             glPopMatrix();
         }
 
-        public static void DrawFieldBone(FieldBone bone, bool UseDLists)
+        public static void DrawFieldBone(FieldBone bone, bool bDListsEnable)
         {
 
             int ri;
@@ -672,12 +685,12 @@ namespace KimeraCS
             glScalef(bone.resizeX, bone.resizeY, bone.resizeZ);
 
             for (ri = 0; ri < bone.nResources; ri++)
-                DrawRSDResource(bone.fRSDResources[ri], UseDLists);
+                DrawRSDResource(bone.fRSDResources[ri], bDListsEnable);
 
             glPopMatrix();
         }
 
-        public static void DrawFieldSkeleton(FieldSkeleton fSkeleton, FieldFrame fFrame, bool UseDLists)
+        public static void DrawFieldSkeleton(FieldSkeleton fSkeleton, FieldFrame fFrame, bool bDListsEnable)
         {
             int bi;
             string[] joint_stack = new string[fSkeleton.bones.Count + 1];
@@ -716,7 +729,7 @@ namespace KimeraCS
 
                 glMultMatrixd(rot_mat);
 
-                DrawFieldBone(fSkeleton.bones[bi], UseDLists);
+                DrawFieldBone(fSkeleton.bones[bi], bDListsEnable);
 
                 glTranslated(0, 0, -fSkeleton.bones[bi].len);
 
@@ -1162,7 +1175,8 @@ namespace KimeraCS
         //  ---------------------------------------------------------------------------------------------------
         //  ======================================= SKELETON DRAW  ============================================
         //  ---------------------------------------------------------------------------------------------------
-        public static void DrawSkeletonModel(PictureBox inPicturebox, ComboBox cbBattleAnimation, ComboBox cbWeapon)
+        public static void DrawSkeletonModel(PictureBox inPicturebox, ComboBox cbBattleAnimation, ComboBox cbWeapon, 
+                                             bool bDListsEnable)
         {
 
             double[] rot_mat = new double[16];
