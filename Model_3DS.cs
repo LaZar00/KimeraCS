@@ -676,7 +676,11 @@ namespace KimeraCS
             int numFaceMatGroups, numFaces;
 
             numMeshes = Model.meshesV.Length;
-            numMaterials = Model.materialsV.Length;
+
+            if (Model.materialsV != null)
+                numMaterials = Model.materialsV.Length;
+            else
+                numMaterials = 0;
 
             for (mei = 0; mei < numMeshes; mei++)
             {
