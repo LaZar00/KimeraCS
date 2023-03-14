@@ -56,7 +56,7 @@ namespace KimeraCS
     public partial class frmSkeletonEditor : Form
     {
 
-        public const string STR_APPNAME = "KimeraCS 1.6z";
+        public const string STR_APPNAME = "KimeraCS 1.7d";
 
         public static int modelWidth;
         public static int modelHeight;
@@ -445,7 +445,7 @@ namespace KimeraCS
             if (e.KeyCode == Keys.Delete && SelectedBone > -1)
                 btnRemovePiece.PerformClick();
 
-            if (e.KeyCode == Keys.Enter || e.KeyCode == Keys.Return)
+            if (e.KeyCode == Keys.Space)
                 if (cbBoneSelector.SelectedIndex >= 0)
                 {
                     switch (modelType)
@@ -461,6 +461,7 @@ namespace KimeraCS
                                 SelectedBonePiece = 0;
                             break;
                     }
+
                     panelModel_DoubleClick(sender, e);
                 }                   
 
@@ -620,10 +621,8 @@ namespace KimeraCS
             IsTMDModel = false;
             if (frmTMDOL != null) frmTMDOL.Dispose();
 
-
             // RSD vars
             IsRSDResource = false;
-
 
             // Model intrinsic vars
             bSkeleton.IsBattleLocation = false;
@@ -873,10 +872,6 @@ namespace KimeraCS
         {
             if (cbTextureSelect.SelectedIndex > -1)
             {
-                POINTAPI aux = new POINTAPI();
-
-                //SetStretchBltMode(textureViewerDC, StretchMode.STRETCH_HALFTONE);
-                //SetBrushOrgEx(textureViewerDC, 0, 0, ref aux);
 
                 switch (modelType)
                 {
@@ -904,17 +899,7 @@ namespace KimeraCS
                                          fSkeleton.bones[SelectedBone].fRSDResources[SelectedBonePiece].textures[cbTextureSelect.SelectedIndex].height,
                                          fSkeleton.bones[SelectedBone].fRSDResources[SelectedBonePiece].textures[cbTextureSelect.SelectedIndex].HBMP);
 
-                                //StretchBlt(textureViewerDC, 0, 0, pbTextureViewer.ClientRectangle.Width, pbTextureViewer.ClientRectangle.Height,
-                                //           fSkeleton.bones[SelectedBone].fRSDResources[SelectedBonePiece].textures[cbTextureSelect.SelectedIndex].HDC,
-                                //           0, 0,
-                                //           fSkeleton.bones[SelectedBone].fRSDResources[SelectedBonePiece].textures[cbTextureSelect.SelectedIndex].width,
-                                //           fSkeleton.bones[SelectedBone].fRSDResources[SelectedBonePiece].textures[cbTextureSelect.SelectedIndex].height,
-                                //           TernaryRasterOperations.SRCCOPY);
                             }
-                            //else
-                            //{
-                            //    chkColorKeyFlag.Enabled = false;
-                            //}
                         }
                         break;
 
@@ -933,36 +918,21 @@ namespace KimeraCS
                                                       bSkeleton.textures[cbTextureSelect.SelectedIndex].width,
                                                       bSkeleton.textures[cbTextureSelect.SelectedIndex].height,
                                                       bSkeleton.textures[cbTextureSelect.SelectedIndex].HBMP);
-
-                            //StretchBlt(textureViewerDC, 0, 0, pbTextureViewer.ClientRectangle.Width, pbTextureViewer.ClientRectangle.Height,
-                            //           bSkeleton.textures[cbTextureSelect.SelectedIndex].HDC, 0, 0,
-                            //           bSkeleton.textures[cbTextureSelect.SelectedIndex].width, bSkeleton.textures[cbTextureSelect.SelectedIndex].height,
-                            //           TernaryRasterOperations.SRCCOPY);
                         }
-                        //else
-                        //{
-                        //    chkColorKeyFlag.Enabled = false;
-                        //}
+
                         break;
 
                     default:
-                        //chkColorKeyFlag.Enabled = false;
                         pbTextureViewer.Image = null;
                         pbTextureViewer.Update();
-                        //BitBlt(textureViewerDC, 
-                        //       0, 0, pbTextureViewer.ClientRectangle.Width, pbTextureViewer.ClientRectangle.Height, 
-                        //       textureViewerDC, 0, 0, TernaryRasterOperations.WHITENESS);
+
                         break;
                 }
             }
             else
             {
-                //chkColorKeyFlag.Enabled = false;
                 pbTextureViewer.Image = null;
                 pbTextureViewer.Update();
-                //BitBlt(textureViewerDC,
-                //       0, 0, pbTextureViewer.ClientRectangle.Width, pbTextureViewer.ClientRectangle.Height,
-                //       textureViewerDC, 0, 0, TernaryRasterOperations.WHITENESS);
             }
         }
 
@@ -986,7 +956,7 @@ namespace KimeraCS
                 ClearPanel();
                 SetDefaultOGLRenderState();
 
-                DrawSkeletonModel(panelModel, cbBattleAnimation, cbWeapon);
+                DrawSkeletonModel(panelModel, cbBattleAnimation, cbWeapon, bDListsEnable);
 
                 glFlush();
                 SwapBuffers(panelModelDC);
@@ -2439,10 +2409,21 @@ namespace KimeraCS
                     switch (modelType)
                     {
                         case K_HRC_SKELETON:
-                            modelTypeStr = "Field Skeleton";
+                            if (IsRSDResource)
+                            {
+                                modelTypeStr = "RSD Resource";
 
-                            saveFileName = strGlobalPathFieldSkeletonFolder + "\\" + strGlobalFieldSkeletonFileName.ToUpper();
-                            strGlobalPathSaveSkeletonFolder = strGlobalPathFieldSkeletonFolder;
+                                saveFileName = strGlobalPathRSDResourceFolder + "\\" + strGlobalRSDResourceName.ToUpper();
+                                strGlobalPathSaveSkeletonFolder = strGlobalPathRSDResourceFolder;
+                            }
+                            else
+                            {
+                                modelTypeStr = "Field Skeleton";
+
+                                saveFileName = strGlobalPathFieldSkeletonFolder + "\\" + strGlobalFieldSkeletonFileName.ToUpper();
+                                strGlobalPathSaveSkeletonFolder = strGlobalPathFieldSkeletonFolder;
+                            }
+
                             break;
 
                         case K_AA_SKELETON:
@@ -2460,8 +2441,17 @@ namespace KimeraCS
                             break;
                     }
 
-                    // We save the Field Skeleton into memory.
-                    iSaveResult = WriteSkeleton(saveFileName);
+                    // Check if it is RSD Resource.
+                    if (IsRSDResource)
+                    {
+                        // We save the RSD Resource.
+                        iSaveResult = WriteFullRSDResource(fSkeleton.bones[0], saveFileName);
+                    }
+                    else
+                    {
+                        // We save the Skeleton.
+                        iSaveResult = WriteSkeleton(saveFileName);
+                    }
 
                     if (iSaveResult == 1)
                     {
@@ -3079,11 +3069,28 @@ namespace KimeraCS
 
                         if (bSkeleton.nTextures > 0) 
                         {
-                            if (bSkeleton.bones[SelectedBone].Models[SelectedBonePiece].Groups[0].texID >= 0 &&
-                                bSkeleton.bones[SelectedBone].Models[SelectedBonePiece].Groups[0].texFlag == 1)
-                                cbTextureSelect.SelectedIndex = 
-                                    bSkeleton.bones[SelectedBone].Models[SelectedBonePiece].Groups[0].texID;
-                            else cbTextureSelect.SelectedIndex = -1;
+                            // Find the first group with texture flag enabled.
+                            int iGroupIdx = 0;
+                            bool bFound = false;
+
+                            while (iGroupIdx < bSkeleton.bones[SelectedBone].Models[SelectedBonePiece].Groups.Length &&
+                                   !bFound)
+                            {
+                                if (bSkeleton.bones[SelectedBone].Models[SelectedBonePiece].Groups[iGroupIdx].texFlag == 0)
+                                    iGroupIdx++;
+                                else bFound = true;
+                            }
+
+                            if (bSkeleton.bones[SelectedBone].Models[SelectedBonePiece].Groups.Length == iGroupIdx)
+                            {
+                                cbTextureSelect.SelectedIndex = -1;
+                            }
+                            else
+                            {
+                                cbTextureSelect.SelectedIndex =
+                                    bSkeleton.bones[SelectedBone].Models[SelectedBonePiece].Groups[iGroupIdx].texID;
+                            }
+                        
                         }
                     }
                     else gbTexturesFrame.Enabled = false;
