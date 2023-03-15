@@ -56,7 +56,7 @@ namespace KimeraCS
     public partial class frmSkeletonEditor : Form
     {
 
-        public const string STR_APPNAME = "KimeraCS 1.7f";
+        public const string STR_APPNAME = "KimeraCS 1.7h";
 
         public static int modelWidth;
         public static int modelHeight;
@@ -151,6 +151,11 @@ namespace KimeraCS
         // DPI vars
         public decimal dDPIScaleFactor;
 
+
+        // Show Normals
+        public static bool bShowVertexNormals;
+        public static int iNormalsColor;
+        public static float fNormalsScale;
 
         public frmSkeletonEditor()
         {
@@ -417,6 +422,18 @@ namespace KimeraCS
             resetCameraToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.Home;
             resetCameraToolStripMenuItem.ShortcutKeyDisplayString = "CTRL+Home";
 
+
+            // Show Normals vars
+            // Define N shortcut for show Normals
+            showVertexNormalsToolStripMenuItem.ShortcutKeyDisplayString = "N";
+
+            greenToolStripMenuItem.Checked = true;
+            iNormalsColor = 2;     // 1 - Red, 2 - Green, 3 - Blue
+
+            oneftoolStripMenuItem.Checked = true;
+            fNormalsScale = 1.0f;
+
+
             // Activate MouseWheel events for panelModel PictureBox;
             panelModel.MouseWheel += panelModel_MouseWheel;
 
@@ -444,6 +461,9 @@ namespace KimeraCS
 
             if (e.KeyCode == Keys.Delete && SelectedBone > -1)
                 btnRemovePiece.PerformClick();
+
+            if (e.KeyCode == Keys.N)
+                showVertexNormalsToolStripMenuItem.PerformClick();
 
             if (e.KeyCode == Keys.Space)
                 if (cbBoneSelector.SelectedIndex >= 0)
@@ -581,7 +601,9 @@ namespace KimeraCS
             cbBoneSelector.Visible = false;
             cbBoneSelector.SelectedIndex = -1;
             cbBoneSelector.Items.Clear();
+            addJointToolStripMenuItem.Enabled = false;
             editJointToolStripMenuItem.Enabled = false;
+            showVertexNormalsToolStripMenuItem.Enabled = false;
 
             gbSelectedBoneFrame.Visible = false;
             gbTexturesFrame.Visible = false;
@@ -599,7 +621,7 @@ namespace KimeraCS
             btnComputeWeaponPosition.Visible = false;
 
             // Menu Strip
-            skeletonToolStripMenuItem.Enabled = false;
+            addJointToolStripMenuItem.Enabled = false;
             loadFieldAnimationToolStripMenuItem.Enabled = false;
             loadBattleMagicLimitsAnimationStripMenuItem.Enabled = false;
 
@@ -687,7 +709,7 @@ namespace KimeraCS
                     btnComputeGroundHeight.Visible = true;
 
                     // Menu Strip
-                    skeletonToolStripMenuItem.Enabled = true;
+                    addJointToolStripMenuItem.Enabled = true;
                     loadFieldAnimationToolStripMenuItem.Enabled = true;
 
                     saveAnimationToolStripMenuItem.Enabled = true;
@@ -859,6 +881,10 @@ namespace KimeraCS
                     break;
             }
 
+            // Show normals menu item
+            showVertexNormalsToolStripMenuItem.Enabled = true;
+
+            // Main window title update
             bChangesDone = false;
             UpdateMainSkeletonWindowTitle();
 
@@ -1039,10 +1065,13 @@ namespace KimeraCS
                 if (SelectedBone > -1)
                 {
                     SetBoneModifiers();
-                    if (!FindWindowOpened("frmPEditor")) gbSelectedBoneFrame.Enabled = true;
-                    //if (modelType == K_AA_SKELETON) SetTextureEditorFields();
+                    if (!FindWindowOpened("frmPEditor")) 
+                    {
+                        gbSelectedBoneFrame.Enabled = true;
 
-                    if (!FindWindowOpened("frmPEditor")) editJointToolStripMenuItem.Enabled = true;
+                        if (modelType == K_HRC_SKELETON)
+                            editJointToolStripMenuItem.Enabled = true;
+                    }
                 }
                 else
                 {
@@ -6559,6 +6588,87 @@ namespace KimeraCS
             }
         }
 
+        private void showVertexNormalsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            bShowVertexNormals = showVertexNormalsToolStripMenuItem.Checked;
+
+            panelModel_Paint(null, null);
+        }
+
+        private void redToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            int mask = 1 << 0;
+
+            if (redToolStripMenuItem.Checked) iNormalsColor |= mask;
+            else iNormalsColor &= ~mask;
+
+            panelModel_Paint(null, null);
+        }
+
+        private void greenToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            int mask = 1 << 1;
+
+            if (greenToolStripMenuItem.Checked) iNormalsColor |= mask;
+            else iNormalsColor &= ~mask;
+
+            panelModel_Paint(null, null);
+        }
+
+        private void blueToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            int mask = 1 << 2;
+
+            if (blueToolStripMenuItem.Checked) iNormalsColor |= mask;
+            else iNormalsColor &= ~mask;
+
+            panelModel_Paint(null, null);
+        }
+
+        private void oneftoolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            fNormalsScale = 1.0f;
+
+            fiveftoolStripMenuItem.Checked = false;
+            thirtyftoolStripMenuItem.Checked = false;
+            thousandftoolStripMenuItem.Checked = false;
+
+            panelModel_Paint(null, null);
+        }
+
+        private void fiveftoolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            fNormalsScale = 5.0f;
+
+            oneftoolStripMenuItem.Checked = false;
+            thirtyftoolStripMenuItem.Checked = false;
+            thousandftoolStripMenuItem.Checked = false;
+
+            panelModel_Paint(null, null);
+        }
+
+        private void thirtyftoolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            fNormalsScale = 30.0f;
+
+            oneftoolStripMenuItem.Checked = false;
+            fiveftoolStripMenuItem.Checked = false;
+            thousandftoolStripMenuItem.Checked = false;
+
+            panelModel_Paint(null, null);
+        }
+
+        private void thousandftoolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            fNormalsScale = 1000.0f;
+
+            oneftoolStripMenuItem.Checked = false;
+            fiveftoolStripMenuItem.Checked = false;
+            thirtyftoolStripMenuItem.Checked = false;
+
+            panelModel_Paint(null, null);
+        }
+
         private void mergeFramesDataTXTOnlyFieldModelsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             int iOpenResult;
@@ -6616,7 +6726,6 @@ namespace KimeraCS
                 return;
             }
         }
-
 
         public void UpdateBones(string strBoneSelected)
         {

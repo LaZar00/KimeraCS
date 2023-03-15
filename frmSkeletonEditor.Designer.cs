@@ -168,6 +168,17 @@ namespace KimeraCS
             this.skeletonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addJointToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editJointToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator8 = new System.Windows.Forms.ToolStripSeparator();
+            this.showVertexNormalsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.normalsColorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.redToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.greenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.blueToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.normalsScaleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.oneftoolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.fiveftoolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.thirtyftoolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.thousandftoolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.textureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.TEXToPNGBatchConversionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.animationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -1789,16 +1800,20 @@ namespace KimeraCS
             // 
             this.skeletonToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.addJointToolStripMenuItem,
-            this.editJointToolStripMenuItem});
-            this.skeletonToolStripMenuItem.Enabled = false;
+            this.editJointToolStripMenuItem,
+            this.toolStripSeparator8,
+            this.showVertexNormalsToolStripMenuItem,
+            this.normalsColorToolStripMenuItem,
+            this.normalsScaleToolStripMenuItem});
             this.skeletonToolStripMenuItem.Name = "skeletonToolStripMenuItem";
             this.skeletonToolStripMenuItem.Size = new System.Drawing.Size(64, 20);
             this.skeletonToolStripMenuItem.Text = "Skeleton";
             // 
             // addJointToolStripMenuItem
             // 
+            this.addJointToolStripMenuItem.Enabled = false;
             this.addJointToolStripMenuItem.Name = "addJointToolStripMenuItem";
-            this.addJointToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
+            this.addJointToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
             this.addJointToolStripMenuItem.Text = "Add Joint";
             this.addJointToolStripMenuItem.Click += new System.EventHandler(this.addJointToolStripMenuItem_Click);
             // 
@@ -1806,9 +1821,100 @@ namespace KimeraCS
             // 
             this.editJointToolStripMenuItem.Enabled = false;
             this.editJointToolStripMenuItem.Name = "editJointToolStripMenuItem";
-            this.editJointToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
+            this.editJointToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
             this.editJointToolStripMenuItem.Text = "Edit Joint";
             this.editJointToolStripMenuItem.Click += new System.EventHandler(this.editJointToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator8
+            // 
+            this.toolStripSeparator8.Name = "toolStripSeparator8";
+            this.toolStripSeparator8.Size = new System.Drawing.Size(183, 6);
+            // 
+            // showVertexNormalsToolStripMenuItem
+            // 
+            this.showVertexNormalsToolStripMenuItem.CheckOnClick = true;
+            this.showVertexNormalsToolStripMenuItem.Enabled = false;
+            this.showVertexNormalsToolStripMenuItem.Name = "showVertexNormalsToolStripMenuItem";
+            this.showVertexNormalsToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+            this.showVertexNormalsToolStripMenuItem.Text = "Show Vertex Normals";
+            this.showVertexNormalsToolStripMenuItem.Click += new System.EventHandler(this.showVertexNormalsToolStripMenuItem_Click);
+            // 
+            // normalsColorToolStripMenuItem
+            // 
+            this.normalsColorToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.redToolStripMenuItem,
+            this.greenToolStripMenuItem,
+            this.blueToolStripMenuItem});
+            this.normalsColorToolStripMenuItem.Name = "normalsColorToolStripMenuItem";
+            this.normalsColorToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+            this.normalsColorToolStripMenuItem.Text = "Normals Color";
+            // 
+            // redToolStripMenuItem
+            // 
+            this.redToolStripMenuItem.CheckOnClick = true;
+            this.redToolStripMenuItem.Name = "redToolStripMenuItem";
+            this.redToolStripMenuItem.Size = new System.Drawing.Size(105, 22);
+            this.redToolStripMenuItem.Text = "Red";
+            this.redToolStripMenuItem.Click += new System.EventHandler(this.redToolStripMenuItem_Click);
+            // 
+            // greenToolStripMenuItem
+            // 
+            this.greenToolStripMenuItem.CheckOnClick = true;
+            this.greenToolStripMenuItem.Name = "greenToolStripMenuItem";
+            this.greenToolStripMenuItem.Size = new System.Drawing.Size(105, 22);
+            this.greenToolStripMenuItem.Text = "Green";
+            this.greenToolStripMenuItem.Click += new System.EventHandler(this.greenToolStripMenuItem_Click);
+            // 
+            // blueToolStripMenuItem
+            // 
+            this.blueToolStripMenuItem.CheckOnClick = true;
+            this.blueToolStripMenuItem.Name = "blueToolStripMenuItem";
+            this.blueToolStripMenuItem.Size = new System.Drawing.Size(105, 22);
+            this.blueToolStripMenuItem.Text = "Blue";
+            this.blueToolStripMenuItem.Click += new System.EventHandler(this.blueToolStripMenuItem_Click);
+            // 
+            // normalsScaleToolStripMenuItem
+            // 
+            this.normalsScaleToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.oneftoolStripMenuItem,
+            this.fiveftoolStripMenuItem,
+            this.thirtyftoolStripMenuItem,
+            this.thousandftoolStripMenuItem});
+            this.normalsScaleToolStripMenuItem.Name = "normalsScaleToolStripMenuItem";
+            this.normalsScaleToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+            this.normalsScaleToolStripMenuItem.Text = "Normals Scale";
+            // 
+            // oneftoolStripMenuItem
+            // 
+            this.oneftoolStripMenuItem.CheckOnClick = true;
+            this.oneftoolStripMenuItem.Name = "oneftoolStripMenuItem";
+            this.oneftoolStripMenuItem.Size = new System.Drawing.Size(216, 22);
+            this.oneftoolStripMenuItem.Text = "1.0 (Field Models)";
+            this.oneftoolStripMenuItem.Click += new System.EventHandler(this.oneftoolStripMenuItem_Click);
+            // 
+            // fiveftoolStripMenuItem
+            // 
+            this.fiveftoolStripMenuItem.CheckOnClick = true;
+            this.fiveftoolStripMenuItem.Name = "fiveftoolStripMenuItem";
+            this.fiveftoolStripMenuItem.Size = new System.Drawing.Size(216, 22);
+            this.fiveftoolStripMenuItem.Text = "5.0";
+            this.fiveftoolStripMenuItem.Click += new System.EventHandler(this.fiveftoolStripMenuItem_Click);
+            // 
+            // thirtyftoolStripMenuItem
+            // 
+            this.thirtyftoolStripMenuItem.CheckOnClick = true;
+            this.thirtyftoolStripMenuItem.Name = "thirtyftoolStripMenuItem";
+            this.thirtyftoolStripMenuItem.Size = new System.Drawing.Size(216, 22);
+            this.thirtyftoolStripMenuItem.Text = "30.0 (Battle/Magic Models)";
+            this.thirtyftoolStripMenuItem.Click += new System.EventHandler(this.thirtyftoolStripMenuItem_Click);
+            // 
+            // thousandftoolStripMenuItem
+            // 
+            this.thousandftoolStripMenuItem.CheckOnClick = true;
+            this.thousandftoolStripMenuItem.Name = "thousandftoolStripMenuItem";
+            this.thousandftoolStripMenuItem.Size = new System.Drawing.Size(216, 22);
+            this.thousandftoolStripMenuItem.Text = "1000.0 (Locations)";
+            this.thousandftoolStripMenuItem.Click += new System.EventHandler(this.thousandftoolStripMenuItem_Click);
             // 
             // textureToolStripMenuItem
             // 
@@ -2244,6 +2350,17 @@ namespace KimeraCS
         private System.Windows.Forms.ToolStripMenuItem editJointToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem loadTMDToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem mergeFramesDataTXTToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator8;
+        private System.Windows.Forms.ToolStripMenuItem showVertexNormalsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem normalsColorToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem redToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem greenToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem blueToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem normalsScaleToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem oneftoolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem fiveftoolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem thousandftoolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem thirtyftoolStripMenuItem;
     }
 }
 
