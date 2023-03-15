@@ -1155,9 +1155,19 @@ namespace KimeraCS
             RemoveGroup(ref EditedPModel, lbGroups.SelectedIndex);
             CheckModelConsistency(ref EditedPModel);
 
+            KillUnusedVertices(ref EditedPModel);
+
+            ApplyCurrentVCoordsPE(ref EditedPModel);
+
+            ComputePColors(ref EditedPModel);
+            ComputeEdges(ref EditedPModel);
+            ComputeNormals(ref EditedPModel);
+
             FillGroupsList();
-            panelEditorPModel_Paint(null, null);
+            
             CopyModelColors2VP(EditedPModel, ref vcolorsOriginal, ref pcolorsOriginal);
+            
+            panelEditorPModel_Paint(null, null);          
             chkPalettized_CheckedChanged(null, null);
 
             ChangeGroupEnable(false);
@@ -1178,9 +1188,19 @@ namespace KimeraCS
             DuplicateGroup(ref EditedPModel, lbGroups.SelectedIndex);
             CheckModelConsistency(ref EditedPModel);
 
+            KillUnusedVertices(ref EditedPModel);
+
+            ApplyCurrentVCoordsPE(ref EditedPModel);
+
+            ComputePColors(ref EditedPModel);
+            ComputeEdges(ref EditedPModel);
+            ComputeNormals(ref EditedPModel);
+
             FillGroupsList();
-            panelEditorPModel_Paint(null, null);
+
             CopyModelColors2VP(EditedPModel, ref vcolorsOriginal, ref pcolorsOriginal);
+
+            panelEditorPModel_Paint(null, null);
             chkPalettized_CheckedChanged(null, null);
 
             ChangeGroupEnable(false);
@@ -1256,7 +1276,6 @@ namespace KimeraCS
         private void btnCommitChanges_Click(object sender, EventArgs e)
         {
             // Apply changes to the actual EditedPModel local PEditor variable.
-            // Apply Normals
             CommitContextualizedPChanges(false);
 
             // Apply changes to the Skeleton in frmSkeletonEditor (fSkeleton, bSkeleton, fPModel)
@@ -1780,8 +1799,10 @@ namespace KimeraCS
 
                 MirrorHemisphere(ref EditedPModel, planeA, planeB, planeC, planeD);
 
-                if (chkEnableLighting.Checked) ComputeNormals(ref EditedPModel);
+                //if (chkEnableLighting.Checked) ComputeNormals(ref EditedPModel);
+                ComputeNormals(ref EditedPModel);
 
+                CopyModelColors2VP(EditedPModel, ref vcolorsOriginal, ref pcolorsOriginal);
                 panelEditorPModel_Paint(null, null);
             } 
         }
@@ -1801,7 +1822,14 @@ namespace KimeraCS
 
                 FillGroupsList();
 
-                if (chkEnableLighting.Checked) ComputeNormals(ref EditedPModel);
+                //if (chkEnableLighting.Checked) ComputeNormals(ref EditedPModel);
+                KillUnusedVertices(ref EditedPModel);
+
+                ApplyCurrentVCoordsPE(ref EditedPModel);
+
+                ComputePColors(ref EditedPModel);
+                ComputeEdges(ref EditedPModel);
+                ComputeNormals(ref EditedPModel);
 
                 CopyModelColors2VP(EditedPModel, ref vcolorsOriginal, ref pcolorsOriginal);
                 panelEditorPModel_Paint(null, null);
@@ -2364,8 +2392,17 @@ namespace KimeraCS
                 
                 CutPModelThroughPlane(ref EditedPModel, planeA, planeB, planeC, planeD, ref knownPlaneVPoints);
 
-                if (chkEnableLighting.Checked) ComputeNormals(ref EditedPModel);
+                //if (chkEnableLighting.Checked) ComputeNormals(ref EditedPModel);
+                KillUnusedVertices(ref EditedPModel);
 
+                ApplyCurrentVCoordsPE(ref EditedPModel);
+
+                ComputePColors(ref EditedPModel);
+                ComputeEdges(ref EditedPModel);
+                ComputeNormals(ref EditedPModel);
+
+                CopyModelColors2VP(EditedPModel, ref vcolorsOriginal, ref pcolorsOriginal);
+                
                 panelEditorPModel_Paint(null, null);
             }
         }
@@ -2383,8 +2420,16 @@ namespace KimeraCS
 
                 FillGroupsList();
 
-                if (chkEnableLighting.Checked) ComputeNormals(ref EditedPModel);
+                //if (chkEnableLighting.Checked) ComputeNormals(ref EditedPModel);
+                KillUnusedVertices(ref EditedPModel);
 
+                ApplyCurrentVCoordsPE(ref EditedPModel);
+
+                ComputePColors(ref EditedPModel);
+                ComputeEdges(ref EditedPModel);
+                ComputeNormals(ref EditedPModel);
+
+                CopyModelColors2VP(EditedPModel, ref vcolorsOriginal, ref pcolorsOriginal);
                 panelEditorPModel_Paint(null, null);
             }
         }
@@ -3592,8 +3637,7 @@ namespace KimeraCS
                             p1 = EditedPModel.Verts[EditedPModel.Groups[iGroupIdx].offsetVert + vi1];
                             p2 = EditedPModel.Verts[EditedPModel.Groups[iGroupIdx].offsetVert + vi2];
 
-                            if (EditedPModel.Groups[iGroupIdx].texFlag == 1 || 
-                                EditedPModel.Groups[iGroupIdx].offsetTex > 0)
+                            if (EditedPModel.Groups[iGroupIdx].texFlag == 1)
                             {
                                 tc1 = EditedPModel.TexCoords[EditedPModel.Groups[iGroupIdx].offsetTex + vi1];
                                 tc2 = EditedPModel.TexCoords[EditedPModel.Groups[iGroupIdx].offsetTex + vi2];
@@ -3613,8 +3657,7 @@ namespace KimeraCS
                                 {
                                     iGroupIdx = tmpGroupIdx;
 
-                                    if (EditedPModel.Groups[iGroupIdx].texFlag == 1 ||
-                                        EditedPModel.Groups[iGroupIdx].offsetTex > 0)
+                                    if (EditedPModel.Groups[iGroupIdx].texFlag == 1)
                                     {
                                         vi1 = EditedPModel.Polys[pi].Verts[ei];
                                         vi2 = EditedPModel.Polys[pi].Verts[(ei + 1) % 3];
@@ -3624,17 +3667,19 @@ namespace KimeraCS
                                     }
                                 }
 
-                                iGroupIdx = tmpGroupIdx;
                                 CutEdgeAtPoint(ref EditedPModel, pi, ei, intersectionPoint, intersectionTexCoord);
                             }
 
                             ComputePColors(ref EditedPModel);
 
-                            if (glIsEnabled(glCapability.GL_LIGHTING)) ComputeNormals(ref EditedPModel);
+                            //if (glIsEnabled(glCapability.GL_LIGHTING)) ComputeNormals(ref EditedPModel);
+                            ComputeNormals(ref EditedPModel);
 
                             if (chkPaletteMode.Checked)
                                 FillColorTable(EditedPModel, ref colorTable, 
                                                ref translationTableVertex, ref translationTablePolys, iThreshold);
+
+                            CopyModelColors2VP(EditedPModel, ref vcolorsOriginal, ref pcolorsOriginal);
                         }
                     }
 
