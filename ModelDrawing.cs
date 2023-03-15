@@ -39,9 +39,55 @@ namespace KimeraCS
         //  ---------------------------------------------------------------------------------------------------
         //  ================================== GENERIC FIELD/BATTLE DRAW  =====================================
         //  ---------------------------------------------------------------------------------------------------
-        public static void DrawGroup(ref PGroup Group, ref PPolygon[] Polys, ref Point3D[] Verts,
-                                     ref Color[] Vcolors, ref Point3D[] Normals, ref Point2D[] TexCoords, 
-                                     ref PHundret Hundret, bool HideHiddenQ)
+        public static void ShowVertexNormals(PGroup Group, PPolygon[] Polys, Point3D[] Verts, Point3D[] Normals)
+        {
+            long pi, vi;
+            float x, y, z, fRed, fGreen, fBlue;
+            bool bLightingEnabled = false;
+
+            fRed = fGreen = fBlue = 0.0f;
+
+            if ((iNormalsColor & 0x1) == 0x1) fRed = 1.0f;
+            if ((iNormalsColor & 0x2) == 0x2) fGreen = 1.0f;
+            if ((iNormalsColor & 0x4) == 0x4) fBlue = 1.0f;
+
+            glColor4f(fRed, fGreen, fBlue, 1.0f);
+
+            glDisable(glCapability.GL_TEXTURE_2D);
+
+            if (glIsEnabled(glCapability.GL_LIGHTING)) bLightingEnabled = true;
+            glDisable(glCapability.GL_LIGHTING);
+
+            glBegin(glDrawMode.GL_LINES);
+
+            if (Normals.Length > 0)
+            {
+                for (pi = Group.offsetPoly; pi < Group.offsetPoly + Group.numPoly; pi++)
+                {
+                    for (vi = 0; vi < 3; vi++)
+                    {
+                        x = Verts[Polys[pi].Verts[vi] + Group.offsetVert].x;
+                        y = Verts[Polys[pi].Verts[vi] + Group.offsetVert].y;
+                        z = Verts[Polys[pi].Verts[vi] + Group.offsetVert].z;
+                        glVertex3f(x, y, z);
+
+                        x += Normals[Polys[pi].Normals[vi]].x * fNormalsScale;
+                        y += Normals[Polys[pi].Normals[vi]].y * fNormalsScale;
+                        z += Normals[Polys[pi].Normals[vi]].z * fNormalsScale;
+                        glVertex3f(x, y, z);
+                    }
+                }
+            }
+
+            glEnd();
+
+            if (bLightingEnabled)
+                glEnable(glCapability.GL_LIGHTING);
+        }
+
+        public static void DrawGroup(PGroup Group, PPolygon[] Polys, Point3D[] Verts,
+                                     Color[] Vcolors, Point3D[] Normals,Point2D[] TexCoords, 
+                                     PHundret Hundret, bool HideHiddenQ)
         {
 
             if (Group.HiddenQ && HideHiddenQ) return;
@@ -69,6 +115,11 @@ namespace KimeraCS
                                       Vcolors[Polys[pi].Verts[vi] + Group.offsetVert].B / 255.0f,
                                       1.0f);
 
+                        //if (Normals.Length > 0)
+                        //    glNormal3f(Normals[Polys[pi].Normals[vi] + Group.offsetVert].x,
+                        //               Normals[Polys[pi].Normals[vi] + Group.offsetVert].y,
+                        //               Normals[Polys[pi].Normals[vi] + Group.offsetVert].z);
+
                         if (Normals.Length > 0)
                             glNormal3f(Normals[Polys[pi].Normals[vi]].x,
                                        Normals[Polys[pi].Normals[vi]].y,
@@ -90,7 +141,13 @@ namespace KimeraCS
                 }
 
                 glEnd();
+
+                // Let's try here to render the normals
+                if (bShowVertexNormals)
+                    ShowVertexNormals(Group, Polys, Verts, Normals);
+
             }
+
             catch (Exception ex)
             {
                 MessageBox.Show("Exception in DrawGroup procedure.\nGroup: " + Group.realGID.ToString() +
@@ -135,11 +192,14 @@ namespace KimeraCS
 
             texEnabled = glIsEnabled(glCapability.GL_TEXTURE_2D);
 
-            glShadeModel(glShadingModel.GL_SMOOTH);
-            glEnable(glCapability.GL_COLOR_MATERIAL);
-
             for (gi = 0; gi < Model.Header.numGroups; gi++)
             {
+                // ShadeMode
+                if (Model.Hundrets[gi].shademode == 1) glShadeModel(glShadingModel.GL_FLAT);
+                else glShadeModel(glShadingModel.GL_SMOOTH);
+
+                glEnable(glCapability.GL_COLOR_MATERIAL);
+
                 //  Set the render states acording to the hundrets information
                 //  V_WIREFRAME
                 glPolygonMode(glFace.GL_FRONT, glPolygon.GL_FILL);
@@ -320,8 +380,8 @@ namespace KimeraCS
                          Model.Groups[gi].rszGroupY,
                          Model.Groups[gi].rszGroupZ);
 
-                DrawGroup(ref Model.Groups[gi], ref Model.Polys, ref Model.Verts, ref Model.Vcolors,
-                          ref Model.Normals, ref Model.TexCoords, ref Model.Hundrets[gi], HideHiddenGroupsQ);
+                DrawGroup(Model.Groups[gi], Model.Polys, Model.Verts, Model.Vcolors,
+                          Model.Normals, Model.TexCoords, Model.Hundrets[gi], HideHiddenGroupsQ);
                 glDisable(glCapability.GL_TEXTURE_2D);
 
                 glPopMatrix();
@@ -1269,7 +1329,6 @@ namespace KimeraCS
                         if (bShowBones)
                         {                        
                             glDisable(glCapability.GL_DEPTH_TEST);
-                            glDisable(glCapability.GL_LIGHTING);
                             glColor3f(0, 1, 0);
 
                             DrawFieldSkeletonBones(fSkeleton, fAnimation.frames[iCurrentFrameScroll]);
@@ -1768,7 +1827,7 @@ namespace KimeraCS
                 glDisable(glCapability.GL_LIGHT2);
                 glDisable(glCapability.GL_LIGHT3);
 
-                ComputePModelBoundingBox(EditedPModel, ref p_min, ref p_max);
+                ComputePModelBoundingBox(frmPEditor.EditedPModel, ref p_min, ref p_max);
                 modelDiameterNormalized = (-2 * ComputeSceneRadius(p_min, p_max)) / frmPEditor.LIGHT_STEPS;
 
                 SetLighting(glCapability.GL_LIGHT0, modelDiameterNormalized * frmPEditor.iLightX,
@@ -1789,7 +1848,7 @@ namespace KimeraCS
                 case K_PCOLORS:
                     glEnable(glCapability.GL_POLYGON_OFFSET_FILL);
                     glPolygonOffset(1, 1);
-                    DrawPModelPolys(EditedPModel);
+                    DrawPModelPolys(frmPEditor.EditedPModel);
                     glDisable(glCapability.GL_POLYGON_OFFSET_FILL);
 
                     DrawPModelMesh(EditedPModel);
@@ -1910,7 +1969,7 @@ namespace KimeraCS
             Array.Resize(ref Model.Verts, Model.Header.numVerts);
             Array.Resize(ref Model.Vcolors, Model.Header.numVerts);
 
-            if (Model.Groups[iGroupIdx].texFlag == 1 || Model.Groups[iGroupIdx].offsetTex > 0)
+            if (Model.Groups[iGroupIdx].texFlag == 1)
             {
                 Model.Header.numTexCs++;
                 Array.Resize(ref Model.TexCoords, Model.Header.numTexCs);
@@ -1935,7 +1994,7 @@ namespace KimeraCS
                     Model.Vcolors[vi] = Model.Vcolors[vi - 1];
                 }
 
-                if (Model.Groups[iGroupIdx].texFlag == 1 || Model.Groups[iGroupIdx].offsetTex > 0)
+                if (Model.Groups[iGroupIdx].texFlag == 1)
                 {
                     baseTexCoords = Model.Groups[iGroupIdx].offsetTex + Model.Groups[iGroupIdx].numVert;
 
@@ -1947,7 +2006,7 @@ namespace KimeraCS
 
                 if (glIsEnabled(glCapability.GL_LIGHTING))
                 {
-                    if (Model.Groups[iGroupIdx].texFlag == 1 || Model.Groups[iGroupIdx].offsetTex > 0)
+                    if (Model.Groups[iGroupIdx].texFlag == 1)
                     {
                         //baseNormals = Model.Groups[iGroupIdx + 1].offsetVert;
                         baseNormals = Model.Groups[iNextGroup].offsetVert;
@@ -1963,8 +2022,7 @@ namespace KimeraCS
                 {
                     Model.Groups[iNextGroup].offsetVert++;
 
-                    if ((Model.Groups[iGroupIdx].texFlag == 1 || Model.Groups[iGroupIdx].offsetTex > 0) &&
-                        (Model.Groups[iNextGroup].texFlag == 1 || Model.Groups[iNextGroup].offsetTex > 0))
+                    if ((Model.Groups[iGroupIdx].texFlag == 1) && (Model.Groups[iNextGroup].texFlag == 1))
                     {
                         Model.Groups[iNextGroup].offsetTex++;
                     }
