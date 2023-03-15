@@ -1853,15 +1853,17 @@ namespace KimeraCS
             // 
             this.redToolStripMenuItem.CheckOnClick = true;
             this.redToolStripMenuItem.Name = "redToolStripMenuItem";
-            this.redToolStripMenuItem.Size = new System.Drawing.Size(105, 22);
+            this.redToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.redToolStripMenuItem.Text = "Red";
             this.redToolStripMenuItem.Click += new System.EventHandler(this.redToolStripMenuItem_Click);
             // 
             // greenToolStripMenuItem
             // 
+            this.greenToolStripMenuItem.Checked = true;
             this.greenToolStripMenuItem.CheckOnClick = true;
+            this.greenToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.greenToolStripMenuItem.Name = "greenToolStripMenuItem";
-            this.greenToolStripMenuItem.Size = new System.Drawing.Size(105, 22);
+            this.greenToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.greenToolStripMenuItem.Text = "Green";
             this.greenToolStripMenuItem.Click += new System.EventHandler(this.greenToolStripMenuItem_Click);
             // 
@@ -1869,7 +1871,7 @@ namespace KimeraCS
             // 
             this.blueToolStripMenuItem.CheckOnClick = true;
             this.blueToolStripMenuItem.Name = "blueToolStripMenuItem";
-            this.blueToolStripMenuItem.Size = new System.Drawing.Size(105, 22);
+            this.blueToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.blueToolStripMenuItem.Text = "Blue";
             this.blueToolStripMenuItem.Click += new System.EventHandler(this.blueToolStripMenuItem_Click);
             // 
@@ -1886,7 +1888,9 @@ namespace KimeraCS
             // 
             // oneftoolStripMenuItem
             // 
+            this.oneftoolStripMenuItem.Checked = true;
             this.oneftoolStripMenuItem.CheckOnClick = true;
+            this.oneftoolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.oneftoolStripMenuItem.Name = "oneftoolStripMenuItem";
             this.oneftoolStripMenuItem.Size = new System.Drawing.Size(216, 22);
             this.oneftoolStripMenuItem.Text = "1.0 (Field Models)";
