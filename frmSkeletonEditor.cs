@@ -56,7 +56,7 @@ namespace KimeraCS
     public partial class frmSkeletonEditor : Form
     {
 
-        public const string STR_APPNAME = "KimeraCS 1.7h";
+        public const string STR_APPNAME = "KimeraCS 1.7i";
 
         public static int modelWidth;
         public static int modelHeight;
@@ -668,6 +668,9 @@ namespace KimeraCS
 
                     // Menu Strip
                     saveSkeletonAsToolStripMenuItem.Enabled = true;
+
+                    // Show Normals vars
+                    oneftoolStripMenuItem.PerformClick();
                     break;
 
                 case K_HRC_SKELETON:
@@ -721,6 +724,9 @@ namespace KimeraCS
 
                     saveSkeletonToolStripMenuItem.Enabled = true;
                     saveSkeletonAsToolStripMenuItem.Enabled = true;
+
+                    // Show Normals vars
+                    oneftoolStripMenuItem.PerformClick();
                     break;
 
                 case K_AA_SKELETON:
@@ -793,6 +799,14 @@ namespace KimeraCS
 
                         saveAnimationToolStripMenuItem.Enabled = true;
                         saveAnimationAsToolStripMenuItem.Enabled = true;
+
+                        // Show Normals vars
+                        thirtyftoolStripMenuItem.PerformClick();
+                    }
+                    else
+                    {
+                        // Show Normals vars
+                        thousandftoolStripMenuItem.PerformClick();
                     }
 
                     if (bSkeleton.wpModels.Count > 0)
@@ -870,6 +884,9 @@ namespace KimeraCS
 
                     saveSkeletonToolStripMenuItem.Enabled = true;
                     saveSkeletonAsToolStripMenuItem.Enabled = true;
+
+                    // Show Normals vars
+                    thirtyftoolStripMenuItem.PerformClick();
                     break;
 
                 default:
@@ -878,6 +895,9 @@ namespace KimeraCS
                     // Menu Strip
                     saveSkeletonToolStripMenuItem.Enabled = true;
                     saveSkeletonAsToolStripMenuItem.Enabled = true;
+
+                    // Show Normals vars
+                    oneftoolStripMenuItem.PerformClick();
                     break;
             }
 
@@ -1453,7 +1473,8 @@ namespace KimeraCS
 
                         if (bi > -1 && bi < bSkeleton.nBones)
                         {
-                            if (selectBoneForWeaponAttachmentQ) SetWeaponAnimationAttachedToBone(e.Button == MouseButtons.Right, this);
+                            if (selectBoneForWeaponAttachmentQ) 
+                                SetWeaponAnimationAttachedToBone(e.Button == MouseButtons.Right, this);
 
                             if (bSkeleton.IsBattleLocation)
                             {
@@ -1462,7 +1483,7 @@ namespace KimeraCS
                             else
                             {
                                 pi = GetClosestBattleBoneModel(bSkeleton, bAnimationsPack.SkeletonAnimations[ianimIndex].frames[tbCurrentFrameScroll.Value],
-                                                               bi, e.X, e.Y);                                
+                                                               bi, e.X, e.Y);
                             }
 
                             SelectedBonePiece = pi;
@@ -1481,7 +1502,7 @@ namespace KimeraCS
                             if (bi == bSkeleton.nBones)
                             {
                                 SetBoneModifiers();
-                                SelectedBonePiece = -2;
+                                SelectedBonePiece = cbWeapon.SelectedIndex;
 
                                 if (!FindWindowOpened("frmPEditor")) gbSelectedBoneFrame.Enabled = true;
                                 SetBonePieceModifiers();
@@ -1489,14 +1510,14 @@ namespace KimeraCS
                                 if (!FindWindowOpened("frmPEditor")) gbSelectedPieceFrame.Enabled = true;
 
                                 // Select the weapon texture
-                                if (bSkeleton.wpModels[cbWeapon.SelectedIndex].Groups[0].texFlag == 1)
-                                {
-                                    if (bSkeleton.textures.Count > bSkeleton.wpModels[cbWeapon.SelectedIndex].Groups[0].texID)
-                                        cbTextureSelect.SelectedIndex = bSkeleton.wpModels[cbWeapon.SelectedIndex].Groups[0].texID;
-                                    else
-                                        if (bSkeleton.textures.Count > 0)
-                                            cbTextureSelect.SelectedIndex = 0;
-                                }
+                                //if (bSkeleton.wpModels[cbWeapon.SelectedIndex].Groups[0].texFlag == 1)
+                                //{
+                                //    if (bSkeleton.textures.Count > bSkeleton.wpModels[cbWeapon.SelectedIndex].Groups[0].texID)
+                                //        cbTextureSelect.SelectedIndex = bSkeleton.wpModels[cbWeapon.SelectedIndex].Groups[0].texID;
+                                //    else
+                                //        if (bSkeleton.textures.Count > 0)
+                                //            cbTextureSelect.SelectedIndex = 0;
+                                //}
                             }
                             else
                             {
@@ -1711,12 +1732,13 @@ namespace KimeraCS
                     case K_AA_SKELETON:
                     case K_MAGIC_SKELETON:
                         if (SelectedBone > -1 && SelectedBonePiece > -1)
-                            tmpPModel = bSkeleton.bones[SelectedBone].Models[SelectedBonePiece];
-                        else
                         {
                             if (SelectedBone == bSkeleton.nBones)
-                                tmpPModel = bSkeleton.wpModels[ianimWeaponIndex];
-                        }                         
+                                tmpPModel = bSkeleton.wpModels[SelectedBonePiece];
+                            else
+                                tmpPModel = bSkeleton.bones[SelectedBone].Models[SelectedBonePiece];
+                        }
+
                         break;
 
                     case K_P_BATTLE_MODEL:
@@ -3096,30 +3118,40 @@ namespace KimeraCS
                             cbTextureSelect.Items.Add(ti);
                         }
 
-                        if (bSkeleton.nTextures > 0) 
+                        if (bSkeleton.nTextures > 0)
                         {
-                            // Find the first group with texture flag enabled.
-                            int iGroupIdx = 0;
-                            bool bFound = false;
-
-                            while (iGroupIdx < bSkeleton.bones[SelectedBone].Models[SelectedBonePiece].Groups.Length &&
-                                   !bFound)
+                            // Let's check if we have weapon or model part
+                            if (bSkeleton.nBones == SelectedBone)
                             {
-                                if (bSkeleton.bones[SelectedBone].Models[SelectedBonePiece].Groups[iGroupIdx].texFlag == 0)
-                                    iGroupIdx++;
-                                else bFound = true;
-                            }
-
-                            if (bSkeleton.bones[SelectedBone].Models[SelectedBonePiece].Groups.Length == iGroupIdx)
-                            {
-                                cbTextureSelect.SelectedIndex = -1;
+                                if (bSkeleton.wpModels[SelectedBonePiece].Groups[0].texFlag == 1)
+                                    cbTextureSelect.SelectedIndex = bSkeleton.wpModels[SelectedBonePiece].Groups[0].texID;
+                                else
+                                    cbTextureSelect.SelectedIndex = -1;
                             }
                             else
                             {
-                                cbTextureSelect.SelectedIndex =
-                                    bSkeleton.bones[SelectedBone].Models[SelectedBonePiece].Groups[iGroupIdx].texID;
-                            }
-                        
+                                // Find the first group with texture flag enabled.
+                                int iGroupIdx = 0;
+                                bool bFound = false;
+
+                                while (iGroupIdx < bSkeleton.bones[SelectedBone].Models[SelectedBonePiece].Groups.Length &&
+                                       !bFound)
+                                {
+                                    if (bSkeleton.bones[SelectedBone].Models[SelectedBonePiece].Groups[iGroupIdx].texFlag == 0)
+                                        iGroupIdx++;
+                                    else bFound = true;
+                                }
+
+                                if (bSkeleton.bones[SelectedBone].Models[SelectedBonePiece].Groups.Length == iGroupIdx)
+                                {
+                                    cbTextureSelect.SelectedIndex = -1;
+                                }
+                                else
+                                {
+                                    cbTextureSelect.SelectedIndex =
+                                        bSkeleton.bones[SelectedBone].Models[SelectedBonePiece].Groups[iGroupIdx].texID;
+                                }
+                            }                        
                         }
                     }
                     else gbTexturesFrame.Enabled = false;
@@ -6458,11 +6490,11 @@ namespace KimeraCS
                         if (bSkeleton.wpModels.Count > 0 && SelectedBone == bSkeleton.nBones)
                         {
                             if (ianimWeaponIndex == -1) return;
-                            frmTexViewer = new frmTextureViewer(this, bSkeleton.wpModels[cbWeapon.SelectedIndex]);                           
+                                frmTexViewer = new frmTextureViewer(this, bSkeleton.wpModels[cbWeapon.SelectedIndex]);                           
                         }
                         else
                         {
-                            frmTexViewer = new frmTextureViewer(this, bSkeleton.bones[SelectedBone].Models[SelectedBonePiece]);
+                                frmTexViewer = new frmTextureViewer(this, bSkeleton.bones[SelectedBone].Models[SelectedBonePiece]);
                         }
                         break;
                 }

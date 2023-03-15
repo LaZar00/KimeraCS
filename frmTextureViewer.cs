@@ -256,33 +256,43 @@ namespace KimeraCS
 
                     iTCWidth = fSkeleton.bones[SelectedBone].fRSDResources[SelectedBonePiece].textures[iTexID].width;
                     iTCHeight = fSkeleton.bones[SelectedBone].fRSDResources[SelectedBonePiece].textures[iTexID].height;
+
                     break;
 
                 case K_AA_SKELETON:
-                    if (bSkeleton.wpModels.Count > 0 && SelectedBone == bSkeleton.nBones)
-                    {
-                        hTmpBMP = bSkeleton.textures[bSkeleton.wpModels[frmSkelEdit.cbWeapon.SelectedIndex].Groups[0].texID].HBMP;
-
-                        iTCWidth = bSkeleton.textures[bSkeleton.wpModels[frmSkelEdit.cbWeapon.SelectedIndex].Groups[0].texID].width;
-                        iTCHeight = bSkeleton.textures[bSkeleton.wpModels[frmSkelEdit.cbWeapon.SelectedIndex].Groups[0].texID].height;
-                    }
-                    else
-                    {
-                        hTmpBMP = bSkeleton.textures[iTexID].HBMP;
-
-                        iTCWidth = bSkeleton.textures[iTexID].width;
-                        iTCHeight = bSkeleton.textures[iTexID].height;
-                    }
-
-
-                    break;
-
                 case K_MAGIC_SKELETON:
                     hTmpBMP = bSkeleton.textures[iTexID].HBMP;
 
                     iTCWidth = bSkeleton.textures[iTexID].width;
                     iTCHeight = bSkeleton.textures[iTexID].height;
+
                     break;
+
+                //case K_AA_SKELETON:
+                //    if (bSkeleton.wpModels.Count > 0 && SelectedBone == bSkeleton.nBones)
+                //    {
+                //        hTmpBMP = bSkeleton.textures[bSkeleton.wpModels[frmSkelEdit.cbWeapon.SelectedIndex].Groups[0].texID].HBMP;
+
+                //        iTCWidth = bSkeleton.textures[bSkeleton.wpModels[frmSkelEdit.cbWeapon.SelectedIndex].Groups[0].texID].width;
+                //        iTCHeight = bSkeleton.textures[bSkeleton.wpModels[frmSkelEdit.cbWeapon.SelectedIndex].Groups[0].texID].height;
+                //    }
+                //    else
+                //    {
+                //        hTmpBMP = bSkeleton.textures[iTexID].HBMP;
+
+                //        iTCWidth = bSkeleton.textures[iTexID].width;
+                //        iTCHeight = bSkeleton.textures[iTexID].height;
+                //    }
+
+
+                //    break;
+
+                //case K_MAGIC_SKELETON:
+                //    hTmpBMP = bSkeleton.textures[iTexID].HBMP;
+
+                //    iTCWidth = bSkeleton.textures[iTexID].width;
+                //    iTCHeight = bSkeleton.textures[iTexID].height;
+                //    break;
             }
 
             Bitmap tmpBMP = new Bitmap(pbTextureView.Width, pbTextureView.Height);
@@ -566,23 +576,29 @@ namespace KimeraCS
                     break;
 
                 case K_AA_SKELETON:
-                    if (bSkeleton.wpModels.Count > 0 && SelectedBone == bSkeleton.nBones)
-                    {
-                        iWidth = bSkeleton.textures[bSkeleton.wpModels[frmSkelEdit.cbWeapon.SelectedIndex].Groups[0].texID].width;
-                        iHeight = bSkeleton.textures[bSkeleton.wpModels[frmSkelEdit.cbWeapon.SelectedIndex].Groups[0].texID].height;
-                    }
-                    else
-                    {
-                        iWidth = bSkeleton.textures[iTexID].width;
-                        iHeight = bSkeleton.textures[iTexID].height;
-                    }
-
-                    break;
-
                 case K_MAGIC_SKELETON:
                     iWidth = bSkeleton.textures[iTexID].width;
                     iHeight = bSkeleton.textures[iTexID].height;
                     break;
+
+                    //case K_AA_SKELETON:
+                    //    if (bSkeleton.wpModels.Count > 0 && SelectedBone == bSkeleton.nBones)
+                    //    {
+                    //        iWidth = bSkeleton.textures[bSkeleton.wpModels[frmSkelEdit.cbWeapon.SelectedIndex].Groups[0].texID].width;
+                    //        iHeight = bSkeleton.textures[bSkeleton.wpModels[frmSkelEdit.cbWeapon.SelectedIndex].Groups[0].texID].height;
+                    //    }
+                    //    else
+                    //    {
+                    //        iWidth = bSkeleton.textures[iTexID].width;
+                    //        iHeight = bSkeleton.textures[iTexID].height;
+                    //    }
+
+                    //    break;
+
+                    //case K_MAGIC_SKELETON:
+                    //    iWidth = bSkeleton.textures[iTexID].width;
+                    //    iHeight = bSkeleton.textures[iTexID].height;
+                    //    break;
             }
 
             fAspectRatio = (float)iWidth / (float)iHeight;
