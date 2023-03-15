@@ -6661,6 +6661,7 @@ namespace KimeraCS
         {
             fNormalsScale = 1.0f;
 
+            oneftoolStripMenuItem.Checked = true;
             fiveftoolStripMenuItem.Checked = false;
             thirtyftoolStripMenuItem.Checked = false;
             thousandftoolStripMenuItem.Checked = false;
@@ -6673,6 +6674,7 @@ namespace KimeraCS
             fNormalsScale = 5.0f;
 
             oneftoolStripMenuItem.Checked = false;
+            fiveftoolStripMenuItem.Checked = true;
             thirtyftoolStripMenuItem.Checked = false;
             thousandftoolStripMenuItem.Checked = false;
 
@@ -6685,6 +6687,7 @@ namespace KimeraCS
 
             oneftoolStripMenuItem.Checked = false;
             fiveftoolStripMenuItem.Checked = false;
+            thirtyftoolStripMenuItem.Checked = true;
             thousandftoolStripMenuItem.Checked = false;
 
             panelModel_Paint(null, null);
@@ -6697,6 +6700,7 @@ namespace KimeraCS
             oneftoolStripMenuItem.Checked = false;
             fiveftoolStripMenuItem.Checked = false;
             thirtyftoolStripMenuItem.Checked = false;
+            thousandftoolStripMenuItem.Checked = true;
 
             panelModel_Paint(null, null);
         }
