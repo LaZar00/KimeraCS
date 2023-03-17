@@ -56,7 +56,7 @@ namespace KimeraCS
     public partial class frmSkeletonEditor : Form
     {
 
-        public const string STR_APPNAME = "KimeraCS 1.7i";
+        public const string STR_APPNAME = "KimeraCS 1.7l";
 
         public static int modelWidth;
         public static int modelHeight;
@@ -153,7 +153,7 @@ namespace KimeraCS
 
 
         // Show Normals
-        public static bool bShowVertexNormals;
+        public static bool bShowVertexNormals, bShowFaceNormals;
         public static int iNormalsColor;
         public static float fNormalsScale;
 
@@ -423,10 +423,6 @@ namespace KimeraCS
             resetCameraToolStripMenuItem.ShortcutKeyDisplayString = "CTRL+Home";
 
 
-            // Show Normals vars
-            // Define N shortcut for show Normals
-            showVertexNormalsToolStripMenuItem.ShortcutKeyDisplayString = "N";
-
             greenToolStripMenuItem.Checked = true;
             iNormalsColor = 2;     // 1 - Red, 2 - Green, 3 - Blue
 
@@ -462,8 +458,11 @@ namespace KimeraCS
             if (e.KeyCode == Keys.Delete && SelectedBone > -1)
                 btnRemovePiece.PerformClick();
 
-            if (e.KeyCode == Keys.N)
+            if (e.KeyCode == Keys.V)
                 showVertexNormalsToolStripMenuItem.PerformClick();
+
+            if (e.KeyCode == Keys.F)
+                showFaceNormalsToolStripMenuItem.PerformClick();
 
             if (e.KeyCode == Keys.Space)
                 if (cbBoneSelector.SelectedIndex >= 0)
@@ -603,7 +602,7 @@ namespace KimeraCS
             cbBoneSelector.Items.Clear();
             addJointToolStripMenuItem.Enabled = false;
             editJointToolStripMenuItem.Enabled = false;
-            showVertexNormalsToolStripMenuItem.Enabled = false;
+            showNormalsToolStripMenuItem.Enabled = false;
 
             gbSelectedBoneFrame.Visible = false;
             gbTexturesFrame.Visible = false;
@@ -902,7 +901,7 @@ namespace KimeraCS
             }
 
             // Show normals menu item
-            showVertexNormalsToolStripMenuItem.Enabled = true;
+            showNormalsToolStripMenuItem.Enabled = true;
 
             // Main window title update
             bChangesDone = false;
@@ -6622,7 +6621,38 @@ namespace KimeraCS
 
         private void showVertexNormalsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            bShowVertexNormals = showVertexNormalsToolStripMenuItem.Checked;
+            if (showVertexNormalsToolStripMenuItem.Checked)
+            {
+                bShowVertexNormals = true;
+                showVertexNormalsToolStripMenuItem.Checked = true;
+
+                bShowFaceNormals = false;
+                showFaceNormalsToolStripMenuItem.Checked = false;
+            }
+            else
+            {
+                bShowVertexNormals = false;
+                showVertexNormalsToolStripMenuItem.Checked = false;
+            }
+
+            panelModel_Paint(null, null);
+        }
+
+        private void showFaceNormalsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (showFaceNormalsToolStripMenuItem.Checked)
+            {
+                bShowVertexNormals = false;
+                showVertexNormalsToolStripMenuItem.Checked = false;
+
+                bShowFaceNormals = true;
+                showFaceNormalsToolStripMenuItem.Checked = true;
+            }
+            else
+            {
+                bShowFaceNormals = false;
+                showFaceNormalsToolStripMenuItem.Checked = false;
+            }
 
             panelModel_Paint(null, null);
         }

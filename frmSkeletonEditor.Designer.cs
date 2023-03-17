@@ -169,7 +169,9 @@ namespace KimeraCS
             this.addJointToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editJointToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator8 = new System.Windows.Forms.ToolStripSeparator();
+            this.showNormalsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showVertexNormalsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.showFaceNormalsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.normalsColorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.redToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.greenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -1802,7 +1804,7 @@ namespace KimeraCS
             this.addJointToolStripMenuItem,
             this.editJointToolStripMenuItem,
             this.toolStripSeparator8,
-            this.showVertexNormalsToolStripMenuItem,
+            this.showNormalsToolStripMenuItem,
             this.normalsColorToolStripMenuItem,
             this.normalsScaleToolStripMenuItem});
             this.skeletonToolStripMenuItem.Name = "skeletonToolStripMenuItem";
@@ -1813,7 +1815,7 @@ namespace KimeraCS
             // 
             this.addJointToolStripMenuItem.Enabled = false;
             this.addJointToolStripMenuItem.Name = "addJointToolStripMenuItem";
-            this.addJointToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+            this.addJointToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.addJointToolStripMenuItem.Text = "Add Joint";
             this.addJointToolStripMenuItem.Click += new System.EventHandler(this.addJointToolStripMenuItem_Click);
             // 
@@ -1821,23 +1823,42 @@ namespace KimeraCS
             // 
             this.editJointToolStripMenuItem.Enabled = false;
             this.editJointToolStripMenuItem.Name = "editJointToolStripMenuItem";
-            this.editJointToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+            this.editJointToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.editJointToolStripMenuItem.Text = "Edit Joint";
             this.editJointToolStripMenuItem.Click += new System.EventHandler(this.editJointToolStripMenuItem_Click);
             // 
             // toolStripSeparator8
             // 
             this.toolStripSeparator8.Name = "toolStripSeparator8";
-            this.toolStripSeparator8.Size = new System.Drawing.Size(183, 6);
+            this.toolStripSeparator8.Size = new System.Drawing.Size(177, 6);
+            // 
+            // showNormalsToolStripMenuItem
+            // 
+            this.showNormalsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.showVertexNormalsToolStripMenuItem,
+            this.showFaceNormalsToolStripMenuItem});
+            this.showNormalsToolStripMenuItem.Enabled = false;
+            this.showNormalsToolStripMenuItem.Name = "showNormalsToolStripMenuItem";
+            this.showNormalsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.showNormalsToolStripMenuItem.Text = "Show Normals";
             // 
             // showVertexNormalsToolStripMenuItem
             // 
             this.showVertexNormalsToolStripMenuItem.CheckOnClick = true;
-            this.showVertexNormalsToolStripMenuItem.Enabled = false;
             this.showVertexNormalsToolStripMenuItem.Name = "showVertexNormalsToolStripMenuItem";
-            this.showVertexNormalsToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
-            this.showVertexNormalsToolStripMenuItem.Text = "Show Vertex Normals";
+            this.showVertexNormalsToolStripMenuItem.ShortcutKeyDisplayString = "V";
+            this.showVertexNormalsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.showVertexNormalsToolStripMenuItem.Text = "Vertex";
             this.showVertexNormalsToolStripMenuItem.Click += new System.EventHandler(this.showVertexNormalsToolStripMenuItem_Click);
+            // 
+            // showFaceNormalsToolStripMenuItem
+            // 
+            this.showFaceNormalsToolStripMenuItem.CheckOnClick = true;
+            this.showFaceNormalsToolStripMenuItem.Name = "showFaceNormalsToolStripMenuItem";
+            this.showFaceNormalsToolStripMenuItem.ShortcutKeyDisplayString = "F";
+            this.showFaceNormalsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.showFaceNormalsToolStripMenuItem.Text = "Face";
+            this.showFaceNormalsToolStripMenuItem.Click += new System.EventHandler(this.showFaceNormalsToolStripMenuItem_Click);
             // 
             // normalsColorToolStripMenuItem
             // 
@@ -1846,14 +1867,14 @@ namespace KimeraCS
             this.greenToolStripMenuItem,
             this.blueToolStripMenuItem});
             this.normalsColorToolStripMenuItem.Name = "normalsColorToolStripMenuItem";
-            this.normalsColorToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+            this.normalsColorToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.normalsColorToolStripMenuItem.Text = "Normals Color";
             // 
             // redToolStripMenuItem
             // 
             this.redToolStripMenuItem.CheckOnClick = true;
             this.redToolStripMenuItem.Name = "redToolStripMenuItem";
-            this.redToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.redToolStripMenuItem.Size = new System.Drawing.Size(105, 22);
             this.redToolStripMenuItem.Text = "Red";
             this.redToolStripMenuItem.Click += new System.EventHandler(this.redToolStripMenuItem_Click);
             // 
@@ -1863,7 +1884,7 @@ namespace KimeraCS
             this.greenToolStripMenuItem.CheckOnClick = true;
             this.greenToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.greenToolStripMenuItem.Name = "greenToolStripMenuItem";
-            this.greenToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.greenToolStripMenuItem.Size = new System.Drawing.Size(105, 22);
             this.greenToolStripMenuItem.Text = "Green";
             this.greenToolStripMenuItem.Click += new System.EventHandler(this.greenToolStripMenuItem_Click);
             // 
@@ -1871,7 +1892,7 @@ namespace KimeraCS
             // 
             this.blueToolStripMenuItem.CheckOnClick = true;
             this.blueToolStripMenuItem.Name = "blueToolStripMenuItem";
-            this.blueToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.blueToolStripMenuItem.Size = new System.Drawing.Size(105, 22);
             this.blueToolStripMenuItem.Text = "Blue";
             this.blueToolStripMenuItem.Click += new System.EventHandler(this.blueToolStripMenuItem_Click);
             // 
@@ -1883,7 +1904,7 @@ namespace KimeraCS
             this.thirtyftoolStripMenuItem,
             this.thousandftoolStripMenuItem});
             this.normalsScaleToolStripMenuItem.Name = "normalsScaleToolStripMenuItem";
-            this.normalsScaleToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+            this.normalsScaleToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.normalsScaleToolStripMenuItem.Text = "Normals Scale";
             // 
             // oneftoolStripMenuItem
@@ -2355,7 +2376,7 @@ namespace KimeraCS
         private System.Windows.Forms.ToolStripMenuItem loadTMDToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem mergeFramesDataTXTToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator8;
-        private System.Windows.Forms.ToolStripMenuItem showVertexNormalsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem showNormalsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem normalsColorToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem redToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem greenToolStripMenuItem;
@@ -2365,6 +2386,8 @@ namespace KimeraCS
         private System.Windows.Forms.ToolStripMenuItem fiveftoolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem thousandftoolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem thirtyftoolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem showVertexNormalsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem showFaceNormalsToolStripMenuItem;
     }
 }
 
