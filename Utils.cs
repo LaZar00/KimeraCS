@@ -767,17 +767,14 @@ namespace KimeraCS
         // Geometric
         public static Point3D Normalize(ref Point3D v)
         {
-            float l;
+            float fLength;
 
-            l = (float)(Math.Sqrt(Math.Pow(v.x, 2) + Math.Pow(v.y, 2) + Math.Pow(v.z, 2)));
+            fLength = (float)Math.Sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
 
-            if (l > 0)
-            {
-                l = 1 / l;
+            if (fLength == 0.0f)
+                return new Point3D(0.0f, 0.0f, 0.0f);
 
-                return new Point3D(v.x * l, v.y * l, v.z * l);
-            }
-            else return new Point3D(0, 0, 0);
+            return new Point3D(v.x / fLength, v.y / fLength, v.z / fLength);
         }
 
         public static float CalculateDistance(Point3D p1, Point3D p2)
@@ -801,21 +798,16 @@ namespace KimeraCS
             return model_radius + distance_origin;
         }
 
-
         public static Point3D CalculateNormal(ref Point3D p1, ref Point3D p2, ref Point3D p3)
         {
-            float Qx, Qy, Qz, px, py, pz;
+            Point3D v1, v2;
 
-            px = p2.x - p1.x;
-            py = p2.y - p1.y;
-            pz = p2.z - p1.z;
-            Qx = p3.x - p1.x;
-            Qy = p3.y - p1.y;
-            Qz = p3.z - p1.z;
+            v1 = new Point3D(p2.x - p1.x, p2.y - p1.y, p2.z - p1.z);
+            v2 = new Point3D(p2.x - p3.x, p2.y - p3.y, p2.z - p3.z);
 
-            return new Point3D(py * Qz - pz * Qy,
-                               pz * Qx - px * Qz,
-                               px * Qy - py * Qx);
+            return new Point3D(v1.y * v2.z - v1.z * v2.y,
+                               v1.z * v2.x - v1.x * v2.z,
+                               v1.x * v2.y - v1.y * v2.x);
         }
 
         public static bool ComparePoints3D(Point3D a, Point3D b)
@@ -823,8 +815,14 @@ namespace KimeraCS
             return (a.x == b.x) && (a.y == b.y) && (a.z == b.z);
         }
 
- 
-        
+        public static Point3D CalculateCenteroid(Point3D p1, Point3D p2, Point3D p3)
+        {
+            return new Point3D((p1.x + p2.x + p3.x) / 3.0f,
+                               (p1.y + p2.y + p3.y) / 3.0f,
+                               (p1.z + p2.z + p3.z) / 3.0f);
+        }
+
+         
         ///////////////////////////////////////////
         // Maths
         public static bool CompareLongs(long val1, long val2)
