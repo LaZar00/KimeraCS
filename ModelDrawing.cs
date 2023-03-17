@@ -127,7 +127,7 @@ namespace KimeraCS
                 {
                     for (vi = 0; vi < 3; vi++)
                     {
-                        if (Hundret.blend_mode == 0 && !(Hundret.shademode == 1) && !(bSkeleton.IsBattleLocation))
+                        if (Hundret.blend_mode == 0 && !(Hundret.shademode == 1) && !bSkeleton.IsBattleLocation)
                             glColor4f(Vcolors[Polys[pi].Verts[vi] + Group.offsetVert].R / 255.0f,
                                       Vcolors[Polys[pi].Verts[vi] + Group.offsetVert].G / 255.0f,
                                       Vcolors[Polys[pi].Verts[vi] + Group.offsetVert].B / 255.0f,
@@ -461,18 +461,12 @@ namespace KimeraCS
                         drYesNo = 
                             MessageBox.Show("The part: " + Model.fileName + " has not any texture assigned but it has " +
                                             "the texture flags enabled in group: " + gi.ToString() + ".\n" +
-                                            "Do you want to disable the texture flags?", "Warning", 
+                                            "Do you want to disable the texture flag?", "Warning", 
                                             MessageBoxButtons.YesNo);
 
                         if (drYesNo == DialogResult.Yes)
                         {
                             Model.Groups[gi].texFlag = 0;
-
-                            if ((Model.Hundrets[gi].field_8 & 0x2) == 0x2)
-                                Model.Hundrets[gi].field_8 -= 0x2;
-
-                            if ((Model.Hundrets[gi].field_C & 0x2) == 0x2)
-                                Model.Hundrets[gi].field_C -= 0x2;
                         }
                     }
                 }
