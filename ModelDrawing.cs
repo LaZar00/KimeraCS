@@ -39,12 +39,13 @@ namespace KimeraCS
         //  ---------------------------------------------------------------------------------------------------
         //  ================================== GENERIC FIELD/BATTLE DRAW  =====================================
         //  ---------------------------------------------------------------------------------------------------
-        public static void ShowVertexNormals(PGroup Group, PPolygon[] Polys, Point3D[] Verts, Point3D[] Normals)
+        public static void ShowNormals(PGroup Group, PPolygon[] Polys, Point3D[] Verts, Point3D[] Normals)
         {
             long pi, vi;
-            float x, y, z, fRed, fGreen, fBlue;
+            float x, y, z, xn, yn, zn, xn1, xn2, yn1, yn2, zn1, zn2, fRed, fGreen, fBlue;
             bool bLightingEnabled = false;
 
+            x = y = z = xn = yn = zn = xn1 = yn1 = zn1 = xn2 = yn2 = zn2 = 0.0f;
             fRed = fGreen = fBlue = 0.0f;
 
             if ((iNormalsColor & 0x1) == 0x1) fRed = 1.0f;
@@ -64,17 +65,39 @@ namespace KimeraCS
             {
                 for (pi = Group.offsetPoly; pi < Group.offsetPoly + Group.numPoly; pi++)
                 {
-                    for (vi = 0; vi < 3; vi++)
+                    if (bShowVertexNormals)
                     {
-                        x = Verts[Polys[pi].Verts[vi] + Group.offsetVert].x;
-                        y = Verts[Polys[pi].Verts[vi] + Group.offsetVert].y;
-                        z = Verts[Polys[pi].Verts[vi] + Group.offsetVert].z;
-                        glVertex3f(x, y, z);
+                        for (vi = 0; vi < 3; vi++)
+                        {
+                            x = Verts[Polys[pi].Verts[vi] + Group.offsetVert].x;
+                            y = Verts[Polys[pi].Verts[vi] + Group.offsetVert].y;
+                            z = Verts[Polys[pi].Verts[vi] + Group.offsetVert].z;
+                            glVertex3f(x, y, z);
 
-                        x += Normals[Polys[pi].Normals[vi]].x * fNormalsScale;
-                        y += Normals[Polys[pi].Normals[vi]].y * fNormalsScale;
-                        z += Normals[Polys[pi].Normals[vi]].z * fNormalsScale;
-                        glVertex3f(x, y, z);
+                            xn = x + Normals[Polys[pi].Normals[vi]].x * fNormalsScale;
+                            yn = y + Normals[Polys[pi].Normals[vi]].y * fNormalsScale;
+                            zn = z + Normals[Polys[pi].Normals[vi]].z * fNormalsScale;
+                            glVertex3f(xn, yn, zn);
+                        }
+                    }
+                    else if (bShowFaceNormals)
+                    {
+                        Point3D p3DCenteroid, p3DNormal;
+
+                        p3DCenteroid = CalculateCenteroid(Verts[Polys[pi].Verts[0] + Group.offsetVert],
+                                                          Verts[Polys[pi].Verts[1] + Group.offsetVert],
+                                                          Verts[Polys[pi].Verts[2] + Group.offsetVert]);
+
+                        p3DNormal = CalculateNormal(ref Verts[Polys[pi].Verts[0] + Group.offsetVert],
+                                                    ref Verts[Polys[pi].Verts[1] + Group.offsetVert],
+                                                    ref Verts[Polys[pi].Verts[2] + Group.offsetVert]);
+                        p3DNormal = Normalize(ref p3DNormal);
+
+                        glVertex3f(p3DCenteroid.x, p3DCenteroid.y, p3DCenteroid.z);
+
+                        glVertex3f(p3DCenteroid.x + (p3DNormal.x * fNormalsScale),
+                                   p3DCenteroid.y + (p3DNormal.y * fNormalsScale),
+                                   p3DCenteroid.z + (p3DNormal.z * fNormalsScale));
                     }
                 }
             }
@@ -143,8 +166,8 @@ namespace KimeraCS
                 glEnd();
 
                 // Let's try here to render the normals
-                if (bShowVertexNormals)
-                    ShowVertexNormals(Group, Polys, Verts, Normals);
+                if (bShowVertexNormals || bShowFaceNormals)
+                    ShowNormals(Group, Polys, Verts, Normals);
 
             }
 
@@ -1710,6 +1733,10 @@ namespace KimeraCS
 
                     glPopMatrix();
                 }
+
+                // Let's try here to render the normals
+                if (bShowVertexNormals || bShowFaceNormals)
+                    ShowNormals(Model.Groups[gi], Model.Polys, Model.Verts, Model.Normals);
             }
 
             //  glPopMatrix();  -- Commented in KimeraVB6
