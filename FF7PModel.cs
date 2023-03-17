@@ -360,17 +360,29 @@ namespace KimeraCS
             // Let's check Texture flag of model Group and texture flag of Hundret
             // and normalize value/flag in case they are change.
             // If this happens it is probably for older kimera versions
-            int iGroupIdx = 0, iValue = 0;
-            foreach(PGroup itmGroup in Model.Groups)
+            int iGroupIdx = 0;
+            foreach (PGroup itmGroup in Model.Groups)
             {
-                if (itmGroup.texFlag == 1) iValue = 0x2;
-                else iValue = -0x2;
+                if (itmGroup.texFlag == 1)
+                {
+                    Model.Groups[iGroupIdx].polyType = 2;
 
-                if (itmGroup.texFlag != ((Model.Hundrets[iGroupIdx].field_8 & 0x2) == 0 ? 0 : 1))
-                    Model.Hundrets[iGroupIdx].field_8 += iValue;
+                    if ((Model.Hundrets[iGroupIdx].field_8 & 0x2) == 0)
+                        Model.Hundrets[iGroupIdx].field_8 |= (1 << 1);
 
-                if (itmGroup.texFlag != ((Model.Hundrets[iGroupIdx].field_C & 0x2) == 0 ? 0 : 1))
-                    Model.Hundrets[iGroupIdx].field_C += iValue;
+                }
+                else                        
+                {
+                    Model.Groups[iGroupIdx].polyType = 1;
+                    Model.Groups[iGroupIdx].offsetTex = 0;
+
+                    if ((Model.Hundrets[iGroupIdx].field_8 & 0x2) != 0)
+                        Model.Hundrets[iGroupIdx].field_8 &= ~(1 << 1);
+
+                }
+
+                if ((Model.Hundrets[iGroupIdx].field_C & 0x2) == 0)
+                        Model.Hundrets[iGroupIdx].field_C |= (1 << 1);
 
                 iGroupIdx++;
             }
@@ -1574,9 +1586,10 @@ namespace KimeraCS
 
         public static void ComputeNormals(ref PModel Model)
         {
-            int iGroupIdx, iPolyIdx, iVertIdx, iVertIdxNext;
+            int iGroupIdx, iPolyIdx, iVertIdx, iVertIdxNext, iVertArray, iAdjacentCounter;
 
             Point3D p3DNormal = new Point3D(0, 0, 0);
+            bool bVertexCounted;
 
             Model.Normals = new Point3D[Model.Header.numVerts];
             Model.NormalIndex = new int[Model.Header.numVerts];
@@ -1584,9 +1597,9 @@ namespace KimeraCS
             Model.Header.numNormals = Model.Header.numVerts;
             Model.Header.numNormIdx = Model.Header.numVerts;
 
-            Point3D[] sumNorms = new Point3D[Model.Header.numVerts];
+            //Point3D[] sumNorms = new Point3D[Model.Header.numVerts];
 
-            int[] polys_per_vert = new int[Model.Header.numVerts];
+            //int[] polys_per_vert = new int[Model.Header.numVerts];
 
             // Check indexes of polys are correct (greater or equal than 0) This is done by KimeraVB
             for (iPolyIdx = 0; iPolyIdx < Model.Header.numPolys; iPolyIdx++)
@@ -1600,73 +1613,128 @@ namespace KimeraCS
                             Model.Polys[iPolyIdx].Verts[2] = 0;
             }
 
-            for (iGroupIdx = 0; iGroupIdx < Model.Header.numGroups; iGroupIdx++)
+            for (iVertArray = 0; iVertArray < Model.Header.numVerts; iVertArray++)
             {
-                for (iPolyIdx = Model.Groups[iGroupIdx].offsetPoly; 
-                     iPolyIdx < Model.Groups[iGroupIdx].offsetPoly + Model.Groups[iGroupIdx].numPoly; 
-                     iPolyIdx++)
+                iAdjacentCounter = 0;
+
+                for (iGroupIdx = 0; iGroupIdx < Model.Header.numGroups; iGroupIdx++)
                 {
-
-                    p3DNormal = CalculateNormal(ref Model.Verts[Model.Polys[iPolyIdx].Verts[0] +
-                                                    Model.Groups[iGroupIdx].offsetVert],
-                                                ref Model.Verts[Model.Polys[iPolyIdx].Verts[1] +
-                                                    Model.Groups[iGroupIdx].offsetVert],
-                                                ref Model.Verts[Model.Polys[iPolyIdx].Verts[2] +
-                                                    Model.Groups[iGroupIdx].offsetVert]);
-
-                    p3DNormal = Normalize(ref p3DNormal);
-
-                    for (iVertIdx = 0; iVertIdx < 3; iVertIdx++)
+                    for (iPolyIdx = Model.Groups[iGroupIdx].offsetPoly;
+                         iPolyIdx < Model.Groups[iGroupIdx].offsetPoly + Model.Groups[iGroupIdx].numPoly;
+                         iPolyIdx++)
                     {
-                        sumNorms[Model.Polys[iPolyIdx].Verts[iVertIdx] +
-                                 Model.Groups[iGroupIdx].offsetVert].x += p3DNormal.x;
-                        sumNorms[Model.Polys[iPolyIdx].Verts[iVertIdx] +
-                                 Model.Groups[iGroupIdx].offsetVert].y += p3DNormal.y;
-                        sumNorms[Model.Polys[iPolyIdx].Verts[iVertIdx] +
-                                 Model.Groups[iGroupIdx].offsetVert].z += p3DNormal.z;
+                        bVertexCounted = false;
 
-                        polys_per_vert[Model.Polys[iPolyIdx].Verts[iVertIdx] + Model.Groups[iGroupIdx].offsetVert] += 1;
+                        for (iVertIdx = 0; iVertIdx < 3; iVertIdx++)
+                        {
+                            if (ComparePoints3D(Model.Verts[Model.Polys[iPolyIdx].Verts[iVertIdx] + 
+                                                            Model.Groups[iGroupIdx].offsetVert],
+                                                Model.Verts[iVertArray]))
+                            {
+                                Model.Polys[iPolyIdx].Normals[iVertIdx] = (short)iVertArray;
 
-                        Model.Polys[iPolyIdx].Normals[iVertIdx] = (short)(Model.Polys[iPolyIdx].Verts[iVertIdx] +
-                                                                          Model.Groups[iGroupIdx].offsetVert);
+                                if (!bVertexCounted)
+                                {
+                                    p3DNormal = CalculateNormal(ref Model.Verts[Model.Polys[iPolyIdx].Verts[0] +
+                                                                    Model.Groups[iGroupIdx].offsetVert],
+                                                                ref Model.Verts[Model.Polys[iPolyIdx].Verts[1] +
+                                                                    Model.Groups[iGroupIdx].offsetVert],
+                                                                ref Model.Verts[Model.Polys[iPolyIdx].Verts[2] +
+                                                                    Model.Groups[iGroupIdx].offsetVert]);
+
+                                    p3DNormal = Normalize(ref p3DNormal);
+
+                                    Model.Normals[iVertArray].x += p3DNormal.x;
+                                    Model.Normals[iVertArray].y += p3DNormal.y;
+                                    Model.Normals[iVertArray].z += p3DNormal.z;
+
+                                    iAdjacentCounter++;
+
+                                    bVertexCounted = true;
+                                }
+                            }
+                        }
                     }
                 }
+
+                Model.Normals[iVertArray].x /= iAdjacentCounter;
+                Model.Normals[iVertArray].y /= iAdjacentCounter;
+                Model.Normals[iVertArray].z /= iAdjacentCounter;
+
+                Model.Normals[iVertArray] = Normalize(ref Model.Normals[iVertArray]);
+
+                Model.NormalIndex[iVertArray] = iVertArray;
             }
 
-            for (iVertIdx = 0; iVertIdx < Model.Header.numVerts; iVertIdx++)
-            {
-                for (iVertIdxNext = iVertIdx + 1; iVertIdxNext < Model.Header.numVerts; iVertIdxNext++)
-                {
-                    if (ComparePoints3D(Model.Verts[iVertIdx], Model.Verts[iVertIdxNext]))
-                    {
-                        sumNorms[iVertIdx].x = sumNorms[iVertIdxNext].x;
-                        sumNorms[iVertIdx].y = sumNorms[iVertIdxNext].y;
-                        sumNorms[iVertIdx].z = sumNorms[iVertIdxNext].z;
+            int i = 0;
 
-                        polys_per_vert[iVertIdx] += polys_per_vert[iVertIdxNext];
-                        polys_per_vert[iVertIdxNext] = 0;
-                    }
-                }
-            }
+            //for (iGroupIdx = 0; iGroupIdx < Model.Header.numGroups; iGroupIdx++)
+            //{
+            //    for (iPolyIdx = Model.Groups[iGroupIdx].offsetPoly; 
+            //         iPolyIdx < Model.Groups[iGroupIdx].offsetPoly + Model.Groups[iGroupIdx].numPoly; 
+            //         iPolyIdx++)
+            //    {
 
-            for (iVertIdx = 0; iVertIdx < Model.Header.numVerts; iVertIdx++)
-            {
-                if (polys_per_vert[iVertIdx] > 0)
-                {
-                    sumNorms[iVertIdx].x /= polys_per_vert[iVertIdx];
-                    sumNorms[iVertIdx].y /= polys_per_vert[iVertIdx];
-                    sumNorms[iVertIdx].z /= polys_per_vert[iVertIdx];
-                }
-                else
-                {
-                    sumNorms[iVertIdx].x = 0;
-                    sumNorms[iVertIdx].y = 0;
-                    sumNorms[iVertIdx].z = 0;
-                }
+            //        p3DNormal = CalculateNormal(ref Model.Verts[Model.Polys[iPolyIdx].Verts[0] +
+            //                                        Model.Groups[iGroupIdx].offsetVert],
+            //                                    ref Model.Verts[Model.Polys[iPolyIdx].Verts[1] +
+            //                                        Model.Groups[iGroupIdx].offsetVert],
+            //                                    ref Model.Verts[Model.Polys[iPolyIdx].Verts[2] +
+            //                                        Model.Groups[iGroupIdx].offsetVert]);
 
-                Model.Normals[iVertIdx] = Normalize(ref sumNorms[iVertIdx]);
-                Model.NormalIndex[iVertIdx] = iVertIdx;
-            }
+            //        p3DNormal = Normalize(ref p3DNormal);
+
+            //        for (iVertIdx = 0; iVertIdx < 3; iVertIdx++)
+            //        {
+            //            sumNorms[Model.Polys[iPolyIdx].Verts[iVertIdx] +
+            //                     Model.Groups[iGroupIdx].offsetVert].x += p3DNormal.x;
+            //            sumNorms[Model.Polys[iPolyIdx].Verts[iVertIdx] +
+            //                     Model.Groups[iGroupIdx].offsetVert].y += p3DNormal.y;
+            //            sumNorms[Model.Polys[iPolyIdx].Verts[iVertIdx] +
+            //                     Model.Groups[iGroupIdx].offsetVert].z += p3DNormal.z;
+
+            //            polys_per_vert[Model.Polys[iPolyIdx].Verts[iVertIdx] + Model.Groups[iGroupIdx].offsetVert] += 1;
+
+            //            Model.Polys[iPolyIdx].Normals[iVertIdx] = (short)(Model.Polys[iPolyIdx].Verts[iVertIdx] +
+            //                                                              Model.Groups[iGroupIdx].offsetVert);
+            //        }
+            //    }
+            //}
+
+            //for (iVertIdx = 0; iVertIdx < Model.Header.numVerts; iVertIdx++)
+            //{
+            //    for (iVertIdxNext = iVertIdx + 1; iVertIdxNext < Model.Header.numVerts; iVertIdxNext++)
+            //    {
+            //        if (ComparePoints3D(Model.Verts[iVertIdx], Model.Verts[iVertIdxNext]))
+            //        {
+            //            sumNorms[iVertIdx].x = sumNorms[iVertIdxNext].x;
+            //            sumNorms[iVertIdx].y = sumNorms[iVertIdxNext].y;
+            //            sumNorms[iVertIdx].z = sumNorms[iVertIdxNext].z;
+
+            //            polys_per_vert[iVertIdx] += polys_per_vert[iVertIdxNext];
+            //            polys_per_vert[iVertIdxNext] = 0;
+            //        }
+            //    }
+            //}
+
+            //for (iVertIdx = 0; iVertIdx < Model.Header.numVerts; iVertIdx++)
+            //{
+            //    if (polys_per_vert[iVertIdx] > 0)
+            //    {
+            //        sumNorms[iVertIdx].x /= polys_per_vert[iVertIdx];
+            //        sumNorms[iVertIdx].y /= polys_per_vert[iVertIdx];
+            //        sumNorms[iVertIdx].z /= polys_per_vert[iVertIdx];
+            //    }
+            //    else
+            //    {
+            //        sumNorms[iVertIdx].x = 0;
+            //        sumNorms[iVertIdx].y = 0;
+            //        sumNorms[iVertIdx].z = 0;
+            //    }
+
+            //    Model.Normals[iVertIdx] = Normalize(ref sumNorms[iVertIdx]);
+            //    Model.NormalIndex[iVertIdx] = iVertIdx;
+            //}
         }
 
         public static void DisableNormals(ref PModel Model)
