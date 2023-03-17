@@ -56,7 +56,7 @@ namespace KimeraCS
     public partial class frmSkeletonEditor : Form
     {
 
-        public const string STR_APPNAME = "KimeraCS 1.7l";
+        public const string STR_APPNAME = "KimeraCS 1.7m";
 
         public static int modelWidth;
         public static int modelHeight;
@@ -422,6 +422,10 @@ namespace KimeraCS
             resetCameraToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.Home;
             resetCameraToolStripMenuItem.ShortcutKeyDisplayString = "CTRL+Home";
 
+
+            // Show Normals vars
+            // Define N shortcut for show Normals
+            showNormalsToolStripMenuItem.ShortcutKeyDisplayString = "N";
 
             greenToolStripMenuItem.Checked = true;
             iNormalsColor = 2;     // 1 - Red, 2 - Green, 3 - Blue
