@@ -25,9 +25,11 @@ CTRL+Up/Down	->	Rotate alpha with keyboard
 CTRL+Left/Right	->	Rotate beta with keyboard
 DELETE			->	Remove selected bone/piece
 SPACE    		->  Open PEditor if any joint with bone is selected in Bones Selector list
-Double-click	->	Open Texture Coordinates (UVs) Viewer
-(Texture View)
-
+F2				->	Open TMD Object List if we have closed (Hide) it
+F				->  Enable/Disable Face Normals
+V				->  Enable/Disable Vertex Normals
+Mouse Left		->	Open Texture Coordinates (UVs) Viewer (Texture Picturebox)
+Double-click	
 
 == PEditor only
 +/-			->	More/Less Brightness of the colors
