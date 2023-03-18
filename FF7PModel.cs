@@ -1754,8 +1754,6 @@ namespace KimeraCS
                 Model.NormalIndex[iVertArray] = iVertArray;
             }
 
-            int i = 0;
-
 
             //int iGroupIdx, iPolyIdx, iVertIdx, iVertIdxNext, iVertArray, iAdjacentCounter;
 
