@@ -228,53 +228,25 @@ namespace KimeraCS
 
         }
 
-        // In this procedure we will check the realGID assigned when loading
-        // the model is correct (this equals the offsetPoly incremental number order).
-        public static void AssignRealGID(ref PModel Model)
+        // Structure that will contain the relationship between Vertex and
+        // FaceNormal. We will use it for ComputeNormals procedure.
+        // The Vertex and FaceNormal will be put as string in format:
+        // "vx_vy_vz_fnx_fny_fnz" a this is what we will use as unique TKey.
+        public struct VertexFaceNormalUsage
         {
-            int gi, gi2, iMinOffsetPoly = 0, iMaxOffsetPoly = 999999, iGroupFound = 0, iRealGIDCounter = 0;
+            public Point3D p3DVertex;
+            public Point3D p3DVertexAvgFaceNormal;
+            public List<Point3D> p3DFaceNormals;
 
-            if (Model.Header.numGroups > 1)
+            public VertexFaceNormalUsage(Point3D p3DIn)
             {
-
-                gi = 0;
-                while (gi < Model.Header.numGroups)
-                {
-
-                    if (gi == 0)
-                    {
-                        gi2 = 0;
-                        while (Model.Groups[gi2].offsetPoly != 0) gi2++;
-
-                        iGroupFound = gi2;
-                    }
-                    else
-                    {
-                        gi2 = 0;
-                        while (gi2 < Model.Header.numGroups)
-                        {
-                            if (Model.Groups[gi2].offsetPoly < iMaxOffsetPoly &&
-                                Model.Groups[gi2].offsetPoly > iMinOffsetPoly)
-                            {
-                                iMaxOffsetPoly = Model.Groups[gi2].offsetPoly;
-                                iGroupFound = gi2;
-                            }
-
-                            gi2++;
-                        }
-                    }
-
-                    Model.Groups[iGroupFound].realGID = iRealGIDCounter;
-                    iMinOffsetPoly = Model.Groups[iGroupFound].offsetPoly;
-                    iMaxOffsetPoly = 99999999;
-                    iRealGIDCounter++;
-
-                    gi++;
-                }
-
+                p3DVertex = new Point3D(p3DIn.x, p3DIn.y, p3DIn.z);
+                p3DVertexAvgFaceNormal = new Point3D(0, 0, 0);
+                p3DFaceNormals = new List<Point3D>();
             }
-
         }
+        
+        public static List<VertexFaceNormalUsage> stVertexFaceNormalUsage;
 
 
         public static void LoadPModel(ref PModel Model, string strPFolder, string strPFileName)
@@ -769,6 +741,52 @@ namespace KimeraCS
                         NormalIndex[i] = memReader.ReadInt32();
 
                     pos = memReader.BaseStream.Position;
+                }
+            }
+        }
+
+        // In this procedure we will check the realGID assigned when loading
+        // the model is correct (this equals the offsetPoly incremental number order).
+        public static void AssignRealGID(ref PModel Model)
+        {
+            int gi, gi2, iMinOffsetPoly = 0, iMaxOffsetPoly = 999999, iGroupFound = 0, iRealGIDCounter = 0;
+
+            if (Model.Header.numGroups > 1)
+            {
+
+                gi = 0;
+                while (gi < Model.Header.numGroups)
+                {
+
+                    if (gi == 0)
+                    {
+                        gi2 = 0;
+                        while (Model.Groups[gi2].offsetPoly != 0) gi2++;
+
+                        iGroupFound = gi2;
+                    }
+                    else
+                    {
+                        gi2 = 0;
+                        while (gi2 < Model.Header.numGroups)
+                        {
+                            if (Model.Groups[gi2].offsetPoly < iMaxOffsetPoly &&
+                                Model.Groups[gi2].offsetPoly > iMinOffsetPoly)
+                            {
+                                iMaxOffsetPoly = Model.Groups[gi2].offsetPoly;
+                                iGroupFound = gi2;
+                            }
+
+                            gi2++;
+                        }
+                    }
+
+                    Model.Groups[iGroupFound].realGID = iRealGIDCounter;
+                    iMinOffsetPoly = Model.Groups[iGroupFound].offsetPoly;
+                    iMaxOffsetPoly = 99999999;
+                    iRealGIDCounter++;
+
+                    gi++;
                 }
             }
         }
@@ -1584,12 +1602,102 @@ namespace KimeraCS
             Model.BoundingBox.min_z = p_temp.z;
         }
 
+
+
+        public static void GenerateVertexFaceNormalUsageList(PModel Model)
+        {
+            int iGroupIdx, iPolyIdx, iVertIdx, iVertFaceNormalIndex;
+            float fX, fY, fZ;
+
+            Point3D p3DFaceNormal;
+            Point3D p3DVertex = new Point3D(0, 0, 0);
+
+            stVertexFaceNormalUsage = new List<VertexFaceNormalUsage>();
+            VertexFaceNormalUsage stVFNU;
+
+            // Localize usable Face Normals per Vertex
+            for (iGroupIdx = 0; iGroupIdx < Model.Header.numGroups; iGroupIdx++)
+            {
+                for (iPolyIdx = Model.Groups[iGroupIdx].offsetPoly;
+                     iPolyIdx < Model.Groups[iGroupIdx].offsetPoly + Model.Groups[iGroupIdx].numPoly;
+                     iPolyIdx++)
+                {
+
+                    p3DFaceNormal = CalculateNormal(ref Model.Verts[Model.Polys[iPolyIdx].Verts[0] +
+                                                        Model.Groups[iGroupIdx].offsetVert],
+                                                    ref Model.Verts[Model.Polys[iPolyIdx].Verts[1] +
+                                                        Model.Groups[iGroupIdx].offsetVert],
+                                                    ref Model.Verts[Model.Polys[iPolyIdx].Verts[2] +
+                                                        Model.Groups[iGroupIdx].offsetVert]);
+
+                    p3DFaceNormal = Normalize(ref p3DFaceNormal);
+
+
+                    for (iVertIdx = 0; iVertIdx < 3; iVertIdx++)
+                    {
+                        p3DVertex = Model.Verts[Model.Polys[iPolyIdx].Verts[iVertIdx] + 
+                                    Model.Groups[iGroupIdx].offsetVert];
+
+                        iVertFaceNormalIndex = stVertexFaceNormalUsage.
+                                                            FindIndex(x => x.p3DVertex.x == p3DVertex.x &&
+                                                                           x.p3DVertex.y == p3DVertex.y &&
+                                                                           x.p3DVertex.z == p3DVertex.z);
+
+                        fX = (float)Math.Round(p3DFaceNormal.x, 1);
+                        fY = (float)Math.Round(p3DFaceNormal.y, 1);
+                        fZ = (float)Math.Round(p3DFaceNormal.z, 1);
+
+                        if (iVertFaceNormalIndex >= 0)
+                        {
+                            if (stVertexFaceNormalUsage[iVertFaceNormalIndex].p3DFaceNormals.
+                                                  FindIndex(x => x.x == fX && x.y == fY && x.z == fZ) == -1)
+                                stVertexFaceNormalUsage[iVertFaceNormalIndex].p3DFaceNormals.Add(new Point3D(fX, fY, fZ));
+                        }
+                        else
+                        {
+                            stVFNU.p3DVertex = p3DVertex;
+
+                            stVFNU.p3DFaceNormals = new List<Point3D>();
+                            stVFNU.p3DFaceNormals.Add(new Point3D(fX, fY, fZ));
+                            stVFNU.p3DVertexAvgFaceNormal = new Point3D();
+
+                            stVertexFaceNormalUsage.Add(stVFNU);
+                        }
+
+                    }
+                }
+            }
+
+            // Calculate average Face Normal per vertex
+            for (int i = 0; i < stVertexFaceNormalUsage.Count; i++)
+            {
+                stVFNU = stVertexFaceNormalUsage[i];
+
+                foreach (Point3D itmP3D in stVertexFaceNormalUsage[i].p3DFaceNormals)
+                {
+                    stVFNU.p3DVertexAvgFaceNormal.x += itmP3D.x;
+                    stVFNU.p3DVertexAvgFaceNormal.y += itmP3D.y;
+                    stVFNU.p3DVertexAvgFaceNormal.z += itmP3D.z;
+                }
+
+                stVFNU.p3DVertexAvgFaceNormal.x /= stVertexFaceNormalUsage[i].p3DFaceNormals.Count;
+                stVFNU.p3DVertexAvgFaceNormal.y /= stVertexFaceNormalUsage[i].p3DFaceNormals.Count;
+                stVFNU.p3DVertexAvgFaceNormal.z /= stVertexFaceNormalUsage[i].p3DFaceNormals.Count;
+
+                stVertexFaceNormalUsage[i] = stVFNU;
+
+            }
+
+        }
+
         public static void ComputeNormals(ref PModel Model)
         {
-            int iGroupIdx, iPolyIdx, iVertIdx, iVertIdxNext, iVertArray, iAdjacentCounter;
+            int iGroupIdx, iPolyIdx, iVertIdx, iVertArray;
 
-            Point3D p3DNormal = new Point3D(0, 0, 0);
-            bool bVertexCounted;
+            Point3D p3DVertex;
+
+            // First, let's prepare the list of vertices with face normals
+            GenerateVertexFaceNormalUsageList(Model);
 
             Model.Normals = new Point3D[Model.Header.numVerts];
             Model.NormalIndex = new int[Model.Header.numVerts];
@@ -1597,76 +1705,75 @@ namespace KimeraCS
             Model.Header.numNormals = Model.Header.numVerts;
             Model.Header.numNormIdx = Model.Header.numVerts;
 
-            //Point3D[] sumNorms = new Point3D[Model.Header.numVerts];
-
-            //int[] polys_per_vert = new int[Model.Header.numVerts];
-
             // Check indexes of polys are correct (greater or equal than 0) This is done by KimeraVB
             for (iPolyIdx = 0; iPolyIdx < Model.Header.numPolys; iPolyIdx++)
             {
                 //  This should never happen. What the hell is going on?! -Borde comment
-                if (Model.Polys[iPolyIdx].Verts[0] < 0) 
-                            Model.Polys[iPolyIdx].Verts[0] = 0;
-                if (Model.Polys[iPolyIdx].Verts[1] < 0) 
-                            Model.Polys[iPolyIdx].Verts[1] = 0;
-                if (Model.Polys[iPolyIdx].Verts[2] < 0) 
-                            Model.Polys[iPolyIdx].Verts[2] = 0;
+                if (Model.Polys[iPolyIdx].Verts[0] < 0)
+                    Model.Polys[iPolyIdx].Verts[0] = 0;
+                if (Model.Polys[iPolyIdx].Verts[1] < 0)
+                    Model.Polys[iPolyIdx].Verts[1] = 0;
+                if (Model.Polys[iPolyIdx].Verts[2] < 0)
+                    Model.Polys[iPolyIdx].Verts[2] = 0;
             }
 
             for (iVertArray = 0; iVertArray < Model.Header.numVerts; iVertArray++)
             {
-                iAdjacentCounter = 0;
 
                 for (iGroupIdx = 0; iGroupIdx < Model.Header.numGroups; iGroupIdx++)
                 {
+
                     for (iPolyIdx = Model.Groups[iGroupIdx].offsetPoly;
                          iPolyIdx < Model.Groups[iGroupIdx].offsetPoly + Model.Groups[iGroupIdx].numPoly;
                          iPolyIdx++)
                     {
-                        bVertexCounted = false;
 
                         for (iVertIdx = 0; iVertIdx < 3; iVertIdx++)
                         {
-                            if (ComparePoints3D(Model.Verts[Model.Polys[iPolyIdx].Verts[iVertIdx] + 
-                                                            Model.Groups[iGroupIdx].offsetVert],
+
+                            if (ComparePoints3D(Model.Verts[Model.Polys[iPolyIdx].Verts[iVertIdx] +
+                                                Model.Groups[iGroupIdx].offsetVert],
                                                 Model.Verts[iVertArray]))
                             {
+
                                 Model.Polys[iPolyIdx].Normals[iVertIdx] = (short)iVertArray;
 
-                                if (!bVertexCounted)
-                                {
-                                    p3DNormal = CalculateNormal(ref Model.Verts[Model.Polys[iPolyIdx].Verts[0] +
-                                                                    Model.Groups[iGroupIdx].offsetVert],
-                                                                ref Model.Verts[Model.Polys[iPolyIdx].Verts[1] +
-                                                                    Model.Groups[iGroupIdx].offsetVert],
-                                                                ref Model.Verts[Model.Polys[iPolyIdx].Verts[2] +
-                                                                    Model.Groups[iGroupIdx].offsetVert]);
-
-                                    p3DNormal = Normalize(ref p3DNormal);
-
-                                    Model.Normals[iVertArray].x += p3DNormal.x;
-                                    Model.Normals[iVertArray].y += p3DNormal.y;
-                                    Model.Normals[iVertArray].z += p3DNormal.z;
-
-                                    iAdjacentCounter++;
-
-                                    bVertexCounted = true;
-                                }
                             }
                         }
                     }
                 }
 
-                Model.Normals[iVertArray].x /= iAdjacentCounter;
-                Model.Normals[iVertArray].y /= iAdjacentCounter;
-                Model.Normals[iVertArray].z /= iAdjacentCounter;
+                p3DVertex = Model.Verts[iVertArray];
+                iVertIdx = stVertexFaceNormalUsage.FindIndex(x => x.p3DVertex.x == p3DVertex.x &&
+                                                                  x.p3DVertex.y == p3DVertex.y &&
+                                                                  x.p3DVertex.z == p3DVertex.z);
 
-                Model.Normals[iVertArray] = Normalize(ref Model.Normals[iVertArray]);
+                if (iVertIdx >= 0)
+                    Model.Normals[iVertArray] = stVertexFaceNormalUsage[iVertIdx].p3DVertexAvgFaceNormal;
 
                 Model.NormalIndex[iVertArray] = iVertArray;
             }
 
             int i = 0;
+
+
+            //int iGroupIdx, iPolyIdx, iVertIdx, iVertIdxNext, iVertArray, iAdjacentCounter;
+
+            //Point3D[] sumNorms = new Point3D[Model.Header.numVerts];
+
+            //int[] polys_per_vert = new int[Model.Header.numVerts];
+
+            //// Check indexes of polys are correct (greater or equal than 0) This is done by KimeraVB
+            //for (iPolyIdx = 0; iPolyIdx < Model.Header.numPolys; iPolyIdx++)
+            //{
+            //    //  This should never happen. What the hell is going on?! -Borde comment
+            //    if (Model.Polys[iPolyIdx].Verts[0] < 0)
+            //        Model.Polys[iPolyIdx].Verts[0] = 0;
+            //    if (Model.Polys[iPolyIdx].Verts[1] < 0)
+            //        Model.Polys[iPolyIdx].Verts[1] = 0;
+            //    if (Model.Polys[iPolyIdx].Verts[2] < 0)
+            //        Model.Polys[iPolyIdx].Verts[2] = 0;
+            //}
 
             //for (iGroupIdx = 0; iGroupIdx < Model.Header.numGroups; iGroupIdx++)
             //{
