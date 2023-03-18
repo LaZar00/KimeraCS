@@ -765,21 +765,63 @@ namespace KimeraCS
 
         ///////////////////////////////////////////
         // Geometric
+        public static float CalculateLength3D(Point3D v)
+        {
+            return (float)Math.Sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
+        }
+
+        public static float DotProduct3D(Point3D v1, Point3D v2)
+        {
+            return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
+        }
+
+        public static Point3D CrossProduct3D(Point3D v1, Point3D v2)
+        {
+            return new Point3D(v1.y * v2.z - v1.z * v2.y,
+                               v1.z * v2.x - v1.x * v2.z,
+                               v1.x * v2.y - v1.y * v2.x);
+        }
+
+        public static float CalculateAngle2Vectors3D(Point3D v1, Point3D v2)
+        {
+            double dAngleRadians;
+
+            dAngleRadians = Math.Acos(DotProduct3D(v1, v2) / (CalculateLength3D(v1) * CalculateLength3D(v2)));
+
+            return (float)Math.Abs(dAngleRadians * (180 / PI));
+        }
+
+        public static float CalculateAreaPoly3D(Point3D v0, Point3D v1, Point3D v2)
+        {
+            float a = CalculateDistance(v0, v1);
+            float b = CalculateDistance(v1, v2);
+            float c = CalculateDistance(v2, v0);
+            float s = (a + b + c) / 2;
+
+            return (float)Math.Sqrt(s * (s - a) * (s - b) * (s - c));
+        }
+
         public static Point3D Normalize(ref Point3D v)
         {
             float fLength;
 
-            fLength = (float)Math.Sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
+            fLength = 1.0f / CalculateLength3D(v);
 
-            if (fLength == 0.0f)
-                return new Point3D(0.0f, 0.0f, 0.0f);
+            return new Point3D(v.x * fLength, v.y * fLength, v.z * fLength);
+            //if (fLength == 0.0f)
+            //    return new Point3D(0.0f, 0.0f, 0.0f);
 
-            return new Point3D(v.x / fLength, v.y / fLength, v.z / fLength);
+            //return new Point3D(v.x / fLength, v.y / fLength, v.z / fLength);
         }
 
-        public static float CalculateDistance(Point3D p1, Point3D p2)
+        public static float CalculateDistance(Point3D v0, Point3D v1)
         {
-            return (float)Math.Sqrt(Math.Pow(p2.x - p1.x, 2) + Math.Pow(p2.y - p1.y, 2) + Math.Pow(p2.z - p1.z, 2));
+            float fDeltaX = v1.x - v0.x;
+            float fDeltaY = v1.y - v0.y;
+            float fDeltaZ = v1.z - v0.z;
+
+            return (float)Math.Sqrt(fDeltaX * fDeltaX + fDeltaY * fDeltaY + fDeltaZ * fDeltaZ);
+            //return (float)Math.Sqrt(Math.Pow(p2.x - p1.x, 2) + Math.Pow(p2.y - p1.y, 2) + Math.Pow(p2.z - p1.z, 2));
         }
 
         public static float ComputeSceneRadius(Point3D p_min, Point3D p_max)
@@ -805,9 +847,7 @@ namespace KimeraCS
             v1 = new Point3D(p2.x - p1.x, p2.y - p1.y, p2.z - p1.z);
             v2 = new Point3D(p2.x - p3.x, p2.y - p3.y, p2.z - p3.z);
 
-            return new Point3D(v1.y * v2.z - v1.z * v2.y,
-                               v1.z * v2.x - v1.x * v2.z,
-                               v1.x * v2.y - v1.y * v2.x);
+            return CrossProduct3D(v1, v2);
         }
 
         public static bool ComparePoints3D(Point3D a, Point3D b)
