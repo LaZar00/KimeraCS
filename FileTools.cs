@@ -60,7 +60,11 @@ namespace KimeraCS
         public static Hashtable lstCFGKeys = new Hashtable();
 
         public static int numCharLGPRegisters;
-        public static bool bDBLoaded, bDBEnemiesLoaded, bDBLocationsLoaded, bDBMainPCsLoaded, bDBMagicLoaded;
+        public static bool bDBLoaded, bDBEnemiesLoaded, bDBLocationsLoaded, bDBMainPCsLoaded, 
+                           bDBMagicLoaded;
+
+        public static bool bAdjust3DSImport;
+        public static int iPEFilterIdx;
 
         public static List<STCharLGPRegister> lstCharLGPRegisters;
         public static List<STBattleLGPRegister> lstBattleEnemiesLGPRegisters;
@@ -94,7 +98,7 @@ namespace KimeraCS
         public static string strGlobalPathMagicSkeletonFolder = "", strGlobalMagicSkeletonFileName = "", strGlobalMagicSkeletonName = "",
                              strGlobalPathMagicAnimationFolder = "", strGlobalMagicAnimationName = "";
         public static string strGlobalPathTextureFolder = "", strGlobalTextureName = "";
-        public static string strGlobalPathPartModelFolder = "", strGlobalPartModelName = "";
+        public static string strGlobalPathPartModelFolder = "", strGlobalPartModelName = "";    // Add Piece option
         public static string strGlobalPathSaveSkeletonFolder = "", strGlobalPathSaveAnimationFolder = "", 
                              strGlobalPathSaveModelFolder = "", strGlobalPathSaveTMDFolder = "";
 
@@ -152,6 +156,9 @@ namespace KimeraCS
 
             lstCFGKeys.Add("UNDO_BUFFER_CAPACITY", "");
             lstCFGKeys.Add("UNDO_BUFFERPE_CAPACITY", "");
+
+            lstCFGKeys.Add("ADJUST_3DS_IMPORT", "");
+            lstCFGKeys.Add("PELOAD_3DS_FILTER_INDEX", "");
         }
 
 
@@ -230,6 +237,9 @@ namespace KimeraCS
                 if (!Int32.TryParse(lstCFGKeys["WINDOW_POSYPE"].ToString(), out iwindowPosYPE)) iwindowPosYPE = 0;
                 if (!Int32.TryParse(lstCFGKeys["WINDOWSIZE_WIDTHPE"].ToString(), out isizeWindowWidthPE)) isizeWindowWidthPE = 736;
                 if (!Int32.TryParse(lstCFGKeys["WINDOWSIZE_HEIGHTPE"].ToString(), out isizeWindowHeightPE)) isizeWindowHeightPE = 592;
+
+                if (!bool.TryParse(lstCFGKeys["ADJUST_3DS_IMPORT"].ToString(), out bAdjust3DSImport)) bAdjust3DSImport = false;
+                if (!Int32.TryParse(lstCFGKeys["PELOAD_3DS_FILTER_INDEX"].ToString(), out iPEFilterIdx)) iPEFilterIdx = -1;
             }
         }
 
@@ -282,6 +292,9 @@ namespace KimeraCS
             lstCFGKeys["WINDOW_POSYPE"] = iwindowPosYPE.ToString();
             lstCFGKeys["WINDOWSIZE_WIDTHPE"] = isizeWindowWidthPE.ToString();
             lstCFGKeys["WINDOWSIZE_HEIGHTPE"] = isizeWindowHeightPE.ToString();
+
+            lstCFGKeys["ADJUST_3DS_IMPORT"] = bAdjust3DSImport.ToString();
+            lstCFGKeys["PELOAD_3DS_FILTER_INDEX"] = iPEFilterIdx.ToString();
 
             // Write Kimera.cfg
             var orderedCFGKeys = lstCFGKeys.Keys.Cast<string>().OrderBy(c => c);
@@ -399,10 +412,12 @@ namespace KimeraCS
                     {
                         if (strLineFilter.Length > 0)
                         {
-                            stcBLGPReg = new STBattleLGPRegister();
+                            stcBLGPReg = new STBattleLGPRegister()
+                            {
+                                fileName = strLineFilter.Split('=')[0],
+                                modelName = strLineFilter.Split('=')[1],
+                            };
 
-                            stcBLGPReg.fileName = strLineFilter.Split('=')[0];
-                            stcBLGPReg.modelName = strLineFilter.Split('=')[1];
                             tmpBattleLGPRegister.Add(stcBLGPReg);
                         }
                     }
@@ -436,135 +451,173 @@ namespace KimeraCS
 
 
             // AERITH
-            stcLimitsRegister = new STLimitsRegister();
+            stcLimitsRegister = new STLimitsRegister()
+            {
+                lstModelNames = new List<string>(),
+            };
 
-            stcLimitsRegister.lstModelNames = new List<string>();
             stcLimitsRegister.lstModelNames.Add("RVAA");
 
-            stcLimitsRegister.lstLimitsAnimations = new List<string>();
-            stcLimitsRegister.lstLimitsAnimations.Add("LIMEA2.A00");
-            stcLimitsRegister.lstLimitsAnimations.Add("LIMEA3.A00");
-            stcLimitsRegister.lstLimitsAnimations.Add("LIMEA4.A00");
-            stcLimitsRegister.lstLimitsAnimations.Add("LIMEA5.A00");
-            stcLimitsRegister.lstLimitsAnimations.Add("LIMEA6.A00");
-            stcLimitsRegister.lstLimitsAnimations.Add("LIMEA7.A00");
-            stcLimitsRegister.lstLimitsAnimations.Add("IYASH.A00");
-            stcLimitsRegister.lstLimitsAnimations.Add("KODO.A00");
+            stcLimitsRegister.lstLimitsAnimations = new List<string>
+            {
+                "LIMEA2.A00",
+                "LIMEA3.A00",
+                "LIMEA4.A00",
+                "LIMEA5.A00",
+                "LIMEA6.A00",
+                "LIMEA7.A00",
+                "IYASH.A00",
+                "KODO.A00"
+            };
 
             lstBattleLimitsAnimations.Add(stcLimitsRegister);
 
 
             // BARRET
-            stcLimitsRegister = new STLimitsRegister();
+            stcLimitsRegister = new STLimitsRegister()
+            {
+                lstModelNames = new List<string>()
+                {
+                    "SBAA",
+                    "SCAA",
+                    "SDAA",
+                    "SEAA",
+                },
 
-            stcLimitsRegister.lstModelNames = new List<string>();
-            stcLimitsRegister.lstModelNames.Add("SBAA");
-            stcLimitsRegister.lstModelNames.Add("SCAA");
-            stcLimitsRegister.lstModelNames.Add("SDAA");
-            stcLimitsRegister.lstModelNames.Add("SEAA");
-
-
-            stcLimitsRegister.lstLimitsAnimations = new List<string>();
-            stcLimitsRegister.lstLimitsAnimations.Add("LIMBR2.A00");
-            stcLimitsRegister.lstLimitsAnimations.Add("LIMBR3.A00");
-            stcLimitsRegister.lstLimitsAnimations.Add("LIMBR4.A00");
-            stcLimitsRegister.lstLimitsAnimations.Add("LIMBR5.A00");
-            stcLimitsRegister.lstLimitsAnimations.Add("LIMBR6.A00");
-            stcLimitsRegister.lstLimitsAnimations.Add("LIMBR7.A00");
-            stcLimitsRegister.lstLimitsAnimations.Add("HVSHOT.A00");
+                lstLimitsAnimations = new List<string>()
+                {
+                    "LIMBR2.A00",
+                    "LIMBR3.A00",
+                    "LIMBR4.A00",
+                    "LIMBR5.A00",
+                    "LIMBR6.A00",
+                    "LIMBR7.A00",
+                    "HVSHOT.A00",
+                }
+            };
 
             lstBattleLimitsAnimations.Add(stcLimitsRegister);
 
 
             // CAIT SITH
-            stcLimitsRegister = new STLimitsRegister();
+            stcLimitsRegister = new STLimitsRegister()
+            {
+                lstModelNames = new List<string>()
+                {
+                    "RYAA",
+                },
 
-            stcLimitsRegister.lstModelNames = new List<string>();
-            stcLimitsRegister.lstModelNames.Add("RYAA");
-
-            stcLimitsRegister.lstLimitsAnimations = new List<string>();
-            stcLimitsRegister.lstLimitsAnimations.Add("DICE.A00");
-
+                lstLimitsAnimations = new List<string>()
+                {
+                    "DICE.A00",
+                }
+            };
+           
             lstBattleLimitsAnimations.Add(stcLimitsRegister);
 
 
             // CID
-            stcLimitsRegister = new STLimitsRegister();
+            stcLimitsRegister = new STLimitsRegister()
+            {
+                lstModelNames = new List<string>()
+                {
+                    "RZAA"
+                },
 
-            stcLimitsRegister.lstModelNames = new List<string>();
-            stcLimitsRegister.lstModelNames.Add("RZAA");
-
-            stcLimitsRegister.lstLimitsAnimations = new List<string>();
-            stcLimitsRegister.lstLimitsAnimations.Add("LIMCD2.A00");
-            stcLimitsRegister.lstLimitsAnimations.Add("LIMCD3.A00");
-            stcLimitsRegister.lstLimitsAnimations.Add("LIMCD4.A00");
-            stcLimitsRegister.lstLimitsAnimations.Add("LIMCD5.A00");
-            stcLimitsRegister.lstLimitsAnimations.Add("LIMCD6.A00");
+                lstLimitsAnimations = new List<string>()
+                {
+                    "LIMCD2.A00",
+                    "LIMCD3.A00",
+                    "LIMCD4.A00",
+                    "LIMCD5.A00",
+                    "LIMCD6.A00",
+                }
+            };
 
             lstBattleLimitsAnimations.Add(stcLimitsRegister);
 
 
             // CLOUD
-            stcLimitsRegister = new STLimitsRegister();
+            stcLimitsRegister = new STLimitsRegister()
+            {
+                lstModelNames = new List<string>()
+                {
+                    "RTAA",
+                },
 
-            stcLimitsRegister.lstModelNames = new List<string>();
-            stcLimitsRegister.lstModelNames.Add("RTAA");
-
-            stcLimitsRegister.lstLimitsAnimations = new List<string>();
-            stcLimitsRegister.lstLimitsAnimations.Add("LIMCL2.A00");
-            stcLimitsRegister.lstLimitsAnimations.Add("LIMCL3.A00");
-            stcLimitsRegister.lstLimitsAnimations.Add("LIMCL4.A00");
-            stcLimitsRegister.lstLimitsAnimations.Add("LIMCL6.A00");
-            stcLimitsRegister.lstLimitsAnimations.Add("LIMCL7.A00");
-            stcLimitsRegister.lstLimitsAnimations.Add("BLAVER.A00");
-            stcLimitsRegister.lstLimitsAnimations.Add("KYOU.A00");
+                lstLimitsAnimations = new List<string>()
+                {
+                    "LIMCL2.A00",
+                    "LIMCL3.A00",
+                    "LIMCL4.A00",
+                    "LIMCL6.A00",
+                    "LIMCL7.A00",
+                    "BLAVER.A00",
+                    "KYOU.A00",
+                }
+            };
 
             lstBattleLimitsAnimations.Add(stcLimitsRegister);
 
 
             // RED XIII
-            stcLimitsRegister = new STLimitsRegister();
+            stcLimitsRegister = new STLimitsRegister()
+            {
+                lstModelNames = new List<string>()
+                {
+                    "RWAA",
+                },
 
-            stcLimitsRegister.lstModelNames = new List<string>();
-            stcLimitsRegister.lstModelNames.Add("RWAA");
-
-            stcLimitsRegister.lstLimitsAnimations = new List<string>();
-            stcLimitsRegister.lstLimitsAnimations.Add("LIMRD3.A00");
-            stcLimitsRegister.lstLimitsAnimations.Add("LIMRD4.A00");
-            stcLimitsRegister.lstLimitsAnimations.Add("LIMRD5.A00");
-            stcLimitsRegister.lstLimitsAnimations.Add("LIMRD6.A00");
-            stcLimitsRegister.lstLimitsAnimations.Add("LIMRD7.A00");
-            stcLimitsRegister.lstLimitsAnimations.Add("LIMSLED.A00");
+                lstLimitsAnimations = new List<string>()
+                {
+                    "LIMRD3.A00",
+                    "LIMRD4.A00",
+                    "LIMRD5.A00",
+                    "LIMRD6.A00",
+                    "LIMRD7.A00",
+                    "LIMSLED.A00",
+                }
+            };
 
             lstBattleLimitsAnimations.Add(stcLimitsRegister);
 
 
             // TIFA
-            stcLimitsRegister = new STLimitsRegister();
+            stcLimitsRegister = new STLimitsRegister()
+            {
+                lstModelNames = new List<string>()
+                {
+                    "RUAA",
+                },
 
-            stcLimitsRegister.lstModelNames = new List<string>();
-            stcLimitsRegister.lstModelNames.Add("RUAA");
-
-            stcLimitsRegister.lstLimitsAnimations = new List<string>();
-            stcLimitsRegister.lstLimitsAnimations.Add("LIMFAST.A00");
+                lstLimitsAnimations = new List<string>()
+                {
+                    "LIMFAST.A00",
+                }
+            };
 
             lstBattleLimitsAnimations.Add(stcLimitsRegister);
 
 
             // YUFFIE
-            stcLimitsRegister = new STLimitsRegister();
+            stcLimitsRegister = new STLimitsRegister()
+            {
+                lstModelNames = new List<string>()
+                {
+                    "RXAA",
+                },
 
-            stcLimitsRegister.lstModelNames = new List<string>();
-            stcLimitsRegister.lstModelNames.Add("RXAA");
-
-            stcLimitsRegister.lstLimitsAnimations = new List<string>();
-            stcLimitsRegister.lstLimitsAnimations.Add("LIMYF1.A00");
-            stcLimitsRegister.lstLimitsAnimations.Add("LIMYF2.A00");
-            stcLimitsRegister.lstLimitsAnimations.Add("LIMYF3.A00");
-            stcLimitsRegister.lstLimitsAnimations.Add("LIMYF4.A00");
-            stcLimitsRegister.lstLimitsAnimations.Add("LIMYF5.A00");
-            stcLimitsRegister.lstLimitsAnimations.Add("LIMYF6.A00");
-            stcLimitsRegister.lstLimitsAnimations.Add("LIMYF7.A00");
+                lstLimitsAnimations = new List<string>()
+                {
+                    "LIMYF1.A00",
+                    "LIMYF2.A00",
+                    "LIMYF3.A00",
+                    "LIMYF4.A00",
+                    "LIMYF5.A00",
+                    "LIMYF6.A00",
+                    "LIMYF7.A00",
+                }
+            };
 
             lstBattleLimitsAnimations.Add(stcLimitsRegister);
         }
