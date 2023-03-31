@@ -11,7 +11,7 @@ namespace KimeraCS
 
     using Defines;
 
-    using static frmSkeletonEditor;
+    using static FrmSkeletonEditor;
 
     using static FF7Skeleton;
     using static FF7FieldSkeleton;
@@ -49,12 +49,12 @@ namespace KimeraCS
             }
         }
 
-        public struct orderPair
+        public struct OrderPair
         {
             public float d;
         }
 
-        public struct stIntVector
+        public struct STIntVector
         {
             public int length;
             public int[] vector;
@@ -70,7 +70,7 @@ namespace KimeraCS
 
 
         //  This is for PEditor
-        public struct pairIB
+        public struct PairIB
         {
             public int I;
             public float B;
@@ -91,10 +91,12 @@ namespace KimeraCS
 
         public const double PI_180 = 3.141593 / 180;
 
-        private int[] Onbits = new int[32];
+        //private int[] Onbits = new int[32];
+
+        public static string strGlobalExceptionMessage;
 
         // Helper Functions
-        public static bool IsNumeric(string val) => Int32.TryParse(val, out int result);
+        public static bool IsNumeric(string val) => Int32.TryParse(val, out int _);
 
         public static void BuildQuaternionFromAxis(ref Point3D vec, double angle, ref Quaternion res_quat)
         {
@@ -193,7 +195,7 @@ namespace KimeraCS
 
             Point3D[] box_pointsV = new Point3D[8];
             Point3D p_aux_trans = new Point3D();
-            int pi;
+            int iBoxPoints;
 
             p_max_trans.x = -(float)INFINITY_SINGLE;
             p_max_trans.y = -(float)INFINITY_SINGLE;
@@ -231,9 +233,9 @@ namespace KimeraCS
             box_pointsV[7].y = p_min.y;
             box_pointsV[7].z = p_min.z;
 
-            for (pi = 0; pi < 8; pi++)
+            for (iBoxPoints = 0; iBoxPoints < 8; iBoxPoints++)
             {
-                MultiplyPoint3DByOGLMatrix(MV_matrix, box_pointsV[pi], ref p_aux_trans);
+                MultiplyPoint3DByOGLMatrix(MV_matrix, box_pointsV[iBoxPoints], ref p_aux_trans);
 
                 if (p_max_trans.x < p_aux_trans.x) p_max_trans.x = p_aux_trans.x;
                 if (p_max_trans.y < p_aux_trans.y) p_max_trans.y = p_aux_trans.y;
@@ -267,7 +269,7 @@ namespace KimeraCS
             BuildMatrixFromQuaternion(quat_xyz, ref mat_res);
         }
 
-        public static Quaternion GetQuaternionFromEulerUniversal(double y, double x, double z, int i, int j, int k, int h, int n, int s, int f)
+        public static Quaternion GetQuaternionFromEulerUniversal(double y, double x, double z, int i, int j, int k, int n, int s, int f)
         {
             double[] a = new double[3];
             double ti, tj, th, ci, cj, ch, si, sj, sh, cc, cs, sc, ss;
@@ -336,10 +338,11 @@ namespace KimeraCS
             mag2 = quat.w * quat.w + quat.x * quat.x + quat.y * quat.y + quat.z * quat.z;
 
             mag = Math.Sqrt(mag2);
-            quat.w = quat.w / mag;
-            quat.x = quat.x / mag;
-            quat.y = quat.y / mag;
-            quat.z = quat.z / mag;
+
+            quat.w /= mag;
+            quat.x /= mag;
+            quat.y /= mag;
+            quat.z /= mag;
 
             //        NEW UDPATE vertex2995 fix for Hojo/Heidegger animations (by L@Zar0)
             //        If Abs(mag2 - 1#) > QUAT_NORM_TOLERANCE Then
@@ -432,12 +435,12 @@ namespace KimeraCS
 
         public static Quaternion GetQuaternionFromEulerXYZr(double x, double y, double z)
         {
-            return GetQuaternionFromEulerUniversal(DegToRad(x), DegToRad(y), DegToRad(z), 2, 1, 0, 2, 1, 0, 1);
+            return GetQuaternionFromEulerUniversal(DegToRad(x), DegToRad(y), DegToRad(z), 2, 1, 0, 1, 0, 1);
         }
 
         public static Quaternion GetQuaternionFromEulerYXZr(double x, double y, double z)
         {
-            return GetQuaternionFromEulerUniversal(DegToRad(x), DegToRad(y), DegToRad(z), 2, 0, 1, 2, 0, 0, 1);
+            return GetQuaternionFromEulerUniversal(DegToRad(x), DegToRad(y), DegToRad(z), 2, 0, 1, 0, 0, 1);
         }
 
         public static Point3D GetEulerFormMatrixUniversal(double[] mat, int i, int j, int k, int n, int s, int f)
@@ -511,12 +514,13 @@ namespace KimeraCS
 
         public static Quaternion GetQuaternionConjugate(ref Quaternion quat)
         {
-            Quaternion quat_GetQuaternionConjugateResult = new Quaternion();
-
-            quat_GetQuaternionConjugateResult.x = -quat.x;
-            quat_GetQuaternionConjugateResult.y = -quat.y;
-            quat_GetQuaternionConjugateResult.z = -quat.z;
-            quat_GetQuaternionConjugateResult.w = quat.w;
+            Quaternion quat_GetQuaternionConjugateResult = new Quaternion()
+            {
+                x = -quat.x,
+                y = -quat.y,
+                z = -quat.z,
+                w = quat.w,
+            };
 
             return quat_GetQuaternionConjugateResult;
         }
@@ -555,7 +559,7 @@ namespace KimeraCS
         {
             double[] rot_mat = new double[16];
 
-            glMatrixMode(glMatrixModeList.GL_MODELVIEW);
+            glMatrixMode(GLMatrixModeList.GL_MODELVIEW);
             //glLoadIdentity();
             glTranslatef(cX, cY, cZ);
 
@@ -571,7 +575,7 @@ namespace KimeraCS
         {
             double[] rot_mat = new double[16];
 
-            glMatrixMode(glMatrixModeList.GL_MODELVIEW);
+            glMatrixMode(GLMatrixModeList.GL_MODELVIEW);
             glLoadIdentity();
             glTranslatef(cX, cY, cZ);
 
@@ -587,7 +591,7 @@ namespace KimeraCS
         {
             double[] rot_mat = new double[16];
 
-            glMatrixMode(glMatrixModeList.GL_MODELVIEW);
+            glMatrixMode(GLMatrixModeList.GL_MODELVIEW);
             glLoadIdentity();
 
             glTranslatef(cX, cY, cZ);
@@ -605,7 +609,7 @@ namespace KimeraCS
         {
             double[] rot_mat = new double[16];
 
-            glMatrixMode(glMatrixModeList.GL_MODELVIEW);
+            glMatrixMode(GLMatrixModeList.GL_MODELVIEW);
             glLoadIdentity();
 
             glTranslatef(cX, cY, cZ);
@@ -630,15 +634,14 @@ namespace KimeraCS
 
             float model_radius, distance_origin, scene_radius;
             int[] vp = new int[4];
-            double[] rot_mat = new double[16];
 
             ComputePModelBoundingBox(Model, ref p_min, ref p_max);
 
-            glGetIntegerv((uint)glCapability.GL_VIEWPORT, vp);
+            glGetIntegerv((uint)GLCapability.GL_VIEWPORT, vp);
             width = vp[2];
             height = vp[3];
 
-            glMatrixMode(glMatrixModeList.GL_PROJECTION);
+            glMatrixMode(GLMatrixModeList.GL_PROJECTION);
             glLoadIdentity();
 
             center_model = new Point3D((p_min.x + p_max.x) / 2,
@@ -665,11 +668,11 @@ namespace KimeraCS
             float scene_radius;
             int[] vp = new int[4];
 
-            glGetIntegerv((uint)glCapability.GL_VIEWPORT, vp);
+            glGetIntegerv((uint)GLCapability.GL_VIEWPORT, vp);
             width = vp[2];
             height = vp[3];
 
-            glMatrixMode(glMatrixModeList.GL_PROJECTION);
+            glMatrixMode(GLMatrixModeList.GL_PROJECTION);
             glLoadIdentity();
 
             scene_radius = ComputeSceneRadius(p_min, p_max);
@@ -688,11 +691,11 @@ namespace KimeraCS
             float scene_radius;
             int[] vp = new int[4];
 
-            glGetIntegerv((uint)glCapability.GL_VIEWPORT, vp);
+            glGetIntegerv((uint)GLCapability.GL_VIEWPORT, vp);
             width = vp[2];
             height = vp[3];
 
-            glMatrixMode(glMatrixModeList.GL_PROJECTION);
+            glMatrixMode(GLMatrixModeList.GL_PROJECTION);
             glLoadIdentity();
 
             scene_radius = ComputeSceneRadius(p_min, p_max);
@@ -708,7 +711,7 @@ namespace KimeraCS
             Point3D originTrans = new Point3D();
             double[] MV_matrix = new double[16];
 
-            glGetDoublev((uint)glCapability.GL_MODELVIEW_MATRIX, MV_matrix);
+            glGetDoublev((uint)GLCapability.GL_MODELVIEW_MATRIX, MV_matrix);
 
             InvertMatrix(ref MV_matrix);
 
@@ -770,6 +773,16 @@ namespace KimeraCS
             return (float)Math.Sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
         }
 
+        public static Point3D AddPoint3D(Point3D v1, Point3D v2)
+        {
+            return new Point3D(v1.x + v2.x, v1.y + v2.y, v1.z + v2.z);
+        }
+
+        public static Point3D SubstractPoint3D(Point3D v1, Point3D v2)
+        {
+            return new Point3D(v1.x - v2.x, v1.y - v2.y, v1.z - v2.z);
+        }
+
         public static float DotProduct3D(Point3D v1, Point3D v2)
         {
             return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
@@ -780,6 +793,11 @@ namespace KimeraCS
             return new Point3D(v1.y * v2.z - v1.z * v2.y,
                                v1.z * v2.x - v1.x * v2.z,
                                v1.x * v2.y - v1.y * v2.x);
+        }
+
+        public static Point3D DividePoint3D(Point3D v, float fScalar)
+        {
+            return new Point3D(v.x / fScalar, v.y / fScalar, v.z / fScalar);
         }
 
         public static float CalculateAngle2Vectors3D(Point3D v1, Point3D v2)
@@ -801,17 +819,25 @@ namespace KimeraCS
             return (float)Math.Sqrt(s * (s - a) * (s - b) * (s - c));
         }
 
-        public static Point3D Normalize(ref Point3D v)
+        public static Point3D Normalize(Point3D v)
         {
             float fLength;
 
-            fLength = 1.0f / CalculateLength3D(v);
+            fLength = CalculateLength3D(v);
 
-            return new Point3D(v.x * fLength, v.y * fLength, v.z * fLength);
-            //if (fLength == 0.0f)
-            //    return new Point3D(0.0f, 0.0f, 0.0f);
+            return DividePoint3D(v, fLength);
 
-            //return new Point3D(v.x / fLength, v.y / fLength, v.z / fLength);
+
+            //fLength = CalculateLength3D(v);
+
+            //if (fLength > 0)
+            //{
+            //    fLength = 1 / fLength;
+
+            //    return new Point3D(v.x / fLength, v.y / fLength, v.z / fLength);
+            //}
+
+            //else return new Point3D(0.0f, 0.0f, 0.0f);
         }
 
         public static float CalculateDistance(Point3D v0, Point3D v1)
@@ -821,7 +847,6 @@ namespace KimeraCS
             float fDeltaZ = v1.z - v0.z;
 
             return (float)Math.Sqrt(fDeltaX * fDeltaX + fDeltaY * fDeltaY + fDeltaZ * fDeltaZ);
-            //return (float)Math.Sqrt(Math.Pow(p2.x - p1.x, 2) + Math.Pow(p2.y - p1.y, 2) + Math.Pow(p2.z - p1.z, 2));
         }
 
         public static float ComputeSceneRadius(Point3D p_min, Point3D p_max)
@@ -840,12 +865,12 @@ namespace KimeraCS
             return model_radius + distance_origin;
         }
 
-        public static Point3D CalculateNormal(ref Point3D p1, ref Point3D p2, ref Point3D p3)
+        public static Point3D CalculateNormal(Point3D p1, Point3D p2, Point3D p3)
         {
             Point3D v1, v2;
 
-            v1 = new Point3D(p2.x - p1.x, p2.y - p1.y, p2.z - p1.z);
-            v2 = new Point3D(p2.x - p3.x, p2.y - p3.y, p2.z - p3.z);
+            v1 = SubstractPoint3D(p2, p1);
+            v2 = SubstractPoint3D(p3, p1);
 
             return CrossProduct3D(v1, v2);
         }
@@ -1016,35 +1041,35 @@ namespace KimeraCS
                     if (!isAligned)
                     {
                         res = vect[baseByte];
-                        res = res & (int)(Math.Pow(2, (8 - unalignedByBits)) - 1);
+                        res &= (int)(Math.Pow(2, (8 - unalignedByBits)) - 1);
                         firstAlignedByte = 1;
                     }
 
                     //  Aligned bytes
                     for (bi = firstAlignedByte; bi <= lastAlignedByte; bi++)
                     {
-                        res = res * 256;
-                        res = res | vect[baseByte + bi];
+                        res *= 256;
+                        res |= vect[baseByte + bi];
                     }
 
                     //  Sufix
                     //  Stored at the end of the byte
                     if (!cleanEnd)
                     {
-                        res = res * (int)Math.Pow(2, endBits);
-                        res = res | ((vect[baseByte + lastAlignedByte + 1]) / (int)(Math.Pow(2, 8 - endBits)) & (int)(Math.Pow(2, endBits) - 1));
+                        res *= (int)Math.Pow(2, endBits);
+                        res |= ((vect[baseByte + lastAlignedByte + 1]) / (int)(Math.Pow(2, 8 - endBits)) & (int)(Math.Pow(2, endBits) - 1));
                     }
                 }
                 else
                 {
                     res = vect[baseByte];
-                    res = res / (int)Math.Pow(2, 8 - (unalignedByBits + nBits));
-                    res = res & (int)(Math.Pow(2, nBits) - 1);
+                    res /= (int)Math.Pow(2, 8 - (unalignedByBits + nBits));
+                    res &= (int)(Math.Pow(2, nBits) - 1);
                 }
 
                 iGetBitBlockVUnsignedResult = (short)res;
 
-                FBit = FBit + nBits;
+                FBit += nBits;
             }
 
             return iGetBitBlockVUnsignedResult;
@@ -1052,9 +1077,7 @@ namespace KimeraCS
 
         public static int ExtendSignInteger(int val, int len)
         {
-            int iExtendSignIntegerResult = 0;
-
-            int auxRes;
+            int iExtendSignIntegerResult, auxRes;
 
             //KimeraCS VB6 has this lines but they don't seem to have any effect, right?
             //if (len != 12)
@@ -1065,8 +1088,8 @@ namespace KimeraCS
             if ((val & (int)Math.Pow(2, (len - 1))) != 0)
             {
                 auxRes = (int)Math.Pow(2, 16) - 1;
-                auxRes = auxRes ^ (int)(Math.Pow(2, len) - 1);
-                auxRes = auxRes | val;
+                auxRes ^= (int)(Math.Pow(2, len) - 1);
+                auxRes |= val;
 
                 iExtendSignIntegerResult = auxRes;
             }
@@ -1115,7 +1138,7 @@ namespace KimeraCS
             //  Deal with it as some raw positive value.
             //  Divisions can't be used for bit shifting negative values,
             //  since they round towards 0 instead of minus infinity
-            iValue = iValue & (int)(Math.Pow(2, nBits) - 1);
+            iValue &= (int)(Math.Pow(2, nBits) - 1);
 
             if (nBits > 0)
             {
@@ -1141,7 +1164,7 @@ namespace KimeraCS
                     if (!isAligned)
                     {
                         tmpValue = iValue / (int)(Math.Pow(2, nBits - (8 - unalignedByBits)));
-                        tmpValue = tmpValue & ((int)(Math.Pow(2, (8 - unalignedByBits)) - 1));
+                        tmpValue &= ((int)(Math.Pow(2, (8 - unalignedByBits)) - 1));
                         vect[baseByte] = (byte)(vect[baseByte] | tmpValue);
                         firstAlignedByte = 1;
                     }
@@ -1169,7 +1192,7 @@ namespace KimeraCS
                     }
 
                     tmpValue = iValue & (int)Math.Pow(2, nBits) - 1;
-                    tmpValue = tmpValue * (int)Math.Pow(2, 8 - (unalignedByBits + nBits));
+                    tmpValue *= (int)Math.Pow(2, 8 - (unalignedByBits + nBits));
                     vect[baseByte] = (byte)(vect[baseByte] | tmpValue);
                 }
             }
@@ -1201,8 +1224,8 @@ namespace KimeraCS
             //return (iValue / (float)Math.Pow(2, 12 - key)) * 360;
             float fVal = iValue;
             //fVal = fVal / 4096;
-            fVal = fVal / (float)Math.Pow(2, 12 - key);
-            fVal = fVal * 360;
+            fVal /= (float)Math.Pow(2, 12 - key);
+            fVal *= 360;
             return fVal;
             //return ((float)iValue / 4096) * 360;
         }
@@ -1211,9 +1234,9 @@ namespace KimeraCS
         {
             //return (int)((fValue / 360f) * Math.Pow(2, 12 - key));
             float fVal = fValue;
-            fVal = fVal / 360;
+            fVal /= 360;
             //fVal = fVal * 4096;
-            fVal = fVal * (float)Math.Pow(2, 12 - key);
+            fVal *= (float)Math.Pow(2, 12 - key);
             int iVal = (int)Math.Round(fVal);
             return iVal;
             //return (int)(fValue / 360f) * 4096;
@@ -1226,7 +1249,7 @@ namespace KimeraCS
 
         public static int SetBitInteger(int iValue, int iBitIndex, int iBitValue)
         {
-            int iSetBitIntegerResult = 0;
+            int iSetBitIntegerResult;
 
             if (iBitValue == 0) iSetBitIntegerResult = iValue & (~(int)Math.Pow(2, iBitIndex));
             else iSetBitIntegerResult = iValue | ((int)Math.Pow(2, iBitIndex));
@@ -1255,19 +1278,19 @@ namespace KimeraCS
         }
 
         public static void FillColorTable(PModel Model, ref List<Color> colorTable,
-                                                        ref pairIB[] translationTableVertex, ref pairIB[] translationTablePolys,
+                                                        ref PairIB[] translationTableVertex, ref PairIB[] translationTablePolys,
                                                         byte iThreshold)
         {
             float v;
             double dv;
-            int tmpR, tmpG, tmpB, iC, it, i, iDiff;
+            int iC, it, i, iDiff;
             Color cColor;
 
             colorTable.Clear();
 
             //colorTable = new Color[Model.Header.numVerts + Model.Header.numPolys];
-            translationTablePolys = new pairIB[Model.Header.numPolys];
-            translationTableVertex = new pairIB[Model.Header.numVerts];
+            translationTablePolys = new PairIB[Model.Header.numPolys];
+            translationTableVertex = new PairIB[Model.Header.numVerts];
 
             for (it = 0; it < Model.Header.numVerts; it++)
             {
@@ -1279,20 +1302,17 @@ namespace KimeraCS
                 if (v == 0) dv = 255;
                 else dv = Math.Round(128 / v, 15);
 
-                tmpR = Math.Min(255, (int)Math.Truncate(cColor.R * dv));
-                tmpG = Math.Min(255, (int)Math.Truncate(cColor.G * dv));
-                tmpB = Math.Min(255, (int)Math.Truncate(cColor.B * dv));
                 iC = -1;
                 iDiff = 765;
 
                 for (i = 0; i < colorTable.Count; i++)
                 {
-                    if ((colorTable[i].R <= Math.Min(255, cColor.R + iThreshold) &&
-                         colorTable[i].R >= Math.Max(0, cColor.R - iThreshold)) &&
-                        (colorTable[i].G <= Math.Min(255, cColor.G + iThreshold) &&
-                         colorTable[i].G >= Math.Max(0, cColor.G - iThreshold)) &&
-                        (colorTable[i].B <= Math.Min(255, cColor.B + iThreshold) &&
-                         colorTable[i].B >= Math.Max(0, cColor.B - iThreshold)))
+                    if (colorTable[i].R <= Math.Min(255, cColor.R + iThreshold) &&
+                        colorTable[i].R >= Math.Max(0, cColor.R - iThreshold) &&
+                        colorTable[i].G <= Math.Min(255, cColor.G + iThreshold) &&
+                        colorTable[i].G >= Math.Max(0, cColor.G - iThreshold) &&
+                        colorTable[i].B <= Math.Min(255, cColor.B + iThreshold) &&
+                        colorTable[i].B >= Math.Max(0, cColor.B - iThreshold))
                     {
                         if (Math.Abs(cColor.R - colorTable[i].R) +
                             Math.Abs(cColor.G - colorTable[i].G) +
@@ -1326,21 +1346,17 @@ namespace KimeraCS
                 if (v == 0) dv = 255;
                 else dv = Math.Round(128 / v, 15);
 
-                tmpR = Math.Min(255, (int)Math.Truncate(cColor.R * dv));
-                tmpG = Math.Min(255, (int)Math.Truncate(cColor.G * dv));
-                tmpB = Math.Min(255, (int)Math.Truncate(cColor.B * dv));
-
                 iC = -1;
                 iDiff = 765;
 
                 for (i = 0; i < colorTable.Count; i++)
                 {
-                    if ((colorTable[i].R <= Math.Min(255, cColor.R + iThreshold) &&
-                         colorTable[i].R >= Math.Max(0, cColor.R - iThreshold)) &&
-                        (colorTable[i].G <= Math.Min(255, cColor.G + iThreshold) &&
-                         colorTable[i].G >= Math.Max(0, cColor.G - iThreshold)) &&
-                        (colorTable[i].B <= Math.Min(255, cColor.B + iThreshold) &&
-                         colorTable[i].B >= Math.Max(0, cColor.B - iThreshold)))
+                    if (colorTable[i].R <= Math.Min(255, cColor.R + iThreshold) &&
+                        colorTable[i].R >= Math.Max(0, cColor.R - iThreshold) &&
+                        colorTable[i].G <= Math.Min(255, cColor.G + iThreshold) &&
+                        colorTable[i].G >= Math.Max(0, cColor.G - iThreshold) &&
+                        colorTable[i].B <= Math.Min(255, cColor.B + iThreshold) &&
+                        colorTable[i].B >= Math.Max(0, cColor.B - iThreshold))
                     {
                         if (Math.Abs(cColor.R - colorTable[i].R) +
                             Math.Abs(cColor.G - colorTable[i].G) +
@@ -1485,36 +1501,30 @@ namespace KimeraCS
         //    }
         //}
 
-        public static void ApplyColorTable(ref PModel Model, List<Color> colorTable, pairIB[] translationTableVertex,
-                                                                                     pairIB[] translationTablePolys)
+        public static void ApplyColorTable(ref PModel Model, List<Color> colorTable, PairIB[] translationTableVertex,
+                                                                                     PairIB[] translationTablePolys)
         {
-            int vi, pi;
+            int iPolyIdx, iVertIdx;
             Color cColor;
 
-            for (vi = 0; vi < Model.Header.numVerts; vi++)
+            for (iVertIdx = 0; iVertIdx < Model.Header.numVerts; iVertIdx++)
             {
-                cColor = colorTable[translationTableVertex[vi].I];
+                cColor = colorTable[translationTableVertex[iVertIdx].I];
 
-                if (!Model.Groups[GetVertexGroup(Model, vi)].HiddenQ)
+                if (!Model.Groups[GetVertexGroup(Model, iVertIdx)].HiddenQ)
                 {
-                    Model.Vcolors[vi] = Color.FromArgb(255,
-                                                       cColor.R,
-                                                       cColor.G,
-                                                       cColor.B);
+                    Model.Vcolors[iVertIdx] = Color.FromArgb(255, cColor.R, cColor.G, cColor.B);
                 }
             }
 
             // -- This is not in KimeraVB6
-            for (pi = 0; pi < Model.Header.numPolys; pi++)
+            for (iPolyIdx = 0; iPolyIdx < Model.Header.numPolys; iPolyIdx++)
             {
-                cColor = colorTable[translationTablePolys[pi].I];
+                cColor = colorTable[translationTablePolys[iPolyIdx].I];
 
-                if (!Model.Groups[GetPolygonGroup(Model, pi)].HiddenQ)
+                if (!Model.Groups[GetPolygonGroup(Model, iPolyIdx)].HiddenQ)
                 {
-                    Model.Pcolors[pi] = Color.FromArgb(255,
-                                                       cColor.R,
-                                                       cColor.G,
-                                                       cColor.B);
+                    Model.Pcolors[iPolyIdx] = Color.FromArgb(255, cColor.R, cColor.G, cColor.B);
                 }
             }
         }
@@ -1529,52 +1539,42 @@ namespace KimeraCS
 
         //    for (vi = 0; vi < Model.Header.numVerts; vi++)
         //    {
-        //        cColor = colorTable[translationTableVertex[vi].I];
-        //        dv = translationTableVertex[vi].B;
+        //        cColor = colorTable[translationTableVertex[iVertIdx].I];
+        //        dv = translationTableVertex[iVertIdx].B;
 
-        //        Model.Vcolors[vi] = Color.FromArgb(255,
+        //        Model.Vcolors[iVertIdx] = Color.FromArgb(255,
         //                                           (byte)Math.Max(0, Math.Min(255, Math.Ceiling(cColor.R / dv))),
         //                                           (byte)Math.Max(0, Math.Min(255, Math.Ceiling(cColor.G / dv))),
         //                                           (byte)Math.Max(0, Math.Min(255, Math.Ceiling(cColor.B / dv))));
         //    }
 
-        //    // -- This is not in KimeraVB6
-        //    for (pi = 0; pi < Model.Header.numPolys; pi++)
-        //    {
-        //        cColor = colorTable[translationTablePolys[pi].I];
-        //        dv = translationTablePolys[pi].B;
-
-        //        Model.Pcolors[pi] = Color.FromArgb(255,
-        //                                           (byte)Math.Max(0, Math.Min(255, Math.Ceiling(cColor.R / dv))),
-        //                                           (byte)Math.Max(0, Math.Min(255, Math.Ceiling(cColor.G / dv))),
-        //                                           (byte)Math.Max(0, Math.Min(255, Math.Ceiling(cColor.B / dv))));
-        //    }
         //}
 
         public static void ChangeBrightness(ref PModel Model, int iFactor, Color[] vcolorsOriginal, Color[] pcolorsOriginal)
         {
-            int vi, pi;
+            int iPolyIdx, iVertIdx;
 
-            for (vi = 0; vi < Model.Header.numVerts; vi++)
+            for (iVertIdx = 0; iVertIdx < Model.Header.numVerts; iVertIdx++)
             {
-                Model.Vcolors[vi] = Color.FromArgb(255,
-                                                   Math.Max(0, Math.Min(255, vcolorsOriginal[vi].R + iFactor)),
-                                                   Math.Max(0, Math.Min(255, vcolorsOriginal[vi].G + iFactor)),
-                                                   Math.Max(0, Math.Min(255, vcolorsOriginal[vi].B + iFactor)));
+                Model.Vcolors[iVertIdx] = Color.FromArgb(255,
+                                 Math.Max(0, Math.Min(255, vcolorsOriginal[iVertIdx].R + iFactor)),
+                                 Math.Max(0, Math.Min(255, vcolorsOriginal[iVertIdx].G + iFactor)),
+                                 Math.Max(0, Math.Min(255, vcolorsOriginal[iVertIdx].B + iFactor)));
             }
 
-            for (pi = 0; pi < Model.Header.numPolys; pi++)
+            for (iPolyIdx = 0; iPolyIdx < Model.Header.numPolys; iPolyIdx++)
             {
-                Model.Pcolors[pi] = Color.FromArgb(255,
-                                                   Math.Max(0, Math.Min(255, pcolorsOriginal[pi].R + iFactor)),
-                                                   Math.Max(0, Math.Min(255, pcolorsOriginal[pi].G + iFactor)),
-                                                   Math.Max(0, Math.Min(255, pcolorsOriginal[pi].B + iFactor)));
+                Model.Pcolors[iPolyIdx] = Color.FromArgb(255,
+                                     Math.Max(0, Math.Min(255, pcolorsOriginal[iPolyIdx].R + iFactor)),
+                                     Math.Max(0, Math.Min(255, pcolorsOriginal[iPolyIdx].G + iFactor)),
+                                     Math.Max(0, Math.Min(255, pcolorsOriginal[iPolyIdx].B + iFactor)));
             }
         }
 
-        public static void UpdateTranslationTable(ref pairIB[] translationTableVertex, PModel Model, int pIndex, int cIndex)
+        public static void UpdateTranslationTable(ref PairIB[] translationTableVertex, 
+                                                  PModel Model, int pIndex, int cIndex)
         {
-            int vi, iGroupIdx, iDiff, baseVert;
+            int iVertIdx, iGroupIdx, iDiff, baseVert;
 
             iDiff = Model.Header.numVerts - 1 - (translationTableVertex.Length - 1);
 
@@ -1583,16 +1583,16 @@ namespace KimeraCS
 
             Array.Resize(ref translationTableVertex, Model.Header.numVerts);
 
-            for (vi = Model.Header.numVerts - 1; vi >= baseVert + 1; vi--)
+            for (iVertIdx = Model.Header.numVerts - 1; iVertIdx >= baseVert + 1; iVertIdx--)
             {
-                translationTableVertex[vi].I = translationTableVertex[vi - iDiff].I;
-                translationTableVertex[vi].B = translationTableVertex[vi - iDiff].B;
+                translationTableVertex[iVertIdx].I = translationTableVertex[iVertIdx - iDiff].I;
+                translationTableVertex[iVertIdx].B = translationTableVertex[iVertIdx - iDiff].B;
             }
 
-            for (vi = baseVert + 1; vi <= baseVert + iDiff; vi++)
+            for (iVertIdx = baseVert + 1; iVertIdx <= baseVert + iDiff; iVertIdx++)
             {
-                translationTableVertex[vi].I = cIndex;
-                translationTableVertex[vi].B = 1;
+                translationTableVertex[iVertIdx].I = cIndex;
+                translationTableVertex[iVertIdx].B = 1;
             }
         }
 
@@ -1627,6 +1627,52 @@ namespace KimeraCS
             }
 
             return false;
+        }
+
+        // This function will check if there are any duplicated vertices or duplicated polys indexes
+        // in Add Polygon feature of PEditor.
+        // iArrayVNP = VertexNewPoly        iVCNP = VertexCountNewPoly
+        public static bool ValidateAddPolygonVertices(PModel Model, int[] iArrayVNP, int iVCNP)
+        {
+            bool bValidateVerts = true;
+            int iGrpv0, iGrpv1, iGrpv2;
+            Point3D p3Dv0, p3Dv1, p3Dv2;
+
+            if (iVCNP > 1)
+            {
+                switch (iVCNP)
+                {
+                    case 2:
+                        p3Dv0 = Model.Verts[iArrayVNP[0]];
+                        p3Dv1 = Model.Verts[iArrayVNP[1]];
+
+                        iGrpv0 = GetVertexGroup(Model, iArrayVNP[0]);
+                        iGrpv1 = GetVertexGroup(Model, iArrayVNP[1]);
+
+                        if (iArrayVNP[0] == iArrayVNP[1] || ComparePoints3D(p3Dv0, p3Dv1) || iGrpv0 != iGrpv1)
+                            bValidateVerts = false;
+
+                        break;
+
+                    case 3:
+                        p3Dv0 = Model.Verts[iArrayVNP[0]];
+                        p3Dv1 = Model.Verts[iArrayVNP[1]];
+                        p3Dv2 = Model.Verts[iArrayVNP[2]];
+
+                        iGrpv0 = GetVertexGroup(Model, iArrayVNP[0]);
+                        iGrpv1 = GetVertexGroup(Model, iArrayVNP[1]);
+                        iGrpv2 = GetVertexGroup(Model, iArrayVNP[2]);
+
+                        if (iArrayVNP[0] == iArrayVNP[1] || iArrayVNP[0] == iArrayVNP[2] || iArrayVNP[1] == iArrayVNP[2] ||
+                            ComparePoints3D(p3Dv0, p3Dv1) || ComparePoints3D(p3Dv0, p3Dv2) || ComparePoints3D(p3Dv1, p3Dv2) ||
+                            iGrpv0 != iGrpv1 || iGrpv0 != iGrpv2)
+                            bValidateVerts = false;
+
+                        break;
+                }
+            }
+
+            return bValidateVerts;
         }
 
     }
