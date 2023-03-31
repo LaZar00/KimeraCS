@@ -11,8 +11,8 @@ namespace KimeraCS
 {
     using Defines;
 
-    using static frmSkeletonEditor;
-    using static frmPEditor;
+    using static FrmSkeletonEditor;
+    using static FrmPEditor;
 
     using static FF7Skeleton;
     using static FF7FieldSkeleton;
@@ -39,13 +39,15 @@ namespace KimeraCS
         //  ---------------------------------------------------------------------------------------------------
         //  ================================== GENERIC FIELD/BATTLE DRAW  =====================================
         //  ---------------------------------------------------------------------------------------------------
-        public static void ShowNormals(PGroup Group, PPolygon[] Polys, Point3D[] Verts, Point3D[] Normals)
+        public static void ShowNormals(PGroup Group, PPolygon[] Polys, Point3D[] Verts, 
+                                       Point3D[] Normals, int[] NormalsIndex)
         {
-            long pi, vi;
-            float x, y, z, xn, yn, zn, xn1, xn2, yn1, yn2, zn1, zn2, fRed, fGreen, fBlue;
+            long iPolyIdx, iVertIdx;
+            float x, y, z, xn, yn, zn, fRed, fGreen, fBlue;
             bool bLightingEnabled = false;
 
-            x = y = z = xn = yn = zn = xn1 = yn1 = zn1 = xn2 = yn2 = zn2 = 0.0f;
+            if (Group.HiddenQ) return;
+
             fRed = fGreen = fBlue = 0.0f;
 
             if ((iNormalsColor & 0x1) == 0x1) fRed = 1.0f;
@@ -54,29 +56,29 @@ namespace KimeraCS
 
             glColor4f(fRed, fGreen, fBlue, 1.0f);
 
-            glDisable(glCapability.GL_TEXTURE_2D);
+            glDisable(GLCapability.GL_TEXTURE_2D);
 
-            if (glIsEnabled(glCapability.GL_LIGHTING)) bLightingEnabled = true;
-            glDisable(glCapability.GL_LIGHTING);
+            if (glIsEnabled(GLCapability.GL_LIGHTING)) bLightingEnabled = true;
+            glDisable(GLCapability.GL_LIGHTING);
 
-            glBegin(glDrawMode.GL_LINES);
+            glBegin(GLDrawMode.GL_LINES);
 
             if (Normals.Length > 0)
             {
-                for (pi = Group.offsetPoly; pi < Group.offsetPoly + Group.numPoly; pi++)
+                for (iPolyIdx = Group.offsetPoly; iPolyIdx < Group.offsetPoly + Group.numPoly; iPolyIdx++)
                 {
                     if (bShowVertexNormals)
                     {
-                        for (vi = 0; vi < 3; vi++)
+                        for (iVertIdx = 0; iVertIdx < 3; iVertIdx++)
                         {
-                            x = Verts[Polys[pi].Verts[vi] + Group.offsetVert].x;
-                            y = Verts[Polys[pi].Verts[vi] + Group.offsetVert].y;
-                            z = Verts[Polys[pi].Verts[vi] + Group.offsetVert].z;
+                            x = Verts[Polys[iPolyIdx].Verts[iVertIdx] + Group.offsetVert].x;
+                            y = Verts[Polys[iPolyIdx].Verts[iVertIdx] + Group.offsetVert].y;
+                            z = Verts[Polys[iPolyIdx].Verts[iVertIdx] + Group.offsetVert].z;
                             glVertex3f(x, y, z);
 
-                            xn = x + Normals[Polys[pi].Normals[vi]].x * fNormalsScale;
-                            yn = y + Normals[Polys[pi].Normals[vi]].y * fNormalsScale;
-                            zn = z + Normals[Polys[pi].Normals[vi]].z * fNormalsScale;
+                            xn = x + Normals[NormalsIndex[Polys[iPolyIdx].Verts[iVertIdx] + Group.offsetVert]].x * fNormalsScale;
+                            yn = y + Normals[NormalsIndex[Polys[iPolyIdx].Verts[iVertIdx] + Group.offsetVert]].y * fNormalsScale;
+                            zn = z + Normals[NormalsIndex[Polys[iPolyIdx].Verts[iVertIdx] + Group.offsetVert]].z * fNormalsScale;
                             glVertex3f(xn, yn, zn);
                         }
                     }
@@ -84,20 +86,20 @@ namespace KimeraCS
                     {
                         Point3D p3DCenteroid, p3DNormal;
 
-                        p3DCenteroid = CalculateCenteroid(Verts[Polys[pi].Verts[0] + Group.offsetVert],
-                                                          Verts[Polys[pi].Verts[1] + Group.offsetVert],
-                                                          Verts[Polys[pi].Verts[2] + Group.offsetVert]);
+                        p3DCenteroid = CalculateCenteroid(Verts[Polys[iPolyIdx].Verts[0] + Group.offsetVert],
+                                                          Verts[Polys[iPolyIdx].Verts[1] + Group.offsetVert],
+                                                          Verts[Polys[iPolyIdx].Verts[2] + Group.offsetVert]);
 
-                        p3DNormal = CalculateNormal(ref Verts[Polys[pi].Verts[0] + Group.offsetVert],
-                                                    ref Verts[Polys[pi].Verts[1] + Group.offsetVert],
-                                                    ref Verts[Polys[pi].Verts[2] + Group.offsetVert]);
-                        p3DNormal = Normalize(ref p3DNormal);
+                        p3DNormal = CalculateNormal(Verts[Polys[iPolyIdx].Verts[0] + Group.offsetVert],
+                                                    Verts[Polys[iPolyIdx].Verts[1] + Group.offsetVert],
+                                                    Verts[Polys[iPolyIdx].Verts[2] + Group.offsetVert]);
+                        p3DNormal = Normalize(p3DNormal);
 
                         glVertex3f(p3DCenteroid.x, p3DCenteroid.y, p3DCenteroid.z);
 
-                        glVertex3f(p3DCenteroid.x + (p3DNormal.x * fNormalsScale),
-                                   p3DCenteroid.y + (p3DNormal.y * fNormalsScale),
-                                   p3DCenteroid.z + (p3DNormal.z * fNormalsScale));
+                        glVertex3f(p3DCenteroid.x + (-p3DNormal.x * fNormalsScale),
+                                   p3DCenteroid.y + (-p3DNormal.y * fNormalsScale),
+                                   p3DCenteroid.z + (-p3DNormal.z * fNormalsScale));
                     }
                 }
             }
@@ -105,60 +107,65 @@ namespace KimeraCS
             glEnd();
 
             if (bLightingEnabled)
-                glEnable(glCapability.GL_LIGHTING);
+                glEnable(GLCapability.GL_LIGHTING);
         }
 
         public static void DrawGroup(PGroup Group, PPolygon[] Polys, Point3D[] Verts,
-                                     Color[] Vcolors, Point3D[] Normals,Point2D[] TexCoords, 
-                                     PHundret Hundret, bool HideHiddenQ)
+                                     Color[] Vcolors, Point3D[] Normals, int[] NormalsIndex,
+                                     Point2D[] TexCoords, PHundret Hundret, bool HideHiddenQ)
         {
 
             if (Group.HiddenQ && HideHiddenQ) return;
 
-            long pi = 0, vi = 0;
+            int iPolyIdx = 0, iVertIdx = 0;
             float x, y, z;
 
             try
             {
-                glBegin(glDrawMode.GL_TRIANGLES);
-                glColorMaterial(glFace.GL_FRONT_AND_BACK, glMaterialParameter.GL_AMBIENT_AND_DIFFUSE);
+                glBegin(GLDrawMode.GL_TRIANGLES);
+                glColorMaterial(GLFace.GL_FRONT_AND_BACK, GLMaterialParameter.GL_AMBIENT_AND_DIFFUSE);
 
-                for (pi = Group.offsetPoly; pi < Group.offsetPoly + Group.numPoly; pi++)
+                for (iPolyIdx = Group.offsetPoly; iPolyIdx < Group.offsetPoly + Group.numPoly; iPolyIdx++)
                 {
-                    for (vi = 0; vi < 3; vi++)
+                    for (iVertIdx = 0; iVertIdx < 3; iVertIdx++)
                     {
                         if (Hundret.blend_mode == 0 && !(Hundret.shademode == 1) && !bSkeleton.IsBattleLocation)
-                            glColor4f(Vcolors[Polys[pi].Verts[vi] + Group.offsetVert].R / 255.0f,
-                                      Vcolors[Polys[pi].Verts[vi] + Group.offsetVert].G / 255.0f,
-                                      Vcolors[Polys[pi].Verts[vi] + Group.offsetVert].B / 255.0f,
+                            glColor4f(Vcolors[Polys[iPolyIdx].Verts[iVertIdx] + Group.offsetVert].R / 255.0f,
+                                      Vcolors[Polys[iPolyIdx].Verts[iVertIdx] + Group.offsetVert].G / 255.0f,
+                                      Vcolors[Polys[iPolyIdx].Verts[iVertIdx] + Group.offsetVert].B / 255.0f,
                                       0.5f);
                         else
-                            glColor4f(Vcolors[Polys[pi].Verts[vi] + Group.offsetVert].R / 255.0f,
-                                      Vcolors[Polys[pi].Verts[vi] + Group.offsetVert].G / 255.0f,
-                                      Vcolors[Polys[pi].Verts[vi] + Group.offsetVert].B / 255.0f,
+                            glColor4f(Vcolors[Polys[iPolyIdx].Verts[iVertIdx] + Group.offsetVert].R / 255.0f,
+                                      Vcolors[Polys[iPolyIdx].Verts[iVertIdx] + Group.offsetVert].G / 255.0f,
+                                      Vcolors[Polys[iPolyIdx].Verts[iVertIdx] + Group.offsetVert].B / 255.0f,
                                       1.0f);
 
                         //if (Normals.Length > 0)
-                        //    glNormal3f(Normals[Polys[pi].Normals[vi] + Group.offsetVert].x,
-                        //               Normals[Polys[pi].Normals[vi] + Group.offsetVert].y,
-                        //               Normals[Polys[pi].Normals[vi] + Group.offsetVert].z);
+                        //    glNormal3f(Normals[Polys[iPolyIdx].Normals[iVertIdx] + Group.offsetVert].x,
+                        //               Normals[Polys[iPolyIdx].Normals[iVertIdx] + Group.offsetVert].y,
+                        //               Normals[Polys[iPolyIdx].Normals[iVertIdx] + Group.offsetVert].z);
+
+                        //if (Normals.Length > 0)
+                        //    glNormal3f(Normals[Polys[iPolyIdx].Normals[iVertIdx]].x,
+                        //               Normals[Polys[iPolyIdx].Normals[iVertIdx]].y,
+                        //               Normals[Polys[iPolyIdx].Normals[iVertIdx]].z);
 
                         if (Normals.Length > 0)
-                            glNormal3f(Normals[Polys[pi].Normals[vi]].x,
-                                       Normals[Polys[pi].Normals[vi]].y,
-                                       Normals[Polys[pi].Normals[vi]].z);
+                            glNormal3f(Normals[NormalsIndex[Polys[iPolyIdx].Verts[iVertIdx] + Group.offsetVert]].x,
+                                       Normals[NormalsIndex[Polys[iPolyIdx].Verts[iVertIdx] + Group.offsetVert]].y,
+                                       Normals[NormalsIndex[Polys[iPolyIdx].Verts[iVertIdx] + Group.offsetVert]].z);
 
                         if (TexCoords != null)
                             if (Group.texFlag == 1 && TexCoords.Length > 0)
                             {
-                                x = TexCoords[Group.offsetTex + Polys[pi].Verts[vi]].x;
-                                y = TexCoords[Group.offsetTex + Polys[pi].Verts[vi]].y;
+                                x = TexCoords[Group.offsetTex + Polys[iPolyIdx].Verts[iVertIdx]].x;
+                                y = TexCoords[Group.offsetTex + Polys[iPolyIdx].Verts[iVertIdx]].y;
                                 glTexCoord2f(x, y);
                             }
 
-                        x = Verts[Polys[pi].Verts[vi] + Group.offsetVert].x;
-                        y = Verts[Polys[pi].Verts[vi] + Group.offsetVert].y;
-                        z = Verts[Polys[pi].Verts[vi] + Group.offsetVert].z;
+                        x = Verts[Polys[iPolyIdx].Verts[iVertIdx] + Group.offsetVert].x;
+                        y = Verts[Polys[iPolyIdx].Verts[iVertIdx] + Group.offsetVert].y;
+                        z = Verts[Polys[iPolyIdx].Verts[iVertIdx] + Group.offsetVert].z;
                         glVertex3f(x, y, z);
                     }
                 }
@@ -167,15 +174,17 @@ namespace KimeraCS
 
                 // Let's try here to render the normals
                 if (bShowVertexNormals || bShowFaceNormals)
-                    ShowNormals(Group, Polys, Verts, Normals);
+                    ShowNormals(Group, Polys, Verts, Normals, NormalsIndex);
 
             }
 
             catch (Exception ex)
             {
+                strGlobalExceptionMessage = ex.Message;
+
                 MessageBox.Show("Exception in DrawGroup procedure.\nGroup: " + Group.realGID.ToString() +
-                                "\nPolygon (pi): " + pi.ToString() +
-                                "\nVertex (vi): " + vi.ToString() +
+                                "\nPolygon (iPolyIdx): " + iPolyIdx.ToString() +
+                                "\nVertex (iVertIdx): " + iVertIdx.ToString() +
                                 "\noffsetVertex: " + Group.offsetVert.ToString() +
                                 "\noffsetPolygon: " + Group.offsetPoly.ToString(), 
                                 "Exception error", MessageBoxButtons.OK);
@@ -210,71 +219,71 @@ namespace KimeraCS
 
         public static void DrawPModel(ref PModel Model, ref uint[] tex_ids, bool HideHiddenGroupsQ)
         {
-            int gi;
+            int iGroupIdx;
             bool set_v_textured, v_textured, set_v_linearfilter, v_linearfilter, texEnabled;
 
-            texEnabled = glIsEnabled(glCapability.GL_TEXTURE_2D);
+            texEnabled = glIsEnabled(GLCapability.GL_TEXTURE_2D);
 
-            for (gi = 0; gi < Model.Header.numGroups; gi++)
+            for (iGroupIdx = 0; iGroupIdx < Model.Header.numGroups; iGroupIdx++)
             {
                 // ShadeMode
-                if (Model.Hundrets[gi].shademode == 1) glShadeModel(glShadingModel.GL_FLAT);
-                else glShadeModel(glShadingModel.GL_SMOOTH);
+                if (Model.Hundrets[iGroupIdx].shademode == 1) glShadeModel(GLShadingModel.GL_FLAT);
+                else glShadeModel(GLShadingModel.GL_SMOOTH);
 
-                glEnable(glCapability.GL_COLOR_MATERIAL);
+                glEnable(GLCapability.GL_COLOR_MATERIAL);
 
                 //  Set the render states acording to the hundrets information
                 //  V_WIREFRAME
-                glPolygonMode(glFace.GL_FRONT, glPolygon.GL_FILL);
-                glPolygonMode(glFace.GL_BACK, glPolygon.GL_FILL);
+                glPolygonMode(GLFace.GL_FRONT, GLPolygon.GL_FILL);
+                glPolygonMode(GLFace.GL_BACK, GLPolygon.GL_FILL);
 
-                if ((Model.Hundrets[gi].field_8 & 0x1) != 0)
+                if ((Model.Hundrets[iGroupIdx].field_8 & 0x1) != 0)
                 {
-                    if ((Model.Hundrets[gi].field_C & 0x1) != 0)
+                    if ((Model.Hundrets[iGroupIdx].field_C & 0x1) != 0)
                     {
-                        glPolygonMode(glFace.GL_FRONT, glPolygon.GL_LINE);
-                        glPolygonMode(glFace.GL_BACK, glPolygon.GL_LINE);
+                        glPolygonMode(GLFace.GL_FRONT, GLPolygon.GL_LINE);
+                        glPolygonMode(GLFace.GL_BACK, GLPolygon.GL_LINE);
                     }
                 }
 
                 //  V_TEXTRED
-                set_v_textured = (Model.Hundrets[gi].field_8 & 0x2) != 0;
-                v_textured = (Model.Hundrets[gi].field_C & 0x2) != 0;
+                set_v_textured = (Model.Hundrets[iGroupIdx].field_8 & 0x2) != 0;
+                v_textured = (Model.Hundrets[iGroupIdx].field_C & 0x2) != 0;
 
                 //  V_LINEARFILTER
-                set_v_linearfilter = (Model.Hundrets[gi].field_8 & 0x4) != 0;
-                v_linearfilter = (Model.Hundrets[gi].field_C & 0x4) != 0;
+                set_v_linearfilter = (Model.Hundrets[iGroupIdx].field_8 & 0x4) != 0;
+                v_linearfilter = (Model.Hundrets[iGroupIdx].field_C & 0x4) != 0;
 
                 //  V_NOCULL
-                glDisable(glCapability.GL_CULL_FACE); 
+                glDisable(GLCapability.GL_CULL_FACE); 
 
-                if ((Model.Hundrets[gi].field_8 & 0x4000) != 0)
+                if ((Model.Hundrets[iGroupIdx].field_8 & 0x4000) != 0)
                 {
-                    if ((Model.Hundrets[gi].field_C & 0x4000) != 0)
+                    if ((Model.Hundrets[iGroupIdx].field_C & 0x4000) != 0)
                     {
-                        glEnable(glCapability.GL_CULL_FACE);
+                        glEnable(GLCapability.GL_CULL_FACE);
                     }
                 }
 
                 //  V_CULLFACE
-                glCullFace(glFace.GL_FRONT);
+                glCullFace(GLFace.GL_FRONT);
 
-                if ((Model.Hundrets[gi].field_8 & 0x2000) != 0)
+                if ((Model.Hundrets[iGroupIdx].field_8 & 0x2000) != 0)
                 {
-                    if ((Model.Hundrets[gi].field_C & 0x2000) != 0)
+                    if ((Model.Hundrets[iGroupIdx].field_C & 0x2000) != 0)
                     {
-                        glCullFace(glFace.GL_BACK);
+                        glCullFace(GLFace.GL_BACK);
                     }
                 }
 
                 //// V_DEPTH_TEST
-                //glDisable(glCapability.GL_DEPTH_TEST);
+                //glDisable(GLCapability.GL_DEPTH_TEST);
 
-                //if ((Model.Hundrets[gi].field_8 & 0x8000) != 0)
+                //if ((Model.Hundrets[iGroupIdx].field_8 & 0x8000) != 0)
                 //{
-                //    glEnable(glCapability.GL_DEPTH_TEST);
+                //    glEnable(GLCapability.GL_DEPTH_TEST);
 
-                //    if ((Model.Hundrets[gi].field_C & 0x8000) != 0)
+                //    if ((Model.Hundrets[iGroupIdx].field_C & 0x8000) != 0)
                 //    {
                 //        //?
                 //    }
@@ -283,11 +292,11 @@ namespace KimeraCS
                 //// V_DEPTH_MASK
                 //glDepthMask(0);
 
-                //if ((Model.Hundrets[gi].field_8 & 0x10000) != 0)
+                //if ((Model.Hundrets[iGroupIdx].field_8 & 0x10000) != 0)
                 //{
                 //    glDepthMask(1);
 
-                //    if ((Model.Hundrets[gi].field_C & 0x10000) != 0)
+                //    if ((Model.Hundrets[iGroupIdx].field_C & 0x10000) != 0)
                 //    {
                 //        //?
                 //    }
@@ -297,86 +306,86 @@ namespace KimeraCS
                 if (bSkeleton.IsBattleLocation) 
                 {
                     if (Model.fileName.Substring(Model.fileName.Length - 2, 2) == "AO")
-                        glDepthFunc(glFunc.GL_ALWAYS);
+                        glDepthFunc(GLFunc.GL_ALWAYS);
                     else
-                        glDepthFunc(glFunc.GL_LESS);
+                        glDepthFunc(GLFunc.GL_LESS);
                 }
 
 
                 //  Now let's set the blending state
-                if (((Model.Hundrets[gi].field_8 & 0x400) == 0x400 &&
-                     (Model.Hundrets[gi].field_C & 0x400) == 0x400) ||
-                      Model.Hundrets[gi].blend_mode == 0 ||
-                      IsColorKey(Model, gi))                     
+                if (((Model.Hundrets[iGroupIdx].field_8 & 0x400) == 0x400 &&
+                     (Model.Hundrets[iGroupIdx].field_C & 0x400) == 0x400) ||
+                      Model.Hundrets[iGroupIdx].blend_mode == 0 ||
+                      IsColorKey(Model, iGroupIdx))                     
                 {
-                    glEnable(glCapability.GL_BLEND);
+                    glEnable(GLCapability.GL_BLEND);
 
-                    switch (Model.Hundrets[gi].blend_mode)
+                    switch (Model.Hundrets[iGroupIdx].blend_mode)
                     {
                         case 0:
-                            if (Model.Groups[gi].texFlag == 1)
+                            if (Model.Groups[iGroupIdx].texFlag == 1)
                             {
-                                GLExt.glBlendEquation(glBlendEquationMode.GL_FUNC_ADD);
+                                GLExt.glBlendEquation(GLBlendEquationMode.GL_FUNC_ADD);
 
-                                glBlendFunc(glBlendFuncFactor.GL_SRC_ALPHA, glBlendFuncFactor.GL_ONE_MINUS_SRC_ALPHA);
+                                glBlendFunc(GLBlendFuncFactor.GL_SRC_ALPHA, GLBlendFuncFactor.GL_ONE_MINUS_SRC_ALPHA);
                             }
 
                             break;
 
                         case 1:
-                            GLExt.glBlendEquation(glBlendEquationMode.GL_FUNC_ADD);
-                            glBlendFunc(glBlendFuncFactor.GL_ONE, glBlendFuncFactor.GL_ONE);
+                            GLExt.glBlendEquation(GLBlendEquationMode.GL_FUNC_ADD);
+                            glBlendFunc(GLBlendFuncFactor.GL_ONE, GLBlendFuncFactor.GL_ONE);
 
                             break;
 
                         case 2:
-                            GLExt.glBlendEquation(glBlendEquationMode.GL_FUNC_SUBTRACT);
-                            glBlendFunc(glBlendFuncFactor.GL_ONE, glBlendFuncFactor.GL_ONE);
+                            GLExt.glBlendEquation(GLBlendEquationMode.GL_FUNC_SUBTRACT);
+                            glBlendFunc(GLBlendFuncFactor.GL_ONE, GLBlendFuncFactor.GL_ONE);
 
                             break;
 
                         case 3:
-                            glDisable(glCapability.GL_BLEND);
+                            glDisable(GLCapability.GL_BLEND);
 
                             break;
 
                     }
 
                 }
-                else glDisable(glCapability.GL_BLEND);
+                else glDisable(GLCapability.GL_BLEND);
 
 
-                if (Model.Groups[gi].texFlag == 1 && tex_ids.Length > 0 && v_textured)
+                if (Model.Groups[iGroupIdx].texFlag == 1 && tex_ids.Length > 0 && v_textured)
                 {
-                    if(Model.Groups[gi].texID < tex_ids.Length)
+                    if(Model.Groups[iGroupIdx].texID < tex_ids.Length)
                     {
-                        if (glIsTexture(tex_ids[Model.Groups[gi].texID]))
+                        if (glIsTexture(tex_ids[Model.Groups[iGroupIdx].texID]))
                         {
                             if (set_v_textured)
                             {
-                                if (v_textured) glEnable(glCapability.GL_TEXTURE_2D);
-                                else glDisable(glCapability.GL_TEXTURE_2D);
+                                if (v_textured) glEnable(GLCapability.GL_TEXTURE_2D);
+                                else glDisable(GLCapability.GL_TEXTURE_2D);
                             }
 
-                            glBindTexture(glTextureTarget.GL_TEXTURE_2D, tex_ids[Model.Groups[gi].texID]);
+                            glBindTexture(GLTextureTarget.GL_TEXTURE_2D, tex_ids[Model.Groups[iGroupIdx].texID]);
 
                             if (set_v_linearfilter)
                             {
                                 if (v_linearfilter)
                                 {
-                                    glTexParameterf(glTextureTarget.GL_TEXTURE_2D, glTextureParameter.GL_TEXTURE_MAG_FILTER,
-                                                             (float)glTextureMagFilter.GL_LINEAR);
+                                    glTexParameterf(GLTextureTarget.GL_TEXTURE_2D, GLTextureParameter.GL_TEXTURE_MAG_FILTER,
+                                                             (float)GLTextureMagFilter.GL_LINEAR);
 
-                                    glTexParameterf(glTextureTarget.GL_TEXTURE_2D, glTextureParameter.GL_TEXTURE_MIN_FILTER,
-                                                             (float)glTextureMagFilter.GL_LINEAR);
+                                    glTexParameterf(GLTextureTarget.GL_TEXTURE_2D, GLTextureParameter.GL_TEXTURE_MIN_FILTER,
+                                                             (float)GLTextureMagFilter.GL_LINEAR);
                                 }
                                 else
                                 {
-                                    glTexParameterf(glTextureTarget.GL_TEXTURE_2D, glTextureParameter.GL_TEXTURE_MAG_FILTER,
-                                                             (float)glTextureMagFilter.GL_NEAREST);
+                                    glTexParameterf(GLTextureTarget.GL_TEXTURE_2D, GLTextureParameter.GL_TEXTURE_MAG_FILTER,
+                                                             (float)GLTextureMagFilter.GL_NEAREST);
 
-                                    glTexParameterf(glTextureTarget.GL_TEXTURE_2D, glTextureParameter.GL_TEXTURE_MIN_FILTER,
-                                                             (float)glTextureMagFilter.GL_NEAREST);
+                                    glTexParameterf(GLTextureTarget.GL_TEXTURE_2D, GLTextureParameter.GL_TEXTURE_MIN_FILTER,
+                                                             (float)GLTextureMagFilter.GL_NEAREST);
                                 }
                             }
                         }
@@ -386,26 +395,27 @@ namespace KimeraCS
                 // Use Group Reposition/Resize/Rotate changes.
                 double[] rot_mat = new double[16];
 
-                glMatrixMode(glMatrixModeList.GL_MODELVIEW);
+                glMatrixMode(GLMatrixModeList.GL_MODELVIEW);
                 glPushMatrix();
 
-                glTranslatef(Model.Groups[gi].repGroupX,
-                             Model.Groups[gi].repGroupY,
-                             Model.Groups[gi].repGroupZ);
+                glTranslatef(Model.Groups[iGroupIdx].repGroupX,
+                             Model.Groups[iGroupIdx].repGroupY,
+                             Model.Groups[iGroupIdx].repGroupZ);
 
-                BuildRotationMatrixWithQuaternionsXYZ(Model.Groups[gi].rotGroupAlpha,
-                                                      Model.Groups[gi].rotGroupBeta,
-                                                      Model.Groups[gi].rotGroupGamma,
+                BuildRotationMatrixWithQuaternionsXYZ(Model.Groups[iGroupIdx].rotGroupAlpha,
+                                                      Model.Groups[iGroupIdx].rotGroupBeta,
+                                                      Model.Groups[iGroupIdx].rotGroupGamma,
                                                       ref rot_mat);
 
                 glMultMatrixd(rot_mat);
-                glScalef(Model.Groups[gi].rszGroupX,
-                         Model.Groups[gi].rszGroupY,
-                         Model.Groups[gi].rszGroupZ);
+                glScalef(Model.Groups[iGroupIdx].rszGroupX,
+                         Model.Groups[iGroupIdx].rszGroupY,
+                         Model.Groups[iGroupIdx].rszGroupZ);
 
-                DrawGroup(Model.Groups[gi], Model.Polys, Model.Verts, Model.Vcolors,
-                          Model.Normals, Model.TexCoords, Model.Hundrets[gi], HideHiddenGroupsQ);
-                glDisable(glCapability.GL_TEXTURE_2D);
+                DrawGroup(Model.Groups[iGroupIdx], Model.Polys, Model.Verts, Model.Vcolors,
+                          Model.Normals, Model.NormalIndex, Model.TexCoords, 
+                          Model.Hundrets[iGroupIdx], HideHiddenGroupsQ);
+                glDisable(GLCapability.GL_TEXTURE_2D);
 
                 glPopMatrix();
             }
@@ -418,9 +428,9 @@ namespace KimeraCS
 
         public static void DrawPModelDLists(ref PModel Model, ref uint[] tex_ids)
         {
-            int gi;
+            int iGroupIdx;
 
-            //glMatrixMode(glMatrixModeList.GL_MODELVIEW);
+            //glMatrixMode(GLMatrixModeList.GL_MODELVIEW);
             //glPushMatrix();
 
             //glScalef(Model.resizeX, Model.resizeY, Model.resizeZ);
@@ -429,64 +439,70 @@ namespace KimeraCS
             //glRotatef(Model.rotateGamma, 0, 0, 1);
             //glTranslatef(Model.repositionX, Model.repositionY, Model.repositionZ);
 
-            glShadeModel(glShadingModel.GL_SMOOTH);
-            glPolygonMode(glFace.GL_FRONT, glPolygon.GL_FILL);
-            glPolygonMode(glFace.GL_BACK, glPolygon.GL_FILL);
-            glEnable(glCapability.GL_COLOR_MATERIAL);
+            glPolygonMode(GLFace.GL_FRONT, GLPolygon.GL_FILL);
+            glPolygonMode(GLFace.GL_BACK, GLPolygon.GL_FILL);
 
-            for (gi = 0; gi < Model.Header.numGroups; gi++)
+            glEnable(GLCapability.GL_COLOR_MATERIAL);
+
+            for (iGroupIdx = 0; iGroupIdx < Model.Header.numGroups; iGroupIdx++)
             {
+
+                if (Model.Hundrets[iGroupIdx].shademode == 1) glShadeModel(GLShadingModel.GL_FLAT);
+                else glShadeModel(GLShadingModel.GL_SMOOTH);
+
+                glDisable(GLCapability.GL_TEXTURE_2D);
+
                 if (tex_ids.Length > 0)
                 {
-                    if (Model.Groups[gi].texFlag == 1 && tex_ids[0] > 0)
+                    if (Model.Groups[iGroupIdx].texFlag == 1 && tex_ids[0] > 0)
                     {
-                        if (Model.Groups[gi].texID <= tex_ids.Length)
+                        if (Model.Groups[iGroupIdx].texID <= tex_ids.Length)
                         {
-                            if (glIsTexture(tex_ids[Model.Groups[gi].texID]))
+                            if (glIsTexture(tex_ids[Model.Groups[iGroupIdx].texID]))
                             {
-                                glEnable(glCapability.GL_TEXTURE_2D);
+                                glEnable(GLCapability.GL_TEXTURE_2D);
 
-                                glBindTexture(glTextureTarget.GL_TEXTURE_2D, tex_ids[Model.Groups[gi].texID]);
-                                glTexParameterf(glTextureTarget.GL_TEXTURE_2D, glTextureParameter.GL_TEXTURE_MAG_FILTER, (float)glTextureMagFilter.GL_LINEAR);
-                                glTexParameterf(glTextureTarget.GL_TEXTURE_2D, glTextureParameter.GL_TEXTURE_MIN_FILTER, (float)glTextureMagFilter.GL_LINEAR);
+                                glBindTexture(GLTextureTarget.GL_TEXTURE_2D, tex_ids[Model.Groups[iGroupIdx].texID]);
+                                glTexParameterf(GLTextureTarget.GL_TEXTURE_2D, GLTextureParameter.GL_TEXTURE_MAG_FILTER, (float)GLTextureMagFilter.GL_LINEAR);
+                                glTexParameterf(GLTextureTarget.GL_TEXTURE_2D, GLTextureParameter.GL_TEXTURE_MIN_FILTER, (float)GLTextureMagFilter.GL_LINEAR);
                             }
                         }
                     }
                 }
                 else
                 {
-                    if (Model.Groups[gi].texFlag == 1)
+                    if (Model.Groups[iGroupIdx].texFlag == 1)
                     {
                         DialogResult drYesNo;
                         drYesNo = 
                             MessageBox.Show("The part: " + Model.fileName + " has not any texture assigned but it has " +
-                                            "the texture flags enabled in group: " + gi.ToString() + ".\n" +
+                                            "the texture flags enabled in group: " + iGroupIdx.ToString() + ".\n" +
                                             "Do you want to disable the texture flag?", "Warning", 
                                             MessageBoxButtons.YesNo);
 
                         if (drYesNo == DialogResult.Yes)
                         {
-                            Model.Groups[gi].texFlag = 0;
+                            Model.Groups[iGroupIdx].texFlag = 0;
                         }
                     }
                 }
 
-                DrawGroupDList(ref Model.Groups[gi]);
+                DrawGroupDList(ref Model.Groups[iGroupIdx]);
 
-                glDisable(glCapability.GL_TEXTURE_2D);
+                glDisable(GLCapability.GL_TEXTURE_2D);
             }
         }
 
         public static void DrawPModelBoundingBox(PModel Model)
         {
-            glBegin(glDrawMode.GL_LINES);
-            glDisable(glCapability.GL_DEPTH_TEST);
+            glBegin(GLDrawMode.GL_LINES);
+            glDisable(GLCapability.GL_DEPTH_TEST);
 
             DrawBox(Model.BoundingBox.max_x, Model.BoundingBox.max_y, Model.BoundingBox.max_z,
                     Model.BoundingBox.min_x, Model.BoundingBox.min_y, Model.BoundingBox.min_z,
                     1, 1, 0);
 
-            glEnable(glCapability.GL_DEPTH_TEST);
+            glEnable(GLCapability.GL_DEPTH_TEST);
             glEnd();
             // glPopMatrix();
         }
@@ -501,7 +517,7 @@ namespace KimeraCS
             int bi, jsp;
             string[] joint_stack = new string[fSkeleton.bones.Count];
 
-            glMatrixMode(glMatrixModeList.GL_MODELVIEW);
+            glMatrixMode(GLMatrixModeList.GL_MODELVIEW);
 
             jsp = 0;
             joint_stack[jsp] = fSkeleton.bones[0].joint_f;
@@ -545,7 +561,7 @@ namespace KimeraCS
         {
             glColor3f(red, green, blue);
 
-            glBegin(glDrawMode.GL_LINES);
+            glBegin(GLDrawMode.GL_LINES);
 
             glVertex3f(max_x, max_y, max_z);
             glVertex3f(max_x, max_y, min_z);
@@ -583,8 +599,8 @@ namespace KimeraCS
         {
             double[] rot_mat = new double[16];
 
-            glDisable(glCapability.GL_DEPTH_TEST);
-            glMatrixMode(glMatrixModeList.GL_MODELVIEW);
+            glDisable(GLCapability.GL_DEPTH_TEST);
+            glMatrixMode(GLMatrixModeList.GL_MODELVIEW);
             glScalef(bone.resizeX, bone.resizeY, bone.resizeZ);
 
             glTranslatef(bone.fRSDResources[p_index].Model.repositionX,
@@ -606,7 +622,7 @@ namespace KimeraCS
                     bone.fRSDResources[p_index].Model.BoundingBox.min_z,
                     0, 1, 0);
 
-            glEnable(glCapability.GL_DEPTH_TEST);
+            glEnable(GLCapability.GL_DEPTH_TEST);
         }
 
         public static void DrawFieldBoneBoundingBox(FieldBone bone)
@@ -616,20 +632,20 @@ namespace KimeraCS
             float max_x, max_y, max_z;
             float min_x, min_y, min_z;
 
-            glMatrixMode(glMatrixModeList.GL_MODELVIEW);
+            glMatrixMode(GLMatrixModeList.GL_MODELVIEW);
             glScalef(bone.resizeX, bone.resizeY, bone.resizeZ);
 
             if (bone.nResources == 0)
             {
-                glDisable(glCapability.GL_DEPTH_TEST);
+                glDisable(GLCapability.GL_DEPTH_TEST);
                 
                 glColor3f(1, 0, 0);
-                glBegin(glDrawMode.GL_LINES);
+                glBegin(GLDrawMode.GL_LINES);
                     glVertex3f(0, 0, 0);
                     glVertex3f(0, 0, -(float)bone.len);
                 glEnd();
 
-                glEnable(glCapability.GL_DEPTH_TEST);
+                glEnable(GLCapability.GL_DEPTH_TEST);
             }
             else
             {
@@ -652,9 +668,9 @@ namespace KimeraCS
                     if (min_z > bone.fRSDResources[ri].Model.BoundingBox.min_x) min_z = bone.fRSDResources[ri].Model.BoundingBox.min_z;
                 }
 
-                glDisable(glCapability.GL_DEPTH_TEST);
+                glDisable(GLCapability.GL_DEPTH_TEST);
                 DrawBox(max_x, max_y, max_z, min_x, min_y, min_z, 1, 0, 0);
-                glEnable(glCapability.GL_DEPTH_TEST);
+                glEnable(GLCapability.GL_DEPTH_TEST);
             }
         }
 
@@ -666,7 +682,7 @@ namespace KimeraCS
 
             jsp = 0;
 
-            glMatrixMode(glMatrixModeList.GL_MODELVIEW);
+            glMatrixMode(GLMatrixModeList.GL_MODELVIEW);
             glPushMatrix();
 
             glTranslated(fFrame.rootTranslationX, 0, 0);
@@ -698,12 +714,12 @@ namespace KimeraCS
                 BuildRotationMatrixWithQuaternions(fFrame.rotations[bi].alpha, fFrame.rotations[bi].beta, fFrame.rotations[bi].gamma, ref rot_mat);
                 glMultMatrixd(rot_mat);
 
-                glBegin(glDrawMode.GL_POINTS);
+                glBegin(GLDrawMode.GL_POINTS);
                     glVertex3f(0, 0, 0);
                     glVertex3f(0, 0, (float)-fSkeleton.bones[bi].len);
                 glEnd();
 
-                glBegin(glDrawMode.GL_LINES);
+                glBegin(GLDrawMode.GL_LINES);
                     glVertex3f(0, 0, 0);
                     glVertex3f(0, 0, (float)-fSkeleton.bones[bi].len);
                 glEnd();
@@ -735,7 +751,7 @@ namespace KimeraCS
                 tex_ids[ti] = fRSDResource.textures[ti].texID;
             }
 
-            glMatrixMode(glMatrixModeList.GL_MODELVIEW);
+            glMatrixMode(GLMatrixModeList.GL_MODELVIEW);
             glPushMatrix();
 
             glTranslatef(fRSDResource.Model.repositionX, fRSDResource.Model.repositionY, fRSDResource.Model.repositionZ);
@@ -756,7 +772,7 @@ namespace KimeraCS
 
             int ri;
 
-            glMatrixMode(glMatrixModeList.GL_MODELVIEW);
+            glMatrixMode(GLMatrixModeList.GL_MODELVIEW);
             glPushMatrix();
 
             glScalef(bone.resizeX, bone.resizeY, bone.resizeZ);
@@ -774,7 +790,7 @@ namespace KimeraCS
             int jsp;
             double[] rot_mat = new double[16];
 
-            glMatrixMode(glMatrixModeList.GL_MODELVIEW);
+            glMatrixMode(GLMatrixModeList.GL_MODELVIEW);
 
             glPushMatrix();
             glTranslated(fFrame.rootTranslationX, 0, 0);
@@ -838,7 +854,7 @@ namespace KimeraCS
             if (bSkeleton.nBones > 1) itmpbones = 1;
             else itmpbones = 0;
 
-            glMatrixMode(glMatrixModeList.GL_MODELVIEW);
+            glMatrixMode(GLMatrixModeList.GL_MODELVIEW);
             glPushMatrix();
             glTranslated(bFrame.startX, bFrame.startY, bFrame.startZ);
 
@@ -905,7 +921,7 @@ namespace KimeraCS
             return iMoveToBattleBoneMiddleResult;
         }
 
-        public static int MoveToBattleBoneEnd(BattleSkeleton bskeleton, BattleFrame bFrame, int boneIndex)
+        public static int MoveToBattleBoneEnd(BattleSkeleton bSkeleton, BattleFrame bFrame, int boneIndex)
         {
             int iMoveToBattleBoneEndResult;
 
@@ -919,8 +935,8 @@ namespace KimeraCS
         {
             double[] rot_mat = new double[16];
 
-            glDisable(glCapability.GL_DEPTH_TEST);
-            glMatrixMode(glMatrixModeList.GL_MODELVIEW);
+            glDisable(GLCapability.GL_DEPTH_TEST);
+            glMatrixMode(GLMatrixModeList.GL_MODELVIEW);
             glScalef(bBone.resizeX, bBone.resizeY, bBone.resizeZ);
 
             glTranslatef(bBone.Models[partIndex].repositionX, bBone.Models[partIndex].repositionY, bBone.Models[partIndex].repositionZ);
@@ -933,15 +949,14 @@ namespace KimeraCS
             DrawBox(bBone.Models[partIndex].BoundingBox.max_x, bBone.Models[partIndex].BoundingBox.max_y, bBone.Models[partIndex].BoundingBox.max_z,
                     bBone.Models[partIndex].BoundingBox.min_x, bBone.Models[partIndex].BoundingBox.min_y, bBone.Models[partIndex].BoundingBox.min_z,
                     0, 1, 0);
-            glEnable(glCapability.GL_DEPTH_TEST);
+            glEnable(GLCapability.GL_DEPTH_TEST);
         }
 
         public static void DrawBattleBoneBoundingBox(BattleBone bBone)
         {
-            double[] rot_mat = new double[16];
 
-            glDisable(glCapability.GL_DEPTH_TEST);
-            glMatrixMode(glMatrixModeList.GL_MODELVIEW);
+            glDisable(GLCapability.GL_DEPTH_TEST);
+            glMatrixMode(GLMatrixModeList.GL_MODELVIEW);
 
             glScalef(bBone.resizeX, bBone.resizeY, bBone.resizeZ);
 
@@ -956,18 +971,18 @@ namespace KimeraCS
                 DrawBox(bBone.Models[0].BoundingBox.max_x, bBone.Models[0].BoundingBox.max_y, bBone.Models[0].BoundingBox.max_z,
                         bBone.Models[0].BoundingBox.min_x, bBone.Models[0].BoundingBox.min_y, bBone.Models[0].BoundingBox.min_z,
                         0, 1, 0);
-                glEnable(glCapability.GL_DEPTH_TEST);
+                glEnable(GLCapability.GL_DEPTH_TEST);
             }
             else
             {
                 glColor3f(0, 1, 0);
-                glBegin(glDrawMode.GL_LINES);
+                glBegin(GLDrawMode.GL_LINES);
                     glVertex3f(0, 0, 0);
                     glVertex3f(0, 0, bBone.len);
                 glEnd();
             }
 
-            glEnable(glCapability.GL_DEPTH_TEST);
+            glEnable(GLCapability.GL_DEPTH_TEST);
         }
 
         public static void DrawBattleWeaponBoundingBox(BattleSkeleton bSkeleton, BattleFrame wpFrame, int weaponIndex)
@@ -1022,7 +1037,7 @@ namespace KimeraCS
             if (bSkeleton.nBones > 1) itmpbones = 1;
             else itmpbones = 0;
 
-            glMatrixMode(glMatrixModeList.GL_MODELVIEW);
+            glMatrixMode(GLMatrixModeList.GL_MODELVIEW);
             glPointSize(5);
             glPushMatrix();
             glTranslated(bFrame.startX, bFrame.startY, bFrame.startZ);
@@ -1050,12 +1065,12 @@ namespace KimeraCS
                                                    ref rot_mat);
                 glMultMatrixd(rot_mat);
 
-                glBegin(glDrawMode.GL_POINTS);
+                glBegin(GLDrawMode.GL_POINTS);
                     glVertex3f(0, 0, 0);
                     glVertex3f(0, 0, bSkeleton.bones[bi].len);
                 glEnd();
 
-                glBegin(glDrawMode.GL_LINES);
+                glBegin(GLDrawMode.GL_LINES);
                     glVertex3f(0, 0, 0);
                     glVertex3f(0, 0, bSkeleton.bones[bi].len);
                 glEnd();
@@ -1082,7 +1097,7 @@ namespace KimeraCS
             int mi;
             PModel tmpbModel = new PModel();
 
-            glMatrixMode(glMatrixModeList.GL_MODELVIEW);
+            glMatrixMode(GLMatrixModeList.GL_MODELVIEW);
             glPushMatrix();
             glScalef(bBone.resizeX, bBone.resizeY, bBone.resizeZ);
 
@@ -1092,7 +1107,7 @@ namespace KimeraCS
                 {
                     for (mi = 0; mi < bBone.nModels; mi++)
                     {
-                        double[] rot_mat = new double[16];
+
                         glPushMatrix();
                         glTranslatef(bBone.Models[mi].repositionX, bBone.Models[mi].repositionY, bBone.Models[mi].repositionZ);
 
@@ -1147,7 +1162,7 @@ namespace KimeraCS
             if (bSkeleton.nBones > 1) itmpbones = 1;
             else itmpbones = 0;
 
-            glMatrixMode(glMatrixModeList.GL_MODELVIEW);
+            glMatrixMode(GLMatrixModeList.GL_MODELVIEW);
             glPushMatrix();
             glTranslated(bFrame.startX, bFrame.startY, bFrame.startZ);
 
@@ -1215,7 +1230,7 @@ namespace KimeraCS
                 BuildRotationMatrixWithQuaternions(wpFrame.bones[0].alpha, wpFrame.bones[0].beta, wpFrame.bones[0].gamma, ref rot_mat);
                 glMultMatrixd(rot_mat);
 
-                glMatrixMode(glMatrixModeList.GL_MODELVIEW);
+                glMatrixMode(GLMatrixModeList.GL_MODELVIEW);
                 glPushMatrix();
 
                 glTranslatef(bSkeleton.wpModels[weaponIndex].repositionX,
@@ -1252,8 +1267,7 @@ namespace KimeraCS
         //  ---------------------------------------------------------------------------------------------------
         //  ======================================= SKELETON DRAW  ============================================
         //  ---------------------------------------------------------------------------------------------------
-        public static void DrawSkeletonModel(PictureBox inPicturebox, ComboBox cbBattleAnimation, ComboBox cbWeapon, 
-                                             bool bDListsEnable)
+        public static void DrawSkeletonModel(bool bDListsEnable)
         {
 
             double[] rot_mat = new double[16];
@@ -1278,14 +1292,14 @@ namespace KimeraCS
 
                         if (bShowGround)
                         {
-                            glDisable(glCapability.GL_LIGHTING);
-                            DrawGround(inPicturebox);
+                            glDisable(GLCapability.GL_LIGHTING);
+                            DrawGround();
                             DrawShadow(ref p_min, ref p_max);
                         }
 
                         SetLights();
 
-                        glMatrixMode(glMatrixModeList.GL_MODELVIEW);
+                        glMatrixMode(GLMatrixModeList.GL_MODELVIEW);
                         glPushMatrix();
 
                         glTranslatef(fPModel.repositionX,
@@ -1318,8 +1332,8 @@ namespace KimeraCS
 
                         if (bShowGround)
                         {
-                            glDisable(glCapability.GL_LIGHTING);
-                            DrawGround(inPicturebox);
+                            glDisable(GLCapability.GL_LIGHTING);
+                            DrawGround();
                             DrawShadow(ref p_min, ref p_max);
                         }
 
@@ -1341,16 +1355,16 @@ namespace KimeraCS
                             glColorMask(GL_Boolean.GL_TRUE, GL_Boolean.GL_TRUE, GL_Boolean.GL_TRUE, GL_Boolean.GL_TRUE);
                         }
 
-                        glDisable(glCapability.GL_LIGHTING);
+                        glDisable(GLCapability.GL_LIGHTING);
 
                         if (bShowBones)
                         {                        
-                            glDisable(glCapability.GL_DEPTH_TEST);
+                            glDisable(GLCapability.GL_DEPTH_TEST);
                             glColor3f(0, 1, 0);
 
                             DrawFieldSkeletonBones(fSkeleton, fAnimation.frames[iCurrentFrameScroll]);
 
-                            glEnable(glCapability.GL_DEPTH_TEST);
+                            glEnable(GLCapability.GL_DEPTH_TEST);
                         }
 
                         SelectFieldBoneAndPiece(fSkeleton, fAnimation.frames[iCurrentFrameScroll],
@@ -1371,8 +1385,8 @@ namespace KimeraCS
 
                         if (bShowGround)
                         {
-                            glDisable(glCapability.GL_LIGHTING);
-                            DrawGround(inPicturebox);
+                            glDisable(GLCapability.GL_LIGHTING);
+                            DrawGround();
                             DrawShadow(ref p_min, ref p_max);
                         }
 
@@ -1403,15 +1417,15 @@ namespace KimeraCS
                             glColorMask(GL_Boolean.GL_TRUE, GL_Boolean.GL_TRUE, GL_Boolean.GL_TRUE, GL_Boolean.GL_TRUE);
                         }
 
-                        glDisable(glCapability.GL_LIGHTING);
+                        glDisable(GLCapability.GL_LIGHTING);
 
                         if (bShowBones)
                         {
-                            glDisable(glCapability.GL_DEPTH_TEST);
-                            glDisable(glCapability.GL_LIGHTING);
+                            glDisable(GLCapability.GL_DEPTH_TEST);
+                            glDisable(GLCapability.GL_LIGHTING);
                             glColor3f(0, 1, 0);
                             DrawBattleSkeletonBones(bSkeleton, bAnimationsPack.SkeletonAnimations[ianimIndex].frames[iCurrentFrameScroll]);
-                            glEnable(glCapability.GL_DEPTH_TEST);
+                            glEnable(GLCapability.GL_DEPTH_TEST);
                         }
 
                         SelectBattleBoneAndModel(bSkeleton, bAnimationsPack.SkeletonAnimations[ianimIndex].frames[iCurrentFrameScroll],
@@ -1430,15 +1444,15 @@ namespace KimeraCS
         //  ---------------------------------------------------------------------------------------------------
         //  ============================ DRAWING EXTENSIONS (GROUND/SHADOW)  ==================================
         //  ---------------------------------------------------------------------------------------------------
-        public static void DrawGround(PictureBox inPictureBox)
+        public static void DrawGround()
         {
             int gi, lw;
             float r, g, b;
 
             //  Draw plane
             glColor3f(0.9f, 0.9f, 1f);
-            glDisable(glCapability.GL_DEPTH_TEST);
-            glBegin(glDrawMode.GL_QUADS);
+            glDisable(GLCapability.GL_DEPTH_TEST);
+            glBegin(GLDrawMode.GL_QUADS);
             glVertex4f(300f, 0f, 300f, 0.001f);
             glVertex4f(300f, 0f, -300f, 0.001f);
             glVertex4f(-300f, 0f, -300f, 0.001f);
@@ -1449,13 +1463,13 @@ namespace KimeraCS
             g = 0.9f;
             b = 1.0f;
             lw = 5;
-            //glEnable(glCapability.GL_LINE_SMOOTH);
+            //glEnable(GLCapability.GL_LINE_SMOOTH);
 
             for (gi = 10; gi >= 5; gi--)
             {
                 glLineWidth(lw);
                 glColor3f(r, g, b);
-                glBegin(glDrawMode.GL_LINES);
+                glBegin(GLDrawMode.GL_LINES);
                 glVertex4f(0f, 0f, 50f, 0.0001f);
                 glVertex4f(0f, 0f, -50f, 0.0001f);
                 glVertex4f(-50f, 0f, 0f, 0.0001f);
@@ -1465,11 +1479,11 @@ namespace KimeraCS
                 r = 0.9f - 0.9f / 10f * (10 - gi);
                 g = 0.9f - 0.9f / 10f * (10 - gi);
                 b = 1 - 1f / 10f * (10 - gi);
-                lw = lw - 1;
+                lw--;
             }
 
             glLineWidth(1f);
-            //glDisable(glCapability.GL_LINE_SMOOTH);
+            //glDisable(GLCapability.GL_LINE_SMOOTH);
         }
 
         public static void DrawShadow(ref Point3D p_min, ref Point3D p_max)
@@ -1477,11 +1491,7 @@ namespace KimeraCS
             float ground_radius, sub_y, cx, cz;
             int numSegments, si;
 
-            Point3D p_min_aux = new Point3D();
-            Point3D p_max_aux = new Point3D();
-
-            cx = 0;
-            cz = 0;
+            Point3D p_min_aux, p_max_aux;
 
             sub_y = p_max.y;
             p_min_aux = p_min;
@@ -1495,7 +1505,7 @@ namespace KimeraCS
 
             // Draw Shadow
             numSegments = 20;
-            glBegin(glDrawMode.GL_TRIANGLE_FAN);
+            glBegin(GLDrawMode.GL_TRIANGLE_FAN);
                 glColor4f(0.1f, 0.1f, 0.1f, 0.5f);
                 glVertex3f(cx, 0, cz);
 
@@ -1506,13 +1516,13 @@ namespace KimeraCS
                                (float)(ground_radius * Math.Cos(si * 2 * PI / numSegments) + cz));
                 }
             glEnd();
-            glEnable(glCapability.GL_DEPTH_TEST);
-            glDisable(glCapability.GL_FOG);
+            glEnable(GLCapability.GL_DEPTH_TEST);
+            glDisable(GLCapability.GL_FOG);
 
             // Draw underlying box (just depth)
             glColorMask(GL_Boolean.GL_FALSE, GL_Boolean.GL_FALSE, GL_Boolean.GL_FALSE, GL_Boolean.GL_FALSE);
             glColor3f(1, 1, 1);
-            glBegin(glDrawMode.GL_QUADS);
+            glBegin(GLDrawMode.GL_QUADS);
                 glVertex3f(p_max.x, 0, p_max.z);
                 glVertex3f(p_max.x, 0, p_min.z);
                 glVertex3f(p_min.x, 0, p_min.z);
@@ -1551,21 +1561,21 @@ namespace KimeraCS
             Point3D p3 = new Point3D();
             Point3D p4 = new Point3D();
 
-            glEnable(glCapability.GL_BLEND);
-            GLExt.glBlendEquation(glBlendEquationMode.GL_FUNC_ADD);
-            glBlendFunc(glBlendFuncFactor.GL_SRC_ALPHA, glBlendFuncFactor.GL_ONE_MINUS_SRC_ALPHA);
+            glEnable(GLCapability.GL_BLEND);
+            GLExt.glBlendEquation(GLBlendEquationMode.GL_FUNC_ADD);
+            glBlendFunc(GLBlendFuncFactor.GL_SRC_ALPHA, GLBlendFuncFactor.GL_ONE_MINUS_SRC_ALPHA);
 
             MultiplyPoint3DByOGLMatrix(planeTransformation, planeOriginalPoint1, ref p1);
             MultiplyPoint3DByOGLMatrix(planeTransformation, planeOriginalPoint2, ref p2);
             MultiplyPoint3DByOGLMatrix(planeTransformation, planeOriginalPoint3, ref p3);
             MultiplyPoint3DByOGLMatrix(planeTransformation, planeOriginalPoint4, ref p4);
 
-            glPolygonMode(glFace.GL_FRONT, glPolygon.GL_FILL);
-            glPolygonMode(glFace.GL_BACK, glPolygon.GL_LINE);
+            glPolygonMode(GLFace.GL_FRONT, GLPolygon.GL_FILL);
+            glPolygonMode(GLFace.GL_BACK, GLPolygon.GL_LINE);
 
             glColor4f(1, 0, 0, 0.10f);
-            glEnable(glCapability.GL_BLEND);
-            glBegin(glDrawMode.GL_QUADS);
+            glEnable(GLCapability.GL_BLEND);
+            glBegin(GLDrawMode.GL_QUADS);
             glVertex3f(p1.x, p1.y, p1.z);
             glVertex3f(p2.x, p2.y, p2.z);
             glVertex3f(p3.x, p3.y, p3.z);
@@ -1585,14 +1595,14 @@ namespace KimeraCS
             Point3D p_max = new Point3D();
             Point3D p_min = new Point3D();
 
-            glDisable(glCapability.GL_LIGHTING);
+            glDisable(GLCapability.GL_LIGHTING);
             ComputePModelBoundingBox(EditedPModel, ref p_min, ref p_max);
 
             max_x = Math.Abs(p_min.x) > Math.Abs(p_max.x) ? p_min.x : p_max.x;
             max_y = Math.Abs(p_min.y) > Math.Abs(p_max.y) ? p_min.y : p_max.y;
             max_z = Math.Abs(p_min.z) > Math.Abs(p_max.z) ? p_min.z : p_max.z;
 
-            glBegin(glDrawMode.GL_LINES);
+            glBegin(GLDrawMode.GL_LINES);
             glColor3f(1, 0, 0);
             glVertex3f(0, 0, 0);
             glVertex3f(2 * max_x, 0, 0);
@@ -1626,17 +1636,17 @@ namespace KimeraCS
 
 
             //  Set 2D mode to draw letters
-            glMatrixMode(glMatrixModeList.GL_PROJECTION);
+            glMatrixMode(GLMatrixModeList.GL_PROJECTION);
             glLoadIdentity();
             gluOrtho2D(0, pbIn.ClientRectangle.Width, 0, pbIn.ClientRectangle.Height);
-            glMatrixMode(glMatrixModeList.GL_MODELVIEW);
+            glMatrixMode(GLMatrixModeList.GL_MODELVIEW);
             glLoadIdentity();
 
             letterWidth = LETTER_SIZE;
             letterHeight = (float)(LETTER_SIZE * 1.5);
-            glDisable(glCapability.GL_DEPTH_TEST);
+            glDisable(GLCapability.GL_DEPTH_TEST);
 
-            glBegin(glDrawMode.GL_LINES);
+            glBegin(GLDrawMode.GL_LINES);
             //  Draw X
             glColor3f(0, 0, 0);
             glVertex2f(pX.x - letterWidth, pX.y - letterHeight);
@@ -1663,7 +1673,7 @@ namespace KimeraCS
             glVertex2f(pZ.x - letterWidth, pZ.y - letterHeight);
             glEnd();
 
-            glEnable(glCapability.GL_DEPTH_TEST);
+            glEnable(GLCapability.GL_DEPTH_TEST);
         }
 
 
@@ -1673,54 +1683,70 @@ namespace KimeraCS
         //  ---------------------------------------------------------------------------------------------------
         public static void DrawPModelPolys(PModel Model)
         {
-            int gi, pi, vi;
+            int iGroupIdx, iPolyIdx, iVertIdx;
 
-            glShadeModel(glShadingModel.GL_FLAT);
+            glShadeModel(GLShadingModel.GL_FLAT);
 
-            glPolygonMode(glFace.GL_FRONT, glPolygon.GL_LINE);
-            glPolygonMode(glFace.GL_BACK, glPolygon.GL_FILL);
-            glEnable(glCapability.GL_COLOR_MATERIAL);
+            glPolygonMode(GLFace.GL_FRONT, GLPolygon.GL_LINE);
+            glPolygonMode(GLFace.GL_BACK, GLPolygon.GL_FILL);
+            glEnable(GLCapability.GL_COLOR_MATERIAL);
 
-            for (gi = 0; gi < Model.Header.numGroups; gi++)
+            for (iGroupIdx = 0; iGroupIdx < Model.Header.numGroups; iGroupIdx++)
             {
-                if (!Model.Groups[gi].HiddenQ)
+                if (!Model.Groups[iGroupIdx].HiddenQ)
                 {
 
                     // We will apply Group update values for Reposition/Resize/Rotate.
                     double[] rot_mat = new double[16];
 
-                    glMatrixMode(glMatrixModeList.GL_MODELVIEW);
+                    glMatrixMode(GLMatrixModeList.GL_MODELVIEW);
                     glPushMatrix();
 
-                    glTranslatef(Model.Groups[gi].repGroupX,
-                                 Model.Groups[gi].repGroupY,
-                                 Model.Groups[gi].repGroupZ);
+                    glTranslatef(Model.Groups[iGroupIdx].repGroupX,
+                                 Model.Groups[iGroupIdx].repGroupY,
+                                 Model.Groups[iGroupIdx].repGroupZ);
 
-                    BuildRotationMatrixWithQuaternionsXYZ(Model.Groups[gi].rotGroupAlpha,
-                                                          Model.Groups[gi].rotGroupBeta,
-                                                          Model.Groups[gi].rotGroupGamma,
+                    BuildRotationMatrixWithQuaternionsXYZ(Model.Groups[iGroupIdx].rotGroupAlpha,
+                                                          Model.Groups[iGroupIdx].rotGroupBeta,
+                                                          Model.Groups[iGroupIdx].rotGroupGamma,
                                                           ref rot_mat);
 
                     glMultMatrixd(rot_mat);
-                    glScalef(Model.Groups[gi].rszGroupX,
-                             Model.Groups[gi].rszGroupY,
-                             Model.Groups[gi].rszGroupZ);
+                    glScalef(Model.Groups[iGroupIdx].rszGroupX,
+                             Model.Groups[iGroupIdx].rszGroupY,
+                             Model.Groups[iGroupIdx].rszGroupZ);
 
-                    for (pi = Model.Groups[gi].offsetPoly; pi < Model.Groups[gi].offsetPoly + Model.Groups[gi].numPoly; pi++)
+                    for (iPolyIdx = Model.Groups[iGroupIdx].offsetPoly;
+                         iPolyIdx < Model.Groups[iGroupIdx].offsetPoly + Model.Groups[iGroupIdx].numPoly;
+                         iPolyIdx++)
                     {
-                        glColor4f(Model.Pcolors[pi].R / 255.0f, Model.Pcolors[pi].G / 255.0f, Model.Pcolors[pi].B / 255.0f, Model.Pcolors[pi].A / 255.0f);
-                        glColorMaterial(glFace.GL_FRONT_AND_BACK, glMaterialParameter.GL_AMBIENT_AND_DIFFUSE);
+                        glColor4f(Model.Pcolors[iPolyIdx].R / 255.0f, 
+                                  Model.Pcolors[iPolyIdx].G / 255.0f, 
+                                  Model.Pcolors[iPolyIdx].B / 255.0f, 
+                                  Model.Pcolors[iPolyIdx].A / 255.0f);
 
-                        glBegin(glDrawMode.GL_TRIANGLES);
-                        for (vi = 0; vi < 3; vi++)
+                        glColorMaterial(GLFace.GL_FRONT_AND_BACK, GLMaterialParameter.GL_AMBIENT_AND_DIFFUSE);
+
+                        glBegin(GLDrawMode.GL_TRIANGLES);
+                        for (iVertIdx = 0; iVertIdx < 3; iVertIdx++)
                         {
-                            glNormal3f(Model.Normals[Model.Polys[pi].Normals[vi]].x,
-                                       Model.Normals[Model.Polys[pi].Normals[vi]].y,
-                                       Model.Normals[Model.Polys[pi].Normals[vi]].z);
+                            //glNormal3f(Model.Normals[Model.Polys[iPolyIdx].Normals[iVertIdx]].x,
+                            //           Model.Normals[Model.Polys[iPolyIdx].Normals[iVertIdx]].y,
+                            //           Model.Normals[Model.Polys[iPolyIdx].Normals[iVertIdx]].z);
 
-                            glVertex3f(Model.Verts[Model.Polys[pi].Verts[vi] + Model.Groups[gi].offsetVert].x,
-                                       Model.Verts[Model.Polys[pi].Verts[vi] + Model.Groups[gi].offsetVert].y,
-                                       Model.Verts[Model.Polys[pi].Verts[vi] + Model.Groups[gi].offsetVert].z);
+                            glNormal3f(Model.Normals[Model.NormalIndex[Model.Polys[iPolyIdx].Verts[iVertIdx] +
+                                                                       Model.Groups[iGroupIdx].offsetVert]].x,
+                                       Model.Normals[Model.NormalIndex[Model.Polys[iPolyIdx].Verts[iVertIdx] +
+                                                                       Model.Groups[iGroupIdx].offsetVert]].y,
+                                       Model.Normals[Model.NormalIndex[Model.Polys[iPolyIdx].Verts[iVertIdx] +
+                                                                       Model.Groups[iGroupIdx].offsetVert]].z);
+
+                            glVertex3f(Model.Verts[Model.Polys[iPolyIdx].Verts[iVertIdx] + 
+                                                   Model.Groups[iGroupIdx].offsetVert].x,
+                                       Model.Verts[Model.Polys[iPolyIdx].Verts[iVertIdx] + 
+                                                   Model.Groups[iGroupIdx].offsetVert].y,
+                                       Model.Verts[Model.Polys[iPolyIdx].Verts[iVertIdx] + 
+                                                   Model.Groups[iGroupIdx].offsetVert].z);
                         }
                         glEnd();
                     }
@@ -1730,7 +1756,8 @@ namespace KimeraCS
 
                 // Let's try here to render the normals
                 if (bShowVertexNormals || bShowFaceNormals)
-                    ShowNormals(Model.Groups[gi], Model.Polys, Model.Verts, Model.Normals);
+                    ShowNormals(Model.Groups[iGroupIdx], Model.Polys, Model.Verts, 
+                                Model.Normals, Model.NormalIndex);
             }
 
             //  glPopMatrix();  -- Commented in KimeraVB6
@@ -1738,7 +1765,7 @@ namespace KimeraCS
 
         public static void DrawPModelMesh(PModel Model)
         {
-            int gi, pi, vi;
+            int iGroupIdx, iPolyIdx, iVertIdx;
 
             // -- Commented in KimeraVB6
             //  glMatrixMode GL_MODELVIEW
@@ -1751,44 +1778,49 @@ namespace KimeraCS
             //      glTranslatef .RepositionX, .RepositionY, .RepositionZ
             //  End With
 
-            glPolygonMode(glFace.GL_FRONT, glPolygon.GL_LINE);
-            glPolygonMode(glFace.GL_BACK, glPolygon.GL_LINE);
+            glPolygonMode(GLFace.GL_FRONT, GLPolygon.GL_LINE);
+            glPolygonMode(GLFace.GL_BACK, GLPolygon.GL_LINE);
             glColor3f(0, 0, 0);
 
-            for (gi = 0; gi < Model.Header.numGroups; gi++)
+            for (iGroupIdx = 0; iGroupIdx < Model.Header.numGroups; iGroupIdx++)
             {
 
-                if (!Model.Groups[gi].HiddenQ)
+                if (!Model.Groups[iGroupIdx].HiddenQ)
                 {
 
                     // We will apply Group update values for Reposition/Resize/Rotate.
                     double[] rot_mat = new double[16];
 
-                    glMatrixMode(glMatrixModeList.GL_MODELVIEW);
+                    glMatrixMode(GLMatrixModeList.GL_MODELVIEW);
                     glPushMatrix();
 
-                    glTranslatef(Model.Groups[gi].repGroupX,
-                                 Model.Groups[gi].repGroupY,
-                                 Model.Groups[gi].repGroupZ);
+                    glTranslatef(Model.Groups[iGroupIdx].repGroupX,
+                                 Model.Groups[iGroupIdx].repGroupY,
+                                 Model.Groups[iGroupIdx].repGroupZ);
 
-                    BuildRotationMatrixWithQuaternionsXYZ(Model.Groups[gi].rotGroupAlpha,
-                                                          Model.Groups[gi].rotGroupBeta,
-                                                          Model.Groups[gi].rotGroupGamma,
+                    BuildRotationMatrixWithQuaternionsXYZ(Model.Groups[iGroupIdx].rotGroupAlpha,
+                                                          Model.Groups[iGroupIdx].rotGroupBeta,
+                                                          Model.Groups[iGroupIdx].rotGroupGamma,
                                                           ref rot_mat);
 
                     glMultMatrixd(rot_mat);
-                    glScalef(Model.Groups[gi].rszGroupX,
-                             Model.Groups[gi].rszGroupY,
-                             Model.Groups[gi].rszGroupZ);
+                    glScalef(Model.Groups[iGroupIdx].rszGroupX,
+                             Model.Groups[iGroupIdx].rszGroupY,
+                             Model.Groups[iGroupIdx].rszGroupZ);
 
-                    for (pi = Model.Groups[gi].offsetPoly; pi < Model.Groups[gi].offsetPoly + Model.Groups[gi].numPoly; pi++)
+                    for (iPolyIdx = Model.Groups[iGroupIdx].offsetPoly; 
+                         iPolyIdx < Model.Groups[iGroupIdx].offsetPoly + Model.Groups[iGroupIdx].numPoly;
+                         iPolyIdx++)
                     {
-                        glBegin(glDrawMode.GL_TRIANGLES);
-                        for (vi = 0; vi < 3; vi++)
+                        glBegin(GLDrawMode.GL_TRIANGLES);
+                        for (iVertIdx = 0; iVertIdx < 3; iVertIdx++)
                         {
-                            glVertex3f(Model.Verts[Model.Polys[pi].Verts[vi] + Model.Groups[gi].offsetVert].x,
-                                       Model.Verts[Model.Polys[pi].Verts[vi] + Model.Groups[gi].offsetVert].y,
-                                       Model.Verts[Model.Polys[pi].Verts[vi] + Model.Groups[gi].offsetVert].z);
+                            glVertex3f(Model.Verts[Model.Polys[iPolyIdx].Verts[iVertIdx] + 
+                                                   Model.Groups[iGroupIdx].offsetVert].x,
+                                       Model.Verts[Model.Polys[iPolyIdx].Verts[iVertIdx] + 
+                                                   Model.Groups[iGroupIdx].offsetVert].y,
+                                       Model.Verts[Model.Polys[iPolyIdx].Verts[iVertIdx] + 
+                                                   Model.Groups[iGroupIdx].offsetVert].z);
                         }
                         glEnd();
                     }
@@ -1800,20 +1832,19 @@ namespace KimeraCS
             //  glPopMatrix();      -- Commented in KimeraVB6
         }
 
-        public static void KillPrecalculatedLighting(PModel Model, ref pairIB[] translationTableVertex)
+        public static void KillPrecalculatedLighting(PModel Model, ref PairIB[] translationTableVertex)
         {
-            int ci;
+            int iVColorIdx;
 
-            for (ci = 0; ci < Model.Header.numVerts; ci++)
+            for (iVColorIdx = 0; iVColorIdx < Model.Header.numVerts; iVColorIdx++)
             {
-                translationTableVertex[ci].B = 1;
+                translationTableVertex[iVColorIdx].B = 1;
             }
         }
 
-
-        public static void DrawPModelEditor(bool bEnableLighting, float rotateAlpha, float rotateBeta, float rotateGamma, PictureBox pbIn)
+        //public static void DrawPModelEditor(bool bEnableLighting, float rotateAlpha, float rotateBeta, float rotateGamma, PictureBox pbIn)
+        public static void DrawPModelEditor(bool bEnableLighting, PictureBox pbIn)
         {
-            double[] rot_mat = new double[16];
 
             Point3D p_min = new Point3D();
             Point3D p_max = new Point3D();
@@ -1832,7 +1863,7 @@ namespace KimeraCS
                             alphaPE, betaPE, gammaPE,
                             rszXPE, rszYPE, rszZPE);
 
-            glMatrixMode(glMatrixModeList.GL_MODELVIEW);
+            glMatrixMode(GLMatrixModeList.GL_MODELVIEW);
             glPushMatrix();
 
             //ConcatenateCameraModelView(repXPE, repYPE, repZPE,
@@ -1843,20 +1874,20 @@ namespace KimeraCS
             {
                 float modelDiameterNormalized;
 
-                glDisable(glCapability.GL_LIGHT0);
-                glDisable(glCapability.GL_LIGHT1);
-                glDisable(glCapability.GL_LIGHT2);
-                glDisable(glCapability.GL_LIGHT3);
+                glDisable(GLCapability.GL_LIGHT0);
+                glDisable(GLCapability.GL_LIGHT1);
+                glDisable(GLCapability.GL_LIGHT2);
+                glDisable(GLCapability.GL_LIGHT3);
 
-                ComputePModelBoundingBox(frmPEditor.EditedPModel, ref p_min, ref p_max);
-                modelDiameterNormalized = (-2 * ComputeSceneRadius(p_min, p_max)) / frmPEditor.LIGHT_STEPS;
+                ComputePModelBoundingBox(EditedPModel, ref p_min, ref p_max);
+                modelDiameterNormalized = (-2 * ComputeSceneRadius(p_min, p_max)) / FrmPEditor.LIGHT_STEPS;
 
-                SetLighting(glCapability.GL_LIGHT0, modelDiameterNormalized * frmPEditor.iLightX,
-                                                    modelDiameterNormalized * frmPEditor.iLightY,
-                                                    modelDiameterNormalized * frmPEditor.iLightZ,
+                SetLighting(GLCapability.GL_LIGHT0, modelDiameterNormalized * iLightX,
+                                                    modelDiameterNormalized * iLightY,
+                                                    modelDiameterNormalized * iLightZ,
                                                     1, 1, 1, false);
             }
-            else glDisable(glCapability.GL_LIGHTING);
+            else glDisable(GLCapability.GL_LIGHTING);
 
             SetDefaultOGLRenderState();
 
@@ -1867,10 +1898,10 @@ namespace KimeraCS
                     break;
 
                 case K_PCOLORS:
-                    glEnable(glCapability.GL_POLYGON_OFFSET_FILL);
+                    glEnable(GLCapability.GL_POLYGON_OFFSET_FILL);
                     glPolygonOffset(1, 1);
-                    DrawPModelPolys(frmPEditor.EditedPModel);
-                    glDisable(glCapability.GL_POLYGON_OFFSET_FILL);
+                    DrawPModelPolys(EditedPModel);
+                    glDisable(GLCapability.GL_POLYGON_OFFSET_FILL);
 
                     DrawPModelMesh(EditedPModel);
                     break;
@@ -1893,7 +1924,7 @@ namespace KimeraCS
         //    //SetCameraPModel(EditedPModel, panX, panY, panZ + DIST,
         //    //                alpha, beta, gamma, 1, 1, 1);
 
-        //    //glMatrixMode(glMatrixModeList.GL_MODELVIEW);
+        //    //glMatrixMode(GLMatrixModeList.GL_MODELVIEW);
         //    //glPushMatrix();
 
         //    //ConcatenateCameraModelView(repX, repY, repZ,
@@ -1903,7 +1934,7 @@ namespace KimeraCS
         //    SetCameraPModel(EditedPModel, frmPEditor.panX, frmPEditor.panY, frmPEditor.panZ + frmPEditor.DIST,
         //                    frmPEditor.alpha, frmPEditor.beta, frmPEditor.gamma, 1, 1, 1);
 
-        //    glMatrixMode(glMatrixModeList.GL_MODELVIEW);
+        //    glMatrixMode(GLMatrixModeList.GL_MODELVIEW);
         //    glPushMatrix();
 
         //    ConcatenateCameraModelView(repX, repY, repZ,
@@ -1916,20 +1947,20 @@ namespace KimeraCS
         //        Point3D p_max = new Point3D();
         //        float modelDiameterNormalized;
 
-        //        glDisable(glCapability.GL_LIGHT0);
-        //        glDisable(glCapability.GL_LIGHT1);
-        //        glDisable(glCapability.GL_LIGHT2);
-        //        glDisable(glCapability.GL_LIGHT3);
+        //        glDisable(GLCapability.GL_LIGHT0);
+        //        glDisable(GLCapability.GL_LIGHT1);
+        //        glDisable(GLCapability.GL_LIGHT2);
+        //        glDisable(GLCapability.GL_LIGHT3);
 
         //        ComputePModelBoundingBox(EditedPModel, ref p_min, ref p_max);
         //        modelDiameterNormalized = (-2 * ComputeSceneRadius(p_min, p_max)) / frmPEditor.LIGHT_STEPS;
 
-        //        SetLighting(glCapability.GL_LIGHT0, modelDiameterNormalized * frmPEdit.hsbLightX.Value,
+        //        SetLighting(GLCapability.GL_LIGHT0, modelDiameterNormalized * frmPEdit.hsbLightX.Value,
         //                                            modelDiameterNormalized * frmPEdit.hsbLightY.Value,
         //                                            modelDiameterNormalized * frmPEdit.hsbLightZ.Value,
         //                                            1, 1, 1, false);
         //    }
-        //    else glDisable(glCapability.GL_LIGHTING);
+        //    else glDisable(GLCapability.GL_LIGHTING);
 
         //    SetDefaultOGLRenderState();
 
@@ -1940,10 +1971,10 @@ namespace KimeraCS
         //            break;
 
         //        case K_PCOLORS:
-        //            glEnable(glCapability.GL_POLYGON_OFFSET_FILL);
+        //            glEnable(GLCapability.GL_POLYGON_OFFSET_FILL);
         //            glPolygonOffset(1, 1);
         //            DrawPModelPolys(EditedPModel);
-        //            glDisable(glCapability.GL_POLYGON_OFFSET_FILL);
+        //            glDisable(GLCapability.GL_POLYGON_OFFSET_FILL);
 
         //            DrawPModelMesh(EditedPModel);
         //            break;
@@ -1958,19 +1989,21 @@ namespace KimeraCS
         //    //glPopMatrix();
         //}
 
-        public static int GetEqualGroupVertices(PModel Model, int iVertIdx, ref List<int> lstVerts)
+        public static int GetEqualGroupVertices(PModel Model, int iActualVertIdx, ref List<int> lstVerts)
         {
-            int vi, iGroupIdx;
+            int iGroupIdx, iVertIdx;
             Point3D tmpUP3DVert;
 
-            tmpUP3DVert = Model.Verts[iVertIdx];
-            iGroupIdx = GetVertexGroup(Model, iVertIdx);
+            tmpUP3DVert = Model.Verts[iActualVertIdx];
+            iGroupIdx = GetVertexGroup(Model, iActualVertIdx);
 
-            for (vi = Model.Groups[iGroupIdx].offsetVert; vi < Model.Groups[iGroupIdx].offsetVert + Model.Groups[iGroupIdx].numVert; vi++)
+            for (iVertIdx = Model.Groups[iGroupIdx].offsetVert; 
+                 iVertIdx < Model.Groups[iGroupIdx].offsetVert + Model.Groups[iGroupIdx].numVert;
+                 iVertIdx++)
             {
-                if (ComparePoints3D(Model.Verts[vi], tmpUP3DVert))
+                if (ComparePoints3D(Model.Verts[iVertIdx], tmpUP3DVert))
                 {
-                    lstVerts.Add(vi);
+                    lstVerts.Add(iVertIdx);
                     //  Debug.Print "Intended("; n_verts; ")"; Str$(vi)
                 }
             }
@@ -1983,7 +2016,7 @@ namespace KimeraCS
             int iAddVertexResult = -1;
             //  -------- Warning! Causes the Normals to be inconsistent if lights are disabled.------------------
             //  --------------------------------Must call ComputeNormals ----------------------------------------
-            int vi, ni, tci, baseVerts, baseNormals, baseTexCoords;
+            int iVertIdx, iNormalIdx, iTexCoordIdx, baseVerts, baseNormals, baseTexCoords;
             int iNextGroup;
 
             Model.Header.numVerts++;
@@ -2009,33 +2042,33 @@ namespace KimeraCS
                 //baseVerts = Model.Groups[iGroupIdx + 1].offsetVert;
                 baseVerts = Model.Groups[iNextGroup].offsetVert;
 
-                for (vi = Model.Header.numVerts - 1; vi >= baseVerts; vi--)
+                for (iVertIdx = Model.Header.numVerts - 1; iVertIdx >= baseVerts; iVertIdx--)
                 {
-                    Model.Verts[vi] = Model.Verts[vi - 1];
-                    Model.Vcolors[vi] = Model.Vcolors[vi - 1];
+                    Model.Verts[iVertIdx] = Model.Verts[iVertIdx - 1];
+                    Model.Vcolors[iVertIdx] = Model.Vcolors[iVertIdx - 1];
                 }
+
+                //if (glIsEnabled(GLCapability.GL_LIGHTING))
+                //{
+                if (Model.Groups[iGroupIdx].texFlag == 1)
+                    {
+                        //baseNormals = Model.Groups[iGroupIdx + 1].offsetVert;
+                        baseNormals = Model.Groups[iNextGroup].offsetVert;
+
+                        for (iNormalIdx = Model.Header.numNormals - 1; iNormalIdx >= baseNormals; iNormalIdx--)
+                        {
+                            Model.Normals[iNormalIdx] = Model.Normals[iNormalIdx - 1];
+                        }
+                    }
+                //}
 
                 if (Model.Groups[iGroupIdx].texFlag == 1)
                 {
                     baseTexCoords = Model.Groups[iGroupIdx].offsetTex + Model.Groups[iGroupIdx].numVert;
 
-                    for (tci = Model.Header.numTexCs - 1; tci >= baseTexCoords; tci--)
+                    for (iTexCoordIdx = Model.Header.numTexCs - 1; iTexCoordIdx >= baseTexCoords; iTexCoordIdx--)
                     {
-                        Model.TexCoords[tci] = Model.TexCoords[tci - 1];
-                    }
-                }
-
-                if (glIsEnabled(glCapability.GL_LIGHTING))
-                {
-                    if (Model.Groups[iGroupIdx].texFlag == 1)
-                    {
-                        //baseNormals = Model.Groups[iGroupIdx + 1].offsetVert;
-                        baseNormals = Model.Groups[iNextGroup].offsetVert;
-
-                        for (ni = Model.Header.numNormals - 1; ni >= baseNormals; ni--)
-                        {
-                            Model.Normals[ni] = Model.Normals[ni - 1];
-                        }
+                        Model.TexCoords[iTexCoordIdx] = Model.TexCoords[iTexCoordIdx - 1];
                     }
                 }
 
@@ -2050,16 +2083,7 @@ namespace KimeraCS
 
                     iNextGroup = GetNextGroup(Model, iNextGroup);
                 }
-                //for (gi = iGroupIdx + 1; gi < Model.Header.numGroups; gi++)
-                //{
-                //    Model.Groups[gi].offsetVert++;
 
-                //    if (Model.Groups[iGroupIdx].texFlag == 1 && Model.Groups[gi].texFlag == 1)
-                //    {
-                //        Model.Groups[gi].offsetTex++;
-                //    }
-
-                //}
             }
 
             if (iGroupIdx < Model.Header.numGroups)
@@ -2073,56 +2097,51 @@ namespace KimeraCS
             return iAddVertexResult;
         }
 
-        public static int PaintVertex(ref PModel Model, int iGroupIdx, int iVertIdx, 
+        public static int PaintVertex(ref PModel Model, int iGroupIdx, int iPolyIdx, int iVertIdx,
                                       byte bR, byte bG, byte bB, bool bTextured)
         {
-            List<int> lstVerts = new List<int>();
+
             int iPaintVertexResult = -1;
 
             Point3D tmpVert;
             Color tmpColor;
 
-            if (Model.Vcolors[iVertIdx + Model.Groups[iGroupIdx].offsetVert].R == bR &&
-                Model.Vcolors[iVertIdx + Model.Groups[iGroupIdx].offsetVert].G == bG &&
-                Model.Vcolors[iVertIdx + Model.Groups[iGroupIdx].offsetVert].B == bB)
+            if (Model.Vcolors[Model.Polys[iPolyIdx].Verts[iVertIdx] + 
+                              Model.Groups[iGroupIdx].offsetVert].R == bR &&
+                Model.Vcolors[Model.Polys[iPolyIdx].Verts[iVertIdx] +
+                              Model.Groups[iGroupIdx].offsetVert].G == bG &&
+                Model.Vcolors[Model.Polys[iPolyIdx].Verts[iVertIdx] +
+                              Model.Groups[iGroupIdx].offsetVert].B == bB)
                         iPaintVertexResult = iVertIdx;
 
             if (iPaintVertexResult == -1)
             {
-                //GetEqualGroupVertices(Model, iVertIdx + Model.Groups[iGroupIdx].offsetVert, ref lstVerts);
-                //foreach (int itmVert in lstVerts)
-                //{
-                //    //Debug.Print "Found("; vi; ")"; v_list(vi)
-                //    if (Model.Vcolors[itmVert].R == bR &&
-                //        Model.Vcolors[itmVert].G == bG &&
-                //        Model.Vcolors[itmVert].B == bB)
-                //    {
-                //        iPaintVertexResult = itmVert - Model.Groups[iGroupIdx].offsetVert;
-                //        break;
-                //    }
-                //}
 
-                //if (iPaintVertexResult == -1)
-                //{
-                    tmpVert.x = Model.Verts[iVertIdx + Model.Groups[iGroupIdx].offsetVert].x;
-                    tmpVert.y = Model.Verts[iVertIdx + Model.Groups[iGroupIdx].offsetVert].y;
-                    tmpVert.z = Model.Verts[iVertIdx + Model.Groups[iGroupIdx].offsetVert].z;
+                tmpVert.x = Model.Verts[Model.Polys[iPolyIdx].Verts[iVertIdx] +
+                                        Model.Groups[iGroupIdx].offsetVert].x;
+                tmpVert.y = Model.Verts[Model.Polys[iPolyIdx].Verts[iVertIdx] +
+                                        Model.Groups[iGroupIdx].offsetVert].y;
+                tmpVert.z = Model.Verts[Model.Polys[iPolyIdx].Verts[iVertIdx] +
+                                        Model.Groups[iGroupIdx].offsetVert].z;
 
-                    tmpColor = Color.FromArgb(255, bR, bG, bB);
+                tmpColor = Color.FromArgb(255, bR, bG, bB);
 
-                    iPaintVertexResult = AddPaintVertex(ref Model, iGroupIdx, tmpVert, tmpColor) - Model.Groups[iGroupIdx].offsetVert;
+                iPaintVertexResult = AddPaintVertex(ref Model, iGroupIdx, tmpVert, tmpColor) - Model.Groups[iGroupIdx].offsetVert;
 
-                    Model.Normals[iPaintVertexResult] = 
-                        new Point3D(Model.Normals[iVertIdx + Model.Groups[iGroupIdx].offsetVert].x,
-                                    Model.Normals[iVertIdx + Model.Groups[iGroupIdx].offsetVert].y,
-                                    Model.Normals[iVertIdx + Model.Groups[iGroupIdx].offsetVert].z);
+                Model.Normals[Model.NormalIndex[iPaintVertexResult]] =
+                    new Point3D(Model.Normals[Model.NormalIndex[Model.Polys[iPolyIdx].Verts[iVertIdx]]+
+                                                                Model.Groups[iGroupIdx].offsetVert].x,
+                                Model.Normals[Model.NormalIndex[Model.Polys[iPolyIdx].Verts[iVertIdx]] +
+                                                                Model.Groups[iGroupIdx].offsetVert].y,
+                                Model.Normals[Model.NormalIndex[Model.Polys[iPolyIdx].Verts[iVertIdx]] +
+                                                                Model.Groups[iGroupIdx].offsetVert].z);
 
-                    if (bTextured)
-                    {
-                        Model.TexCoords[Model.Groups[iGroupIdx].offsetTex + iPaintVertexResult] = 
-                            new Point2D(Model.TexCoords[iVertIdx + Model.Groups[iGroupIdx].offsetTex].x,
-                                        Model.TexCoords[iVertIdx + Model.Groups[iGroupIdx].offsetTex].y);
-                    }
+                if (bTextured)
+                {
+                    Model.TexCoords[Model.Groups[iGroupIdx].offsetTex + iPaintVertexResult] = 
+                        new Point2D(Model.TexCoords[iVertIdx + Model.Groups[iGroupIdx].offsetTex].x,
+                                    Model.TexCoords[iVertIdx + Model.Groups[iGroupIdx].offsetTex].y);
+                }
 
                 //    // -- Commented in KimeraVB6
                 //    // Model.Normals[iPaintVertexResult + Model.Groups[iGroupIdx].offsetVert] = Model.Normals[iVertIdx];
@@ -2140,44 +2159,43 @@ namespace KimeraCS
         //  -------*Can causes the Normals to be inconsistent (call ComputeNormals).--
         //  -------*Can causes inconsistent edges (call ComputeEdges).----------------
         //  -------*Can cause unused vertices (call KillUnusedVertices).--------------
-        public static void PaintPolygon(ref PModel Model, int pIndex, byte bR, byte bG, byte bB)
+        public static void PaintPolygon(ref PModel Model, int iPolyIdx, byte bR, byte bG, byte bB)
         {
-            int iGroupIdx, vi;
+            int iGroupIdx, iVertIdx;
 
-            iGroupIdx = GetPolygonGroup(Model, pIndex);
+            iGroupIdx = GetPolygonGroup(Model, iPolyIdx);
 
-            for (vi = 0; vi < 3; vi++)
+            for (iVertIdx = 0; iVertIdx < 3; iVertIdx++)
             {
-                Model.Polys[pIndex].Verts[vi] = (short)PaintVertex(ref Model, iGroupIdx, Model.Polys[pIndex].Verts[vi],
-                                                                   bR, bG, bB,
-                                                                   Model.Groups[iGroupIdx].texFlag == 1);
+                Model.Polys[iPolyIdx].Verts[iVertIdx] = 
+                    (short)PaintVertex(ref Model, iGroupIdx, iPolyIdx, iVertIdx, bR, bG, bB,
+                                       Model.Groups[iGroupIdx].texFlag == 1);
                 //  'Debug.Print "Vert(:", .Verts(vi), ",", Group, ")", obj.Verts(.Verts(vi) + obj.Groups(Group).offVert).x, obj.Verts(.Verts(vi) + obj.Groups(Group).offVert).y, obj.Verts(.Verts(vi) + obj.Groups(Group).offVert).z
             }
 
-            //Model.Pcolors[pIndex] = Color.FromArgb(255, bR, bG, bB);
-            Model.Pcolors[pIndex] = Color.FromArgb(Model.Pcolors[pIndex].A, bR, bG, bB);
+            Model.Pcolors[iPolyIdx] = Color.FromArgb(Model.Pcolors[iPolyIdx].A, bR, bG, bB);
         }
 
         public static Color ComputePolyColor(PModel Model, int iPolyIdx)
         {
-            int vi, iGroupIdx;
-            int tmpA = 0, tmpR = 0, tmpG = 0, tmpB = 0;
+            int iGroupIdx, iVertIdx;
+            int iTmpA = 0, iTmpR = 0, iTmpG = 0, iTmpB = 0;
 
             iGroupIdx = GetPolygonGroup(Model, iPolyIdx);
 
-            for (vi = 0; vi < 3; vi++)
+            for (iVertIdx = 0; iVertIdx < 3; iVertIdx++)
             {
-                //tmpA = (byte)(tmpA + Model.Vcolors[Model.Polys[iPolyIdx].Verts[vi] + Model.Groups[iGroupIdx].offsetVert].A);
-                //tmpR = (byte)(tmpR + Model.Vcolors[Model.Polys[iPolyIdx].Verts[vi] + Model.Groups[iGroupIdx].offsetVert].R);
-                //tmpG = (byte)(tmpG + Model.Vcolors[Model.Polys[iPolyIdx].Verts[vi] + Model.Groups[iGroupIdx].offsetVert].G);
-                //tmpB = (byte)(tmpB + Model.Vcolors[Model.Polys[iPolyIdx].Verts[vi] + Model.Groups[iGroupIdx].offsetVert].B);
-                tmpA += Model.Vcolors[Model.Polys[iPolyIdx].Verts[vi] + Model.Groups[iGroupIdx].offsetVert].A;
-                tmpR += Model.Vcolors[Model.Polys[iPolyIdx].Verts[vi] + Model.Groups[iGroupIdx].offsetVert].R;
-                tmpG += Model.Vcolors[Model.Polys[iPolyIdx].Verts[vi] + Model.Groups[iGroupIdx].offsetVert].G;
-                tmpB += Model.Vcolors[Model.Polys[iPolyIdx].Verts[vi] + Model.Groups[iGroupIdx].offsetVert].B;
+                iTmpA += Model.Vcolors[Model.Polys[iPolyIdx].Verts[iVertIdx] + 
+                                       Model.Groups[iGroupIdx].offsetVert].A;
+                iTmpR += Model.Vcolors[Model.Polys[iPolyIdx].Verts[iVertIdx] + 
+                                       Model.Groups[iGroupIdx].offsetVert].R;
+                iTmpG += Model.Vcolors[Model.Polys[iPolyIdx].Verts[iVertIdx] + 
+                                       Model.Groups[iGroupIdx].offsetVert].G;
+                iTmpB += Model.Vcolors[Model.Polys[iPolyIdx].Verts[iVertIdx] + 
+                                       Model.Groups[iGroupIdx].offsetVert].B;
             }
 
-            return Color.FromArgb(tmpA / 3, tmpR / 3, tmpG / 3, tmpB / 3);
+            return Color.FromArgb(iTmpA / 3, iTmpR / 3, iTmpG / 3, iTmpB / 3);
         }
 
 
