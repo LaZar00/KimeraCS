@@ -16,6 +16,7 @@ namespace KimeraCS
 
     using static FF7TEXTexture;
 
+    using static Utils;
     using static OpenGL32;
     using static GDI32;
     using static FileTools;
@@ -105,8 +106,8 @@ namespace KimeraCS
                     // Let's get the num textures
                     numTextures = Int32.Parse(rsdString[rsdNTEXpos].Split('=')[1]);
 
-                    glTexParameterf(glTextureTarget.GL_TEXTURE_2D, glTextureParameter.GL_TEXTURE_MAG_FILTER, (float)glTextureMagFilter.GL_LINEAR);
-                    glTexParameterf(glTextureTarget.GL_TEXTURE_2D, glTextureParameter.GL_TEXTURE_MIN_FILTER, (float)glTextureMagFilter.GL_LINEAR);
+                    glTexParameterf(GLTextureTarget.GL_TEXTURE_2D, GLTextureParameter.GL_TEXTURE_MAG_FILTER, (float)GLTextureMagFilter.GL_LINEAR);
+                    glTexParameterf(GLTextureTarget.GL_TEXTURE_2D, GLTextureParameter.GL_TEXTURE_MIN_FILTER, (float)GLTextureMagFilter.GL_LINEAR);
 
                     for (ti = 0; ti < numTextures; ti++)
                     {
@@ -114,10 +115,13 @@ namespace KimeraCS
                         while (rsdString[rsdNTEXpos].Length == 0 || rsdString[rsdNTEXpos][0] != 'T') rsdNTEXpos++;
 
                         // Prepare itmTextureTEX var
-                        itmTextureTEX = new TEX();
-
-                        // Get each texture entry in RSD (TEX[n] entries)
-                        itmTextureTEX.TEXfileName = (rsdString[rsdNTEXpos].Split('=')[1]).Substring(0, rsdString[rsdNTEXpos].Split('=')[1].IndexOf('.')) + ".TEX";
+                        itmTextureTEX = new TEX()
+                        {
+                            // Get each texture entry in RSD (TEX[n] entries)
+                            TEXfileName = rsdString[rsdNTEXpos].Split('=')[1].
+                                                Substring(0, rsdString[rsdNTEXpos].
+                                                Split('=')[1].IndexOf('.')) + ".TEX",
+                        };
 
                         // Position for next "TEX[n]" line
                         rsdNTEXpos++;
@@ -158,14 +162,16 @@ namespace KimeraCS
         //  ---------------------------------------------------------------------------------------------------
         //  ============================================= SAVING ==============================================
         //  ---------------------------------------------------------------------------------------------------
-        public static void MergeFieldRSDResources(ref FieldRSDResource fRSDResourceOut, FieldRSDResource fRSDResourceIn)
+        public static void MergeFieldRSDResources(ref FieldRSDResource fRSDResourceOut, 
+                                                  FieldRSDResource fRSDResourceIn)
         {
-            int ti;
+            int iTextureIdx;
 
             MergePModels(ref fRSDResourceOut.Model, fRSDResourceIn.Model);
 
             // Merge textures
-            for (ti = 0; ti < fRSDResourceIn.numTextures; ti++) fRSDResourceOut.textures.Add(fRSDResourceIn.textures[ti]);
+            for (iTextureIdx = 0; iTextureIdx < fRSDResourceIn.numTextures; iTextureIdx++) 
+                fRSDResourceOut.textures.Add(fRSDResourceIn.textures[iTextureIdx]);
 
             fRSDResourceOut.numTextures += fRSDResourceIn.numTextures;
         }
@@ -224,7 +230,7 @@ namespace KimeraCS
                     {
                         tmpPModel = infBone.fRSDResources[0].Model;
                         WriteGlobalPModel(ref tmpPModel, 
-                            strGlobalPathSaveSkeletonFolder + "\\" + tmpPModel.fileName.ToUpper());
+                            Path.GetDirectoryName(strFullFileName) + "\\" + tmpPModel.fileName.ToUpper());
                     }
                 }
 
@@ -232,6 +238,8 @@ namespace KimeraCS
             }
             catch (Exception ex)
             {
+                strGlobalExceptionMessage = ex.Message;
+
                 iWriteRSDResourceResult = -1;
             }
 
@@ -269,13 +277,14 @@ namespace KimeraCS
         //  --------------------------------------------------------------------------------------------------
         public static FieldRSDResource CopyRSDResource(FieldRSDResource fRSDResourceIn)
         {
-            FieldRSDResource tmpFieldRSDResource = new FieldRSDResource();
-
-            tmpFieldRSDResource.ID = fRSDResourceIn.ID;
-            tmpFieldRSDResource.numTextures = fRSDResourceIn.numTextures;
-            tmpFieldRSDResource.res_file = fRSDResourceIn.res_file;
-            tmpFieldRSDResource.textures = fRSDResourceIn.textures;
-            tmpFieldRSDResource.Model = CopyPModel(fRSDResourceIn.Model);
+            FieldRSDResource tmpFieldRSDResource = new FieldRSDResource()
+            {
+                ID = fRSDResourceIn.ID,
+                numTextures = fRSDResourceIn.numTextures,
+                res_file = fRSDResourceIn.res_file,
+                textures = fRSDResourceIn.textures,
+                Model = CopyPModel(fRSDResourceIn.Model),
+            };
 
             return tmpFieldRSDResource;
         }
