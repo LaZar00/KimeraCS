@@ -17,7 +17,7 @@ namespace KimeraCS
 {
     using Defines;
 
-    using static frmSkeletonEditor;
+    using static FrmSkeletonEditor;
 
     using static FF7Skeleton;
     using static FF7FieldSkeleton;
@@ -38,10 +38,10 @@ namespace KimeraCS
     using static User32;
     using static GDI32;
 
-    public partial class frmPEditor : Form
+    public partial class FrmPEditor : Form
     {
 
-        private frmSkeletonEditor frmSkelEdit;
+        readonly private FrmSkeletonEditor frmSkelEdit;
 
         // Const
         private const int K_PAINT = 0;
@@ -110,8 +110,8 @@ namespace KimeraCS
         public static double dblPickedVertexZ;
         List<int> lstPickedVertices = new List<int>();
         int[] lstAdjacentPolys;
-        stIntVector[] lstAdjacentVerts;
-        stIntVector[] lstAdjacentAdjacentPolys;
+        STIntVector[] lstAdjacentVerts;
+        STIntVector[] lstAdjacentAdjacentPolys;
 
         public static bool loadedPModel;
         public static bool bLoading;
@@ -129,8 +129,8 @@ namespace KimeraCS
 
         // Palette
         public static List<Color> colorTable = new List<Color>();
-        public static pairIB[] translationTablePolys;
-        public static pairIB[] translationTableVertex;
+        public static PairIB[] translationTablePolys;
+        public static PairIB[] translationTableVertex;
         public static int iSelectedColor, iBrightnessFactor;
         public static byte iThreshold;
         public DirectBitmap bmpFullGradientPalette;
@@ -144,10 +144,10 @@ namespace KimeraCS
         public static bool bGlobalChangeGroup;
 
         // GroupPropierties vars
-        public frmGroupProperties frmGroupProp;
+        public FrmGroupProperties frmGroupProp;
 
 
-        public frmPEditor(frmSkeletonEditor frmSkelEdit, PModel ModelIn)
+        public FrmPEditor(FrmSkeletonEditor frmSkelEdit, PModel ModelIn)
         {
             InitializeComponent();
 
@@ -163,18 +163,18 @@ namespace KimeraCS
         public void SetOGLEditorSettings()
         {
             glClearDepth(1.0f);
-            glDepthFunc(glFunc.GL_LEQUAL);
-            glEnable(glCapability.GL_DEPTH_TEST);
-            glEnable(glCapability.GL_BLEND);
-            glEnable(glCapability.GL_ALPHA_TEST);
-            glBlendFunc(glBlendFuncFactor.GL_SRC_ALPHA, glBlendFuncFactor.GL_ONE_MINUS_SRC_ALPHA);
+            glDepthFunc(GLFunc.GL_LEQUAL);
+            glEnable(GLCapability.GL_DEPTH_TEST);
+            glEnable(GLCapability.GL_BLEND);
+            glEnable(GLCapability.GL_ALPHA_TEST);
+            glBlendFunc(GLBlendFuncFactor.GL_SRC_ALPHA, GLBlendFuncFactor.GL_ONE_MINUS_SRC_ALPHA);
         }
         /////////////////////////////////////////////////////////////
 
         /////////////////////////////////////////////////////////////
         // ToolTip Helpers:
         // Create the ToolTip and associate with the Form container.
-        ToolTip toolTip1 = new ToolTip();
+        readonly ToolTip toolTip1 = new ToolTip();
 
         public void DefineToolTips()
         {
@@ -199,7 +199,7 @@ namespace KimeraCS
             toolTip1.SetToolTip(btnResetBrightness, "Reset Brightness");
         }
 
-        private void frmPEditor_Resize(object sender, EventArgs e)
+        private void FrmPEditor_Resize(object sender, EventArgs e)
         {            
             if (loadedPModel && this.Visible && !bLoading)
             {
@@ -210,7 +210,7 @@ namespace KimeraCS
 
                     // We can redraw the model in panel
                     //panelEditorPModel.Update();
-                    panelEditorPModel_Paint(null, null);
+                    PanelEditorPModel_Paint(null, null);
                 }
 
                 // Assign this if visible
@@ -220,7 +220,7 @@ namespace KimeraCS
             }
         }
 
-        private void frmPEditor_KeyDown(object sender, KeyEventArgs e)
+        private void FrmPEditor_KeyDown(object sender, KeyEventArgs e)
         {
             DoNotAddPEStateQ = false;
 
@@ -262,20 +262,20 @@ namespace KimeraCS
 
 
             panelEditorPModel.Update();
-            panelEditorPModel_Paint(null, null);
+            PanelEditorPModel_Paint(null, null);
         }
 
-        private void frmPEditor_KeyUp(object sender, KeyEventArgs e)
+        private void FrmPEditor_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Shift || e.KeyCode == Keys.ShiftKey) shiftPressedQ = 0;
 
             if (e.KeyCode == Keys.Control || e.KeyCode == Keys.ControlKey) controlPressedQ = false;
 
             panelEditorPModel.Update();
-            panelEditorPModel_Paint(null, null);
+            PanelEditorPModel_Paint(null, null);
         }
 
-        private void chkEnableLighting_CheckedChanged(object sender, EventArgs e)
+        private void ChkEnableLighting_CheckedChanged(object sender, EventArgs e)
         {
             // Change icon and enable scrolls
             if (chkEnableLighting.Checked)
@@ -298,25 +298,25 @@ namespace KimeraCS
             // Do processing
             if (chkEnableLighting.Checked && loadedPModel)
             {
-                glEnable(glCapability.GL_NORMALIZE);
+                glEnable(GLCapability.GL_NORMALIZE);
                 ComputeNormals(ref EditedPModel);
             }
-            else glDisable(glCapability.GL_NORMALIZE);
+            else glDisable(GLCapability.GL_NORMALIZE);
 
-            panelEditorPModel_Paint(null, null);
+            PanelEditorPModel_Paint(null, null);
         }
 
-        private void chkShowAxes_Click(object sender, EventArgs e)
+        private void ChkShowAxes_Click(object sender, EventArgs e)
         {
-            panelEditorPModel_Paint(null, null);
+            PanelEditorPModel_Paint(null, null);
         }
 
-        private void chkShowPlane_Click(object sender, EventArgs e)
+        private void ChkShowPlane_Click(object sender, EventArgs e)
         {
-            panelEditorPModel_Paint(null, null);
+            PanelEditorPModel_Paint(null, null);
         }
 
-        private void rbMesh_Click(object sender, EventArgs e)
+        private void RbMesh_Click(object sender, EventArgs e)
         {
             drawMode = 0;
 
@@ -324,10 +324,10 @@ namespace KimeraCS
             rbPolygonColors.Checked = false;
             rbVertexColors.Checked = false;
 
-            panelEditorPModel_Paint(null, null);
+            PanelEditorPModel_Paint(null, null);
         }
 
-        private void rbPolygonColors_Click(object sender, EventArgs e)
+        private void RbPolygonColors_Click(object sender, EventArgs e)
         {
             drawMode = 1;
 
@@ -335,30 +335,30 @@ namespace KimeraCS
             rbPolygonColors.Checked = true;
             rbVertexColors.Checked = false;
 
-            panelEditorPModel_Paint(null, null);
+            PanelEditorPModel_Paint(null, null);
         }
 
-        private void rbVertexColors_Click(object sender, EventArgs e)
+        private void RbVertexColors_Click(object sender, EventArgs e)
         {
             drawMode = 2;
 
             rbMesh.Checked = false;
             rbPolygonColors.Checked = false;
             rbVertexColors.Checked = true;
-            panelEditorPModel_Paint(null, null);
+            PanelEditorPModel_Paint(null, null);
         }
 
-        private void panelEditorPModel_MouseDown(object sender, MouseEventArgs e)
+        private void PanelEditorPModel_MouseDown(object sender, MouseEventArgs e)
         {
             if (loadedPModel)
             {
                 pbMouseIsDownPE = true;
 
-                if (chkEnableLighting.Checked) glEnable(glCapability.GL_LIGHTING);
+                if (chkEnableLighting.Checked) glEnable(GLCapability.GL_LIGHTING);
 
                 //glClearColor(0.4f, 0.4f, 0.65f, 0);
                 glViewport(0, 0, panelEditorPModel.ClientRectangle.Width, panelEditorPModel.ClientRectangle.Height);
-                //glClear(glBufferMask.GL_COLOR_BUFFER_BIT | glBufferMask.GL_DEPTH_BUFFER_BIT);
+                //glClear(GLBufferMask.GL_COLOR_BUFFER_BIT | GLBufferMask.GL_DEPTH_BUFFER_BIT);
 
                 SetCameraPModel(EditedPModel, panXPE, panYPE, panZPE + DISTPE,
                                 alphaPE, betaPE, gammaPE, 1, 1, 1);
@@ -383,14 +383,14 @@ namespace KimeraCS
 
                 }
 
-                panelEditorPModel_Paint(null, null);
+                PanelEditorPModel_Paint(null, null);
 
                 x_lastPE = e.X;
                 y_lastPE = e.Y;
             }
         }
 
-        private void panelEditorPModel_MouseMove(object sender, MouseEventArgs e)
+        private void PanelEditorPModel_MouseMove(object sender, MouseEventArgs e)
         {
             if (pbMouseIsDownPE)
             {
@@ -399,7 +399,7 @@ namespace KimeraCS
 
                     glClearColor(0.4f, 0.4f, 0.65f, 0);
                     glViewport(0, 0, panelEditorPModel.ClientRectangle.Width, panelEditorPModel.ClientRectangle.Height);
-                    glClear(glBufferMask.GL_COLOR_BUFFER_BIT | glBufferMask.GL_DEPTH_BUFFER_BIT);
+                    glClear(GLBufferMask.GL_COLOR_BUFFER_BIT | GLBufferMask.GL_DEPTH_BUFFER_BIT);
 
                     SetCameraPModel(EditedPModel, panXPE, panYPE, panZPE + DISTPE,
                                     alphaPE, betaPE, gammaPE, 1, 1, 1);
@@ -427,12 +427,12 @@ namespace KimeraCS
                     x_lastPE = e.X;
                     y_lastPE = e.Y;
 
-                    panelEditorPModel_Paint(null, null);
+                    PanelEditorPModel_Paint(null, null);
                 }
             }
         }
 
-        private void panelEditorPModel_MouseUp(object sender, MouseEventArgs e)
+        private void PanelEditorPModel_MouseUp(object sender, MouseEventArgs e)
         {
             pbMouseIsDownPE = false;
 
@@ -446,68 +446,23 @@ namespace KimeraCS
             }
         }
 
-        public void panelEditorPModel_MouseWheel(object sender, MouseEventArgs e)
+        public void PanelEditorPModel_MouseWheel(object sender, MouseEventArgs e)
         {
-            //Point3D p_temp;
-            //Point3D p_temp2;
 
-            //float aux_y;
-            //float tmpDIST;
-
-            //if (ActiveForm != this) return;
-
-            //if (loadedPModel)
-            //{
-            //    tmpDIST = DISTPE;
-
-            //    if (controlPressedQ)
-            //        DISTPE = DISTPE + (e.Delta * ComputeDiameter(EditedPModel.BoundingBox)) / 10000;
-            //    else
-            //        DISTPE = DISTPE + (e.Delta * ComputeDiameter(EditedPModel.BoundingBox)) / 1000;
-
-
-            //    SetCameraModelView(panXPE, panYPE, panZPE + DISTPE, alphaPE, betaPE, gammaPE, 1, 1, 1);
-
-            //    aux_y = panYPE;
-
-            //    p_temp2 = new Point3D();
-            //    p_temp = new Point3D(x_lastPE, y_lastPE, GetDepthZ(p_temp2));
-
-            //    p_temp = GetUnProjectedCoords(p_temp);
-
-            //    panXPE = panXPE + p_temp.x;
-            //    panYPE = panYPE + p_temp.y;
-            //    panZPE = panZPE + p_temp.z;
-
-            //    p_temp.x = x_lastPE;
-            //    p_temp.y = y_lastPE;
-            //    p_temp.z = GetDepthZ(p_temp2);
-            //    p_temp = GetUnProjectedCoords(p_temp);
-
-            //    panXPE = panXPE - p_temp.x;
-            //    panYPE = panYPE - p_temp.y;
-            //    panZPE = panZPE - p_temp.z;
-
-            //}
-
-            //SetCameraModelView(panXPE, panYPE, panZPE + DISTPE, alphaPE, betaPE, gammaPE, 1, 1, 1);
-
-            //panelEditorPModel_Paint(null, null);
-
-
-            if (controlPressedQ)
-                DISTPE = DISTPE + (e.Delta * ComputeDiameter(EditedPModel.BoundingBox)) / 10000;
+             if (controlPressedQ)
+                DISTPE += e.Delta * ComputeDiameter(EditedPModel.BoundingBox) / 10000;
             else
-                DISTPE = DISTPE + (e.Delta * ComputeDiameter(EditedPModel.BoundingBox)) / 1000;
+                DISTPE += e.Delta * ComputeDiameter(EditedPModel.BoundingBox) / 1000;
 
             SetCameraModelView(panXPE, panYPE, panZPE + DISTPE, alphaPE, betaPE, gammaPE, 1, 1, 1);
 
-            panelEditorPModel_Paint(null, null);
+            PanelEditorPModel_Paint(null, null);
 
         }
 
-        public void panelEditorPModel_Paint(object sender, PaintEventArgs e)
+        public void PanelEditorPModel_Paint(object sender, PaintEventArgs e)
         {
+
             if (loadedPModel)
             {
                 if (GetOGLContext() != OGLContextPEditor)
@@ -515,9 +470,11 @@ namespace KimeraCS
 
                 SetOGLEditorSettings();
 
-                DrawPModelEditor(chkEnableLighting.Checked, 
-                                 hsbRotateAlpha.Value, hsbRotateBeta.Value, hsbRotateGamma.Value,
-                                 panelEditorPModel);
+                //DrawPModelEditor(chkEnableLighting.Checked, 
+                //                 hsbRotateAlpha.Value, hsbRotateBeta.Value, hsbRotateGamma.Value,
+                //                 panelEditorPModel);
+
+                DrawPModelEditor(chkEnableLighting.Checked, panelEditorPModel);
 
                 SetOGLEditorSettings();
 
@@ -531,52 +488,46 @@ namespace KimeraCS
                 glFlush();
                 SwapBuffers(panelEditorPModelDC);
 
-                //if (frmSkelEdit.pbIsMinimized)
-                //{
-                //    frmSkelEdit.panelModel_Paint(null, null);
-
-                //    frmSkelEdit.pbIsMinimized = false;
-                //}
             }
         }
 
-        private void nudXPlane_ValueChanged(object sender, EventArgs e)
+        private void NudXPlane_ValueChanged(object sender, EventArgs e)
         {
             planeTransformation[12] = (float)nudXPlane.Value * EditedPModel.diameter / 100;
             ComputeCurrentEquations();
-            panelEditorPModel_Paint(null, null);
+            PanelEditorPModel_Paint(null, null);
         }
 
-        private void nudXPlane_TextChanged(object sender, EventArgs e)
+        private void NudXPlane_TextChanged(object sender, EventArgs e)
         {
-            nudXPlane_ValueChanged(sender, e);
+            NudXPlane_ValueChanged(sender, e);
         }
 
-        private void nudYPlane_ValueChanged(object sender, EventArgs e)
+        private void NudYPlane_ValueChanged(object sender, EventArgs e)
         {
             planeTransformation[13] = (float)nudYPlane.Value * EditedPModel.diameter / 100;
             ComputeCurrentEquations();
-            panelEditorPModel_Paint(null, null);
+            PanelEditorPModel_Paint(null, null);
         }
 
-        private void nudYPlane_TextChanged(object sender, EventArgs e)
+        private void NudYPlane_TextChanged(object sender, EventArgs e)
         {
-            nudYPlane_ValueChanged(sender, e);
+            NudYPlane_ValueChanged(sender, e);
         }
 
-        private void nudZPlane_ValueChanged(object sender, EventArgs e)
+        private void NudZPlane_ValueChanged(object sender, EventArgs e)
         {
             planeTransformation[14] = (float)nudZPlane.Value * EditedPModel.diameter / 100;
             ComputeCurrentEquations();
-            panelEditorPModel_Paint(null, null);
+            PanelEditorPModel_Paint(null, null);
         }
 
-        private void nudZPlane_TextChanged(object sender, EventArgs e)
+        private void NudZPlane_TextChanged(object sender, EventArgs e)
         {
-            nudZPlane_ValueChanged(sender, e);
+            NudZPlane_ValueChanged(sender, e);
         }
 
-        private void nudAlphaPlane_ValueChanged(object sender, EventArgs e)
+        private void NudAlphaPlane_ValueChanged(object sender, EventArgs e)
         {
             float fDiff;
             Quaternion tmpQuat = new Quaternion();
@@ -595,15 +546,15 @@ namespace KimeraCS
             NormalizeQuaternion(ref planeRotationQuat);
 
             ComputeCurrentEquations();
-            panelEditorPModel_Paint(null, null);
+            PanelEditorPModel_Paint(null, null);
         }
 
-        private void nudAlphaPlane_TextChanged(object sender, EventArgs e)
+        private void NudAlphaPlane_TextChanged(object sender, EventArgs e)
         {
-            nudAlphaPlane_ValueChanged(sender, e);
+            NudAlphaPlane_ValueChanged(sender, e);
         }
 
-        private void nudBetaPlane_ValueChanged(object sender, EventArgs e)
+        private void NudBetaPlane_ValueChanged(object sender, EventArgs e)
         {
             float fDiff;
             Quaternion tmpQuat = new Quaternion();
@@ -622,33 +573,33 @@ namespace KimeraCS
             NormalizeQuaternion(ref planeRotationQuat);
 
             ComputeCurrentEquations();
-            panelEditorPModel_Paint(null, null);
+            PanelEditorPModel_Paint(null, null);
         }
 
-        private void nudBetaPlane_TextChanged(object sender, EventArgs e)
+        private void NudBetaPlane_TextChanged(object sender, EventArgs e)
         {
-            nudBetaPlane_ValueChanged(sender, e);
+            NudBetaPlane_ValueChanged(sender, e);
         }
 
-        private void hsbLightX_ValueChanged(object sender, EventArgs e)
+        private void HsbLightX_ValueChanged(object sender, EventArgs e)
         {
             iLightX = hsbLightX.Value;
-            panelEditorPModel_Paint(null, null);
+            PanelEditorPModel_Paint(null, null);
         }
 
-        private void hsbLightY_ValueChanged(object sender, EventArgs e)
+        private void HsbLightY_ValueChanged(object sender, EventArgs e)
         {
             iLightY = hsbLightY.Value;
-            panelEditorPModel_Paint(null, null);
+            PanelEditorPModel_Paint(null, null);
         }
 
-        private void hsbLightZ_ValueChanged(object sender, EventArgs e)
+        private void HsbLightZ_ValueChanged(object sender, EventArgs e)
         {
             iLightZ = hsbLightZ.Value;
-            panelEditorPModel_Paint(null, null);
+            PanelEditorPModel_Paint(null, null);
         }
 
-        private void hsbResizeX_ValueChanged(object sender, EventArgs e)
+        private void HsbResizeX_ValueChanged(object sender, EventArgs e)
         {
             if (loadingModifiersQ) return;
 
@@ -668,11 +619,11 @@ namespace KimeraCS
                 EditedPModel.resizeX = rszXPE;
             }
 
-            panelEditorPModel_Paint(null, null);
+            PanelEditorPModel_Paint(null, null);
             DoNotAddPEStateQ = false;
         }
 
-        private void hsbResizeY_ValueChanged(object sender, EventArgs e)
+        private void HsbResizeY_ValueChanged(object sender, EventArgs e)
         {
             if (loadingModifiersQ) return;
 
@@ -692,11 +643,11 @@ namespace KimeraCS
                 EditedPModel.resizeY = rszYPE;
             }
 
-            panelEditorPModel_Paint(null, null);
+            PanelEditorPModel_Paint(null, null);
             DoNotAddPEStateQ = false;
         }
 
-        private void hsbResizeZ_ValueChanged(object sender, EventArgs e)
+        private void HsbResizeZ_ValueChanged(object sender, EventArgs e)
         {
             if (loadingModifiersQ) return;
 
@@ -716,17 +667,15 @@ namespace KimeraCS
                 EditedPModel.resizeZ = rszZPE;
             }
 
-            panelEditorPModel_Paint(null, null);
+            PanelEditorPModel_Paint(null, null);
             DoNotAddPEStateQ = false;
         }
 
-        private void txtResizeX_TextChanged(object sender, EventArgs e)
+        private void TxtResizeX_TextChanged(object sender, EventArgs e)
         {
             if (loadingModifiersQ) return;
 
-            int iResizeX;
-
-            if (Int32.TryParse(txtResizeX.Text, out iResizeX))
+            if (Int32.TryParse(txtResizeX.Text, out int iResizeX))
             {
                 if (iResizeX < 0 || iResizeX > 500)
                 {
@@ -742,13 +691,11 @@ namespace KimeraCS
             hsbResizeX.Value = iResizeX;
         }
 
-        private void txtResizeY_TextChanged(object sender, EventArgs e)
+        private void TxtResizeY_TextChanged(object sender, EventArgs e)
         {
             if (loadingModifiersQ) return;
 
-            int iResizeY;
-
-            if (Int32.TryParse(txtResizeY.Text, out iResizeY))
+            if (Int32.TryParse(txtResizeY.Text, out int iResizeY))
             {
                 if (iResizeY < 0 || iResizeY > 500)
                 {
@@ -764,13 +711,11 @@ namespace KimeraCS
             hsbResizeY.Value = iResizeY;
         }
 
-        private void txtResizeZ_TextChanged(object sender, EventArgs e)
+        private void TxtResizeZ_TextChanged(object sender, EventArgs e)
         {
             if (loadingModifiersQ) return;
 
-            int iResizeZ;
-
-            if (Int32.TryParse(txtResizeZ.Text, out iResizeZ))
+            if (Int32.TryParse(txtResizeZ.Text, out int iResizeZ))
             {
                 if (iResizeZ < 0 || iResizeZ > 500)
                 {
@@ -786,7 +731,7 @@ namespace KimeraCS
             hsbResizeZ.Value = iResizeZ;
         }
 
-        private void hsbRepositionX_ValueChanged(object sender, EventArgs e)
+        private void HsbRepositionX_ValueChanged(object sender, EventArgs e)
         {
             if (loadingModifiersQ) return;
 
@@ -806,11 +751,11 @@ namespace KimeraCS
                 EditedPModel.repositionX = repXPE;
             }
 
-            panelEditorPModel_Paint(null, null);
+            PanelEditorPModel_Paint(null, null);
             DoNotAddPEStateQ = false;
         }
 
-        private void hsbRepositionY_ValueChanged(object sender, EventArgs e)
+        private void HsbRepositionY_ValueChanged(object sender, EventArgs e)
         {
             if (loadingModifiersQ) return;
 
@@ -830,11 +775,11 @@ namespace KimeraCS
                 EditedPModel.repositionY = repYPE;
             }
 
-            panelEditorPModel_Paint(null, null);
+            PanelEditorPModel_Paint(null, null);
             DoNotAddPEStateQ = false;
         }
 
-        private void hsbRepositionZ_ValueChanged(object sender, EventArgs e)
+        private void HsbRepositionZ_ValueChanged(object sender, EventArgs e)
         {
             if (loadingModifiersQ) return;
 
@@ -854,17 +799,15 @@ namespace KimeraCS
                 EditedPModel.repositionZ = repZPE;
             }
 
-            panelEditorPModel_Paint(null, null);
+            PanelEditorPModel_Paint(null, null);
             DoNotAddPEStateQ = false;
         }
 
-        private void txtRepositionX_TextChanged(object sender, EventArgs e)
+        private void TxtRepositionX_TextChanged(object sender, EventArgs e)
         {
             if (loadingModifiersQ) return;
 
-            int iRepositionX;
-
-            if (Int32.TryParse(txtRepositionX.Text, out iRepositionX))
+            if (Int32.TryParse(txtRepositionX.Text, out int iRepositionX))
             {
                 if (iRepositionX < -500 || iRepositionX > 500)
                 {
@@ -880,13 +823,11 @@ namespace KimeraCS
             hsbRepositionX.Value = iRepositionX;
         }
 
-        private void txtRepositionY_TextChanged(object sender, EventArgs e)
+        private void TxtRepositionY_TextChanged(object sender, EventArgs e)
         {
             if (loadingModifiersQ) return;
 
-            int iRepositionY;
-
-            if (Int32.TryParse(txtRepositionY.Text, out iRepositionY))
+            if (Int32.TryParse(txtRepositionY.Text, out int iRepositionY))
             {
                 if (iRepositionY < -500 || iRepositionY > 500)
                 {
@@ -902,13 +843,11 @@ namespace KimeraCS
             hsbRepositionY.Value = iRepositionY;
         }
 
-        private void txtRepositionZ_TextChanged(object sender, EventArgs e)
+        private void TxtRepositionZ_TextChanged(object sender, EventArgs e)
         {
             if (loadingModifiersQ) return;
 
-            int iRepositionZ;
-
-            if (Int32.TryParse(txtRepositionZ.Text, out iRepositionZ))
+            if (Int32.TryParse(txtRepositionZ.Text, out int iRepositionZ))
             {
                 if (iRepositionZ < -500 || iRepositionZ > 500)
                 {
@@ -946,32 +885,31 @@ namespace KimeraCS
             txtRotateBeta.Text = hsbRotateBeta.Value.ToString();
             txtRotateGamma.Text = hsbRotateGamma.Value.ToString();
 
-            panelEditorPModel_Paint(null, null);
+            PanelEditorPModel_Paint(null, null);
             DoNotAddPEStateQ = false;
         }
 
-        private void hsbRotateAlpha_ValueChanged(object sender, EventArgs e)
+        private void HsbRotateAlpha_ValueChanged(object sender, EventArgs e)
         {
             if (!bGlobalChangeGroup) RotationModifiersChanged();
         }
 
-        private void hsbRotateBeta_ValueChanged(object sender, EventArgs e)
+        private void HsbRotateBeta_ValueChanged(object sender, EventArgs e)
         {
             if (!bGlobalChangeGroup) RotationModifiersChanged();
         }
 
-        private void hsbRotateGamma_ValueChanged(object sender, EventArgs e)
+        private void HsbRotateGamma_ValueChanged(object sender, EventArgs e)
         {
             if (!bGlobalChangeGroup) RotationModifiersChanged();
         }
 
-        private void txtRotateAlpha_TextChanged(object sender, EventArgs e)
+        private void TxtRotateAlpha_TextChanged(object sender, EventArgs e)
         {
-            int iRotateAlpha;
 
             if (loadingModifiersQ) return;
 
-            if (Int32.TryParse(txtRotateAlpha.Text, out iRotateAlpha))
+            if (Int32.TryParse(txtRotateAlpha.Text, out int iRotateAlpha))
             {
                 if (iRotateAlpha < 0 || iRotateAlpha > 360)
                 {
@@ -987,13 +925,12 @@ namespace KimeraCS
             hsbRotateAlpha.Value = iRotateAlpha;
         }
 
-        private void txtRotateBeta_TextChanged(object sender, EventArgs e)
+        private void TxtRotateBeta_TextChanged(object sender, EventArgs e)
         {
-            int iRotateBeta;
 
             if (loadingModifiersQ) return;
 
-            if (Int32.TryParse(txtRotateBeta.Text, out iRotateBeta))
+            if (Int32.TryParse(txtRotateBeta.Text, out int iRotateBeta))
             {
                 if (iRotateBeta < 0 || iRotateBeta > 360)
                 {
@@ -1009,13 +946,12 @@ namespace KimeraCS
             hsbRotateBeta.Value = iRotateBeta;
         }
 
-        private void txtRotateGamma_TextChanged(object sender, EventArgs e)
+        private void TxtRotateGamma_TextChanged(object sender, EventArgs e)
         {
-            int iRotateGamma;
 
             if (loadingModifiersQ) return;
 
-            if (Int32.TryParse(txtRotateGamma.Text, out iRotateGamma))
+            if (Int32.TryParse(txtRotateGamma.Text, out int iRotateGamma))
             {
                 if (iRotateGamma < 0 || iRotateGamma > 360)
                 {
@@ -1031,7 +967,7 @@ namespace KimeraCS
             hsbRotateGamma.Value = iRotateGamma;
         }
 
-        private void btnUpGroup_Click(object sender, EventArgs e)
+        private void BtnUpGroup_Click(object sender, EventArgs e)
         {
             int iGroupIdx, i;
             PGroup[] tmpGroups;
@@ -1076,14 +1012,14 @@ namespace KimeraCS
                 //  Refresh Groups List
                 FillGroupsList();
 
-                panelEditorPModel_Paint(null, null);
+                PanelEditorPModel_Paint(null, null);
 
                 //  Let's select in listbox the record.
                 lbGroups.SelectedIndex = iGroupIdx - 1;
             }
         }
 
-        private void btnDownGroup_Click(object sender, EventArgs e)
+        private void BtnDownGroup_Click(object sender, EventArgs e)
         {
             int iGroupIdx, i;
             PGroup[] tmpGroups;
@@ -1128,14 +1064,14 @@ namespace KimeraCS
                 //  Refresh Groups List
                 FillGroupsList();
 
-                panelEditorPModel_Paint(null, null);
+                PanelEditorPModel_Paint(null, null);
 
                 //  Let's select in listbox the record.
                 lbGroups.SelectedIndex = iGroupIdx + 1;
             }
         }
 
-        private void btnRemoveGroup_Click(object sender, EventArgs e)
+        private void BtnRemoveGroup_Click(object sender, EventArgs e)
         {
             if (lbGroups.SelectedIndex == -1)
             {
@@ -1153,11 +1089,10 @@ namespace KimeraCS
 
             VCountNewPoly = 0;
             RemoveGroup(ref EditedPModel, lbGroups.SelectedIndex);
-            CheckModelConsistency(ref EditedPModel);
 
             KillUnusedVertices(ref EditedPModel);
 
-            ApplyCurrentVCoordsPE(ref EditedPModel);
+            //ApplyCurrentVCoordsPE(ref EditedPModel);
 
             ComputePColors(ref EditedPModel);
             ComputeEdges(ref EditedPModel);
@@ -1167,14 +1102,14 @@ namespace KimeraCS
             
             CopyModelColors2VP(EditedPModel, ref vcolorsOriginal, ref pcolorsOriginal);
             
-            panelEditorPModel_Paint(null, null);          
-            chkPalettized_CheckedChanged(null, null);
+            PanelEditorPModel_Paint(null, null);          
+            ChkPalettized_CheckedChanged(null, null);
 
             ChangeGroupEnable(false);
             ChangeGroupStatus(false);
         }
 
-        private void btnDuplicateGroup_Click(object sender, EventArgs e)
+        private void BtnDuplicateGroup_Click(object sender, EventArgs e)
         {
             if (lbGroups.SelectedIndex == -1)
             {
@@ -1190,7 +1125,7 @@ namespace KimeraCS
 
             KillUnusedVertices(ref EditedPModel);
 
-            ApplyCurrentVCoordsPE(ref EditedPModel);
+            //ApplyCurrentVCoordsPE(ref EditedPModel);
 
             ComputePColors(ref EditedPModel);
             ComputeEdges(ref EditedPModel);
@@ -1200,19 +1135,19 @@ namespace KimeraCS
 
             CopyModelColors2VP(EditedPModel, ref vcolorsOriginal, ref pcolorsOriginal);
 
-            panelEditorPModel_Paint(null, null);
-            chkPalettized_CheckedChanged(null, null);
+            PanelEditorPModel_Paint(null, null);
+            ChkPalettized_CheckedChanged(null, null);
 
             ChangeGroupEnable(false);
             ChangeGroupStatus(false);
         }
 
-        private void btnGroupProperties_Click(object sender, EventArgs e)
+        private void BtnGroupProperties_Click(object sender, EventArgs e)
         {
             if (lbGroups.SelectedIndex > -1)
             {
                 // Instantiate other forms
-                frmGroupProp = new frmGroupProperties(this, lbGroups.SelectedIndex);
+                frmGroupProp = new FrmGroupProperties(this, lbGroups.SelectedIndex);
                 frmGroupProp.ShowDialog();
             }
         }
@@ -1234,7 +1169,7 @@ namespace KimeraCS
             btnHideShowGroup.Enabled = bEnabled;
         }
 
-        private void lbGroups_Click(object sender, EventArgs e)
+        private void LbGroups_Click(object sender, EventArgs e)
         {
             if (lbGroups.Items.Count > 0)
             {
@@ -1247,12 +1182,12 @@ namespace KimeraCS
             }
         }
 
-        private void lbGroups_DoubleClick(object sender, EventArgs e)
+        private void LbGroups_DoubleClick(object sender, EventArgs e)
         {
             btnGroupProperties.PerformClick();
         }
 
-        private void btnHideShowGroup_Click(object sender, EventArgs e)
+        private void BtnHideShowGroup_Click(object sender, EventArgs e)
         {
             int iSelIdx;
 
@@ -1268,12 +1203,12 @@ namespace KimeraCS
                 FillGroupsList();
 
                 lbGroups.SelectedIndex = iSelIdx;
-                panelEditorPModel_Paint(null, null);
-                chkPalettized_CheckedChanged(null, null);
+                PanelEditorPModel_Paint(null, null);
+                ChkPalettized_CheckedChanged(null, null);
             }
         }
 
-        private void btnCommitChanges_Click(object sender, EventArgs e)
+        private void BtnCommitChanges_Click(object sender, EventArgs e)
         {
             // Apply changes to the actual EditedPModel local PEditor variable.
             CommitContextualizedPChanges(false);
@@ -1324,20 +1259,17 @@ namespace KimeraCS
             // Update main title window
             bChangesDone = true;
             frmSkelEdit.UpdateMainSkeletonWindowTitle();
-            frmSkelEdit.SetBonePieceModifiersPEditor(EditedBone, EditedBonePiece);
-            //frmSkelEdit.UpdateScrollBars(EditedPModel.resizeX, EditedPModel.resizeY, EditedPModel.resizeZ,
-            //                             EditedPModel.repositionX, EditedPModel.repositionY, EditedPModel.repositionZ,
-            //                             EditedPModel.rotateAlpha / 100 );
+            frmSkelEdit.SetBonePieceModifiersPEditor();
 
-            frmSkelEdit.panelModel_Paint(null, null);
+            frmSkelEdit.PanelModel_Paint(null, null);
         }
 
-        private void btnClose_Click(object sender, EventArgs e)
+        private void BtnClose_Click(object sender, EventArgs e)
         {
             Close();
         }
 
-        private void rbPaintPolygon_MouseDown(object sender, MouseEventArgs e)
+        private void RbPaintPolygon_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
             {
@@ -1358,7 +1290,7 @@ namespace KimeraCS
             SetFunctionButtonColors();
         }
 
-        private void rbCutEdge_MouseDown(object sender, MouseEventArgs e)
+        private void RbCutEdge_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
             {
@@ -1379,7 +1311,7 @@ namespace KimeraCS
             SetFunctionButtonColors();
         }
 
-        private void rbErasePolygon_MouseDown(object sender, MouseEventArgs e)
+        private void RbErasePolygon_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
             {
@@ -1400,7 +1332,7 @@ namespace KimeraCS
             SetFunctionButtonColors();
         }
 
-        private void rbMoveVertex_MouseDown(object sender, MouseEventArgs e)
+        private void RbMoveVertex_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
             {
@@ -1421,7 +1353,7 @@ namespace KimeraCS
             SetFunctionButtonColors();
         }
 
-        private void rbFreeRotate_MouseDown(object sender, MouseEventArgs e)
+        private void RbFreeRotate_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
             {
@@ -1442,7 +1374,7 @@ namespace KimeraCS
             SetFunctionButtonColors();
         }
 
-        private void rbZoomInOut_MouseDown(object sender, MouseEventArgs e)
+        private void RbZoomInOut_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
             {
@@ -1463,7 +1395,7 @@ namespace KimeraCS
             SetFunctionButtonColors();
         }
 
-        private void rbPanning_MouseDown(object sender, MouseEventArgs e)
+        private void RbPanning_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
             {
@@ -1484,7 +1416,7 @@ namespace KimeraCS
             SetFunctionButtonColors();
         }
 
-        private void rbNewPolygon_MouseDown(object sender, MouseEventArgs e)
+        private void RbNewPolygon_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
             {
@@ -1506,7 +1438,7 @@ namespace KimeraCS
         }
 
 
-        private void loadModelToolStripMenuItem_Click(object sender, EventArgs e)
+        private void LoadModelToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string tmpFileName;
 
@@ -1514,20 +1446,24 @@ namespace KimeraCS
             openFile.Title = "Open Model (PEditor)";
             openFile.Filter = "FF7 Field Model|*.P|FF7 Battle Model (*.*)|*.*|FF7 Magic Model|*.P??|FF7 3DS Model|*.3DS|All files|*.*";
 
-            switch (modelType)
+            if (iPEFilterIdx == -1)
             {
-                case K_HRC_SKELETON:
-                    openFile.FilterIndex = 1;
-                    break;
+                switch (modelType)
+                {
+                    case K_HRC_SKELETON:
+                        openFile.FilterIndex = 1;
+                        break;
 
-                case K_AA_SKELETON:
-                    openFile.FilterIndex = 2;
-                    break;
+                    case K_AA_SKELETON:
+                        openFile.FilterIndex = 2;
+                        break;
 
-                case K_MAGIC_SKELETON:
-                    openFile.FilterIndex = 3;
-                    break;
+                    case K_MAGIC_SKELETON:
+                        openFile.FilterIndex = 3;
+                        break;
+                }
             }
+            else openFile.FilterIndex = iPEFilterIdx;
 
             openFile.FileName = null;
 
@@ -1551,18 +1487,21 @@ namespace KimeraCS
                         // Set Global Paths and save them
                         strGlobalPathPModelFolderPE = Path.GetDirectoryName(openFile.FileName);
                         strGlobalPModelNamePE = Path.GetFileName(openFile.FileName).ToUpper();
+
+                        iPEFilterIdx = openFile.FilterIndex;
+
                         WriteCFGFile();
 
                         // Load the Model (We need to check if we have a .3DS or a .P file
                         tmpFileName = EditedPModel.fileName;
 
-                        Model3DS[] tmpModel3DS;
+                        DestroyPModelResources(ref EditedPModel);
                         EditedPModel = new PModel();
 
                         if (Path.GetExtension(openFile.FileName).ToUpper() == ".3DS")
                         {
-                            Load3DS(openFile.FileName, out tmpModel3DS);
-                            ConvertModels3DSToPModel(tmpModel3DS, ref EditedPModel);
+                            Load3DS(openFile.FileName, out Model3DS[] tmpModel3DS);
+                            ConvertModels3DSToPModel(tmpModel3DS, ref EditedPModel, bAdjust3DSImport);
                         }
                         else
                         {
@@ -1577,7 +1516,17 @@ namespace KimeraCS
                         {
                             // Initialize environment and model
                             InitializeLoadPEditor();
-                            panelEditorPModel_Paint(null, null);
+
+                            ComputeBoundingBox(ref EditedPModel);
+
+                            FillGroupsList();
+
+                            CommitContextualizedPChanges(false);
+
+                            ResetCamera();
+                            ResetPlane();
+
+                            PanelEditorPModel_Paint(null, null);
                         }
                     }
                 }
@@ -1590,27 +1539,32 @@ namespace KimeraCS
             }
         }
 
-        private void loadModelAsNewGroupToolStripMenuItem_Click(object sender, EventArgs e)
+        private void LoadModelAsNewGroupToolStripMenuItem_Click(object sender, EventArgs e)
         {
             PModel GroupModel;
+
             // Set filter options and filter index.
             openFile.Title = "Open Model as new Group (PEditor)";
             openFile.Filter = "FF7 Field Model|*.P|FF7 Battle Model (*.*)|*.*|FF7 Magic Model|*.P??|FF7 3DS Model|*.3DS|All files|*.*";
 
-            switch (modelType)
+            if (iPEFilterIdx == -1)
             {
-                case K_HRC_SKELETON:
-                    openFile.FilterIndex = 1;
-                    break;
+                switch (modelType)
+                {
+                    case K_HRC_SKELETON:
+                        openFile.FilterIndex = 1;
+                        break;
 
-                case K_AA_SKELETON:
-                    openFile.FilterIndex = 2;
-                    break;
+                    case K_AA_SKELETON:
+                        openFile.FilterIndex = 2;
+                        break;
 
-                case K_MAGIC_SKELETON:
-                    openFile.FilterIndex = 3;
-                    break;
+                    case K_MAGIC_SKELETON:
+                        openFile.FilterIndex = 3;
+                        break;
+                }
             }
+            else openFile.FilterIndex = iPEFilterIdx;
 
             openFile.FileName = null;
 
@@ -1634,21 +1588,24 @@ namespace KimeraCS
                         // Set Global Paths and save them
                         strGlobalPathPModelFolderPE = Path.GetDirectoryName(openFile.FileName);
                         strGlobalPModelNamePE = Path.GetFileName(openFile.FileName).ToUpper();
+
+                        iPEFilterIdx = openFile.FilterIndex;
+
                         WriteCFGFile();
 
                         // Load the Model (We need to check if we have a .3DS or a .P file
-                        Model3DS[] tmpModel3DS;
                         GroupModel = new PModel();
 
                         if (Path.GetExtension(openFile.FileName).ToUpper() == ".3DS")
                         {
-                            Load3DS(openFile.FileName, out tmpModel3DS);
-                            ConvertModels3DSToPModel(tmpModel3DS, ref GroupModel);
+                            Load3DS(openFile.FileName, out Model3DS[] tmpModel3DS);
+                            ConvertModels3DSToPModel(tmpModel3DS, ref GroupModel, bAdjust3DSImport);
                         }
                         else
                         {
                             LoadPModel(ref GroupModel, strGlobalPathPModelFolderPE,
                                        Path.GetFileName(strGlobalPModelNamePE));
+
                         }                     
 
                         if (GroupModel.Header.numVerts > 0)
@@ -1662,12 +1619,16 @@ namespace KimeraCS
                             {
                                 // We will add the group having in mind if it has texFlag or not
                                 if (itmGroup.texFlag == 0)
-                                    AddGroup(ref EditedPModel, 
+                                {
+                                    AddGroup(ref EditedPModel,
                                              GroupModel.Verts.Skip(itmGroup.offsetVert).Take(itmGroup.numVert).ToArray(),
                                              GroupModel.Polys.Skip(itmGroup.offsetPoly).Take(itmGroup.numPoly).ToArray(),
-                                             null, 
-                                             GroupModel.Vcolors.Skip(itmGroup.offsetVert).Take(itmGroup.numVert).ToArray(), 
-                                             GroupModel.Pcolors.Skip(itmGroup.offsetPoly).Take(itmGroup.numPoly).ToArray());
+                                             null,
+                                             GroupModel.Vcolors.Skip(itmGroup.offsetVert).Take(itmGroup.numVert).ToArray(),
+                                             GroupModel.Pcolors.Skip(itmGroup.offsetPoly).Take(itmGroup.numPoly).ToArray(),
+                                             0);
+
+                                }
                                 else
                                 {
                                     AddGroup(ref EditedPModel,
@@ -1675,26 +1636,34 @@ namespace KimeraCS
                                              GroupModel.Polys.Skip(itmGroup.offsetPoly).Take(itmGroup.numPoly).ToArray(),
                                              GroupModel.TexCoords.Skip(itmGroup.offsetTex).Take(itmGroup.numVert).ToArray(),
                                              GroupModel.Vcolors.Skip(itmGroup.offsetVert).Take(itmGroup.numVert).ToArray(),
-                                             GroupModel.Pcolors.Skip(itmGroup.offsetPoly).Take(itmGroup.numPoly).ToArray());
+                                             GroupModel.Pcolors.Skip(itmGroup.offsetPoly).Take(itmGroup.numPoly).ToArray(),
+                                             itmGroup.texID);
 
                                     EditedPModel.Groups[iEditedPModelGroupIdx].texID = GroupModel.Groups[iGroupIdx].texID;
                                     EditedPModel.Hundrets[iEditedPModelGroupIdx] = CopyPHundret(GroupModel.Hundrets[iGroupIdx]);
                                 }
 
+                                // We need to adjust the 3DS here also, because we are adding a new
+                                // Group to the main .P EditedPModel, and the rotGroupGamma would be 0.
+                                if (Path.GetExtension(openFile.FileName).ToUpper() == ".3DS" &&
+                                    bAdjust3DSImport)
+                                {
+                                    EditedPModel.Groups[iEditedPModelGroupIdx].rotGroupGamma = 180;
+                                }
+
                                 iGroupIdx++;
                                 iEditedPModelGroupIdx++;
+
                             }
 
                             DestroyPModelResources(ref GroupModel);
 
-                            CheckModelConsistency(ref EditedPModel);
-                            ComputeNormals(ref EditedPModel);
-                            ComputeEdges(ref EditedPModel);
+                            ComputeBoundingBox(ref EditedPModel);
 
                             FillGroupsList();
-                            panelEditorPModel_Paint(null, null);
-                            CopyModelColors2VP(EditedPModel, ref vcolorsOriginal, ref pcolorsOriginal);
-                            chkPalettized_CheckedChanged(null, null);
+
+                            CommitContextualizedPChanges(false);
+
 
                             // Let's clear selected groups of lbGroups listbox
                             SelectedGroup = -1;
@@ -1704,15 +1673,17 @@ namespace KimeraCS
                     }
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                strGlobalExceptionMessage = ex.Message;
+
                 MessageBox.Show("Error opening Model file " + openFile.FileName.ToUpper() + " as new Group in the P Editor.",
                                 "Error");
                 return;
             }
         }
 
-        private void saveModelAsToolStripMenuItem_Click(object sender, EventArgs e)
+        private void SaveModelAsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Set filter options and filter index.
             saveFile.Title = "Save Model As... (PEditor)";
@@ -1773,25 +1744,25 @@ namespace KimeraCS
             }
         }
 
-        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        private void ExitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             btnClose.PerformClick();
         }
 
-        private void resetToolStripMenuItem_Click(object sender, EventArgs e)
+        private void ResetToolStripMenuItem_Click(object sender, EventArgs e)
         {
             ResetPlane();
 
-            panelEditorPModel_Paint(null, null);
+            PanelEditorPModel_Paint(null, null);
         }
 
-        private void invertToolStripMenuItem_Click(object sender, EventArgs e)
+        private void InvertToolStripMenuItem_Click(object sender, EventArgs e)
         {
             nudAlphaPlane.Value = (nudAlphaPlane.Value + 180) % 360;
             //  nudBetaPlane.Value = (nudAlphaPlane.Value + 180) % 360;  -- Commented in KimeraVB6
         }
 
-        private void mirrorModelToolStripMenuItem_Click(object sender, EventArgs e)
+        private void MirrorModelToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (loadedPModel)
             {
@@ -1803,11 +1774,11 @@ namespace KimeraCS
                 ComputeNormals(ref EditedPModel);
 
                 CopyModelColors2VP(EditedPModel, ref vcolorsOriginal, ref pcolorsOriginal);
-                panelEditorPModel_Paint(null, null);
+                PanelEditorPModel_Paint(null, null);
             } 
         }
 
-        private void makeModelSymmetricToolStripMenuItem_Click(object sender, EventArgs e)
+        private void MakeModelSymmetricToolStripMenuItem_Click(object sender, EventArgs e)
         {
             List<Point3D> knownPlaneVPoints = new List<Point3D>();
 
@@ -1832,11 +1803,11 @@ namespace KimeraCS
                 ComputeNormals(ref EditedPModel);
 
                 CopyModelColors2VP(EditedPModel, ref vcolorsOriginal, ref pcolorsOriginal);
-                panelEditorPModel_Paint(null, null);
+                PanelEditorPModel_Paint(null, null);
             }
         }
 
-        private void deleteAllPolysSelectedColorToolStripMenuItem_Click(object sender, EventArgs e)
+        private void DeleteAllPolysSelectedColorToolStripMenuItem_Click(object sender, EventArgs e)
         {
             int piTable, piModel;
 
@@ -1854,10 +1825,10 @@ namespace KimeraCS
             FillColorTable(EditedPModel, ref colorTable,
                            ref translationTableVertex, ref translationTablePolys, (byte)iThreshold);
 
-            panelEditorPModel_Paint(null, null);
+            PanelEditorPModel_Paint(null, null);
         }
 
-        private void deleteAllPolysnotSelectedColorToolStripMenuItem_Click(object sender, EventArgs e)
+        private void DeleteAllPolysnotSelectedColorToolStripMenuItem_Click(object sender, EventArgs e)
         {
             int piTable, piModel;
 
@@ -1874,7 +1845,7 @@ namespace KimeraCS
             FillColorTable(EditedPModel, ref colorTable,
                            ref translationTableVertex, ref translationTablePolys, (byte)iThreshold);
 
-            panelEditorPModel_Paint(null, null);
+            PanelEditorPModel_Paint(null, null);
         }
 
         ////////////////////////////////////////////////////////////////////
@@ -1884,7 +1855,7 @@ namespace KimeraCS
         // old feature of KimeraVB6. I made NOT VISIBLE the menu item option in "Palette features", but
         // I will leave enabled the procedure.
         ////////////////////////////////////////////////////////////////////
-        private void killPrecalculatedLightningToolStripMenuItem_Click(object sender, EventArgs e)
+        private void KillPrecalculatedLightningToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (loadedPModel)
             {
@@ -1893,12 +1864,12 @@ namespace KimeraCS
                 KillPrecalculatedLighting(EditedPModel, ref translationTableVertex);
                 ApplyColorTable(ref EditedPModel, colorTable, translationTableVertex, translationTablePolys);
 
-                panelEditorPModel_Paint(null, null);
-                pbPalette_Paint(null, null);
+                PanelEditorPModel_Paint(null, null);
+                PbPalette_Paint(null, null);
             }
         }
 
-        private void chkPalettized_CheckedChanged(object sender, EventArgs e)
+        private void ChkPalettized_CheckedChanged(object sender, EventArgs e)
         {
             if (loadedPModel)
             {
@@ -1937,7 +1908,7 @@ namespace KimeraCS
             }
         }
 
-        private void frmPEditor_Load(object sender, EventArgs e)
+        private void FrmPEditor_Load(object sender, EventArgs e)
         {
             bLoading = true;
 
@@ -1961,7 +1932,7 @@ namespace KimeraCS
             bLoading = false;
         }
 
-        private void frmPEditor_Move(object sender, EventArgs e)
+        private void FrmPEditor_Move(object sender, EventArgs e)
         {
             if (this.WindowState == FormWindowState.Minimized) return;
 
@@ -1973,12 +1944,12 @@ namespace KimeraCS
             }
         }
 
-        private void pbPalette_Paint(object sender, PaintEventArgs e)
+        private void PbPalette_Paint(object sender, PaintEventArgs e)
         {
             DrawPalette(K_CLICK);
         }
 
-        private void pbPalette_MouseDown(object sender, MouseEventArgs e)
+        private void PbPalette_MouseDown(object sender, MouseEventArgs e)
         {
             int xc, yc, xPos, yPos;
             Color cColor;
@@ -2042,7 +2013,7 @@ namespace KimeraCS
             }
         }
 
-        private void pbPalette_MouseMove(object sender, MouseEventArgs e)
+        private void PbPalette_MouseMove(object sender, MouseEventArgs e)
         {
             int xc, yc, xPos, yPos;
             Color cColor;
@@ -2064,9 +2035,6 @@ namespace KimeraCS
 
                     szColorRowsHeight = Convert.ToInt32(pbPalette.ClientRectangle.Height / numColorRows);
                     szColorColsWidth = Convert.ToInt32(pbPalette.ClientRectangle.Width / numColorCols);
-
-                    yc = (int)Math.Floor((float)yPos / szColorRowsHeight);
-                    xc = (int)Math.Floor((float)xPos / szColorColsWidth);
 
                     yc = (int)Math.Floor((float)yPos / szColorRowsHeight);
                     xc = (int)Math.Floor((float)xPos / szColorColsWidth);
@@ -2113,7 +2081,7 @@ namespace KimeraCS
             }
         }
 
-        private void hsbSelectedColorR_ValueChanged(object sender, EventArgs e)
+        private void HsbSelectedColorR_ValueChanged(object sender, EventArgs e)
         {
             pbPaletteColor.BackColor = Color.FromArgb(255,
                                                       hsbSelectedColorR.Value,
@@ -2136,7 +2104,7 @@ namespace KimeraCS
                 CopyModelColors2VP(EditedPModel, ref vcolorsOriginal, ref pcolorsOriginal);
                 bColorsChanged = true;
 
-                panelEditorPModel_Paint(null, null);
+                PanelEditorPModel_Paint(null, null);
                 DoNotAddPEStateQ = false;
             }
 
@@ -2144,7 +2112,7 @@ namespace KimeraCS
             DrawPalette(K_MOVE);
         }
 
-        private void hsbSelectedColorG_ValueChanged(object sender, EventArgs e)
+        private void HsbSelectedColorG_ValueChanged(object sender, EventArgs e)
         {
             pbPaletteColor.BackColor = Color.FromArgb(255,
                                                       hsbSelectedColorR.Value,
@@ -2167,7 +2135,7 @@ namespace KimeraCS
                 CopyModelColors2VP(EditedPModel, ref vcolorsOriginal, ref pcolorsOriginal);
                 bColorsChanged = true;
 
-                panelEditorPModel_Paint(null, null);
+                PanelEditorPModel_Paint(null, null);
                 DoNotAddPEStateQ = false;
             }
 
@@ -2175,7 +2143,7 @@ namespace KimeraCS
             DrawPalette(K_MOVE);
         }
 
-        private void hsbSelectedColorB_ValueChanged(object sender, EventArgs e)
+        private void HsbSelectedColorB_ValueChanged(object sender, EventArgs e)
         {
             pbPaletteColor.BackColor = Color.FromArgb(255,
                                                       hsbSelectedColorR.Value,
@@ -2198,7 +2166,7 @@ namespace KimeraCS
                 CopyModelColors2VP(EditedPModel, ref vcolorsOriginal, ref pcolorsOriginal);
                 bColorsChanged = true;
 
-                panelEditorPModel_Paint(null, null);
+                PanelEditorPModel_Paint(null, null);
                 DoNotAddPEStateQ = false;
             }
 
@@ -2206,7 +2174,7 @@ namespace KimeraCS
             DrawPalette(K_MOVE);
         }
 
-        private void hsbThresholdSlider_ValueChanged(object sender, EventArgs e)
+        private void HsbThresholdSlider_ValueChanged(object sender, EventArgs e)
         {
             iThreshold = (byte)hsbThresholdSlider.Value;
 
@@ -2224,20 +2192,19 @@ namespace KimeraCS
                            ref translationTableVertex, ref translationTablePolys, (byte)iThreshold);
             ApplyColorTable(ref EditedPModel, colorTable, translationTableVertex, translationTablePolys);
 
-            panelEditorPModel_Paint(null, null);
-            pbPalette_Paint(null, null);
+            PanelEditorPModel_Paint(null, null);
+            PbPalette_Paint(null, null);
             txtThresholdSlider.Text = hsbThresholdSlider.Value.ToString();
             DoNotAddPEStateQ = false;
         }
 
-        private void txtSelectedColorR_TextChanged(object sender, EventArgs e)
+        private void TxtSelectedColorR_TextChanged(object sender, EventArgs e)
         {
             if (loadingColorModifiersQ) return;
 
-            int iColorR;
             string oldSelColR = hsbSelectedColorR.Value.ToString();
 
-            if (Int32.TryParse(txtSelectedColorR.Text, out iColorR))
+            if (Int32.TryParse(txtSelectedColorR.Text, out int iColorR))
             {
                 if (iColorR >= 0 && iColorR <= 255)
                     hsbSelectedColorR.Value = iColorR;
@@ -2248,14 +2215,13 @@ namespace KimeraCS
                 txtSelectedColorR.Text = oldSelColR;
         }
 
-        private void txtSelectedColorG_TextChanged(object sender, EventArgs e)
+        private void TxtSelectedColorG_TextChanged(object sender, EventArgs e)
         {
             if (loadingColorModifiersQ) return;
 
-            int iColorG;
             string oldSelColG = hsbSelectedColorG.Value.ToString();
 
-            if (Int32.TryParse(txtSelectedColorG.Text, out iColorG))
+            if (Int32.TryParse(txtSelectedColorG.Text, out int iColorG))
             {
                 if (iColorG >= 0 && iColorG <= 255)
                     hsbSelectedColorG.Value = iColorG;
@@ -2266,14 +2232,13 @@ namespace KimeraCS
                 txtSelectedColorG.Text = oldSelColG;
         }
 
-        private void txtSelectedColorB_TextChanged(object sender, EventArgs e)
+        private void TxtSelectedColorB_TextChanged(object sender, EventArgs e)
         {
             if (loadingColorModifiersQ) return;
 
-            int iColorB;
             string oldSelColB = hsbSelectedColorB.Value.ToString();
 
-            if (Int32.TryParse(txtSelectedColorB.Text, out iColorB))
+            if (Int32.TryParse(txtSelectedColorB.Text, out int iColorB))
             {
                 if (iColorB >= 0 && iColorB <= 255)
                     hsbSelectedColorB.Value = iColorB;
@@ -2284,12 +2249,12 @@ namespace KimeraCS
                 txtSelectedColorB.Text = oldSelColB;
         }
 
-        private void txtThresholdSlider_TextChanged(object sender, EventArgs e)
+        private void TxtThresholdSlider_TextChanged(object sender, EventArgs e)
         {
-            int iLocalThreshold;
+
             string oldThreshold = hsbThresholdSlider.Value.ToString();
 
-            if (Int32.TryParse(txtThresholdSlider.Text, out iLocalThreshold))
+            if (Int32.TryParse(txtThresholdSlider.Text, out int iLocalThreshold))
             {
                 if (iLocalThreshold >= 0 && iLocalThreshold <= 255)
                     hsbThresholdSlider.Value = iLocalThreshold;
@@ -2300,7 +2265,7 @@ namespace KimeraCS
                 txtThresholdSlider.Text = oldThreshold;
         }
 
-        private void btnMoreBrightness_Click(object sender, EventArgs e)
+        private void BtnMoreBrightness_Click(object sender, EventArgs e)
         {
             if (loadedPModel)
             {
@@ -2309,11 +2274,11 @@ namespace KimeraCS
                 iBrightnessFactor += 5;
                 ChangeBrightness(ref EditedPModel, iBrightnessFactor, vcolorsOriginal, pcolorsOriginal);
 
-                panelEditorPModel_Paint(null, null);
+                PanelEditorPModel_Paint(null, null);
             }
         }
 
-        private void btnLessBrightness_Click(object sender, EventArgs e)
+        private void BtnLessBrightness_Click(object sender, EventArgs e)
         {
             if (loadedPModel)
             {
@@ -2322,11 +2287,11 @@ namespace KimeraCS
                 iBrightnessFactor -= 5;
                 ChangeBrightness(ref EditedPModel, iBrightnessFactor, vcolorsOriginal, pcolorsOriginal);
 
-                panelEditorPModel_Paint(null, null);
+                PanelEditorPModel_Paint(null, null);
             }
         }
 
-        private void btnResetBrightness_Click(object sender, EventArgs e)
+        private void BtnResetBrightness_Click(object sender, EventArgs e)
         {
             if (loadedPModel)
             {
@@ -2335,7 +2300,7 @@ namespace KimeraCS
                 iBrightnessFactor = 0;
                 ChangeBrightness(ref EditedPModel, iBrightnessFactor, vcolorsOriginal, pcolorsOriginal);
 
-                panelEditorPModel_Paint(null, null);
+                PanelEditorPModel_Paint(null, null);
             }
         }
 
@@ -2353,27 +2318,27 @@ namespace KimeraCS
             loadingColorModifiersQ = false;
         }
 
-        private void undoToolStripMenuItem_Click(object sender, EventArgs e)
+        private void UndoToolStripMenuItem_Click(object sender, EventArgs e)
         {
             UndoPE(this);
 
-            panelEditorPModel_Paint(null, null);
-            pbPalette_Paint(null, null);
+            PanelEditorPModel_Paint(null, null);
+            PbPalette_Paint(null, null);
 
             if (iSelectedColor > -1) UpdateColorValues();
         }
 
-        private void redoToolStripMenuItem_Click(object sender, EventArgs e)
+        private void RedoToolStripMenuItem_Click(object sender, EventArgs e)
         {
             RedoPE(this);
 
-            panelEditorPModel_Paint(null, null);
-            pbPalette_Paint(null, null);
+            PanelEditorPModel_Paint(null, null);
+            PbPalette_Paint(null, null);
 
             if (iSelectedColor > -1) UpdateColorValues();
         }
 
-        private void unselectGroupToolStripMenuItem_Click(object sender, EventArgs e)
+        private void UnselectGroupToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SelectedGroup = -1;
             lbGroups.SelectedIndex = -1;
@@ -2382,7 +2347,33 @@ namespace KimeraCS
             ChangeGroupStatus(false);
         }
 
-        private void cutModelToolStripMenuItem_Click(object sender, EventArgs e)
+        private void MergeGroupsIntoOneToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (EditedPModel.Header.numGroups > 1)
+            {
+                MergeGroupsIntoOne(EditedPModel, out EditedPModel, true);
+                ComputeBoundingBox(ref EditedPModel);
+
+                FillGroupsList();
+
+                CommitContextualizedPChanges(false);
+            }
+        }
+
+        private void MergeGroupsIntoOnenotTexturedToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (EditedPModel.Header.numGroups > 1)
+            {
+                MergeGroupsIntoOne(EditedPModel, out EditedPModel, false);
+                ComputeBoundingBox(ref EditedPModel);
+
+                FillGroupsList();
+
+                CommitContextualizedPChanges(false);
+            }
+        }
+
+        private void CutModelToolStripMenuItem_Click(object sender, EventArgs e)
         {
             List<Point3D> knownPlaneVPoints = new List<Point3D>();
 
@@ -2403,11 +2394,11 @@ namespace KimeraCS
 
                 CopyModelColors2VP(EditedPModel, ref vcolorsOriginal, ref pcolorsOriginal);
                 
-                panelEditorPModel_Paint(null, null);
+                PanelEditorPModel_Paint(null, null);
             }
         }
 
-        private void eraseLowerEmisphereToolStripMenuItem_Click(object sender, EventArgs e)
+        private void EraseLowerEmisphereToolStripMenuItem_Click(object sender, EventArgs e)
         {
             List<Point3D> knownPlaneVPoints = new List<Point3D>();
 
@@ -2430,11 +2421,11 @@ namespace KimeraCS
                 ComputeNormals(ref EditedPModel);
 
                 CopyModelColors2VP(EditedPModel, ref vcolorsOriginal, ref pcolorsOriginal);
-                panelEditorPModel_Paint(null, null);
+                PanelEditorPModel_Paint(null, null);
             }
         }
 
-        private void fattenToolStripMenuItem_Click(object sender, EventArgs e)
+        private void FattenToolStripMenuItem_Click(object sender, EventArgs e)
         {
             int i;
             double[] transInverse = new double[16];
@@ -2470,12 +2461,13 @@ namespace KimeraCS
                 EditedPModel.BoundingBox.max_y = max_y;
                 EditedPModel.BoundingBox.max_z = max_z;
 
-                if (chkEnableLighting.Checked) ComputeNormals(ref EditedPModel);
-                panelEditorPModel_Paint(null, null);
+                //if (chkEnableLighting.Checked) ComputeNormals(ref EditedPModel);
+                ComputeNormals(ref EditedPModel);
+                PanelEditorPModel_Paint(null, null);
             }
         }
 
-        private void frmPEditor_FormClosed(object sender, FormClosedEventArgs e)
+        private void FrmPEditor_FormClosed(object sender, FormClosedEventArgs e)
         {
             if (bmpFullGradientPalette != null) bmpFullGradientPalette.Dispose();
             DestroyPModelResources(ref EditedPModel);
@@ -2488,10 +2480,10 @@ namespace KimeraCS
             frmSkelEdit.ChangeGroupBoxesStatusPEditor(true);
 
             frmSkelEdit.Activate();
-            frmSkelEdit.panelModel_Paint(null, null);
+            frmSkelEdit.PanelModel_Paint(null, null);
         }
 
-        private void slimToolStripMenuItem_Click(object sender, EventArgs e)
+        private void SlimToolStripMenuItem_Click(object sender, EventArgs e)
         {
             int i;
             double[] transInverse = new double[16];
@@ -2527,12 +2519,13 @@ namespace KimeraCS
                 EditedPModel.BoundingBox.max_y = max_y;
                 EditedPModel.BoundingBox.max_z = max_z;
 
-                if (chkEnableLighting.Checked) ComputeNormals(ref EditedPModel);
-                panelEditorPModel_Paint(null, null);
+                //if (chkEnableLighting.Checked) ComputeNormals(ref EditedPModel);
+                ComputeNormals(ref EditedPModel);
+                PanelEditorPModel_Paint(null, null);
             }
         }
 
-        private void frmPEditor_Activated(object sender, EventArgs e)
+        private void FrmPEditor_Activated(object sender, EventArgs e)
         {
             //if (GetOGLContext() != OGLContextPEditor)
             //    SetOGLContext(panelEditorPModelDC, OGLContextPEditor);
@@ -2544,7 +2537,7 @@ namespace KimeraCS
             //panelEditorPModel_Paint(null, null);
         }
 
-        private void pbPaletteColor_MouseDown(object sender, MouseEventArgs e)
+        private void PbPaletteColor_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left && chkPaletteMode.Checked)
             {
@@ -2553,13 +2546,13 @@ namespace KimeraCS
             }
         }
 
-        private void pbPalette_DragEnter(object sender, DragEventArgs e)
+        private void PbPalette_DragEnter(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(typeof(PictureBox)))
                             e.Effect = DragDropEffects.Move;
         }
 
-        private void pbPalette_DragDrop(object sender, DragEventArgs e)
+        private void PbPalette_DragDrop(object sender, DragEventArgs e)
         {
             int yPos, xPos, xc, yc;
 
@@ -2588,15 +2581,15 @@ namespace KimeraCS
             CopyModelColors2VP(EditedPModel, ref vcolorsOriginal, ref pcolorsOriginal);
             bColorsChanged = true;
 
-            panelEditorPModel_Paint(null, null);
-            pbPalette_Paint(null, null);
+            PanelEditorPModel_Paint(null, null);
+            PbPalette_Paint(null, null);
 
             DoNotAddPEStateQ = false;
         }
 
-        private void tmrRenderPModel_Tick(object sender, EventArgs e)
+        private void TmrRenderPModel_Tick(object sender, EventArgs e)
         {
-            panelEditorPModel_Paint(null, null);
+            PanelEditorPModel_Paint(null, null);
             tmrRenderPModel.Stop();
         }
 
@@ -2642,7 +2635,7 @@ namespace KimeraCS
             SetFunctionButtonColors();
 
             // Adding MouseWheel feature to panelEditorPModel_MouseWheel PictureBox
-            panelEditorPModel.MouseWheel += panelEditorPModel_MouseWheel;
+            panelEditorPModel.MouseWheel += PanelEditorPModel_MouseWheel;
 
             // Some few Hints/ToolTips
             DefineToolTips();
@@ -2663,7 +2656,7 @@ namespace KimeraCS
             //  Initialize main form
             InitializeEditorPModelDataControls();
 
-            panelEditorPModel_Paint(null, null);
+            PanelEditorPModel_Paint(null, null);
             loadedPModel = true;
 
             // Reset global things of environment
@@ -2787,7 +2780,7 @@ namespace KimeraCS
         public void FillGroupsList()
         {
             int gi;
-            string strName = "";
+            string strName;
 
             lbGroups.Items.Clear();
 
@@ -2838,7 +2831,7 @@ namespace KimeraCS
             planeTransformation[14] = 0;
 
             MultiplyPoint3DByOGLMatrix(planeTransformation, tmpNormal, ref normal);
-            normal = Normalize(ref normal);
+            normal = Normalize(normal);
 
             planeA = normal.x;
             planeB = normal.y;
@@ -2906,38 +2899,40 @@ namespace KimeraCS
 
             float tmpDist, modelDiameterNormalized;
 
+            ComputeNormals(ref EditedPModel);
+            ComputeEdges(ref EditedPModel);
+
             AddStateToBufferPE(this);
 
             SetCameraModelViewQuat(repXPE, repYPE, repZPE,
                                    EditedPModel.rotationQuaternion,
                                    rszXPE, rszYPE, rszZPE);
 
-            glMatrixMode(glMatrixModeList.GL_MODELVIEW);
+            glMatrixMode(GLMatrixModeList.GL_MODELVIEW);
             glPushMatrix();
 
             ComputeCurrentBoundingBox(ref EditedPModel);
             ComputePModelBoundingBox(EditedPModel, ref p_min, ref p_max);
             tmpDist = -2 * ComputeSceneRadius(p_min, p_max);
-            ComputeNormals(ref EditedPModel);
-
+            
             if (chkEnableLighting.Checked)
             {
                 glViewport(0, 0, panelEditorPModel.ClientRectangle.Width, panelEditorPModel.ClientRectangle.Height);
-                glClear(glBufferMask.GL_COLOR_BUFFER_BIT | glBufferMask.GL_DEPTH_BUFFER_BIT);
+                glClear(GLBufferMask.GL_COLOR_BUFFER_BIT | GLBufferMask.GL_DEPTH_BUFFER_BIT);
 
                 SetCameraAroundModelQuat(ref p_min, ref p_max, repXPE, repYPE, repZPE + tmpDist,
                                          EditedPModel.rotationQuaternion,
                                          rszXPE, rszYPE, rszZPE);
 
-                glDisable(glCapability.GL_LIGHT0);
-                glDisable(glCapability.GL_LIGHT1);
-                glDisable(glCapability.GL_LIGHT2);
-                glDisable(glCapability.GL_LIGHT3);
+                glDisable(GLCapability.GL_LIGHT0);
+                glDisable(GLCapability.GL_LIGHT1);
+                glDisable(GLCapability.GL_LIGHT2);
+                glDisable(GLCapability.GL_LIGHT3);
 
                 ComputePModelBoundingBox(EditedPModel, ref p_min, ref p_max);
                 modelDiameterNormalized = (-2 * ComputeSceneRadius(p_min, p_max)) / LIGHT_STEPS;
 
-                SetLighting(glCapability.GL_LIGHT0, modelDiameterNormalized * hsbLightX.Value,
+                SetLighting(GLCapability.GL_LIGHT0, modelDiameterNormalized * hsbLightX.Value,
                                                     modelDiameterNormalized * hsbLightY.Value,
                                                     modelDiameterNormalized * hsbLightZ.Value,
                                                     1, 1, 1, false);
@@ -2945,7 +2940,7 @@ namespace KimeraCS
                 ApplyCurrentVColors(ref EditedPModel);
             }
 
-            glMatrixMode(glMatrixModeList.GL_MODELVIEW);
+            glMatrixMode(GLMatrixModeList.GL_MODELVIEW);
             glPopMatrix();
 
             SetCameraModelViewQuat(repXPE, repYPE, repZPE,
@@ -3004,8 +2999,8 @@ namespace KimeraCS
             iSelectedColor = -1;
             iBrightnessFactor = 0;
 
-            panelEditorPModel_Paint(null, null);
-            pbPalette_Paint(null, null);
+            PanelEditorPModel_Paint(null, null);
+            PbPalette_Paint(null, null);
         }
 
         public void SetFunctionButtonColors()
@@ -3526,16 +3521,16 @@ namespace KimeraCS
             Color tmpColor;
             float fLocalAlpha = 0;
 
-            Point3D p1 = new Point3D();
-            Point3D p2 = new Point3D();
+            Point3D p1;
+            Point3D p2;
             Point2D tc1 = new Point2D();
             Point2D tc2 = new Point2D();
 
-            Point3D intersectionPoint = new Point3D();
-            Point2D intersectionTexCoord = new Point2D();
+            Point3D intersectionPoint;
+            Point2D intersectionTexCoord;
 
             int vi1, vi2, iGroupIdx, tmpGroupIdx;
-            int pi, vi, ei;
+            int iPolyIdx, iVertIdx, iEdgeIdx;
 
             switch (nFunc)
             {
@@ -3543,9 +3538,10 @@ namespace KimeraCS
                     //  Change polygon color/get polygon color
                     if (iEvent >= K_CLICK)
                     {
-                        pi = GetClosestPolygon(EditedPModel, x, y, DISTPE, panelEditorPModel);
+                        //iPolyIdx = GetClosestPolygon(EditedPModel, x, y, DISTPE, panelEditorPModel);
+                        iPolyIdx = GetClosestPolygon(EditedPModel, x, y);
 
-                        if (pi > -1)
+                        if (iPolyIdx > -1)
                         {
                             if (iEvent != K_CLICK_SHIFT)
                                 AddStateToBufferPE(this);
@@ -3554,8 +3550,9 @@ namespace KimeraCS
                             {
                                 if (iEvent == K_CLICK_SHIFT)
                                 {
-                                    iSelectedColor = translationTableVertex[EditedPModel.Polys[pi].Verts[0] +
-                                                                            EditedPModel.Groups[GetPolygonGroup(EditedPModel, pi)].offsetVert].I;
+                                    iSelectedColor = 
+                                        translationTableVertex[EditedPModel.Polys[iPolyIdx].Verts[0] +
+                                                               EditedPModel.Groups[GetPolygonGroup(EditedPModel, iPolyIdx)].offsetVert].I;
 
                                     loadingColorModifiersQ = true;
                                     hsbSelectedColorR.Value = colorTable[iSelectedColor].R;
@@ -3571,13 +3568,14 @@ namespace KimeraCS
                                 {
                                     //if (iSelectedColor > -1)
                                     //{
-                                    PaintPolygon(ref EditedPModel, pi, pbPaletteColor.BackColor.R,
-                                                                       pbPaletteColor.BackColor.G,
-                                                                       pbPaletteColor.BackColor.B);
+                                    PaintPolygon(ref EditedPModel, iPolyIdx, pbPaletteColor.BackColor.R,
+                                                                             pbPaletteColor.BackColor.G,
+                                                                             pbPaletteColor.BackColor.B);
                                         
                                     if (iSelectedColor > -1)
                                     {
-                                        UpdateTranslationTable(ref translationTableVertex, EditedPModel, pi, iSelectedColor);
+                                        UpdateTranslationTable(ref translationTableVertex, EditedPModel, 
+                                                               iPolyIdx, iSelectedColor);
                                         bColorsChanged = true;
                                     }
                                     //}
@@ -3587,7 +3585,7 @@ namespace KimeraCS
                             {
                                 if (iEvent == K_CLICK_SHIFT)
                                 {
-                                    tmpColor = ComputePolyColor(EditedPModel, pi);
+                                    tmpColor = ComputePolyColor(EditedPModel, iPolyIdx);
 
                                     loadingColorModifiersQ = true;
                                     hsbSelectedColorR.Value = tmpColor.R;
@@ -3602,19 +3600,28 @@ namespace KimeraCS
                                 }
                                 else
                                 {
-                                    PaintPolygon(ref EditedPModel, pi, (byte)hsbSelectedColorR.Value,
-                                                                       (byte)hsbSelectedColorG.Value,
-                                                                       (byte)hsbSelectedColorB.Value);
+                                    PaintPolygon(ref EditedPModel, iPolyIdx, (byte)hsbSelectedColorR.Value,
+                                                                             (byte)hsbSelectedColorG.Value,
+                                                                             (byte)hsbSelectedColorB.Value);
 
                                 }
                             }
 
                             // Apply color arrays of the model to P Editor dynamic arrays.
                             if (iEvent != K_CLICK_SHIFT)
+                            {
+                                ComputePColors(ref EditedPModel);
+
+                                if (chkPaletteMode.Checked)
+                                    FillColorTable(EditedPModel, ref colorTable,
+                                                   ref translationTableVertex, ref translationTablePolys, iThreshold);
+
                                 CopyModelColors2VP(EditedPModel, ref vcolorsOriginal, ref pcolorsOriginal);
+                            }
+
 
                             //  -- Commented in KimeraVB6
-                            //  if (glIsEnabled(glCapability.GL_LIGHTING)) ComputeNormals(ref EditedPModel);
+                            //  if (glIsEnabled(GLCapability.GL_LIGHTING)) ComputeNormals(ref EditedPModel);
                         }
                     }
                     break;
@@ -3623,17 +3630,18 @@ namespace KimeraCS
                     //  Cut an edge on the clicked point (thus splitting the surrounding polygons)
                     if (iEvent == K_CLICK)
                     {
-                        pi = GetClosestPolygon(EditedPModel, x, y, DISTPE, panelEditorPModel);
+                        //iPolyIdx = GetClosestPolygon(EditedPModel, x, y, DISTPE, panelEditorPModel);
+                        iPolyIdx = GetClosestPolygon(EditedPModel, x, y);
 
-                        if (pi > -1)
+                        if (iPolyIdx > -1)
                         {
                             AddStateToBufferPE(this);
 
-                            ei = GetClosestEdge(EditedPModel, pi, x, y, ref fLocalAlpha);
+                            iEdgeIdx = GetClosestEdge(EditedPModel, iPolyIdx, x, y, ref fLocalAlpha);
 
-                            vi1 = EditedPModel.Polys[pi].Verts[ei];
-                            vi2 = EditedPModel.Polys[pi].Verts[(ei + 1) % 3];
-                            iGroupIdx = GetPolygonGroup(EditedPModel, pi);
+                            vi1 = EditedPModel.Polys[iPolyIdx].Verts[iEdgeIdx];
+                            vi2 = EditedPModel.Polys[iPolyIdx].Verts[(iEdgeIdx + 1) % 3];
+                            iGroupIdx = GetPolygonGroup(EditedPModel, iPolyIdx);
                             p1 = EditedPModel.Verts[EditedPModel.Groups[iGroupIdx].offsetVert + vi1];
                             p2 = EditedPModel.Verts[EditedPModel.Groups[iGroupIdx].offsetVert + vi2];
 
@@ -3646,12 +3654,12 @@ namespace KimeraCS
                             intersectionPoint = GetPointInLine(p1, p2, fLocalAlpha);
                             intersectionTexCoord = GetPointInLine2D(tc1, tc2, fLocalAlpha);
 
-                            CutEdgeAtPoint(ref EditedPModel, pi, ei, intersectionPoint, intersectionTexCoord);
+                            CutEdgeAtPoint(ref EditedPModel, iPolyIdx, iEdgeIdx, intersectionPoint, intersectionTexCoord);
 
-                            while (FindNextAdjacentPolyEdge(EditedPModel, p1, p2, ref pi, ref ei))
+                            while (FindNextAdjacentPolyEdge(EditedPModel, p1, p2, ref iPolyIdx, ref iEdgeIdx))
                             {
                                 //  If crossed group boundaries, recompute intersection_tex_coord
-                                tmpGroupIdx = GetPolygonGroup(EditedPModel, pi);
+                                tmpGroupIdx = GetPolygonGroup(EditedPModel, iPolyIdx);
 
                                 if (tmpGroupIdx != iGroupIdx)
                                 {
@@ -3659,21 +3667,22 @@ namespace KimeraCS
 
                                     if (EditedPModel.Groups[iGroupIdx].texFlag == 1)
                                     {
-                                        vi1 = EditedPModel.Polys[pi].Verts[ei];
-                                        vi2 = EditedPModel.Polys[pi].Verts[(ei + 1) % 3];
+                                        vi1 = EditedPModel.Polys[iPolyIdx].Verts[iEdgeIdx];
+                                        vi2 = EditedPModel.Polys[iPolyIdx].Verts[(iEdgeIdx + 1) % 3];
                                         tc1 = EditedPModel.TexCoords[EditedPModel.Groups[iGroupIdx].offsetTex + vi1];
                                         tc2 = EditedPModel.TexCoords[EditedPModel.Groups[iGroupIdx].offsetTex + vi2];
                                         intersectionTexCoord = GetPointInLine2D(tc1, tc2, fLocalAlpha);
                                     }
                                 }
 
-                                CutEdgeAtPoint(ref EditedPModel, pi, ei, intersectionPoint, intersectionTexCoord);
+                                CutEdgeAtPoint(ref EditedPModel, iPolyIdx, iEdgeIdx, 
+                                               intersectionPoint, intersectionTexCoord);
                             }
 
                             ComputePColors(ref EditedPModel);
 
-                            //if (glIsEnabled(glCapability.GL_LIGHTING)) ComputeNormals(ref EditedPModel);
-                            ComputeNormals(ref EditedPModel);
+                            // -- Commented in KimeraVB6
+                            //if (glIsEnabled(GLCapability.GL_LIGHTING)) ComputeNormals(ref EditedPModel);
 
                             if (chkPaletteMode.Checked)
                                 FillColorTable(EditedPModel, ref colorTable, 
@@ -3683,22 +3692,22 @@ namespace KimeraCS
                         }
                     }
 
-                    pbPalette_Paint(null, null);
+                    PbPalette_Paint(null, null);
                     break;
 
                 case K_ERASE_POLY:
                     //  Erase polygon
                     if (iEvent == K_CLICK)
                     {
-                        pi = GetClosestPolygon(EditedPModel, x, y, DISTPE, panelEditorPModel);
+                        iPolyIdx = GetClosestPolygon(EditedPModel, x, y);
 
-                        if (pi > -1)
+                        if (iPolyIdx > -1)
                         {
                             AddStateToBufferPE(this);
 
                             if (EditedPModel.Header.numPolys > 1)
                             {
-                                RemovePolygon(ref EditedPModel, pi);
+                                RemovePolygon(ref EditedPModel, iPolyIdx);
                             }
                             else
                             {
@@ -3707,10 +3716,15 @@ namespace KimeraCS
                             }
 
                             // -- Commented in KimeraVB6
-                            //if (glIsEnabled(glCapability.GL_LIGHTING)) ComputeNormals(ref EditedPModel);
+                            //if (glIsEnabled(GLCapability.GL_LIGHTING)) ComputeNormals(ref EditedPModel);
+
+                            ComputePColors(ref EditedPModel);
 
                             if (chkPaletteMode.Checked)
-                                FillColorTable(EditedPModel, ref colorTable, ref translationTableVertex, ref translationTablePolys, iThreshold);
+                                FillColorTable(EditedPModel, ref colorTable,
+                                               ref translationTableVertex, ref translationTablePolys, iThreshold);
+
+                            CopyModelColors2VP(EditedPModel, ref vcolorsOriginal, ref pcolorsOriginal);
                         }
                     }
                     break;
@@ -3719,20 +3733,21 @@ namespace KimeraCS
                     //  Pick a vertex. When a vertex is picked, switch to the K_MOVE_VERTEX operation
                     if (iEvent == K_CLICK)
                     {
-                        pi = GetClosestVertex(EditedPModel, x, y, DISTPE, panelEditorPModel);
+                        
+                        iVertIdx = GetClosestVertex(EditedPModel, x, y);
 
-                        if (pi > -1)
+                        if (iVertIdx > -1)
                         {
                             AddStateToBufferPE(this);
 
-                            dblPickedVertexZ = GetVertexProjectedDepth(ref EditedPModel.Verts, pi);
+                            dblPickedVertexZ = GetVertexProjectedDepth(ref EditedPModel.Verts, iVertIdx);
 
-                            GetEqualVertices(EditedPModel, pi, ref lstPickedVertices);
+                            GetEqualVertices(EditedPModel, iVertIdx, ref lstPickedVertices);
 
                             if (primaryFunc == K_PICK_VERTEX) primaryFunc = K_MOVE_VERTEX;
                             else secondaryFunc = K_MOVE_VERTEX;
 
-                            if (glIsEnabled(glCapability.GL_LIGHTING))
+                            if (glIsEnabled(GLCapability.GL_LIGHTING))
                                 GetAllNormalDependentPolys(EditedPModel, lstPickedVertices,
                                                            ref lstAdjacentPolys, ref lstAdjacentVerts, ref lstAdjacentAdjacentPolys);
                         }
@@ -3751,14 +3766,14 @@ namespace KimeraCS
                             foreach (int itmPickedVertex in lstPickedVertices)
                                 MoveVertex(ref EditedPModel, itmPickedVertex, x, y, (float)dblPickedVertexZ);
 
-                            if (glIsEnabled(glCapability.GL_LIGHTING))
-                            {
-                                UpdateNormals(ref EditedPModel, lstPickedVertices,
+                            //if (glIsEnabled(GLCapability.GL_LIGHTING))
+                            //{
+                            UpdateNormals(ref EditedPModel, lstPickedVertices,
                                               lstAdjacentPolys, lstAdjacentVerts, lstAdjacentAdjacentPolys);
 
                                 // -- Commented in KimeraVB6
                                 //ComputeNormals(ref EditedPModel);
-                            }
+                            //}
                         }
                     }
                     break;
@@ -3767,12 +3782,23 @@ namespace KimeraCS
                     //  Create new polygon
                     if (iEvent == K_CLICK)
                     {
-                        vi = GetClosestVertex(EditedPModel, x, y, DISTPE, panelEditorPModel);
+                        //vi = GetClosestVertex(EditedPModel, x, y, DISTPE, panelEditorPModel);
+                        iVertIdx = GetClosestVertex(EditedPModel, x, y);
 
-                        if (vi > -1)
+                        if (iVertIdx > -1)
                         {
-                            tmpVNewPoly[VCountNewPoly] = vi;
+                            // We will check if vertex is legit (if it is not repeated for example)
+                            tmpVNewPoly[VCountNewPoly] = iVertIdx;
                             VCountNewPoly++;
+
+                            if (!ValidateAddPolygonVertices(EditedPModel, tmpVNewPoly, VCountNewPoly))
+                            {
+                                MessageBox.Show("You are duplicating this last selected vertex for the New Polygon or " +
+                                                "selected a vertex from another Group.\nPlease, select another different " +
+                                                "vertex.\n\n(INFO: You can 'reset' vertices selected pressing N key.)", "Warning");
+                                VCountNewPoly--;
+                                return;
+                            }
 
                             rbNewPolygon.Text = VCountNewPoly.ToString() + "/3";
                         }
@@ -3781,19 +3807,24 @@ namespace KimeraCS
                         {
                             AddStateToBufferPE(this);
 
-                            OrderVertices(EditedPModel, ref tmpVNewPoly);
+                            OrderVertices(EditedPModel.Verts, ref tmpVNewPoly);
 
                             AddPolygon(ref EditedPModel, ref tmpVNewPoly);
-                            if (glIsEnabled(glCapability.GL_LIGHTING)) ComputeNormals(ref EditedPModel);
 
                             VCountNewPoly = 0;
                             rbNewPolygon.Text = "0/3";
 
-                            if (chkPaletteMode.Checked) 
-                            {
-                                FillColorTable(EditedPModel, ref colorTable, 
+                            ComputePColors(ref EditedPModel);
+
+                            // -- Commented in KimeraVB6
+                            //if (glIsEnabled(GLCapability.GL_LIGHTING)) ComputeNormals(ref EditedPModel);
+
+                            if (chkPaletteMode.Checked)
+                                FillColorTable(EditedPModel, ref colorTable,
                                                ref translationTableVertex, ref translationTablePolys, iThreshold);
-                            }
+
+                            CopyModelColors2VP(EditedPModel, ref vcolorsOriginal, ref pcolorsOriginal);
+
                         }
                     }
                     break;

@@ -1,7 +1,7 @@
 ﻿
 namespace KimeraCS
 {
-    partial class frmPEditor
+    partial class FrmPEditor
     {
         /// <summary>
         /// Required designer variable.
@@ -30,7 +30,7 @@ namespace KimeraCS
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmPEditor));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmPEditor));
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -43,6 +43,8 @@ namespace KimeraCS
             this.redoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.unselectGroupToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
+            this.mergeGroupsIntoOneToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.planeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mirrorModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.makeModelSimmetricToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -160,6 +162,7 @@ namespace KimeraCS
             this.saveFile = new System.Windows.Forms.SaveFileDialog();
             this.panelEditorPModel = new System.Windows.Forms.PictureBox();
             this.tmrRenderPModel = new System.Windows.Forms.Timer(this.components);
+            this.mergeGroupsIntoOnenotTexturedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
             this.gbColorEditor.SuspendLayout();
@@ -215,21 +218,21 @@ namespace KimeraCS
             this.loadModelToolStripMenuItem.Name = "loadModelToolStripMenuItem";
             this.loadModelToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
             this.loadModelToolStripMenuItem.Text = "Load Model";
-            this.loadModelToolStripMenuItem.Click += new System.EventHandler(this.loadModelToolStripMenuItem_Click);
+            this.loadModelToolStripMenuItem.Click += new System.EventHandler(this.LoadModelToolStripMenuItem_Click);
             // 
             // loadModelAsNewGroupToolStripMenuItem
             // 
             this.loadModelAsNewGroupToolStripMenuItem.Name = "loadModelAsNewGroupToolStripMenuItem";
             this.loadModelAsNewGroupToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
             this.loadModelAsNewGroupToolStripMenuItem.Text = "Load Model as new Group";
-            this.loadModelAsNewGroupToolStripMenuItem.Click += new System.EventHandler(this.loadModelAsNewGroupToolStripMenuItem_Click);
+            this.loadModelAsNewGroupToolStripMenuItem.Click += new System.EventHandler(this.LoadModelAsNewGroupToolStripMenuItem_Click);
             // 
             // saveModelAsToolStripMenuItem
             // 
             this.saveModelAsToolStripMenuItem.Name = "saveModelAsToolStripMenuItem";
             this.saveModelAsToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
             this.saveModelAsToolStripMenuItem.Text = "Save Model As...";
-            this.saveModelAsToolStripMenuItem.Click += new System.EventHandler(this.saveModelAsToolStripMenuItem_Click);
+            this.saveModelAsToolStripMenuItem.Click += new System.EventHandler(this.SaveModelAsToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
@@ -241,7 +244,7 @@ namespace KimeraCS
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
             this.exitToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
             this.exitToolStripMenuItem.Text = "Exit";
-            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+            this.exitToolStripMenuItem.Click += new System.EventHandler(this.ExitToolStripMenuItem_Click);
             // 
             // editToolStripMenuItem
             // 
@@ -249,7 +252,10 @@ namespace KimeraCS
             this.undoToolStripMenuItem,
             this.redoToolStripMenuItem,
             this.toolStripSeparator4,
-            this.unselectGroupToolStripMenuItem});
+            this.unselectGroupToolStripMenuItem,
+            this.toolStripSeparator5,
+            this.mergeGroupsIntoOneToolStripMenuItem,
+            this.mergeGroupsIntoOnenotTexturedToolStripMenuItem});
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
             this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
             this.editToolStripMenuItem.Text = "&Edit";
@@ -259,30 +265,42 @@ namespace KimeraCS
             this.undoToolStripMenuItem.Enabled = false;
             this.undoToolStripMenuItem.Name = "undoToolStripMenuItem";
             this.undoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.U)));
-            this.undoToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.undoToolStripMenuItem.Size = new System.Drawing.Size(277, 22);
             this.undoToolStripMenuItem.Text = "Undo";
-            this.undoToolStripMenuItem.Click += new System.EventHandler(this.undoToolStripMenuItem_Click);
+            this.undoToolStripMenuItem.Click += new System.EventHandler(this.UndoToolStripMenuItem_Click);
             // 
             // redoToolStripMenuItem
             // 
             this.redoToolStripMenuItem.Enabled = false;
             this.redoToolStripMenuItem.Name = "redoToolStripMenuItem";
             this.redoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R)));
-            this.redoToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.redoToolStripMenuItem.Size = new System.Drawing.Size(277, 22);
             this.redoToolStripMenuItem.Text = "Redo";
-            this.redoToolStripMenuItem.Click += new System.EventHandler(this.redoToolStripMenuItem_Click);
+            this.redoToolStripMenuItem.Click += new System.EventHandler(this.RedoToolStripMenuItem_Click);
             // 
             // toolStripSeparator4
             // 
             this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(151, 6);
+            this.toolStripSeparator4.Size = new System.Drawing.Size(274, 6);
             // 
             // unselectGroupToolStripMenuItem
             // 
             this.unselectGroupToolStripMenuItem.Name = "unselectGroupToolStripMenuItem";
-            this.unselectGroupToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.unselectGroupToolStripMenuItem.Size = new System.Drawing.Size(277, 22);
             this.unselectGroupToolStripMenuItem.Text = "Unselect group";
-            this.unselectGroupToolStripMenuItem.Click += new System.EventHandler(this.unselectGroupToolStripMenuItem_Click);
+            this.unselectGroupToolStripMenuItem.Click += new System.EventHandler(this.UnselectGroupToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator5
+            // 
+            this.toolStripSeparator5.Name = "toolStripSeparator5";
+            this.toolStripSeparator5.Size = new System.Drawing.Size(274, 6);
+            // 
+            // mergeGroupsIntoOneToolStripMenuItem
+            // 
+            this.mergeGroupsIntoOneToolStripMenuItem.Name = "mergeGroupsIntoOneToolStripMenuItem";
+            this.mergeGroupsIntoOneToolStripMenuItem.Size = new System.Drawing.Size(277, 22);
+            this.mergeGroupsIntoOneToolStripMenuItem.Text = "Merge Groups into One (All)";
+            this.mergeGroupsIntoOneToolStripMenuItem.Click += new System.EventHandler(this.MergeGroupsIntoOneToolStripMenuItem_Click);
             // 
             // planeToolStripMenuItem
             // 
@@ -306,28 +324,28 @@ namespace KimeraCS
             this.mirrorModelToolStripMenuItem.Name = "mirrorModelToolStripMenuItem";
             this.mirrorModelToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
             this.mirrorModelToolStripMenuItem.Text = "Mirror model";
-            this.mirrorModelToolStripMenuItem.Click += new System.EventHandler(this.mirrorModelToolStripMenuItem_Click);
+            this.mirrorModelToolStripMenuItem.Click += new System.EventHandler(this.MirrorModelToolStripMenuItem_Click);
             // 
             // makeModelSimmetricToolStripMenuItem
             // 
             this.makeModelSimmetricToolStripMenuItem.Name = "makeModelSimmetricToolStripMenuItem";
             this.makeModelSimmetricToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
             this.makeModelSimmetricToolStripMenuItem.Text = "Make model symmetric";
-            this.makeModelSimmetricToolStripMenuItem.Click += new System.EventHandler(this.makeModelSymmetricToolStripMenuItem_Click);
+            this.makeModelSimmetricToolStripMenuItem.Click += new System.EventHandler(this.MakeModelSymmetricToolStripMenuItem_Click);
             // 
             // eraseLowerEmisphereToolStripMenuItem
             // 
             this.eraseLowerEmisphereToolStripMenuItem.Name = "eraseLowerEmisphereToolStripMenuItem";
             this.eraseLowerEmisphereToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
             this.eraseLowerEmisphereToolStripMenuItem.Text = "Erase lower hemisphere";
-            this.eraseLowerEmisphereToolStripMenuItem.Click += new System.EventHandler(this.eraseLowerEmisphereToolStripMenuItem_Click);
+            this.eraseLowerEmisphereToolStripMenuItem.Click += new System.EventHandler(this.EraseLowerEmisphereToolStripMenuItem_Click);
             // 
             // cutModelToolStripMenuItem
             // 
             this.cutModelToolStripMenuItem.Name = "cutModelToolStripMenuItem";
             this.cutModelToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
             this.cutModelToolStripMenuItem.Text = "Cut model";
-            this.cutModelToolStripMenuItem.Click += new System.EventHandler(this.cutModelToolStripMenuItem_Click);
+            this.cutModelToolStripMenuItem.Click += new System.EventHandler(this.CutModelToolStripMenuItem_Click);
             // 
             // toolStripSeparator2
             // 
@@ -340,7 +358,7 @@ namespace KimeraCS
             this.fattenToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F)));
             this.fattenToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
             this.fattenToolStripMenuItem.Text = "Fatten";
-            this.fattenToolStripMenuItem.Click += new System.EventHandler(this.fattenToolStripMenuItem_Click);
+            this.fattenToolStripMenuItem.Click += new System.EventHandler(this.FattenToolStripMenuItem_Click);
             // 
             // slimToolStripMenuItem
             // 
@@ -348,7 +366,7 @@ namespace KimeraCS
             this.slimToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
             this.slimToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
             this.slimToolStripMenuItem.Text = "Slim";
-            this.slimToolStripMenuItem.Click += new System.EventHandler(this.slimToolStripMenuItem_Click);
+            this.slimToolStripMenuItem.Click += new System.EventHandler(this.SlimToolStripMenuItem_Click);
             // 
             // toolStripSeparator3
             // 
@@ -361,14 +379,14 @@ namespace KimeraCS
             this.invertToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.I)));
             this.invertToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
             this.invertToolStripMenuItem.Text = "Invert";
-            this.invertToolStripMenuItem.Click += new System.EventHandler(this.invertToolStripMenuItem_Click);
+            this.invertToolStripMenuItem.Click += new System.EventHandler(this.InvertToolStripMenuItem_Click);
             // 
             // resetToolStripMenuItem
             // 
             this.resetToolStripMenuItem.Name = "resetToolStripMenuItem";
             this.resetToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
             this.resetToolStripMenuItem.Text = "Reset Plane";
-            this.resetToolStripMenuItem.Click += new System.EventHandler(this.resetToolStripMenuItem_Click);
+            this.resetToolStripMenuItem.Click += new System.EventHandler(this.ResetToolStripMenuItem_Click);
             // 
             // paletteToolStripMenuItem
             // 
@@ -386,7 +404,7 @@ namespace KimeraCS
             this.deleteAllPolysSelectedColorToolStripMenuItem.Name = "deleteAllPolysSelectedColorToolStripMenuItem";
             this.deleteAllPolysSelectedColorToolStripMenuItem.Size = new System.Drawing.Size(258, 22);
             this.deleteAllPolysSelectedColorToolStripMenuItem.Text = "Delete all polys (selected color)";
-            this.deleteAllPolysSelectedColorToolStripMenuItem.Click += new System.EventHandler(this.deleteAllPolysSelectedColorToolStripMenuItem_Click);
+            this.deleteAllPolysSelectedColorToolStripMenuItem.Click += new System.EventHandler(this.DeleteAllPolysSelectedColorToolStripMenuItem_Click);
             // 
             // deleteAllPolysnotSelectedColorToolStripMenuItem
             // 
@@ -394,7 +412,7 @@ namespace KimeraCS
             this.deleteAllPolysnotSelectedColorToolStripMenuItem.Name = "deleteAllPolysnotSelectedColorToolStripMenuItem";
             this.deleteAllPolysnotSelectedColorToolStripMenuItem.Size = new System.Drawing.Size(258, 22);
             this.deleteAllPolysnotSelectedColorToolStripMenuItem.Text = "Delete all polys (not selected color)";
-            this.deleteAllPolysnotSelectedColorToolStripMenuItem.Click += new System.EventHandler(this.deleteAllPolysnotSelectedColorToolStripMenuItem_Click);
+            this.deleteAllPolysnotSelectedColorToolStripMenuItem.Click += new System.EventHandler(this.DeleteAllPolysnotSelectedColorToolStripMenuItem_Click);
             // 
             // killPrecalculatedLightningToolStripMenuItem
             // 
@@ -403,7 +421,7 @@ namespace KimeraCS
             this.killPrecalculatedLightningToolStripMenuItem.Size = new System.Drawing.Size(258, 22);
             this.killPrecalculatedLightningToolStripMenuItem.Text = "Kill precalculated lighting";
             this.killPrecalculatedLightningToolStripMenuItem.Visible = false;
-            this.killPrecalculatedLightningToolStripMenuItem.Click += new System.EventHandler(this.killPrecalculatedLightningToolStripMenuItem_Click);
+            this.killPrecalculatedLightningToolStripMenuItem.Click += new System.EventHandler(this.KillPrecalculatedLightningToolStripMenuItem_Click);
             // 
             // panel1
             // 
@@ -459,7 +477,7 @@ namespace KimeraCS
             this.pbPaletteColor.Size = new System.Drawing.Size(42, 20);
             this.pbPaletteColor.TabIndex = 30;
             this.pbPaletteColor.TabStop = false;
-            this.pbPaletteColor.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pbPaletteColor_MouseDown);
+            this.pbPaletteColor.MouseDown += new System.Windows.Forms.MouseEventHandler(this.PbPaletteColor_MouseDown);
             // 
             // btnResetBrightness
             // 
@@ -472,7 +490,7 @@ namespace KimeraCS
             this.btnResetBrightness.Size = new System.Drawing.Size(24, 24);
             this.btnResetBrightness.TabIndex = 28;
             this.btnResetBrightness.UseVisualStyleBackColor = true;
-            this.btnResetBrightness.Click += new System.EventHandler(this.btnResetBrightness_Click);
+            this.btnResetBrightness.Click += new System.EventHandler(this.BtnResetBrightness_Click);
             // 
             // btnLessBrightness
             // 
@@ -485,7 +503,7 @@ namespace KimeraCS
             this.btnLessBrightness.Size = new System.Drawing.Size(24, 24);
             this.btnLessBrightness.TabIndex = 27;
             this.btnLessBrightness.UseVisualStyleBackColor = true;
-            this.btnLessBrightness.Click += new System.EventHandler(this.btnLessBrightness_Click);
+            this.btnLessBrightness.Click += new System.EventHandler(this.BtnLessBrightness_Click);
             // 
             // btnMoreBrightness
             // 
@@ -498,7 +516,7 @@ namespace KimeraCS
             this.btnMoreBrightness.Size = new System.Drawing.Size(24, 24);
             this.btnMoreBrightness.TabIndex = 26;
             this.btnMoreBrightness.UseVisualStyleBackColor = true;
-            this.btnMoreBrightness.Click += new System.EventHandler(this.btnMoreBrightness_Click);
+            this.btnMoreBrightness.Click += new System.EventHandler(this.BtnMoreBrightness_Click);
             // 
             // lblBrightness
             // 
@@ -517,7 +535,7 @@ namespace KimeraCS
             this.txtSelectedColorB.Size = new System.Drawing.Size(33, 20);
             this.txtSelectedColorB.TabIndex = 24;
             this.txtSelectedColorB.Text = "0";
-            this.txtSelectedColorB.TextChanged += new System.EventHandler(this.txtSelectedColorB_TextChanged);
+            this.txtSelectedColorB.TextChanged += new System.EventHandler(this.TxtSelectedColorB_TextChanged);
             // 
             // hsbSelectedColorB
             // 
@@ -527,7 +545,7 @@ namespace KimeraCS
             this.hsbSelectedColorB.Name = "hsbSelectedColorB";
             this.hsbSelectedColorB.Size = new System.Drawing.Size(94, 19);
             this.hsbSelectedColorB.TabIndex = 23;
-            this.hsbSelectedColorB.ValueChanged += new System.EventHandler(this.hsbSelectedColorB_ValueChanged);
+            this.hsbSelectedColorB.ValueChanged += new System.EventHandler(this.HsbSelectedColorB_ValueChanged);
             // 
             // txtSelectedColorG
             // 
@@ -536,7 +554,7 @@ namespace KimeraCS
             this.txtSelectedColorG.Size = new System.Drawing.Size(33, 20);
             this.txtSelectedColorG.TabIndex = 22;
             this.txtSelectedColorG.Text = "0";
-            this.txtSelectedColorG.TextChanged += new System.EventHandler(this.txtSelectedColorG_TextChanged);
+            this.txtSelectedColorG.TextChanged += new System.EventHandler(this.TxtSelectedColorG_TextChanged);
             // 
             // hsbSelectedColorG
             // 
@@ -546,7 +564,7 @@ namespace KimeraCS
             this.hsbSelectedColorG.Name = "hsbSelectedColorG";
             this.hsbSelectedColorG.Size = new System.Drawing.Size(94, 19);
             this.hsbSelectedColorG.TabIndex = 21;
-            this.hsbSelectedColorG.ValueChanged += new System.EventHandler(this.hsbSelectedColorG_ValueChanged);
+            this.hsbSelectedColorG.ValueChanged += new System.EventHandler(this.HsbSelectedColorG_ValueChanged);
             // 
             // txtSelectedColorR
             // 
@@ -555,7 +573,7 @@ namespace KimeraCS
             this.txtSelectedColorR.Size = new System.Drawing.Size(33, 20);
             this.txtSelectedColorR.TabIndex = 20;
             this.txtSelectedColorR.Text = "0";
-            this.txtSelectedColorR.TextChanged += new System.EventHandler(this.txtSelectedColorR_TextChanged);
+            this.txtSelectedColorR.TextChanged += new System.EventHandler(this.TxtSelectedColorR_TextChanged);
             // 
             // hsbSelectedColorR
             // 
@@ -565,7 +583,7 @@ namespace KimeraCS
             this.hsbSelectedColorR.Name = "hsbSelectedColorR";
             this.hsbSelectedColorR.Size = new System.Drawing.Size(94, 19);
             this.hsbSelectedColorR.TabIndex = 19;
-            this.hsbSelectedColorR.ValueChanged += new System.EventHandler(this.hsbSelectedColorR_ValueChanged);
+            this.hsbSelectedColorR.ValueChanged += new System.EventHandler(this.HsbSelectedColorR_ValueChanged);
             // 
             // txtThresholdSlider
             // 
@@ -575,7 +593,7 @@ namespace KimeraCS
             this.txtThresholdSlider.Size = new System.Drawing.Size(33, 20);
             this.txtThresholdSlider.TabIndex = 18;
             this.txtThresholdSlider.Text = "0";
-            this.txtThresholdSlider.TextChanged += new System.EventHandler(this.txtThresholdSlider_TextChanged);
+            this.txtThresholdSlider.TextChanged += new System.EventHandler(this.TxtThresholdSlider_TextChanged);
             // 
             // hsbThresholdSlider
             // 
@@ -586,7 +604,7 @@ namespace KimeraCS
             this.hsbThresholdSlider.Name = "hsbThresholdSlider";
             this.hsbThresholdSlider.Size = new System.Drawing.Size(94, 19);
             this.hsbThresholdSlider.TabIndex = 17;
-            this.hsbThresholdSlider.ValueChanged += new System.EventHandler(this.hsbThresholdSlider_ValueChanged);
+            this.hsbThresholdSlider.ValueChanged += new System.EventHandler(this.HsbThresholdSlider_ValueChanged);
             // 
             // lblDetectionThreshold
             // 
@@ -607,7 +625,7 @@ namespace KimeraCS
             this.chkPaletteMode.TabIndex = 8;
             this.chkPaletteMode.Text = "Pallete mode";
             this.chkPaletteMode.UseVisualStyleBackColor = true;
-            this.chkPaletteMode.CheckedChanged += new System.EventHandler(this.chkPalettized_CheckedChanged);
+            this.chkPaletteMode.CheckedChanged += new System.EventHandler(this.ChkPalettized_CheckedChanged);
             // 
             // lblBlueLevel
             // 
@@ -660,10 +678,10 @@ namespace KimeraCS
             this.pbPalette.Size = new System.Drawing.Size(132, 148);
             this.pbPalette.TabIndex = 0;
             this.pbPalette.TabStop = false;
-            this.pbPalette.DragDrop += new System.Windows.Forms.DragEventHandler(this.pbPalette_DragDrop);
-            this.pbPalette.DragEnter += new System.Windows.Forms.DragEventHandler(this.pbPalette_DragEnter);
-            this.pbPalette.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pbPalette_MouseDown);
-            this.pbPalette.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pbPalette_MouseMove);
+            this.pbPalette.DragDrop += new System.Windows.Forms.DragEventHandler(this.PbPalette_DragDrop);
+            this.pbPalette.DragEnter += new System.Windows.Forms.DragEventHandler(this.PbPalette_DragEnter);
+            this.pbPalette.MouseDown += new System.Windows.Forms.MouseEventHandler(this.PbPalette_MouseDown);
+            this.pbPalette.MouseMove += new System.Windows.Forms.MouseEventHandler(this.PbPalette_MouseMove);
             // 
             // btnCommitChanges
             // 
@@ -673,7 +691,7 @@ namespace KimeraCS
             this.btnCommitChanges.TabIndex = 1;
             this.btnCommitChanges.Text = "Commit changes";
             this.btnCommitChanges.UseVisualStyleBackColor = true;
-            this.btnCommitChanges.Click += new System.EventHandler(this.btnCommitChanges_Click);
+            this.btnCommitChanges.Click += new System.EventHandler(this.BtnCommitChanges_Click);
             // 
             // chkShowAxes
             // 
@@ -687,7 +705,7 @@ namespace KimeraCS
             this.chkShowAxes.TabIndex = 27;
             this.chkShowAxes.Text = "Show axes";
             this.chkShowAxes.UseVisualStyleBackColor = true;
-            this.chkShowAxes.Click += new System.EventHandler(this.chkShowAxes_Click);
+            this.chkShowAxes.Click += new System.EventHandler(this.ChkShowAxes_Click);
             // 
             // gbDrawMode
             // 
@@ -712,7 +730,7 @@ namespace KimeraCS
             this.rbVertexColors.TabIndex = 2;
             this.rbVertexColors.Text = "Vertex colors";
             this.rbVertexColors.UseVisualStyleBackColor = true;
-            this.rbVertexColors.Click += new System.EventHandler(this.rbVertexColors_Click);
+            this.rbVertexColors.Click += new System.EventHandler(this.RbVertexColors_Click);
             // 
             // rbPolygonColors
             // 
@@ -724,7 +742,7 @@ namespace KimeraCS
             this.rbPolygonColors.TabIndex = 1;
             this.rbPolygonColors.Text = "Polygon colors";
             this.rbPolygonColors.UseVisualStyleBackColor = true;
-            this.rbPolygonColors.Click += new System.EventHandler(this.rbPolygonColors_Click);
+            this.rbPolygonColors.Click += new System.EventHandler(this.RbPolygonColors_Click);
             // 
             // rbMesh
             // 
@@ -736,7 +754,7 @@ namespace KimeraCS
             this.rbMesh.TabIndex = 0;
             this.rbMesh.Text = "Mesh";
             this.rbMesh.UseVisualStyleBackColor = true;
-            this.rbMesh.Click += new System.EventHandler(this.rbMesh_Click);
+            this.rbMesh.Click += new System.EventHandler(this.RbMesh_Click);
             // 
             // panel2
             // 
@@ -786,7 +804,7 @@ namespace KimeraCS
             this.chkShowPlane.TabIndex = 32;
             this.chkShowPlane.Text = "Show plane";
             this.chkShowPlane.UseVisualStyleBackColor = true;
-            this.chkShowPlane.Click += new System.EventHandler(this.chkShowPlane_Click);
+            this.chkShowPlane.Click += new System.EventHandler(this.ChkShowPlane_Click);
             // 
             // nudZPlane
             // 
@@ -805,8 +823,8 @@ namespace KimeraCS
             this.nudZPlane.Name = "nudZPlane";
             this.nudZPlane.Size = new System.Drawing.Size(77, 20);
             this.nudZPlane.TabIndex = 29;
-            this.nudZPlane.ValueChanged += new System.EventHandler(this.nudZPlane_ValueChanged);
-            this.nudZPlane.TextChanged += new System.EventHandler(this.nudZPlane_TextChanged);
+            this.nudZPlane.TextChanged += new System.EventHandler(this.NudZPlane_TextChanged);
+            this.nudZPlane.ValueChanged += new System.EventHandler(this.NudZPlane_ValueChanged);
             // 
             // nudAlphaPlane
             // 
@@ -820,8 +838,8 @@ namespace KimeraCS
             this.nudAlphaPlane.Name = "nudAlphaPlane";
             this.nudAlphaPlane.Size = new System.Drawing.Size(77, 20);
             this.nudAlphaPlane.TabIndex = 30;
-            this.nudAlphaPlane.ValueChanged += new System.EventHandler(this.nudAlphaPlane_ValueChanged);
-            this.nudAlphaPlane.TextChanged += new System.EventHandler(this.nudAlphaPlane_TextChanged);
+            this.nudAlphaPlane.TextChanged += new System.EventHandler(this.NudAlphaPlane_TextChanged);
+            this.nudAlphaPlane.ValueChanged += new System.EventHandler(this.NudAlphaPlane_ValueChanged);
             // 
             // nudYPlane
             // 
@@ -840,8 +858,8 @@ namespace KimeraCS
             this.nudYPlane.Name = "nudYPlane";
             this.nudYPlane.Size = new System.Drawing.Size(77, 20);
             this.nudYPlane.TabIndex = 28;
-            this.nudYPlane.ValueChanged += new System.EventHandler(this.nudYPlane_ValueChanged);
-            this.nudYPlane.TextChanged += new System.EventHandler(this.nudYPlane_TextChanged);
+            this.nudYPlane.TextChanged += new System.EventHandler(this.NudYPlane_TextChanged);
+            this.nudYPlane.ValueChanged += new System.EventHandler(this.NudYPlane_ValueChanged);
             // 
             // nudXPlane
             // 
@@ -860,8 +878,8 @@ namespace KimeraCS
             this.nudXPlane.Name = "nudXPlane";
             this.nudXPlane.Size = new System.Drawing.Size(77, 20);
             this.nudXPlane.TabIndex = 27;
-            this.nudXPlane.ValueChanged += new System.EventHandler(this.nudXPlane_ValueChanged);
-            this.nudXPlane.TextChanged += new System.EventHandler(this.nudXPlane_TextChanged);
+            this.nudXPlane.TextChanged += new System.EventHandler(this.NudXPlane_TextChanged);
+            this.nudXPlane.ValueChanged += new System.EventHandler(this.NudXPlane_ValueChanged);
             // 
             // nudBetaPlane
             // 
@@ -875,8 +893,8 @@ namespace KimeraCS
             this.nudBetaPlane.Name = "nudBetaPlane";
             this.nudBetaPlane.Size = new System.Drawing.Size(77, 20);
             this.nudBetaPlane.TabIndex = 31;
-            this.nudBetaPlane.ValueChanged += new System.EventHandler(this.nudBetaPlane_ValueChanged);
-            this.nudBetaPlane.TextChanged += new System.EventHandler(this.nudBetaPlane_TextChanged);
+            this.nudBetaPlane.TextChanged += new System.EventHandler(this.NudBetaPlane_TextChanged);
+            this.nudBetaPlane.ValueChanged += new System.EventHandler(this.NudBetaPlane_ValueChanged);
             // 
             // lblAlphaPO
             // 
@@ -939,7 +957,7 @@ namespace KimeraCS
             this.btnClose.TabIndex = 3;
             this.btnClose.Text = "Close";
             this.btnClose.UseVisualStyleBackColor = true;
-            this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
+            this.btnClose.Click += new System.EventHandler(this.BtnClose_Click);
             // 
             // gbRotation
             // 
@@ -967,7 +985,7 @@ namespace KimeraCS
             this.txtRotateBeta.Size = new System.Drawing.Size(28, 20);
             this.txtRotateBeta.TabIndex = 24;
             this.txtRotateBeta.Text = "0";
-            this.txtRotateBeta.TextChanged += new System.EventHandler(this.txtRotateBeta_TextChanged);
+            this.txtRotateBeta.TextChanged += new System.EventHandler(this.TxtRotateBeta_TextChanged);
             // 
             // hsbRotateAlpha
             // 
@@ -977,7 +995,7 @@ namespace KimeraCS
             this.hsbRotateAlpha.Name = "hsbRotateAlpha";
             this.hsbRotateAlpha.Size = new System.Drawing.Size(90, 19);
             this.hsbRotateAlpha.TabIndex = 21;
-            this.hsbRotateAlpha.ValueChanged += new System.EventHandler(this.hsbRotateAlpha_ValueChanged);
+            this.hsbRotateAlpha.ValueChanged += new System.EventHandler(this.HsbRotateAlpha_ValueChanged);
             // 
             // txtRotateGamma
             // 
@@ -986,7 +1004,7 @@ namespace KimeraCS
             this.txtRotateGamma.Size = new System.Drawing.Size(28, 20);
             this.txtRotateGamma.TabIndex = 26;
             this.txtRotateGamma.Text = "0";
-            this.txtRotateGamma.TextChanged += new System.EventHandler(this.txtRotateGamma_TextChanged);
+            this.txtRotateGamma.TextChanged += new System.EventHandler(this.TxtRotateGamma_TextChanged);
             // 
             // hsbRotateGamma
             // 
@@ -996,7 +1014,7 @@ namespace KimeraCS
             this.hsbRotateGamma.Name = "hsbRotateGamma";
             this.hsbRotateGamma.Size = new System.Drawing.Size(90, 19);
             this.hsbRotateGamma.TabIndex = 25;
-            this.hsbRotateGamma.ValueChanged += new System.EventHandler(this.hsbRotateGamma_ValueChanged);
+            this.hsbRotateGamma.ValueChanged += new System.EventHandler(this.HsbRotateGamma_ValueChanged);
             // 
             // lblRotateGamma
             // 
@@ -1016,7 +1034,7 @@ namespace KimeraCS
             this.hsbRotateBeta.Name = "hsbRotateBeta";
             this.hsbRotateBeta.Size = new System.Drawing.Size(90, 19);
             this.hsbRotateBeta.TabIndex = 23;
-            this.hsbRotateBeta.ValueChanged += new System.EventHandler(this.hsbRotateBeta_ValueChanged);
+            this.hsbRotateBeta.ValueChanged += new System.EventHandler(this.HsbRotateBeta_ValueChanged);
             // 
             // lblRotateBeta
             // 
@@ -1045,7 +1063,7 @@ namespace KimeraCS
             this.txtRotateAlpha.Size = new System.Drawing.Size(28, 20);
             this.txtRotateAlpha.TabIndex = 22;
             this.txtRotateAlpha.Text = "0";
-            this.txtRotateAlpha.TextChanged += new System.EventHandler(this.txtRotateAlpha_TextChanged);
+            this.txtRotateAlpha.TextChanged += new System.EventHandler(this.TxtRotateAlpha_TextChanged);
             // 
             // gbReposition
             // 
@@ -1073,7 +1091,7 @@ namespace KimeraCS
             this.txtRepositionZ.Size = new System.Drawing.Size(28, 20);
             this.txtRepositionZ.TabIndex = 20;
             this.txtRepositionZ.Text = "0";
-            this.txtRepositionZ.TextChanged += new System.EventHandler(this.txtRepositionZ_TextChanged);
+            this.txtRepositionZ.TextChanged += new System.EventHandler(this.TxtRepositionZ_TextChanged);
             // 
             // hsbRepositionZ
             // 
@@ -1084,7 +1102,7 @@ namespace KimeraCS
             this.hsbRepositionZ.Name = "hsbRepositionZ";
             this.hsbRepositionZ.Size = new System.Drawing.Size(78, 19);
             this.hsbRepositionZ.TabIndex = 19;
-            this.hsbRepositionZ.ValueChanged += new System.EventHandler(this.hsbRepositionZ_ValueChanged);
+            this.hsbRepositionZ.ValueChanged += new System.EventHandler(this.HsbRepositionZ_ValueChanged);
             // 
             // lblRepositionZ
             // 
@@ -1103,7 +1121,7 @@ namespace KimeraCS
             this.txtRepositionY.Size = new System.Drawing.Size(28, 20);
             this.txtRepositionY.TabIndex = 18;
             this.txtRepositionY.Text = "0";
-            this.txtRepositionY.TextChanged += new System.EventHandler(this.txtRepositionY_TextChanged);
+            this.txtRepositionY.TextChanged += new System.EventHandler(this.TxtRepositionY_TextChanged);
             // 
             // hsbRepositionY
             // 
@@ -1114,7 +1132,7 @@ namespace KimeraCS
             this.hsbRepositionY.Name = "hsbRepositionY";
             this.hsbRepositionY.Size = new System.Drawing.Size(78, 19);
             this.hsbRepositionY.TabIndex = 17;
-            this.hsbRepositionY.ValueChanged += new System.EventHandler(this.hsbRepositionY_ValueChanged);
+            this.hsbRepositionY.ValueChanged += new System.EventHandler(this.HsbRepositionY_ValueChanged);
             // 
             // lblRepositionY
             // 
@@ -1143,7 +1161,7 @@ namespace KimeraCS
             this.txtRepositionX.Size = new System.Drawing.Size(28, 20);
             this.txtRepositionX.TabIndex = 16;
             this.txtRepositionX.Text = "0";
-            this.txtRepositionX.TextChanged += new System.EventHandler(this.txtRepositionX_TextChanged);
+            this.txtRepositionX.TextChanged += new System.EventHandler(this.TxtRepositionX_TextChanged);
             // 
             // hsbRepositionX
             // 
@@ -1154,7 +1172,7 @@ namespace KimeraCS
             this.hsbRepositionX.Name = "hsbRepositionX";
             this.hsbRepositionX.Size = new System.Drawing.Size(78, 19);
             this.hsbRepositionX.TabIndex = 15;
-            this.hsbRepositionX.ValueChanged += new System.EventHandler(this.hsbRepositionX_ValueChanged);
+            this.hsbRepositionX.ValueChanged += new System.EventHandler(this.HsbRepositionX_ValueChanged);
             // 
             // gbResize
             // 
@@ -1183,7 +1201,7 @@ namespace KimeraCS
             this.txtResizeZ.Size = new System.Drawing.Size(28, 20);
             this.txtResizeZ.TabIndex = 14;
             this.txtResizeZ.Text = "100";
-            this.txtResizeZ.TextChanged += new System.EventHandler(this.txtResizeZ_TextChanged);
+            this.txtResizeZ.TextChanged += new System.EventHandler(this.TxtResizeZ_TextChanged);
             // 
             // hsbResizeZ
             // 
@@ -1194,7 +1212,7 @@ namespace KimeraCS
             this.hsbResizeZ.Size = new System.Drawing.Size(78, 19);
             this.hsbResizeZ.TabIndex = 13;
             this.hsbResizeZ.Value = 100;
-            this.hsbResizeZ.ValueChanged += new System.EventHandler(this.hsbResizeZ_ValueChanged);
+            this.hsbResizeZ.ValueChanged += new System.EventHandler(this.HsbResizeZ_ValueChanged);
             // 
             // lblResizePieceZ
             // 
@@ -1213,7 +1231,7 @@ namespace KimeraCS
             this.txtResizeY.Size = new System.Drawing.Size(28, 20);
             this.txtResizeY.TabIndex = 12;
             this.txtResizeY.Text = "100";
-            this.txtResizeY.TextChanged += new System.EventHandler(this.txtResizeY_TextChanged);
+            this.txtResizeY.TextChanged += new System.EventHandler(this.TxtResizeY_TextChanged);
             // 
             // hsbResizeY
             // 
@@ -1224,7 +1242,7 @@ namespace KimeraCS
             this.hsbResizeY.Size = new System.Drawing.Size(78, 19);
             this.hsbResizeY.TabIndex = 11;
             this.hsbResizeY.Value = 100;
-            this.hsbResizeY.ValueChanged += new System.EventHandler(this.hsbResizeY_ValueChanged);
+            this.hsbResizeY.ValueChanged += new System.EventHandler(this.HsbResizeY_ValueChanged);
             // 
             // lblResizePieceY
             // 
@@ -1253,7 +1271,7 @@ namespace KimeraCS
             this.txtResizeX.Size = new System.Drawing.Size(28, 20);
             this.txtResizeX.TabIndex = 10;
             this.txtResizeX.Text = "100";
-            this.txtResizeX.TextChanged += new System.EventHandler(this.txtResizeX_TextChanged);
+            this.txtResizeX.TextChanged += new System.EventHandler(this.TxtResizeX_TextChanged);
             // 
             // hsbResizeX
             // 
@@ -1264,7 +1282,7 @@ namespace KimeraCS
             this.hsbResizeX.Size = new System.Drawing.Size(78, 19);
             this.hsbResizeX.TabIndex = 9;
             this.hsbResizeX.Value = 100;
-            this.hsbResizeX.ValueChanged += new System.EventHandler(this.hsbResizeX_ValueChanged);
+            this.hsbResizeX.ValueChanged += new System.EventHandler(this.HsbResizeX_ValueChanged);
             // 
             // panel3
             // 
@@ -1313,7 +1331,7 @@ namespace KimeraCS
             this.rbNewPolygon.TextAlign = System.Drawing.ContentAlignment.TopRight;
             this.rbNewPolygon.TextImageRelation = System.Windows.Forms.TextImageRelation.TextAboveImage;
             this.rbNewPolygon.UseVisualStyleBackColor = false;
-            this.rbNewPolygon.MouseDown += new System.Windows.Forms.MouseEventHandler(this.rbNewPolygon_MouseDown);
+            this.rbNewPolygon.MouseDown += new System.Windows.Forms.MouseEventHandler(this.RbNewPolygon_MouseDown);
             // 
             // rbPanning
             // 
@@ -1327,7 +1345,7 @@ namespace KimeraCS
             this.rbPanning.TabIndex = 39;
             this.rbPanning.TabStop = true;
             this.rbPanning.UseVisualStyleBackColor = false;
-            this.rbPanning.MouseDown += new System.Windows.Forms.MouseEventHandler(this.rbPanning_MouseDown);
+            this.rbPanning.MouseDown += new System.Windows.Forms.MouseEventHandler(this.RbPanning_MouseDown);
             // 
             // rbZoomInOut
             // 
@@ -1341,7 +1359,7 @@ namespace KimeraCS
             this.rbZoomInOut.TabIndex = 38;
             this.rbZoomInOut.TabStop = true;
             this.rbZoomInOut.UseVisualStyleBackColor = false;
-            this.rbZoomInOut.MouseDown += new System.Windows.Forms.MouseEventHandler(this.rbZoomInOut_MouseDown);
+            this.rbZoomInOut.MouseDown += new System.Windows.Forms.MouseEventHandler(this.RbZoomInOut_MouseDown);
             // 
             // rbFreeRotate
             // 
@@ -1355,7 +1373,7 @@ namespace KimeraCS
             this.rbFreeRotate.TabIndex = 37;
             this.rbFreeRotate.TabStop = true;
             this.rbFreeRotate.UseVisualStyleBackColor = false;
-            this.rbFreeRotate.MouseDown += new System.Windows.Forms.MouseEventHandler(this.rbFreeRotate_MouseDown);
+            this.rbFreeRotate.MouseDown += new System.Windows.Forms.MouseEventHandler(this.RbFreeRotate_MouseDown);
             // 
             // rbMoveVertex
             // 
@@ -1368,7 +1386,7 @@ namespace KimeraCS
             this.rbMoveVertex.TabIndex = 36;
             this.rbMoveVertex.TabStop = true;
             this.rbMoveVertex.UseVisualStyleBackColor = true;
-            this.rbMoveVertex.MouseDown += new System.Windows.Forms.MouseEventHandler(this.rbMoveVertex_MouseDown);
+            this.rbMoveVertex.MouseDown += new System.Windows.Forms.MouseEventHandler(this.RbMoveVertex_MouseDown);
             // 
             // rbErasePolygon
             // 
@@ -1382,7 +1400,7 @@ namespace KimeraCS
             this.rbErasePolygon.TabIndex = 35;
             this.rbErasePolygon.TabStop = true;
             this.rbErasePolygon.UseVisualStyleBackColor = false;
-            this.rbErasePolygon.MouseDown += new System.Windows.Forms.MouseEventHandler(this.rbErasePolygon_MouseDown);
+            this.rbErasePolygon.MouseDown += new System.Windows.Forms.MouseEventHandler(this.RbErasePolygon_MouseDown);
             // 
             // rbCutEdge
             // 
@@ -1396,7 +1414,7 @@ namespace KimeraCS
             this.rbCutEdge.TabIndex = 34;
             this.rbCutEdge.TabStop = true;
             this.rbCutEdge.UseVisualStyleBackColor = false;
-            this.rbCutEdge.MouseDown += new System.Windows.Forms.MouseEventHandler(this.rbCutEdge_MouseDown);
+            this.rbCutEdge.MouseDown += new System.Windows.Forms.MouseEventHandler(this.RbCutEdge_MouseDown);
             // 
             // rbPaintPolygon
             // 
@@ -1410,7 +1428,7 @@ namespace KimeraCS
             this.rbPaintPolygon.TabIndex = 33;
             this.rbPaintPolygon.TabStop = true;
             this.rbPaintPolygon.UseVisualStyleBackColor = false;
-            this.rbPaintPolygon.MouseDown += new System.Windows.Forms.MouseEventHandler(this.rbPaintPolygon_MouseDown);
+            this.rbPaintPolygon.MouseDown += new System.Windows.Forms.MouseEventHandler(this.RbPaintPolygon_MouseDown);
             // 
             // gbGroups
             // 
@@ -1438,7 +1456,7 @@ namespace KimeraCS
             this.btnDuplicateGroup.TabIndex = 4;
             this.btnDuplicateGroup.Text = "Duplicate group";
             this.btnDuplicateGroup.UseVisualStyleBackColor = true;
-            this.btnDuplicateGroup.Click += new System.EventHandler(this.btnDuplicateGroup_Click);
+            this.btnDuplicateGroup.Click += new System.EventHandler(this.BtnDuplicateGroup_Click);
             // 
             // btnRemoveGroup
             // 
@@ -1449,7 +1467,7 @@ namespace KimeraCS
             this.btnRemoveGroup.TabIndex = 3;
             this.btnRemoveGroup.Text = "Remove group";
             this.btnRemoveGroup.UseVisualStyleBackColor = true;
-            this.btnRemoveGroup.Click += new System.EventHandler(this.btnRemoveGroup_Click);
+            this.btnRemoveGroup.Click += new System.EventHandler(this.BtnRemoveGroup_Click);
             // 
             // btnGroupProperties
             // 
@@ -1460,7 +1478,7 @@ namespace KimeraCS
             this.btnGroupProperties.TabIndex = 5;
             this.btnGroupProperties.Text = "Group properties";
             this.btnGroupProperties.UseVisualStyleBackColor = true;
-            this.btnGroupProperties.Click += new System.EventHandler(this.btnGroupProperties_Click);
+            this.btnGroupProperties.Click += new System.EventHandler(this.BtnGroupProperties_Click);
             // 
             // btnHideShowGroup
             // 
@@ -1471,7 +1489,7 @@ namespace KimeraCS
             this.btnHideShowGroup.TabIndex = 6;
             this.btnHideShowGroup.Text = "Hide/Show group";
             this.btnHideShowGroup.UseVisualStyleBackColor = true;
-            this.btnHideShowGroup.Click += new System.EventHandler(this.btnHideShowGroup_Click);
+            this.btnHideShowGroup.Click += new System.EventHandler(this.BtnHideShowGroup_Click);
             // 
             // btnDownGroup
             // 
@@ -1482,7 +1500,7 @@ namespace KimeraCS
             this.btnDownGroup.Size = new System.Drawing.Size(19, 42);
             this.btnDownGroup.TabIndex = 2;
             this.btnDownGroup.UseVisualStyleBackColor = true;
-            this.btnDownGroup.Click += new System.EventHandler(this.btnDownGroup_Click);
+            this.btnDownGroup.Click += new System.EventHandler(this.BtnDownGroup_Click);
             // 
             // btnUpGroup
             // 
@@ -1493,7 +1511,7 @@ namespace KimeraCS
             this.btnUpGroup.Size = new System.Drawing.Size(19, 42);
             this.btnUpGroup.TabIndex = 1;
             this.btnUpGroup.UseVisualStyleBackColor = true;
-            this.btnUpGroup.Click += new System.EventHandler(this.btnUpGroup_Click);
+            this.btnUpGroup.Click += new System.EventHandler(this.BtnUpGroup_Click);
             // 
             // lbGroups
             // 
@@ -1503,8 +1521,8 @@ namespace KimeraCS
             this.lbGroups.Name = "lbGroups";
             this.lbGroups.Size = new System.Drawing.Size(155, 84);
             this.lbGroups.TabIndex = 0;
-            this.lbGroups.Click += new System.EventHandler(this.lbGroups_Click);
-            this.lbGroups.DoubleClick += new System.EventHandler(this.lbGroups_DoubleClick);
+            this.lbGroups.Click += new System.EventHandler(this.LbGroups_Click);
+            this.lbGroups.DoubleClick += new System.EventHandler(this.LbGroups_DoubleClick);
             // 
             // gbLight
             // 
@@ -1542,7 +1560,7 @@ namespace KimeraCS
             this.hsbLightZ.Name = "hsbLightZ";
             this.hsbLightZ.Size = new System.Drawing.Size(84, 17);
             this.hsbLightZ.TabIndex = 5;
-            this.hsbLightZ.ValueChanged += new System.EventHandler(this.hsbLightZ_ValueChanged);
+            this.hsbLightZ.ValueChanged += new System.EventHandler(this.HsbLightZ_ValueChanged);
             // 
             // lblY
             // 
@@ -1563,7 +1581,7 @@ namespace KimeraCS
             this.hsbLightY.Name = "hsbLightY";
             this.hsbLightY.Size = new System.Drawing.Size(84, 17);
             this.hsbLightY.TabIndex = 3;
-            this.hsbLightY.ValueChanged += new System.EventHandler(this.hsbLightY_ValueChanged);
+            this.hsbLightY.ValueChanged += new System.EventHandler(this.HsbLightY_ValueChanged);
             // 
             // lblX
             // 
@@ -1584,7 +1602,7 @@ namespace KimeraCS
             this.hsbLightX.Name = "hsbLightX";
             this.hsbLightX.Size = new System.Drawing.Size(84, 17);
             this.hsbLightX.TabIndex = 1;
-            this.hsbLightX.ValueChanged += new System.EventHandler(this.hsbLightX_ValueChanged);
+            this.hsbLightX.ValueChanged += new System.EventHandler(this.HsbLightX_ValueChanged);
             // 
             // chkEnableLighting
             // 
@@ -1601,7 +1619,7 @@ namespace KimeraCS
             this.chkEnableLighting.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.chkEnableLighting.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
             this.chkEnableLighting.UseVisualStyleBackColor = true;
-            this.chkEnableLighting.CheckedChanged += new System.EventHandler(this.chkEnableLighting_CheckedChanged);
+            this.chkEnableLighting.CheckedChanged += new System.EventHandler(this.ChkEnableLighting_CheckedChanged);
             // 
             // panelEditorPModel
             // 
@@ -1614,17 +1632,24 @@ namespace KimeraCS
             this.panelEditorPModel.Size = new System.Drawing.Size(417, 322);
             this.panelEditorPModel.TabIndex = 4;
             this.panelEditorPModel.TabStop = false;
-            this.panelEditorPModel.Paint += new System.Windows.Forms.PaintEventHandler(this.panelEditorPModel_Paint);
-            this.panelEditorPModel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.panelEditorPModel_MouseDown);
-            this.panelEditorPModel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.panelEditorPModel_MouseMove);
-            this.panelEditorPModel.MouseUp += new System.Windows.Forms.MouseEventHandler(this.panelEditorPModel_MouseUp);
+            this.panelEditorPModel.Paint += new System.Windows.Forms.PaintEventHandler(this.PanelEditorPModel_Paint);
+            this.panelEditorPModel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.PanelEditorPModel_MouseDown);
+            this.panelEditorPModel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.PanelEditorPModel_MouseMove);
+            this.panelEditorPModel.MouseUp += new System.Windows.Forms.MouseEventHandler(this.PanelEditorPModel_MouseUp);
             // 
             // tmrRenderPModel
             // 
             this.tmrRenderPModel.Interval = 500;
-            this.tmrRenderPModel.Tick += new System.EventHandler(this.tmrRenderPModel_Tick);
+            this.tmrRenderPModel.Tick += new System.EventHandler(this.TmrRenderPModel_Tick);
             // 
-            // frmPEditor
+            // mergeGroupsIntoOnenotTexturedToolStripMenuItem
+            // 
+            this.mergeGroupsIntoOnenotTexturedToolStripMenuItem.Name = "mergeGroupsIntoOnenotTexturedToolStripMenuItem";
+            this.mergeGroupsIntoOnenotTexturedToolStripMenuItem.Size = new System.Drawing.Size(277, 22);
+            this.mergeGroupsIntoOnenotTexturedToolStripMenuItem.Text = "Merge Groups into One (Not Textured)";
+            this.mergeGroupsIntoOnenotTexturedToolStripMenuItem.Click += new System.EventHandler(this.MergeGroupsIntoOnenotTexturedToolStripMenuItem_Click);
+            // 
+            // FrmPEditor
             // 
             this.AcceptButton = this.btnCommitChanges;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1646,13 +1671,13 @@ namespace KimeraCS
             this.Name = "frmPEditor";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "P Editor";
-            this.Activated += new System.EventHandler(this.frmPEditor_Activated);
-            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.frmPEditor_FormClosed);
-            this.Load += new System.EventHandler(this.frmPEditor_Load);
-            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.frmPEditor_KeyDown);
-            this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.frmPEditor_KeyUp);
-            this.Move += new System.EventHandler(this.frmPEditor_Move);
-            this.Resize += new System.EventHandler(this.frmPEditor_Resize);
+            this.Activated += new System.EventHandler(this.FrmPEditor_Activated);
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.FrmPEditor_FormClosed);
+            this.Load += new System.EventHandler(this.FrmPEditor_Load);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FrmPEditor_KeyDown);
+            this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.FrmPEditor_KeyUp);
+            this.Move += new System.EventHandler(this.FrmPEditor_Move);
+            this.Resize += new System.EventHandler(this.FrmPEditor_Resize);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.panel1.ResumeLayout(false);
@@ -1818,5 +1843,8 @@ namespace KimeraCS
         private System.Windows.Forms.ToolStripMenuItem loadModelAsNewGroupToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
         private System.Windows.Forms.ToolStripMenuItem unselectGroupToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
+        private System.Windows.Forms.ToolStripMenuItem mergeGroupsIntoOneToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem mergeGroupsIntoOnenotTexturedToolStripMenuItem;
     }
 }
