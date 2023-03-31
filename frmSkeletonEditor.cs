@@ -25,7 +25,7 @@ namespace KimeraCS
 
     using Defines;
 
-    using static frmPEditor;
+    using static FrmPEditor;
 
     using static FF7Skeleton;
     using static FF7FieldSkeleton;
@@ -53,10 +53,10 @@ namespace KimeraCS
     using static User32;
     using static GDI32;
 
-    public partial class frmSkeletonEditor : Form
+    public partial class FrmSkeletonEditor : Form
     {
 
-        public const string STR_APPNAME = "KimeraCS 1.7n";
+        public const string STR_APPNAME = "KimeraCS 1.8";
 
         public static int modelWidth;
         public static int modelHeight;
@@ -126,58 +126,61 @@ namespace KimeraCS
         int nUDTexUpDown;
 
         // Other forms instances of main frmSkeletonEditor
-        frmFieldDB frmFieldDatabase;
-        frmBattleDB frmBattleDatabase;
-        frmMagicDB frmMagicDatabase;
-        frmInterpolateAll frmInterpAll;
-        frmTEXToPNGBatchConversion frmTEX2PNGBC;
-        frmSkeletonJoints frmSJ;
+        FrmFieldDB frmFieldDatabase;
+        FrmBattleDB frmBattleDatabase;
+        FrmMagicDB frmMagicDatabase;
+        FrmInterpolateAll frmInterpAll;
+        FrmTEXToPNGBatchConversion frmTEX2PNGBC;
+        FrmSkeletonJoints frmSJ;
 
         // StopWatch
         Stopwatch swPlayAnimation;
 
-
         // PEditor vars
-        public frmPEditor frmPEdit;
+        public FrmPEditor frmPEdit;
 
         // Texture Viewer vars
-        public frmTextureViewer frmTexViewer;
+        public FrmTextureViewer frmTexViewer;
         public bool bPaintGreen;
         public int iTexCoordViewerScale;
 
         // TMD Object List
-        public frmTMDObjList frmTMDOL;
+        public FrmTMDObjList frmTMDOL;
 
         // DPI vars
         public decimal dDPIScaleFactor;
-
 
         // Show Normals
         public static bool bShowVertexNormals, bShowFaceNormals;
         public static int iNormalsColor;
         public static float fNormalsScale;
 
-        public frmSkeletonEditor()
+        // SaveAs global variable
+        public static string strGlobalPathSaveAsSkeletonFolder;
+
+
+        /////////////////////////////////////////////////////////////
+        // Main Skeleton Editor class creator:
+        public FrmSkeletonEditor()
         {
             InitializeComponent();
 
             strGlobalPath = Application.StartupPath;
         }
-
-
+       
         /////////////////////////////////////////////////////////////
         // OpenGL methods:
         public void SetOGLSettings()
         {
             glClearDepth(1.0f);
-            glDepthFunc(glFunc.GL_LEQUAL);
-            glEnable(glCapability.GL_DEPTH_TEST);
-            glEnable(glCapability.GL_BLEND);
-            glEnable(glCapability.GL_ALPHA_TEST);
-            glBlendFunc(glBlendFuncFactor.GL_SRC_ALPHA, glBlendFuncFactor.GL_ONE_MINUS_SRC_ALPHA);
-            glAlphaFunc(glFunc.GL_GREATER, 0);
-            glCullFace(glFace.GL_FRONT);
-            glEnable(glCapability.GL_CULL_FACE);
+            glDepthFunc(GLFunc.GL_LEQUAL);
+            glEnable(GLCapability.GL_DEPTH_TEST);
+            glEnable(GLCapability.GL_BLEND);
+            glEnable(GLCapability.GL_ALPHA_TEST);
+            glBlendFunc(GLBlendFuncFactor.GL_SRC_ALPHA, GLBlendFuncFactor.GL_ONE_MINUS_SRC_ALPHA);
+            glAlphaFunc(GLFunc.GL_GREATER, 0);
+            glCullFace(GLFace.GL_FRONT);
+            glEnable(GLCapability.GL_CULL_FACE);
         }
 
         public void InitOpenGLContext()
@@ -187,7 +190,7 @@ namespace KimeraCS
             panelModelDC = GetDC(panelModel.Handle);
             OGLContext = CreateOGLContext(panelModelDC);
 
-            glEnable(glCapability.GL_DEPTH_TEST);
+            glEnable(GLCapability.GL_DEPTH_TEST);
             glClearColor(0.4f, 0.4f, 0.65f, 0);
             //glClearColor(0.20f, 0.20f, 0.28f, 0);
 
@@ -199,7 +202,7 @@ namespace KimeraCS
         /////////////////////////////////////////////////////////////
         // ToolTip Helpers:
         // Create the ToolTip and associate with the Form container.
-        ToolTip toolTip1 = new ToolTip();
+        readonly ToolTip toolTip1 = new ToolTip();
 
         public void DefineToolTips()
         {
@@ -247,7 +250,7 @@ namespace KimeraCS
                 default:
                     // Instantiate Database form
                     bDBLoaded = true;
-                    frmFieldDatabase = new frmFieldDB();
+                    frmFieldDatabase = new FrmFieldDB();
                     break;
             }
 
@@ -312,7 +315,7 @@ namespace KimeraCS
             if (bDBEnemiesLoaded || bDBLocationsLoaded || bDBMainPCsLoaded)
             {
                 showBattlelgpToolStripMenuItem.Enabled = true;
-                frmBattleDatabase = new frmBattleDB();
+                frmBattleDatabase = new FrmBattleDB();
             }                
             else
             {
@@ -340,13 +343,13 @@ namespace KimeraCS
                     showMagiclgpToolStripMenuItem.Enabled = true;
                     bDBMagicLoaded = true;
                     
-                    frmMagicDatabase = new frmMagicDB();
+                    frmMagicDatabase = new FrmMagicDB();
                     break;
             }
 
         }
 
-        private void frmSkeletonEditor_Load(object sender, EventArgs e)
+        private void FrmSkeletonEditor_Load(object sender, EventArgs e)
         {
             ReadCFGFile();
             Text = STR_APPNAME;
@@ -361,8 +364,11 @@ namespace KimeraCS
 
             foreach (Screen screen in screenList)
             {
-                DEVMODE dm = new DEVMODE();
-                dm.dmSize = (short)Marshal.SizeOf(typeof(DEVMODE));
+                DEVMODE dm = new DEVMODE()
+                {
+                    dmSize = (short)Marshal.SizeOf(typeof(DEVMODE)),
+                };
+
                 EnumDisplaySettings(screen.DeviceName, -1, ref dm);
 
                 dDPIScaleFactor = Math.Round(Decimal.Divide(dm.dmPelsWidth, screen.Bounds.Width), 2);
@@ -374,8 +380,8 @@ namespace KimeraCS
 
 
             // Instantiate other forms
-            frmInterpAll = new frmInterpolateAll();
-            frmTEX2PNGBC = new frmTEXToPNGBatchConversion();
+            frmInterpAll = new FrmInterpolateAll();
+            frmTEX2PNGBC = new FrmTEXToPNGBatchConversion();
 
             // Set Minimum Size (using the property sometimes changes auto in designer)
             // Init also Width/Height as per CFG values
@@ -384,6 +390,8 @@ namespace KimeraCS
 
             if (iwindowPosX == 0 && iwindowPosY == 0) this.CenterToScreen();
             else this.Location = new Point(iwindowPosX, iwindowPosY);
+
+            Import3DSFixingPositionToolStripMenuItem.Checked = bAdjust3DSImport;
 
             // Undo/Redo feature
             DoNotAddStateQ = false;
@@ -435,7 +443,7 @@ namespace KimeraCS
 
 
             // Activate MouseWheel events for panelModel PictureBox;
-            panelModel.MouseWheel += panelModel_MouseWheel;
+            panelModel.MouseWheel += PanelModel_MouseWheel;
 
             // Texture Coordinates(UVs) Viewer Globals
             bPaintGreen = false;
@@ -445,7 +453,7 @@ namespace KimeraCS
             InitOpenGLContext();
         }
 
-        private void frmSkeletonEditor_FormClosed(object sender, FormClosedEventArgs e)
+        private void FrmSkeletonEditor_FormClosed(object sender, FormClosedEventArgs e)
         {
             DestroySkeleton();
 
@@ -453,7 +461,7 @@ namespace KimeraCS
             btnPlayStopAnim.Checked = false;
         }
 
-        private void frmSkeletonEditor_KeyDown(object sender, KeyEventArgs e)
+        private void FrmSkeletonEditor_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.ControlKey) controlPressedQ = true;
 
@@ -480,12 +488,23 @@ namespace KimeraCS
 
                         case K_AA_SKELETON:
                         case K_MAGIC_SKELETON:
-                            if (bSkeleton.bones[SelectedBone].Models.Count > 0)
-                                SelectedBonePiece = 0;
+                            if (bSkeleton.nBones == SelectedBone)
+                            {
+                                if (bSkeleton.nWeapons > 0 && cbWeapon.SelectedIndex > -1)
+                                {
+                                    SelectedBonePiece = cbWeapon.SelectedIndex;
+                                }
+                            }
+                            else
+                            {
+                                if (bSkeleton.bones[SelectedBone].Models.Count > 0)
+                                    SelectedBonePiece = 0;
+                            }
+
                             break;
                     }
 
-                    panelModel_DoubleClick(sender, e);
+                    PanelModel_DoubleClick(sender, e);
                 }                   
 
             if (e.KeyCode == Keys.F2)
@@ -497,20 +516,20 @@ namespace KimeraCS
             if (controlPressedQ && e.KeyCode == Keys.Right) beta++;
 
             panelModel.Update();
-            panelModel_Paint(null, null);
-            textureViewer_Paint(null, null);
+            PanelModel_Paint(null, null);
+            TextureViewer_Paint(null, null);
         }
 
-        private void frmSkeletonEditor_KeyUp(object sender, KeyEventArgs e)
+        private void FrmSkeletonEditor_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Control || e.KeyCode == Keys.ControlKey) controlPressedQ = false;
 
             panelModel.Update();
-            panelModel_Paint(null, null);
-            textureViewer_Paint(null, null);
+            PanelModel_Paint(null, null);
+            TextureViewer_Paint(null, null);
         }
 
-        private void frmSkeletonEditor_Resize(object sender, EventArgs e)
+        private void FrmSkeletonEditor_Resize(object sender, EventArgs e)
         {
             // Check first if minimized.
             if (Application.OpenForms.Count > 0)
@@ -519,11 +538,11 @@ namespace KimeraCS
 
                 // We can redraw the model in panel
                 panelModel.Update();
-                panelModel_Paint(null, null);
+                PanelModel_Paint(null, null);
 
                 // We can redraw the texture in picturebox
                 pbTextureViewer.Update();
-                textureViewer_Paint(null, null);
+                TextureViewer_Paint(null, null);
             }
 
             // Assign this size if visible
@@ -907,6 +926,9 @@ namespace KimeraCS
             // Show normals menu item
             showNormalsToolStripMenuItem.Enabled = true;
 
+            // SaveAs reset
+            strGlobalPathSaveAsSkeletonFolder = "";
+
             // Main window title update
             bChangesDone = false;
             UpdateMainSkeletonWindowTitle();
@@ -917,7 +939,7 @@ namespace KimeraCS
             WriteCFGFile();
         }
 
-        public void textureViewer_Paint(object sender, PaintEventArgs e)
+        public void TextureViewer_Paint(object sender, PaintEventArgs e)
         {
             if (cbTextureSelect.SelectedIndex > -1)
             {
@@ -985,7 +1007,7 @@ namespace KimeraCS
             }
         }
 
-        public void panelModel_Paint(object sender, PaintEventArgs e)
+        public void PanelModel_Paint(object sender, PaintEventArgs e)
         {
             if (bLoaded)
             {
@@ -1005,7 +1027,7 @@ namespace KimeraCS
                 ClearPanel();
                 SetDefaultOGLRenderState();
 
-                DrawSkeletonModel(panelModel, cbBattleAnimation, cbWeapon, bDListsEnable);
+                DrawSkeletonModel(bDListsEnable);
 
                 glFlush();
                 SwapBuffers(panelModelDC);
@@ -1014,7 +1036,7 @@ namespace KimeraCS
         }
 
         // BACKUP
-        //public void panelModel_Paint(object sender, PaintEventArgs e)
+        //public void PanelModel_Paint(object sender, PaintEventArgs e)
         //{
         //    if (bLoaded)
         //    {
@@ -1061,24 +1083,24 @@ namespace KimeraCS
             selectBoneForWeaponAttachmentQ = false;
 
             glClearDepth(1.0f);
-            glDepthFunc(glFunc.GL_LEQUAL);
-            glEnable(glCapability.GL_DEPTH_TEST);
-            glEnable(glCapability.GL_BLEND);
-            glEnable(glCapability.GL_ALPHA_TEST);
-            glBlendFunc(glBlendFuncFactor.GL_SRC_ALPHA, glBlendFuncFactor.GL_ONE_MINUS_SRC_ALPHA);
-            glAlphaFunc(glFunc.GL_GREATER, 0);
-            glCullFace(glFace.GL_FRONT);
-            glEnable(glCapability.GL_CULL_FACE);
+            glDepthFunc(GLFunc.GL_LEQUAL);
+            glEnable(GLCapability.GL_DEPTH_TEST);
+            glEnable(GLCapability.GL_BLEND);
+            glEnable(GLCapability.GL_ALPHA_TEST);
+            glBlendFunc(GLBlendFuncFactor.GL_SRC_ALPHA, GLBlendFuncFactor.GL_ONE_MINUS_SRC_ALPHA);
+            glAlphaFunc(GLFunc.GL_GREATER, 0);
+            glCullFace(GLFace.GL_FRONT);
+            glEnable(GLCapability.GL_CULL_FACE);
         }
 
-        private void checkBDListEnable_CheckedChanged(object sender, EventArgs e)
+        private void CheckBDListEnable_CheckedChanged(object sender, EventArgs e)
         {
             bDListsEnable = chkDListEnable.Checked;
 
-            panelModel_Paint(null, null);
+            PanelModel_Paint(null, null);
         }
 
-        private void cbBoneSelector_SelectedIndexChanged(object sender, EventArgs e)
+        private void CbBoneSelector_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (bLoaded)
             {
@@ -1106,7 +1128,7 @@ namespace KimeraCS
                 SetTextureEditorFields();
 
                 if (!pbMouseIsDown)
-                    panelModel_Paint(null, null);
+                    PanelModel_Paint(null, null);
             }
         }
 
@@ -1389,14 +1411,15 @@ namespace KimeraCS
             loadingAnimationQ = false;
         }
 
-        private void panelModel_MouseUp(object sender, MouseEventArgs e)
+        private void PanelModel_MouseUp(object sender, MouseEventArgs e)
         {
             pbMouseIsDown = false;
         }
 
-        private void panelModel_MouseDown(object sender, MouseEventArgs e)
+        private void PanelModel_MouseDown(object sender, MouseEventArgs e)
         {
-            int bi, pi;
+            int iBoneIdx, iPolyIdx;
+            bool bWindowPEOpened;
 
             Point3D p_min = new Point3D();
             Point3D p_max = new Point3D();
@@ -1406,11 +1429,15 @@ namespace KimeraCS
             pbMouseIsDown = true;
 
             if (bLoaded)
-            {               
+            {
+                // We will block the MouseDown if frmPEditor is enabled and 
+                // the user clicked in "empty" place
+                if (FindWindowOpened("frmPEditor")) bWindowPEOpened = true;
+                else bWindowPEOpened = false;
 
                 //glClearColor(0.4f, 0.4f, 0.65f, 0);
                 //glViewport(0, 0, panelModel.ClientRectangle.Width, panelModel.ClientRectangle.Height);
-                //glClear(glBufferMask.GL_COLOR_BUFFER_BIT | glBufferMask.GL_DEPTH_BUFFER_BIT);
+                //glClear(GLBufferMask.GL_COLOR_BUFFER_BIT | GLBufferMask.GL_DEPTH_BUFFER_BIT);
 
                 switch (modelType)
                 {
@@ -1421,22 +1448,22 @@ namespace KimeraCS
                         SetCameraAroundModel(ref p_min, ref p_max, panX, panY, (float)(panZ + DIST),
                                              (float)alpha, (float)beta, (float)gamma, 1, 1, 1);
 
-                        bi = GetClosestFieldBone(fSkeleton, fAnimation.frames[tbCurrentFrameScroll.Value],
+                        iBoneIdx = GetClosestFieldBone(fSkeleton, fAnimation.frames[tbCurrentFrameScroll.Value],
                                                  e.X, e.Y);
 
-                        SelectedBone = bi;
-                        cbBoneSelector.SelectedIndex = bi;
+                        SelectedBone = iBoneIdx;
+                        cbBoneSelector.SelectedIndex = iBoneIdx;
 
-                        if (bi > -1)
+                        if (iBoneIdx > -1)
                         {
-                            pi = GetClosestFieldBonePiece(fSkeleton, fAnimation.frames[tbCurrentFrameScroll.Value],
-                                                          bi, e.X, e.Y);
+                            iPolyIdx = GetClosestFieldBonePiece(fSkeleton, fAnimation.frames[tbCurrentFrameScroll.Value],
+                                                                iBoneIdx, e.X, e.Y);
 
-                            SelectedBonePiece = pi;
-                            if (pi > -1)
+                            SelectedBonePiece = iPolyIdx;
+                            if (iPolyIdx > -1)
                             {
                                 SetBonePieceModifiers();
-                                if (!FindWindowOpened("frmPEditor")) gbSelectedPieceFrame.Enabled = true;
+                                if (!bWindowPEOpened) gbSelectedPieceFrame.Enabled = true;
                             }
                             else
                             {
@@ -1444,7 +1471,7 @@ namespace KimeraCS
                             }
 
                             SetBoneModifiers();
-                            if (!FindWindowOpened("frmPEditor")) gbSelectedBoneFrame.Enabled = true;
+                            if (!bWindowPEOpened) gbSelectedBoneFrame.Enabled = true;
                         }
                         else
                         {
@@ -1467,60 +1494,51 @@ namespace KimeraCS
                         if (ianimIndex < bAnimationsPack.nbWeaponAnims && bSkeleton.wpModels.Count > 0)
                             wpFrame = bAnimationsPack.WeaponAnimations[ianimIndex].frames[tbCurrentFrameScroll.Value];
 
-                        bi = GetClosestBattleBone(bSkeleton, bAnimationsPack.SkeletonAnimations[ianimIndex].frames[tbCurrentFrameScroll.Value],
+                        iBoneIdx = GetClosestBattleBone(bSkeleton, bAnimationsPack.SkeletonAnimations[ianimIndex].frames[tbCurrentFrameScroll.Value],
                                                   wpFrame, ianimWeaponIndex, e.X, e.Y);
 
-                        SelectedBone = bi;
+                        SelectedBone = iBoneIdx;
 
-                        if (bi <= bSkeleton.nBones) cbBoneSelector.SelectedIndex = bi;
+                        if (iBoneIdx <= bSkeleton.nBones) cbBoneSelector.SelectedIndex = iBoneIdx;
 
-                        if (bi > -1 && bi < bSkeleton.nBones)
+                        if (iBoneIdx > -1 && iBoneIdx < bSkeleton.nBones)
                         {
                             if (selectBoneForWeaponAttachmentQ) 
                                 SetWeaponAnimationAttachedToBone(e.Button == MouseButtons.Right, this);
 
                             if (bSkeleton.IsBattleLocation)
                             {
-                                pi = 0;
+                                iPolyIdx = 0;
                             }
                             else
                             {
-                                pi = GetClosestBattleBoneModel(bSkeleton, bAnimationsPack.SkeletonAnimations[ianimIndex].frames[tbCurrentFrameScroll.Value],
-                                                               bi, e.X, e.Y);
+                                iPolyIdx = GetClosestBattleBoneModel(bSkeleton, bAnimationsPack.SkeletonAnimations[ianimIndex].frames[tbCurrentFrameScroll.Value],
+                                                               iBoneIdx, e.X, e.Y);
                             }
 
-                            SelectedBonePiece = pi;
+                            SelectedBonePiece = iPolyIdx;
                             SetBoneModifiers();
 
-                            if (pi > -1)
+                            if (iPolyIdx > -1)
                             {
                                 SetBonePieceModifiers();
-                                if (!FindWindowOpened("frmPEditor")) gbSelectedPieceFrame.Enabled = true;
+                                if (!bWindowPEOpened) gbSelectedPieceFrame.Enabled = true;
                             }
                             else gbSelectedPieceFrame.Enabled = false;
-                            if (!FindWindowOpened("frmPEditor")) gbSelectedBoneFrame.Enabled = true;
+                            if (!bWindowPEOpened) gbSelectedBoneFrame.Enabled = true;
                         }
                         else
                         {
-                            if (bi == bSkeleton.nBones)
+                            if (iBoneIdx == bSkeleton.nBones)
                             {
                                 SetBoneModifiers();
                                 SelectedBonePiece = cbWeapon.SelectedIndex;
 
-                                if (!FindWindowOpened("frmPEditor")) gbSelectedBoneFrame.Enabled = true;
+                                if (!bWindowPEOpened) gbSelectedBoneFrame.Enabled = true;
                                 SetBonePieceModifiers();
 
-                                if (!FindWindowOpened("frmPEditor")) gbSelectedPieceFrame.Enabled = true;
+                                if (!bWindowPEOpened) gbSelectedPieceFrame.Enabled = true;
 
-                                // Select the weapon texture
-                                //if (bSkeleton.wpModels[cbWeapon.SelectedIndex].Groups[0].texFlag == 1)
-                                //{
-                                //    if (bSkeleton.textures.Count > bSkeleton.wpModels[cbWeapon.SelectedIndex].Groups[0].texID)
-                                //        cbTextureSelect.SelectedIndex = bSkeleton.wpModels[cbWeapon.SelectedIndex].Groups[0].texID;
-                                //    else
-                                //        if (bSkeleton.textures.Count > 0)
-                                //            cbTextureSelect.SelectedIndex = 0;
-                                //}
                             }
                             else
                             {
@@ -1534,17 +1552,15 @@ namespace KimeraCS
                         break;
                 }
 
-                //  gbAnimationOptionsFrame.Enabled = gbSelectedBoneFrame.Enabled;
-
                 SetFrameEditorFields();
-                panelModel_Paint(null, null);
+                PanelModel_Paint(null, null);
 
                 x_last = e.X;
                 y_last = e.Y;
             }
         }
 
-        private void panelModel_MouseMove(object sender, MouseEventArgs e)
+        private void PanelModel_MouseMove(object sender, MouseEventArgs e)
         {
             if (pbMouseIsDown)
             {
@@ -1584,7 +1600,7 @@ namespace KimeraCS
                         case MouseButtons.Right:
                             aux_dist = (float)DIST;
 
-                            DIST = DIST + (e.Y - y_last) * diameter / 100;
+                            DIST += (e.Y - y_last) * diameter / 100;
 
                             SetCameraModelView(panX, panY, (float)(panZ + DIST), (float)alpha, (float)beta, (float)gamma, 1, 1, 1);
 
@@ -1628,18 +1644,18 @@ namespace KimeraCS
 
                             p_temp = GetUnProjectedCoords(p_temp);
 
-                            panX = panX + p_temp.x;
-                            panY = panY + p_temp.y;
-                            panZ = panZ + p_temp.z;
+                            panX += p_temp.x;
+                            panY += p_temp.y;
+                            panZ += p_temp.z;
 
                             p_temp.x = x_last;
                             p_temp.y = y_last;
                             p_temp.z = GetDepthZ(p_temp2);
                             p_temp = GetUnProjectedCoords(p_temp);
 
-                            panX = panX - p_temp.x;
-                            panY = panY - p_temp.y;
-                            panZ = panZ - p_temp.z;
+                            panX -= p_temp.x;
+                            panY -= p_temp.y;
+                            panZ -= p_temp.z;
 
                             SetCameraModelView(panX, panY, (float)(panZ + DIST), (float)alpha, (float)beta, (float)gamma, 1, 1, 1);
 
@@ -1651,13 +1667,13 @@ namespace KimeraCS
                     x_last = e.X;
                     y_last = e.Y;
 
-                    panelModel_Paint(null, null);
+                    PanelModel_Paint(null, null);
 
                 }
             }
         }
 
-        public void panelModel_MouseWheel(object sender, MouseEventArgs e)
+        public void PanelModel_MouseWheel(object sender, MouseEventArgs e)
         {
             Point3D p_temp;
             Point3D p_temp2;
@@ -1680,9 +1696,9 @@ namespace KimeraCS
                 tmpDIST = (float)DIST;
 
                 if (controlPressedQ)
-                    DIST = DIST + (e.Delta * diameter) / 10000;
+                    DIST += e.Delta * diameter / 10000;
                 else
-                    DIST = DIST + (e.Delta * diameter) / 1000;
+                    DIST += e.Delta * diameter / 1000;
 
                 SetCameraModelView(panX, panY, (float)(panZ + DIST), (float)alpha, (float)beta, (float)gamma, 1, 1, 1);
 
@@ -1695,35 +1711,48 @@ namespace KimeraCS
 
                 p_temp = GetUnProjectedCoords(p_temp);
 
-                panX = panX + p_temp.x;
-                panY = panY + p_temp.y;
-                panZ = panZ + p_temp.z;
+                panX += p_temp.x;
+                panY += p_temp.y;
+                panZ += p_temp.z;
 
                 p_temp.x = x_last;
                 p_temp.y = y_last;
                 p_temp.z = GetDepthZ(p_temp2);
                 p_temp = GetUnProjectedCoords(p_temp);
 
-                panX = panX - p_temp.x;
-                panY = panY - p_temp.y;
-                panZ = panZ - p_temp.z;
+                panX -= p_temp.x;
+                panY -= p_temp.y;
+                panZ -= p_temp.z;
 
                 SetCameraModelView(panX, panY, (float)(panZ + DIST), (float)alpha, (float)beta, (float)gamma, 1, 1, 1);
 
                 if (wasValidQ && IsCameraUnderGround()) panY = aux_y;
 
-                panelModel_Paint(null, null);
+                PanelModel_Paint(null, null);
             }
         }
 
-        private void panelModel_DoubleClick(object sender, EventArgs e)
+        private void PanelModel_DoubleClick(object sender, EventArgs e)
         {
             PModel tmpPModel = new PModel();
 
             if (bLoaded)
             {
-                EditedBone = SelectedBone;
-                EditedBonePiece = SelectedBonePiece;
+
+                // This checks avoids a crash when we "unselect" or "click in
+                // any place outside the model" in skeleton main window.
+                // So, we restore to SelectedBone and SelectedBonePiece its values.
+                if (SelectedBone == -1 || SelectedBonePiece == -1)
+                {
+                    SelectedBone = EditedBone;
+                    SelectedBonePiece = EditedBonePiece;
+                    return;
+                }
+                else
+                {
+                    EditedBone = SelectedBone;
+                    EditedBonePiece = SelectedBonePiece;
+                }
 
                 switch (modelType)
                 {
@@ -1763,7 +1792,7 @@ namespace KimeraCS
                     // Change sliders status
                     ChangeGroupBoxesStatusPEditor(false);
 
-                    frmPEdit = new frmPEditor(this, tmpPModel);
+                    frmPEdit = new FrmPEditor(this, tmpPModel);
                     frmPEdit.Show();
                     frmPEdit.tmrRenderPModel.Interval = 100;
                     frmPEdit.tmrRenderPModel.Start();
@@ -1772,66 +1801,66 @@ namespace KimeraCS
             }
         }
 
-        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        private void ExitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Close();
         }
 
-        private void undoToolStripMenuItem_Click(object sender, EventArgs e)
+        private void UndoToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Undo(frmPEdit, this);
 
-            panelModel_Paint(null, null);
-            textureViewer_Paint(null, null);
+            PanelModel_Paint(null, null);
+            TextureViewer_Paint(null, null);
         }
 
-        private void redoToolStripMenuItem_Click(object sender, EventArgs e)
+        private void RedoToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Redo(frmPEdit, this);
 
-            panelModel_Paint(null, null);
-            textureViewer_Paint(null, null);
+            PanelModel_Paint(null, null);
+            TextureViewer_Paint(null, null);
         }
 
-        private void resetCameraToolStripMenuItem_Click(object sender, EventArgs e)
+        private void ResetCameraToolStripMenuItem_Click(object sender, EventArgs e)
         {
             ResetCamera(ref alpha, ref beta, ref gamma, ref panX, ref panY, ref panZ, ref DIST);
 
-            panelModel_Paint(null, null);
-            textureViewer_Paint(null, null);
+            PanelModel_Paint(null, null);
+            TextureViewer_Paint(null, null);
         }
 
-        private void showCharlgpToolStripMenuItem_Click(object sender, EventArgs e)
+        private void ShowCharlgpToolStripMenuItem_Click(object sender, EventArgs e)
         {
             frmFieldDatabase.ShowDialog();
 
-            if (frmFieldDB.bSelectedFileFromDB)
+            if (FrmFieldDB.bSelectedFileFromDB)
             {
-                loadSkeletonFromDB();
+                LoadSkeletonFromDB();
             }
         }
 
-        private void showBattlelgpToolStripMenuItem_Click(object sender, EventArgs e)
+        private void ShowBattlelgpToolStripMenuItem_Click(object sender, EventArgs e)
         {
             frmBattleDatabase.ShowDialog();
 
-            if (frmBattleDB.bSelectedBattleFileFromDB)
+            if (FrmBattleDB.bSelectedBattleFileFromDB)
             {
-                loadSkeletonFromBattleDB(frmBattleDB.strBattleFile, frmBattleDB.strBattleAnimFile);
+                LoadSkeletonFromBattleDB(FrmBattleDB.strBattleFile, FrmBattleDB.strBattleAnimFile);
             }
         }
 
-        private void showMagiclgpToolStripMenuItem_Click(object sender, EventArgs e)
+        private void ShowMagiclgpToolStripMenuItem_Click(object sender, EventArgs e)
         {
             frmMagicDatabase.ShowDialog();
 
-            if (frmMagicDB.bSelectedMagicFileFromDB)
+            if (FrmMagicDB.bSelectedMagicFileFromDB)
             {
-                loadSkeletonFromBattleDB(frmMagicDB.strMagicFile, frmMagicDB.strMagicAnimFile);
+                LoadSkeletonFromBattleDB(FrmMagicDB.strMagicFile, FrmMagicDB.strMagicAnimFile);
             }
         }
 
-        private void loadFieldSkeletonToolStripMenuItem_Click(object sender, EventArgs e)
+        private void LoadFieldSkeletonToolStripMenuItem_Click(object sender, EventArgs e)
         {
             int iLoadResult;
             Point3D p_min = new Point3D();
@@ -1916,18 +1945,20 @@ namespace KimeraCS
                         PostLoadModelPreparations(ref p_min, ref p_max);
 
                         // We can draw the model in panel
-                        panelModel_Paint(null, null);
+                        PanelModel_Paint(null, null);
                     }
                 }
             }
             catch (Exception ex)
             {
+                strGlobalExceptionMessage = ex.Message;
+
                 MessageBox.Show("Global error opening Field Skeleton file " + Path.GetFileName(openFile.FileName).ToUpper() + ".",
                                 "Error");
             }
         }
 
-        private void loadBattleMagicSkeletonToolStripMenuItem_Click(object sender, EventArgs e)
+        private void LoadBattleMagicSkeletonToolStripMenuItem_Click(object sender, EventArgs e)
         {
             int iLoadResult; //, animIndex;
             Point3D p_min = new Point3D();
@@ -2027,18 +2058,20 @@ namespace KimeraCS
                         PostLoadModelPreparations(ref p_min, ref p_max);
 
                         // We can draw the model in panel
-                        panelModel_Paint(null, null);
+                        PanelModel_Paint(null, null);
                     }
                 }
             }
             catch (Exception ex)
             {
+                strGlobalExceptionMessage = ex.Message;
+
                 MessageBox.Show("Global error opening Battle Skeleton file " + Path.GetFileName(openFile.FileName).ToUpper() + ".",
                                 "Error");
             }
         }
 
-        private void loadRSDResourceToolStripMenuItem_Click(object sender, EventArgs e)
+        private void LoadRSDResourceToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Point3D p_min = new Point3D();
             Point3D p_max = new Point3D();
@@ -2117,19 +2150,21 @@ namespace KimeraCS
                         PostLoadModelPreparations(ref p_min, ref p_max);
 
                         // We can draw the model in panel
-                        panelModel_Paint(null, null);
+                        PanelModel_Paint(null, null);
                     }
                 }
             }
             catch (Exception ex)
             {
+                strGlobalExceptionMessage = ex.Message;
+
                 MessageBox.Show("Error opening Model file " + openFile.FileName.ToUpper() + ".",
                                 "Error");
                 return;
             }
         }
 
-        private void loadPModelToolStripMenuItem_Click(object sender, EventArgs e)
+        private void LoadPModelToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Point3D p_min = new Point3D();
             Point3D p_max = new Point3D();
@@ -2216,19 +2251,21 @@ namespace KimeraCS
                         PostLoadModelPreparations(ref p_min, ref p_max);
 
                         // We can draw the model in panel
-                        panelModel_Paint(null, null);
+                        PanelModel_Paint(null, null);
                     }
                 }
             }
             catch (Exception ex)
             {
+                strGlobalExceptionMessage = ex.Message;
+
                 MessageBox.Show("Error opening P Model file " + openFile.FileName.ToUpper() + ".",
                                 "Error");
                 return;
             }
         }
 
-        private void load3DSToolStripMenuItem_Click(object sender, EventArgs e)
+        private void Load3DSToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Point3D p_min = new Point3D();
             Point3D p_max = new Point3D();
@@ -2285,11 +2322,14 @@ namespace KimeraCS
                         strGlobal3DSModelName = Path.GetFileName(openFile.FileName).ToUpper();
 
                         // We load the 3DS model into memory.
-                        Model3DS[] model3DS;
                         fPModel = new PModel();
 
-                        Load3DS(openFile.FileName, out model3DS);
-                        ConvertModels3DSToPModel(model3DS, ref fPModel);
+                        Load3DS(openFile.FileName, out Model3DS[] model3DS);
+                        ConvertModels3DSToPModel(model3DS, ref fPModel, bAdjust3DSImport);
+
+                        ComputeNormals(ref fPModel);
+                        ComputeEdges(ref fPModel);
+                        ComputeBoundingBox(ref fPModel);
 
                         if (fPModel.Header.numVerts > 0)
                         {
@@ -2311,7 +2351,7 @@ namespace KimeraCS
                             PostLoadModelPreparations(ref p_min, ref p_max);
 
                             // We can draw the model in panel
-                            panelModel_Paint(null, null);
+                            PanelModel_Paint(null, null);
                         }
                     }
                 }
@@ -2324,7 +2364,7 @@ namespace KimeraCS
             }
         }
 
-        private void loadTMDToolStripMenuItem_Click(object sender, EventArgs e)
+        private void LoadTMDToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Point3D p_min = new Point3D();
             Point3D p_max = new Point3D();
@@ -2394,9 +2434,10 @@ namespace KimeraCS
                                 IsTMDModel = true;
 
                                 // Now let's try to convert the TMD model into P model.
-                                fPModel = new PModel();
-
-                                fPModel.fileName = Path.GetFileNameWithoutExtension(strGlobalTMDModelName) + "_" + "001";
+                                fPModel = new PModel()
+                                {
+                                    fileName = Path.GetFileNameWithoutExtension(strGlobalTMDModelName) + "_" + "001",
+                                };
 
                                 ConvertTMD2PModel(ref fPModel, mTMDModel, 0);
 
@@ -2405,7 +2446,7 @@ namespace KimeraCS
                                 //    ConvertTMD2PModel(ref fPModel, mTMDModel, i);
                                 //}
 
-                                frmTMDOL = new frmTMDObjList(this);
+                                frmTMDOL = new FrmTMDObjList(this);
                                 frmTMDOL.PopulateTMDObjList();
                                 frmTMDOL.Show();
                             }
@@ -2438,28 +2479,32 @@ namespace KimeraCS
                         PostLoadModelPreparations(ref p_min, ref p_max);
 
                         // We can draw the model in panel
-                        panelModel_Paint(null, null);
+                        PanelModel_Paint(null, null);
                     }
                 }
             }
             catch (Exception ex)
             {
+                strGlobalExceptionMessage = ex.Message;
+
                 MessageBox.Show("Error opening TMD file " + openFile.FileName.ToUpper() + ".",
                                 "Error");
                 return;
             }
         }
 
-        private void saveSkeletonToolStripMenuItem_Click(object sender, EventArgs e)
+        private void SaveSkeletonToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string modelTypeStr = "";
             string saveFileName = "";
-            int iSaveResult = 0;
+            int iSaveResult;
 
             try
             {
                 if (bLoaded)
                 {
+                    // If we have not selected any folder for saving, let's assing the load folder
+                    // for any case
                     switch (modelType)
                     {
                         case K_HRC_SKELETON:
@@ -2467,15 +2512,19 @@ namespace KimeraCS
                             {
                                 modelTypeStr = "RSD Resource";
 
-                                saveFileName = strGlobalPathRSDResourceFolder + "\\" + strGlobalRSDResourceName.ToUpper();
-                                strGlobalPathSaveSkeletonFolder = strGlobalPathRSDResourceFolder;
+                                if (strGlobalPathSaveAsSkeletonFolder == "")
+                                    strGlobalPathSaveAsSkeletonFolder = strGlobalPathRSDResourceFolder;
+
+                                saveFileName = strGlobalPathSaveAsSkeletonFolder + "\\" + strGlobalRSDResourceName.ToUpper();                                
                             }
                             else
                             {
                                 modelTypeStr = "Field Skeleton";
 
-                                saveFileName = strGlobalPathFieldSkeletonFolder + "\\" + strGlobalFieldSkeletonFileName.ToUpper();
-                                strGlobalPathSaveSkeletonFolder = strGlobalPathFieldSkeletonFolder;
+                                if (strGlobalPathSaveAsSkeletonFolder == "")
+                                    strGlobalPathSaveAsSkeletonFolder = strGlobalPathFieldSkeletonFolder;
+
+                                saveFileName = strGlobalPathSaveAsSkeletonFolder + "\\" + strGlobalFieldSkeletonFileName.ToUpper();                                
                             }
 
                             break;
@@ -2483,17 +2532,24 @@ namespace KimeraCS
                         case K_AA_SKELETON:
                             modelTypeStr = "Battle Skeleton";
 
-                            saveFileName = strGlobalPathBattleSkeletonFolder + "\\" + strGlobalBattleSkeletonFileName.ToUpper();
-                            strGlobalPathSaveSkeletonFolder = strGlobalPathBattleSkeletonFolder;
+                            if (strGlobalPathSaveAsSkeletonFolder == "")
+                                strGlobalPathSaveAsSkeletonFolder = strGlobalPathBattleSkeletonFolder;
+
+                            saveFileName = strGlobalPathSaveAsSkeletonFolder + "\\" + strGlobalBattleSkeletonFileName.ToUpper();
+
                             break;
 
                         case K_MAGIC_SKELETON:
                             modelTypeStr = "Magic Skeleton";
 
-                            saveFileName = strGlobalPathMagicSkeletonFolder + "\\" + strGlobalMagicSkeletonFileName.ToUpper();
-                            strGlobalPathSaveSkeletonFolder = strGlobalPathMagicSkeletonFolder;
+                            if (strGlobalPathSaveAsSkeletonFolder == "")
+                                strGlobalPathSaveAsSkeletonFolder = strGlobalPathMagicSkeletonFolder;
+
+                            saveFileName = strGlobalPathSaveAsSkeletonFolder + "\\" + strGlobalMagicSkeletonFileName.ToUpper();
+                            
                             break;
                     }
+
 
                     // Check if it is RSD Resource.
                     if (IsRSDResource)
@@ -2517,9 +2573,14 @@ namespace KimeraCS
                         bChangesDone = false;
                         UpdateMainSkeletonWindowTitle();
 
-                        panelModel_Paint(null, null);
+                        PanelModel_Paint(null, null);
                     }
-
+                    else
+                    {
+                        MessageBox.Show("There has been some error saving the " + modelTypeStr + " " +
+                                        Path.GetFileName(saveFileName).ToUpper() + ".",
+                                        "Information");
+                    } 
                 }
             }
             catch
@@ -2530,7 +2591,7 @@ namespace KimeraCS
             }
         }
 
-        private void saveSkeletonAsToolStripMenuItem_Click(object sender, EventArgs e)
+        private void SaveSkeletonAsToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
             string modelTypeStr = "";
@@ -2565,8 +2626,6 @@ namespace KimeraCS
                         modelTypeStr = "Field Skeleton";
                     }
 
-                    //if (strGlobalFieldAnimationName == "") saveAnimationFileName = "dummy_animation.a";
-                    //else saveAnimationFileName = strGlobalFieldAnimationName;
                     break;
 
                 case K_AA_SKELETON:
@@ -2578,11 +2637,7 @@ namespace KimeraCS
                     saveFile.FileName = strGlobalBattleSkeletonName.ToUpper();
 
                     modelTypeStr = "Battle Skeleton";
-                    //if (strGlobalBattleAnimationName == "")
-                    //    saveAnimationFileName = strGlobalBattleSkeletonName[0] +
-                    //                            strGlobalBattleSkeletonName[1] +
-                    //                            "da";
-                    //else saveAnimationFileName = strGlobalBattleAnimationName;
+
                     break;
 
                 case K_MAGIC_SKELETON:
@@ -2594,9 +2649,7 @@ namespace KimeraCS
                     saveFile.FileName = strGlobalMagicSkeletonName.ToUpper();
 
                     modelTypeStr = "Magic Skeleton";
-                    //if (strGlobalMagicAnimationName == "")
-                    //    saveAnimationFileName = Path.GetFileNameWithoutExtension(strGlobalMagicSkeletonName) + ".a00";
-                    //else saveAnimationFileName = strGlobalMagicAnimationName;
+
                     break;
 
                 case K_P_FIELD_MODEL:
@@ -2614,9 +2667,7 @@ namespace KimeraCS
                     else saveFile.FileName = strGlobalPModelName.ToUpper();
 
                     modelTypeStr = "Model";
-                    //if (strGlobalMagicAnimationName == "")
-                    //    saveAnimationFileName = Path.GetFileNameWithoutExtension(strGlobalMagicSkeletonName) + ".a00";
-                    //else saveAnimationFileName = strGlobalMagicAnimationName;
+
                     break;
             }
 
@@ -2635,14 +2686,16 @@ namespace KimeraCS
                         // I don't think it is needed when saving
                         //AddStateToBuffer(this);
 
-                        strGlobalPathSaveSkeletonFolder = Path.GetDirectoryName(saveFile.FileName);
-                        saveFile.FileName = strGlobalPathSaveSkeletonFolder + "\\" + Path.GetFileName(saveFile.FileName).ToUpper();
-
                         switch (modelType)
                         {
                             case K_HRC_SKELETON:
                             case K_AA_SKELETON:
                             case K_MAGIC_SKELETON:
+                                // Prepare Path
+                                strGlobalPathSaveSkeletonFolder = Path.GetDirectoryName(saveFile.FileName);
+                                saveFile.FileName = strGlobalPathSaveSkeletonFolder + "\\" + Path.GetFileName(saveFile.FileName).ToUpper();
+                                strGlobalPathSaveAsSkeletonFolder = strGlobalPathSaveSkeletonFolder;
+
                                 // We have a different process for RSD Resource
                                 if (IsRSDResource)
                                 {
@@ -2672,6 +2725,10 @@ namespace KimeraCS
                             case K_P_BATTLE_MODEL:
                             case K_P_MAGIC_MODEL:
                             case K_3DS_MODEL:
+                                // Prepare Path
+                                strGlobalPathSaveModelFolder = Path.GetDirectoryName(saveFile.FileName);
+                                saveFile.FileName = strGlobalPathSaveModelFolder + "\\" + Path.GetFileName(saveFile.FileName).ToUpper();
+
                                 // We save the Model.
                                 iSaveResult = WritePModel(saveFile.FileName);
 
@@ -2689,7 +2746,7 @@ namespace KimeraCS
                     bChangesDone = false;
                     UpdateMainSkeletonWindowTitle();
 
-                    panelModel_Paint(null, null);
+                    PanelModel_Paint(null, null);
                 }
             }
             catch
@@ -2700,7 +2757,7 @@ namespace KimeraCS
             }
         }
 
-        private void loadFieldAnimationToolStripMenuItem_Click(object sender, EventArgs e)
+        private void LoadFieldAnimationToolStripMenuItem_Click(object sender, EventArgs e)
         {
             FieldAnimation tmpfAnimation = new FieldAnimation();
 
@@ -2761,11 +2818,13 @@ namespace KimeraCS
                         WriteCFGFile();
                     }
 
-                    panelModel_Paint(null, null);
+                    PanelModel_Paint(null, null);
                 }
             }
             catch (Exception ex)
             {
+                strGlobalExceptionMessage = ex.Message;
+
                 MessageBox.Show("Error opening Field Animation file " + Path.GetFileName(openFile.FileName).ToUpper() + ".",
                                 "Error");
 
@@ -2774,7 +2833,7 @@ namespace KimeraCS
             }
         }
 
-        private void loadBattleMagicLimitAnimationsStripMenuItem_Click(object sender, EventArgs e)
+        private void LoadBattleMagicLimitAnimationsStripMenuItem_Click(object sender, EventArgs e)
         {
             int bi;
             BattleAnimationsPack tmpbAnimationsPack = new BattleAnimationsPack();
@@ -2798,7 +2857,7 @@ namespace KimeraCS
                             openFile.Filter = openFile.Filter + itmLimitBrk.ToString() + ";";
                     }
 
-                    openFile.Filter = openFile.Filter + "|All files|*.*";
+                    openFile.Filter += "|All files|*.*";
                     break;
 
                 case K_MAGIC_SKELETON:
@@ -2890,7 +2949,7 @@ namespace KimeraCS
                         WriteCFGFile();
                     }
 
-                    panelModel_Paint(null, null);
+                    PanelModel_Paint(null, null);
                 }
             }
             catch
@@ -2903,11 +2962,11 @@ namespace KimeraCS
             }
         }
 
-        private void saveAnimationToolStripMenuItem_Click(object sender, EventArgs e)
+        private void SaveAnimationToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string modelTypeStr = "";
             string saveFileName = "";
-            int iSaveResult = 0;
+            int iSaveResult;
 
             try
             {
@@ -2956,7 +3015,7 @@ namespace KimeraCS
             }
         }
 
-        private void saveAnimationAsToolStripMenuItem_Click(object sender, EventArgs e)
+        private void SaveAnimationAsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string modelTypeStr = "";
             int iSaveResult;
@@ -3039,7 +3098,7 @@ namespace KimeraCS
             }
         }
 
-        private void outputFramesDataAsToolStripMenuItem_Click(object sender, EventArgs e)
+        private void OutputFramesDataAsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             int iSaveResult;
 
@@ -3107,7 +3166,7 @@ namespace KimeraCS
                     }
                     else gbTexturesFrame.Enabled = false;
 
-                    textureViewer_Paint(null, null);
+                    TextureViewer_Paint(null, null);
                     break;
 
                 case K_AA_SKELETON:
@@ -3159,32 +3218,32 @@ namespace KimeraCS
                     }
                     else gbTexturesFrame.Enabled = false;
 
-                    textureViewer_Paint(null, null);
+                    TextureViewer_Paint(null, null);
 
                     break;
             }
         }
 
-        private void cbTextureSelect_SelectedIndexChanged(object sender, EventArgs e)
+        private void CbTextureSelect_SelectedIndexChanged(object sender, EventArgs e)
         {
-            textureViewer_Paint(null, null);
+            TextureViewer_Paint(null, null);
         }
 
-        private void chkShowGround_CheckedChanged(object sender, EventArgs e)
+        private void ChkShowGround_CheckedChanged(object sender, EventArgs e)
         {
             bShowGround = chkShowGround.Checked;
 
-            panelModel_Paint(null, null);
+            PanelModel_Paint(null, null);
         }
 
-        private void chkShowLastFrameGhost_CheckedChanged(object sender, EventArgs e)
+        private void ChkShowLastFrameGhost_CheckedChanged(object sender, EventArgs e)
         {
             bShowLastFrameGhost = chkShowLastFrameGhost.Checked;
 
-            panelModel_Paint(null, null);
+            PanelModel_Paint(null, null);
         }
 
-        private void btnAddTexture_Click(object sender, EventArgs e)
+        private void BtnAddTexture_Click(object sender, EventArgs e)
         {
             FieldBone tmpfBone;
             FieldRSDResource tmpfResource;
@@ -3273,18 +3332,20 @@ namespace KimeraCS
                         UpdateMainSkeletonWindowTitle();
                     }
 
-                    panelModel_Paint(null, null);
+                    PanelModel_Paint(null, null);
                 }
             }
             catch (Exception ex)
             {
+                strGlobalExceptionMessage = ex.Message;
+
                 MessageBox.Show("Error adding texture file " + Path.GetFileName(openFile.FileName).ToUpper() + ".",
                                 "Error");
                 return;
             }
         }
 
-        private void btnRemoveTexture_Click(object sender, EventArgs e)
+        private void BtnRemoveTexture_Click(object sender, EventArgs e)
         {
             int ti, texIndex;
             FieldRSDResource tmpfResource;
@@ -3340,7 +3401,7 @@ namespace KimeraCS
                 bChangesDone = true;
                 UpdateMainSkeletonWindowTitle();
 
-                panelModel_Paint(null, null);
+                PanelModel_Paint(null, null);
             }
             catch
             {
@@ -3350,7 +3411,7 @@ namespace KimeraCS
             }
         }
 
-        private void btnChangeTexture_Click(object sender, EventArgs e)
+        private void BtnChangeTexture_Click(object sender, EventArgs e)
         {
             FieldBone tmpfBone;
             FieldRSDResource tmpfRSDResource;
@@ -3434,7 +3495,7 @@ namespace KimeraCS
                     }
                 }
 
-                panelModel_Paint(null, null);
+                PanelModel_Paint(null, null);
             }
             catch
             {
@@ -3444,43 +3505,49 @@ namespace KimeraCS
             }
         }
 
-        private void chkFrontLight_CheckedChanged(object sender, EventArgs e)
+        private void ChkFrontLight_CheckedChanged(object sender, EventArgs e)
         {
             bchkFrontLight = chkFrontLight.Checked;
-            panelModel_Paint(null, null);
+            PanelModel_Paint(null, null);
         }
 
-        private void chkRearLight_CheckedChanged(object sender, EventArgs e)
+        private void ChkRearLight_CheckedChanged(object sender, EventArgs e)
         {
             bchkRearLight = chkRearLight.Checked;
-            panelModel_Paint(null, null);
+            PanelModel_Paint(null, null);
         }
 
-        private void chkRight_CheckedChanged(object sender, EventArgs e)
+        private void ChkLeftLight_CheckedChanged(object sender, EventArgs e)
+        {
+            bchkLeftLight = chkLeftLight.Checked;
+            PanelModel_Paint(null, null);
+        }
+
+        private void ChkRight_CheckedChanged(object sender, EventArgs e)
         {
             bchkRightLight = chkRightLight.Checked;
-            panelModel_Paint(null, null);
+            PanelModel_Paint(null, null);
         }
 
-        private void hsbLightPosX_ValueChanged(object sender, EventArgs e)
+        private void HsbLightPosX_ValueChanged(object sender, EventArgs e)
         {
             fLightPosXScroll = hsbLightPosX.Value;
-            panelModel_Paint(null, null);
+            PanelModel_Paint(null, null);
         }
 
-        private void hsbLightPosY_ValueChanged(object sender, EventArgs e)
+        private void HsbLightPosY_ValueChanged(object sender, EventArgs e)
         {
             fLightPosYScroll = hsbLightPosY.Value;
-            panelModel_Paint(null, null);
+            PanelModel_Paint(null, null);
         }
 
-        private void hsbLightPosZ_ValueChanged(object sender, EventArgs e)
+        private void HsbLightPosZ_ValueChanged(object sender, EventArgs e)
         {
             fLightPosZScroll = hsbLightPosZ.Value;
-            panelModel_Paint(null, null);
+            PanelModel_Paint(null, null);
         }
 
-        private void btnComputeGroundHeight_Click(object sender, EventArgs e)
+        private void BtnComputeGroundHeight_Click(object sender, EventArgs e)
         {
             Point3D p_min = new Point3D();
             Point3D p_max = new Point3D();
@@ -3512,7 +3579,7 @@ namespace KimeraCS
                     for (fi = 0; fi < fAnimation.nFrames; fi++)
                     {
                         tmpfFrame = fAnimation.frames[fi];
-                        tmpfFrame.rootTranslationY = tmpfFrame.rootTranslationY + maxDiff;
+                        tmpfFrame.rootTranslationY += maxDiff;
                         fAnimation.frames[fi] = tmpfFrame;
                     }
                     break;
@@ -3532,7 +3599,7 @@ namespace KimeraCS
                         for (fi = 0; fi < bAnimationsPack.SkeletonAnimations[ianimIndex].numFramesShort; fi++)
                         {
                             tmpbFrame = bAnimationsPack.SkeletonAnimations[ianimIndex].frames[fi];
-                            tmpbFrame.startY = tmpbFrame.startY - (int)maxDiff;
+                            tmpbFrame.startY -= (int)maxDiff;
                             bAnimationsPack.SkeletonAnimations[ianimIndex].frames[fi] = tmpbFrame;
                         }
 
@@ -3542,7 +3609,7 @@ namespace KimeraCS
                             for (fi = 0; fi < bAnimationsPack.SkeletonAnimations[ianimIndex].numFramesShort; fi++)
                             {
                                 tmpbFrame = bAnimationsPack.WeaponAnimations[ianimIndex].frames[fi];
-                                tmpbFrame.startY = tmpbFrame.startY - (int)maxDiff;
+                                tmpbFrame.startY -= (int)maxDiff;
                                 bAnimationsPack.WeaponAnimations[ianimIndex].frames[fi] = tmpbFrame;
                             }
                         }
@@ -3550,11 +3617,11 @@ namespace KimeraCS
                     break;
             }
 
-            panelModel_Paint(null, null);
+            PanelModel_Paint(null, null);
             SetFrameEditorFields();
         }
 
-        private void hsbResizePieceX_ValueChanged(object sender, EventArgs e)
+        private void HsbResizePieceX_ValueChanged(object sender, EventArgs e)
         {
             if (loadingBonePieceModifiersQ || SelectedBonePiece == -1) return;
 
@@ -3603,11 +3670,11 @@ namespace KimeraCS
             }
 
             txtResizePieceX.Text = hsbResizePieceX.Value.ToString();
-            panelModel_Paint(null, null);
+            PanelModel_Paint(null, null);
             DoNotAddStateQ = false;
         }
 
-        private void hsbResizePieceY_ValueChanged(object sender, EventArgs e)
+        private void HsbResizePieceY_ValueChanged(object sender, EventArgs e)
         {
             if (loadingBonePieceModifiersQ || SelectedBonePiece == -1) return;
 
@@ -3654,11 +3721,11 @@ namespace KimeraCS
             }
 
             txtResizePieceY.Text = hsbResizePieceY.Value.ToString();
-            panelModel_Paint(null, null);
+            PanelModel_Paint(null, null);
             DoNotAddStateQ = false;
         }
 
-        private void hsbResizePieceZ_ValueChanged(object sender, EventArgs e)
+        private void HsbResizePieceZ_ValueChanged(object sender, EventArgs e)
         {
             if (loadingBonePieceModifiersQ || SelectedBonePiece == -1) return;
 
@@ -3705,11 +3772,11 @@ namespace KimeraCS
             }
 
             txtResizePieceZ.Text = hsbResizePieceZ.Value.ToString();
-            panelModel_Paint(null, null);
+            PanelModel_Paint(null, null);
             DoNotAddStateQ = false;
         }
 
-        private void hsbRepositionX_ValueChanged(object sender, EventArgs e)
+        private void HsbRepositionX_ValueChanged(object sender, EventArgs e)
         {
             if (loadingBonePieceModifiersQ) return;
 
@@ -3756,11 +3823,11 @@ namespace KimeraCS
             }
 
             txtRepositionX.Text = hsbRepositionX.Value.ToString();
-            panelModel_Paint(null, null);
+            PanelModel_Paint(null, null);
             DoNotAddStateQ = false;
         }
 
-        private void hsbRepositionY_ValueChanged(object sender, EventArgs e)
+        private void HsbRepositionY_ValueChanged(object sender, EventArgs e)
         {
             if (loadingBonePieceModifiersQ) return;
 
@@ -3807,11 +3874,11 @@ namespace KimeraCS
             }
 
             txtRepositionY.Text = hsbRepositionY.Value.ToString();
-            panelModel_Paint(null, null);
+            PanelModel_Paint(null, null);
             DoNotAddStateQ = false;
         }
 
-        private void hsbRepositionZ_ValueChanged(object sender, EventArgs e)
+        private void HsbRepositionZ_ValueChanged(object sender, EventArgs e)
         {
             if (loadingBonePieceModifiersQ) return;
 
@@ -3858,32 +3925,26 @@ namespace KimeraCS
             }
 
             txtRepositionZ.Text = hsbRepositionZ.Value.ToString();
-            panelModel_Paint(null, null);
+            PanelModel_Paint(null, null);
             DoNotAddStateQ = false;
         }
 
-        private void hsbRotateAlpha_ValueChanged(object sender, EventArgs e)
+        private void HsbRotateAlpha_ValueChanged(object sender, EventArgs e)
         {
             PieceRotationModifiersChanged();
         }
 
-        private void hsbRotateBeta_ValueChanged(object sender, EventArgs e)
+        private void HsbRotateBeta_ValueChanged(object sender, EventArgs e)
         {
             PieceRotationModifiersChanged();
         }
 
-        private void hsbRotateGamma_ValueChanged(object sender, EventArgs e)
+        private void HsbRotateGamma_ValueChanged(object sender, EventArgs e)
         {
             PieceRotationModifiersChanged();
         }
 
-        private void chkLeftLight_CheckedChanged(object sender, EventArgs e)
-        {
-            bchkLeftLight = chkLeftLight.Checked;
-            panelModel_Paint(null, null);
-        }
-
-        private void chkZeroAsTransparent_Click(object sender, EventArgs e)
+        private void ChkZeroAsTransparent_Click(object sender, EventArgs e)
         {
             TEX tmpTEX;
 
@@ -3933,16 +3994,14 @@ namespace KimeraCS
                     break;
             }
 
-            panelModel_Paint(null, null);
+            PanelModel_Paint(null, null);
         }
 
-        private void txtResizePieceX_TextChanged(object sender, EventArgs e)
+        private void TxtResizePieceX_TextChanged(object sender, EventArgs e)
         {
             if (loadingBonePieceModifiersQ || SelectedBonePiece == -1) return;
 
-            int iResizePieceX;
-
-            if (Int32.TryParse(txtResizePieceX.Text, out iResizePieceX))
+            if (Int32.TryParse(txtResizePieceX.Text, out int iResizePieceX))
             {
                 if (iResizePieceX >= 0 && iResizePieceX <= 400)
                     hsbResizePieceX.Value = iResizePieceX;
@@ -3953,13 +4012,11 @@ namespace KimeraCS
                 txtResizePieceX.Text = "100";
         }
 
-        private void txtResizePieceY_TextChanged(object sender, EventArgs e)
+        private void TxtResizePieceY_TextChanged(object sender, EventArgs e)
         {
             if (loadingBonePieceModifiersQ || SelectedBonePiece == -1) return;
 
-            int iResizePieceY;
-
-            if (Int32.TryParse(txtResizePieceY.Text, out iResizePieceY))
+            if (Int32.TryParse(txtResizePieceY.Text, out int iResizePieceY))
             {
                 if (iResizePieceY >= 0 && iResizePieceY <= 400)
                     hsbResizePieceY.Value = iResizePieceY;
@@ -3970,13 +4027,11 @@ namespace KimeraCS
                 txtResizePieceY.Text = "100";
         }
 
-        private void txtResizePieceZ_TextChanged(object sender, EventArgs e)
+        private void TxtResizePieceZ_TextChanged(object sender, EventArgs e)
         {
             if (loadingBonePieceModifiersQ || SelectedBonePiece == -1) return;
 
-            int iResizePieceZ;
-
-            if (Int32.TryParse(txtResizePieceZ.Text, out iResizePieceZ))
+            if (Int32.TryParse(txtResizePieceZ.Text, out int iResizePieceZ))
             {
                 if (iResizePieceZ >= 0 && iResizePieceZ <= 400)
                     hsbResizePieceZ.Value = iResizePieceZ;
@@ -3987,13 +4042,11 @@ namespace KimeraCS
                 txtResizePieceZ.Text = "100";
         }
 
-        private void txtRepositionX_TextChanged(object sender, EventArgs e)
+        private void TxtRepositionX_TextChanged(object sender, EventArgs e)
         {
             if (loadingBonePieceModifiersQ || SelectedBonePiece == -1) return;
 
-            int iRepositionX;
-
-            if (Int32.TryParse(txtRepositionX.Text, out iRepositionX))
+            if (Int32.TryParse(txtRepositionX.Text, out int iRepositionX))
             {
                 if (iRepositionX >= -500 && iRepositionX <= 500)
                     hsbRepositionX.Value = iRepositionX;
@@ -4003,13 +4056,11 @@ namespace KimeraCS
             else txtRepositionX.Text = "0";
         }
 
-        private void txtRepositionY_TextChanged(object sender, EventArgs e)
+        private void TxtRepositionY_TextChanged(object sender, EventArgs e)
         {
             if (loadingBonePieceModifiersQ || SelectedBonePiece == -1) return;
 
-            int iRepositionY;
-
-            if (Int32.TryParse(txtRepositionY.Text, out iRepositionY))
+            if (Int32.TryParse(txtRepositionY.Text, out int iRepositionY))
             {
                 if (iRepositionY >= -500 && iRepositionY <= 500)
                     hsbRepositionY.Value = iRepositionY;
@@ -4019,13 +4070,11 @@ namespace KimeraCS
             else txtRepositionY.Text = "0";
         }
 
-        private void txtRepositionZ_TextChanged(object sender, EventArgs e)
+        private void TxtRepositionZ_TextChanged(object sender, EventArgs e)
         {
             if (loadingBonePieceModifiersQ || SelectedBonePiece == -1) return;
 
-            int iRepositionZ;
-
-            if (Int32.TryParse(txtRepositionZ.Text, out iRepositionZ))
+            if (Int32.TryParse(txtRepositionZ.Text, out int iRepositionZ))
             {
                 if (iRepositionZ >= -500 && iRepositionZ <= 500)
                     hsbRepositionZ.Value = iRepositionZ;
@@ -4035,13 +4084,11 @@ namespace KimeraCS
             else txtRepositionZ.Text = "0";
         }
 
-        private void txtRotateAlpha_TextChanged(object sender, EventArgs e)
+        private void TxtRotateAlpha_TextChanged(object sender, EventArgs e)
         {
             if (loadingBonePieceModifiersQ || SelectedBonePiece == -1) return;
 
-            int iRotateAlpha;
-
-            if (Int32.TryParse(txtRotateAlpha.Text, out iRotateAlpha))
+            if (Int32.TryParse(txtRotateAlpha.Text, out int iRotateAlpha))
             {
                 if (iRotateAlpha >= 0 && iRotateAlpha <= 360)
                     hsbRotateAlpha.Value = iRotateAlpha;
@@ -4051,13 +4098,11 @@ namespace KimeraCS
             else txtRotateAlpha.Text = "0";
         }
 
-        private void txtRotateBeta_TextChanged(object sender, EventArgs e)
+        private void TxtRotateBeta_TextChanged(object sender, EventArgs e)
         {
             if (loadingBonePieceModifiersQ || SelectedBonePiece == -1) return;
 
-            int iRotateBeta;
-
-            if (Int32.TryParse(txtRotateBeta.Text, out iRotateBeta))
+            if (Int32.TryParse(txtRotateBeta.Text, out int iRotateBeta))
             {
                 if (iRotateBeta >= 0 && iRotateBeta <= 360)
                     hsbRotateBeta.Value = iRotateBeta;
@@ -4067,13 +4112,11 @@ namespace KimeraCS
             else txtRotateBeta.Text = "0";
         }
 
-        private void txtRotateGamma_TextChanged(object sender, EventArgs e)
+        private void TxtRotateGamma_TextChanged(object sender, EventArgs e)
         {
             if (loadingBonePieceModifiersQ || SelectedBonePiece == -1) return;
 
-            int iRotateGamma;
-
-            if (Int32.TryParse(txtRotateGamma.Text, out iRotateGamma))
+            if (Int32.TryParse(txtRotateGamma.Text, out int iRotateGamma))
             {
                 if (iRotateGamma >= 0 && iRotateGamma <= 360)
                     hsbRotateGamma.Value = iRotateGamma;
@@ -4083,7 +4126,7 @@ namespace KimeraCS
             else txtRotateGamma.Text = "0";
         }
 
-        private void nUDResizeBoneX_ValueChanged(object sender, EventArgs e)
+        private void NudResizeBoneX_ValueChanged(object sender, EventArgs e)
         {
             if (loadingBoneModifiersQ || SelectedBone == -1) return;
 
@@ -4121,11 +4164,11 @@ namespace KimeraCS
                     break;
             }
 
-            panelModel_Paint(null, null);
+            PanelModel_Paint(null, null);
             DoNotAddStateQ = false;
         }
 
-        private void nUDResizeBoneY_ValueChanged(object sender, EventArgs e)
+        private void NudResizeBoneY_ValueChanged(object sender, EventArgs e)
         {
             if (loadingBoneModifiersQ || SelectedBone == -1) return;
 
@@ -4163,11 +4206,11 @@ namespace KimeraCS
                     break;
             }
 
-            panelModel_Paint(null, null);
+            PanelModel_Paint(null, null);
             DoNotAddStateQ = false;
         }
 
-        private void nUDResizeBoneZ_ValueChanged(object sender, EventArgs e)
+        private void NudResizeBoneZ_ValueChanged(object sender, EventArgs e)
         {
             if (loadingBoneModifiersQ || SelectedBone == -1) return;
 
@@ -4205,11 +4248,11 @@ namespace KimeraCS
                     break;
             }
 
-            panelModel_Paint(null, null);
+            PanelModel_Paint(null, null);
             DoNotAddStateQ = false;
         }
 
-        private void nUDBoneLength_ValueChanged(object sender, EventArgs e)
+        private void NudBoneLength_ValueChanged(object sender, EventArgs e)
         {
             if (loadingBoneModifiersQ) return;
 
@@ -4239,25 +4282,23 @@ namespace KimeraCS
                     break;
             }
 
-            panelModel_Paint(null, null);
+            PanelModel_Paint(null, null);
             DoNotAddStateQ = false;
         }
 
-        private void txtBoneLength_TextChanged(object sender, EventArgs e)
+        private void TxtBoneLength_TextChanged(object sender, EventArgs e)
         {
             if (loadingBoneModifiersQ) return;
 
-            float fBoneLength;
-
-            if (float.TryParse(txtBoneOptionsLength.Text, out fBoneLength))
+            if (float.TryParse(txtBoneOptionsLength.Text, out float fBoneLength))
             {
                 nUDBoneOptionsLength.Value = (decimal)fBoneLength * 10000;
             }
         }
 
-        private void btnAddPiece_Click(object sender, EventArgs e)
+        private void BtnAddPiece_Click(object sender, EventArgs e)
         {
-            Model3DS[] models3DS_auxV;
+
             PModel AdditionalP;
             int iResult;
 
@@ -4313,10 +4354,17 @@ namespace KimeraCS
 
                         if (Path.GetExtension(openFile.FileName).ToUpper() == ".3DS")
                         {
-                            iResult = Load3DS(openFile.FileName, out models3DS_auxV);
+                            iResult = Load3DS(openFile.FileName, out Model3DS[] models3DS_auxV);
 
                             if (iResult == 1)
-                                ConvertModels3DSToPModel(models3DS_auxV, ref AdditionalP);
+                            {
+                                ConvertModels3DSToPModel(models3DS_auxV, ref AdditionalP, bAdjust3DSImport);
+
+                                ComputeNormals(ref AdditionalP);
+                                ComputeEdges(ref AdditionalP);
+                                ComputeBoundingBox(ref AdditionalP);
+                            }
+
                         }
                         else
                         {
@@ -4344,19 +4392,21 @@ namespace KimeraCS
                         }
 
                         SetTextureEditorFields();
-                        panelModel_Paint(null, null);
+                        PanelModel_Paint(null, null);
                         WriteCFGFile();
                     }
                 }
             }
             catch (Exception ex)
             {
+                strGlobalExceptionMessage = ex.Message;
+
                 MessageBox.Show("Global error Adding Piece file " + Path.GetFileName(openFile.FileName).ToUpper() + ".",
                                 "Error");
             }
         }
 
-        private void btnRemovePiece_Click(object sender, EventArgs e)
+        private void BtnRemovePiece_Click(object sender, EventArgs e)
         {
             try
             {
@@ -4388,15 +4438,17 @@ namespace KimeraCS
                 
                 SetBoneModifiers();
                 SetTextureEditorFields();
-                panelModel_Paint(null, null);
+                PanelModel_Paint(null, null);
             }
             catch (Exception ex)
             {
+                strGlobalExceptionMessage = ex.Message;
+
                 MessageBox.Show("Global error Removing Piece.", "Error");
             }
         }
 
-        private void btnRotate_Click(object sender, EventArgs e)
+        private void BtnRotate_Click(object sender, EventArgs e)
         {
             TEX tex = new TEX();
             int texIndex;
@@ -4509,11 +4561,11 @@ namespace KimeraCS
                 SetTextureEditorFields();
                 cbTextureSelect.SelectedIndex = texIndex;
 
-                panelModel_Paint(null, null);
+                PanelModel_Paint(null, null);
             }
         }
 
-        private void btnFlipVertical_Click(object sender, EventArgs e)
+        private void BtnFlipVertical_Click(object sender, EventArgs e)
         {
             TEX tex = new TEX();
             int texIndex;
@@ -4612,11 +4664,11 @@ namespace KimeraCS
                 SetTextureEditorFields();
                 cbTextureSelect.SelectedIndex = texIndex;
 
-                panelModel_Paint(null, null);
+                PanelModel_Paint(null, null);
             }
         }
 
-        private void btnFlipHorizontal_Click(object sender, EventArgs e)
+        private void BtnFlipHorizontal_Click(object sender, EventArgs e)
         {
             TEX tex = new TEX();
             int texIndex;
@@ -4644,7 +4696,7 @@ namespace KimeraCS
                 int row, col, BPPStride, i;
                 int current, flipped;
                 byte[] result;
-                int widthStride, heightStride, widheiTotal;
+                int widthStride, widheiTotal;
 
                 BPPStride = tex.bytesPerPixel;
 
@@ -4652,7 +4704,6 @@ namespace KimeraCS
                 result = new byte[widheiTotal];
 
                 widthStride = tex.width * BPPStride;
-                heightStride = tex.height * BPPStride;
 
                 for (row = 0; row < tex.height; row++)
                 {
@@ -4717,11 +4768,11 @@ namespace KimeraCS
                 SetTextureEditorFields();
                 cbTextureSelect.SelectedIndex = texIndex;
 
-                panelModel_Paint(null, null);
+                PanelModel_Paint(null, null);
             }
         }
 
-        private void nUDMoveTextureUpDown_ValueChanged(object sender, EventArgs e)
+        private void NudMoveTextureUpDown_ValueChanged(object sender, EventArgs e)
         {
             // Ok. We will use a NumericalUpDown control as UpDown VB6 control.
             if (nUDTexUpDown != nUDMoveTextureUpDown.Value)
@@ -4825,12 +4876,12 @@ namespace KimeraCS
                     }
                 }
 
-                panelModel_Paint(null, null);
+                PanelModel_Paint(null, null);
                 nUDTexUpDown = (int)nUDMoveTextureUpDown.Value;
             }
         }
 
-        private void nUDFrameDataPart_ValueChanged(object sender, EventArgs e)
+        private void NudFrameDataPart_ValueChanged(object sender, EventArgs e)
         {
             switch (Math.Abs(nUDFrameDataPart.Value % 3))
             {
@@ -4850,7 +4901,7 @@ namespace KimeraCS
             SetFrameEditorFields();
         }
 
-        private void nUDXAnimationFramePart_ValueChanged(object sender, EventArgs e)
+        private void NudXAnimationFramePart_ValueChanged(object sender, EventArgs e)
         {
 
             if (loadingAnimationQ) return;
@@ -5002,11 +5053,11 @@ namespace KimeraCS
                     break;
             }
 
-            panelModel_Paint(null, null);
+            PanelModel_Paint(null, null);
             DoNotAddStateQ = false;
         }
 
-        private void nUDYAnimationFramePart_ValueChanged(object sender, EventArgs e)
+        private void NudYAnimationFramePart_ValueChanged(object sender, EventArgs e)
         {
             if (loadingAnimationQ) return;
 
@@ -5158,11 +5209,11 @@ namespace KimeraCS
                     break;
             }
 
-            panelModel_Paint(null, null);
+            PanelModel_Paint(null, null);
             DoNotAddStateQ = false;
         }
 
-        private void nUDZAnimationFramePart_ValueChanged(object sender, EventArgs e)
+        private void NudZAnimationFramePart_ValueChanged(object sender, EventArgs e)
         {
             if (loadingAnimationQ) return;
 
@@ -5317,11 +5368,11 @@ namespace KimeraCS
                     break;
             }
 
-            panelModel_Paint(null, null);
+            PanelModel_Paint(null, null);
             DoNotAddStateQ = false;
         }
 
-        private void btnRemoveFrame_Click(object sender, EventArgs e)
+        private void BtnRemoveFrame_Click(object sender, EventArgs e)
         {
             AddStateToBuffer(this);
 
@@ -5333,10 +5384,10 @@ namespace KimeraCS
                         fAnimation.frames.RemoveAt(tbCurrentFrameScroll.Value);
 
                         if (tbCurrentFrameScroll.Value == tbCurrentFrameScroll.Maximum)
-                            tbCurrentFrameScroll.Value = tbCurrentFrameScroll.Value - 1;
+                            tbCurrentFrameScroll.Value--;
 
                         fAnimation.nFrames--;
-                        tbCurrentFrameScroll.Maximum = tbCurrentFrameScroll.Maximum - 1;
+                        tbCurrentFrameScroll.Maximum--;
                     }
                     else
                     {
@@ -5387,10 +5438,10 @@ namespace KimeraCS
                     break;
             }
 
-            panelModel_Paint(null, null);
+            PanelModel_Paint(null, null);
         }
 
-        private void btnDuplicateFrame_Click(object sender, EventArgs e)
+        private void BtnDuplicateFrame_Click(object sender, EventArgs e)
         {
             AddStateToBuffer(this);
 
@@ -5441,13 +5492,13 @@ namespace KimeraCS
                     break;
             }
 
-            panelModel_Paint(null, null);
+            PanelModel_Paint(null, null);
         }
 
-        private void btnInterpolateFrame_Click(object sender, EventArgs e)
+        private void BtnInterpolateFrame_Click(object sender, EventArgs e)
         {
             //int animIndex, fi, currentFrame, nextFrame, nFrames, numInterpolatedFrames, i;
-            int fi, currentFrame, nextFrame, nFrames, numInterpolatedFrames, i;
+            int fi, currentFrame, nextFrame, numInterpolatedFrames, i;
             string numInterpolatedFramesStr;
             float alpha, primarySecondaryCountersCoef;
 
@@ -5506,7 +5557,7 @@ namespace KimeraCS
                     //  Create new frames
                     FieldFrame tmpfFrame = new FieldFrame();
 
-                    fAnimation.nFrames = fAnimation.nFrames + numInterpolatedFrames;
+                    fAnimation.nFrames += numInterpolatedFrames;
                     for (i = 0; i < numInterpolatedFrames; i++) fAnimation.frames.Add(tmpfFrame);
 
                     // Move the original frames into their new positions
@@ -5562,7 +5613,6 @@ namespace KimeraCS
                     //  Also don't forget about the weapon frames(where available)
                     if (bSkeleton.wpModels.Count > 0)
                     {
-                        nFrames = bAnimationsPack.SkeletonAnimations[ianimIndex].numFramesShort;
 
                         tmpbAnimation = bAnimationsPack.WeaponAnimations[ianimIndex];
 
@@ -5592,18 +5642,18 @@ namespace KimeraCS
                     break;
             }
 
-            tbCurrentFrameScroll.Maximum = tbCurrentFrameScroll.Maximum + numInterpolatedFrames;
+            tbCurrentFrameScroll.Maximum += numInterpolatedFrames;
             SetFrameEditorFields();
-            panelModel_Paint(null, null);
+            PanelModel_Paint(null, null);
         }
 
-        private void chkShowBones_CheckedChanged(object sender, EventArgs e)
+        private void ChkShowBones_CheckedChanged(object sender, EventArgs e)
         {
             bShowBones = chkShowBones.Checked;
-            panelModel_Paint(null, null);
+            PanelModel_Paint(null, null);
         }
 
-        private void btnInterpolateAnimation_Click(object sender, EventArgs e)
+        private void BtnInterpolateAnimation_Click(object sender, EventArgs e)
         {
             int fi, ifi, frameOffset, nFrames, numInterpolatedFrames, nextElemDiff, i;
             int baseFinalFrame;
@@ -5724,13 +5774,13 @@ namespace KimeraCS
                     break;
             }
 
-            tbCurrentFrameScroll.Value = tbCurrentFrameScroll.Value * (numInterpolatedFrames + 1);
+            tbCurrentFrameScroll.Value *= (numInterpolatedFrames + 1);
 
             SetFrameEditorFields();
-            panelModel_Paint(null, null);
+            PanelModel_Paint(null, null);
         }
 
-        private void btnFrameNext_Click(object sender, EventArgs e)
+        private void BtnFrameNext_Click(object sender, EventArgs e)
         {
             btnPlayStopAnim.Checked = false;
 
@@ -5738,10 +5788,10 @@ namespace KimeraCS
             else tbCurrentFrameScroll.Value += 1;
 
             SetFrameEditorFields();
-            panelModel_Paint(null, null);
+            PanelModel_Paint(null, null);
         }
 
-        private void btnFramePrev_Click(object sender, EventArgs e)
+        private void BtnFramePrev_Click(object sender, EventArgs e)
         {
             btnPlayStopAnim.Checked = false;
 
@@ -5749,30 +5799,30 @@ namespace KimeraCS
             else tbCurrentFrameScroll.Value -= 1;
 
             SetFrameEditorFields();
-            panelModel_Paint(null, null);
+            PanelModel_Paint(null, null);
         }
 
-        private void btnFrameEnd_Click(object sender, EventArgs e)
+        private void BtnFrameEnd_Click(object sender, EventArgs e)
         {
             btnPlayStopAnim.Checked = false;
 
             tbCurrentFrameScroll.Value = tbCurrentFrameScroll.Maximum;
 
             SetFrameEditorFields();
-            panelModel_Paint(null, null);
+            PanelModel_Paint(null, null);
         }
 
-        private void btnFrameBegin_Click(object sender, EventArgs e)
+        private void BtnFrameBegin_Click(object sender, EventArgs e)
         {
             btnPlayStopAnim.Checked = false;
 
             tbCurrentFrameScroll.Value = tbCurrentFrameScroll.Minimum;
 
             SetFrameEditorFields();
-            panelModel_Paint(null, null);
+            PanelModel_Paint(null, null);
         }
 
-        private void btnPlayStopAnm_CheckedChanged(object sender, EventArgs e)
+        private void BtnPlayStopAnm_CheckedChanged(object sender, EventArgs e)
         {
             // If PEditor opened we will not Play Animation
             // (too much issues when doing things in P Model);
@@ -5801,7 +5851,7 @@ namespace KimeraCS
             if (btnPlayStopAnim.Checked)
             {
                 btnPlayStopAnim.BackgroundImage = new Bitmap(Properties.Resources.media_stop);
-                playAnimation();
+                PlayAnimation();
             }
             else
             {
@@ -5809,10 +5859,10 @@ namespace KimeraCS
             }
         }
 
-        private void playAnimation()
+        private void PlayAnimation()
         {
-            TimeSpan current_ts = new TimeSpan();
-            TimeSpan prev_ts = new TimeSpan();
+            TimeSpan current_ts;
+            TimeSpan prev_ts;
             bool bthisFocus = false;
 
             swPlayAnimation.Start();
@@ -5832,7 +5882,7 @@ namespace KimeraCS
                     else tbCurrentFrameScroll.Value += 1;
 
                     SetFrameEditorFields();
-                    panelModel_Paint(null, null);
+                    PanelModel_Paint(null, null);
 
                     prev_ts = current_ts;
                 }
@@ -5849,7 +5899,7 @@ namespace KimeraCS
             swPlayAnimation.Stop();
         }
 
-        private void toolStripFPS15_Click(object sender, EventArgs e)
+        private void ToolStripFPS15_Click(object sender, EventArgs e)
         {
             if (!toolStripFPS15.Checked)
             {
@@ -5862,7 +5912,7 @@ namespace KimeraCS
             }
         }
 
-        private void toolStripFPS30_Click(object sender, EventArgs e)
+        private void ToolStripFPS30_Click(object sender, EventArgs e)
         {
             if (!toolStripFPS30.Checked)
             {
@@ -5885,7 +5935,7 @@ namespace KimeraCS
             fFPS = 1000 / iFPS;
         }
 
-        private void toolStripFPS60_Click(object sender, EventArgs e)
+        private void ToolStripFPS60_Click(object sender, EventArgs e)
         {
             if (!toolStripFPS60.Checked)
             {
@@ -5906,7 +5956,7 @@ namespace KimeraCS
             fFPS = 1000 / iFPS;
         }
 
-        private void btnCopyFrame_Click(object sender, EventArgs e)
+        private void BtnCopyFrame_Click(object sender, EventArgs e)
         {
 
             switch(modelType)
@@ -5941,7 +5991,7 @@ namespace KimeraCS
             }
         }
 
-        private void btnPasteFrame_Click(object sender, EventArgs e)
+        private void BtnPasteFrame_Click(object sender, EventArgs e)
         {
 
             AddStateToBuffer(this);
@@ -5997,10 +6047,10 @@ namespace KimeraCS
             }
         }
 
-        private void chkInifintyFarLights_CheckedChanged(object sender, EventArgs e)
+        private void ChkInifintyFarLights_CheckedChanged(object sender, EventArgs e)
         {
             infinityFarQ = chkInifintyFarLights.Checked;
-            panelModel_Paint(null, null);
+            PanelModel_Paint(null, null);
         }
 
         public void SetBonePieceModifiers()
@@ -6078,7 +6128,7 @@ namespace KimeraCS
             loadingBonePieceModifiersQ = false;
         }
 
-        private void frmSkeletonEditor_Move(object sender, EventArgs e)
+        private void FrmSkeletonEditor_Move(object sender, EventArgs e)
         {
             if (this.WindowState == FormWindowState.Minimized) return;
 
@@ -6090,16 +6140,16 @@ namespace KimeraCS
             }
         }
 
-        private void btnComputeWeaponPosition_Click(object sender, EventArgs e)
+        private void BtnComputeWeaponPosition_Click(object sender, EventArgs e)
         {
             selectBoneForWeaponAttachmentQ = true;
-            panelModel_Paint(null, null);
+            PanelModel_Paint(null, null);
             MessageBox.Show("Please, click (right-click = end, left-click = middle) on the bone " +
                             "you want the weapon to be attached to. Press ESC to cancel.",
                             "Select bone", MessageBoxButtons.OK);
         }
 
-        private void interpolateAllAnimationsToolStripMenuItem_Click(object sender, EventArgs e)
+        private void InterpolateAllAnimationsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             frmInterpAll.ShowDialog();
         }
@@ -6109,7 +6159,7 @@ namespace KimeraCS
             frmTEX2PNGBC.ShowDialog();
         }
 
-        private void frmSkeletonEditor_Activated(object sender, EventArgs e)
+        private void FrmSkeletonEditor_Activated(object sender, EventArgs e)
         {
             //if (GetOGLContext() != OGLContext)
             //    SetOGLContext(panelModelDC, OGLContext);
@@ -6118,10 +6168,10 @@ namespace KimeraCS
 
             //MessageBox.Show("frmSkeletonEditor", "Test", MessageBoxButtons.OK);
 
-            //panelModel_Paint(null, null);
+            //PanelModel_Paint(null, null);
         }
 
-        public void tsUIOpacity100_Click(object sender, EventArgs e)
+        public void TsUIOpacity100_Click(object sender, EventArgs e)
         {
             this.Opacity = 1.00F;
 
@@ -6132,7 +6182,7 @@ namespace KimeraCS
             tsUIOpacity25.Checked = false;
         }
 
-        public void tsUIOpacity90_Click(object sender, EventArgs e)
+        public void TsUIOpacity90_Click(object sender, EventArgs e)
         {
             this.Opacity = 0.90F;
 
@@ -6143,7 +6193,7 @@ namespace KimeraCS
             tsUIOpacity25.Checked = false;
         }
 
-        public void tsUIOpacity75_Click(object sender, EventArgs e)
+        public void TsUIOpacity75_Click(object sender, EventArgs e)
         {
             this.Opacity = 0.75F;
 
@@ -6154,7 +6204,7 @@ namespace KimeraCS
             tsUIOpacity25.Checked = false;
         }
 
-        public void tsUIOpacity50_Click(object sender, EventArgs e)
+        public void TsUIOpacity50_Click(object sender, EventArgs e)
         {
             this.Opacity = 0.50F;
 
@@ -6165,7 +6215,7 @@ namespace KimeraCS
             tsUIOpacity25.Checked = false;
         }
 
-        public void tsUIOpacity25_Click(object sender, EventArgs e)
+        public void TsUIOpacity25_Click(object sender, EventArgs e)
         {
             this.Opacity = 0.25F;
 
@@ -6176,25 +6226,25 @@ namespace KimeraCS
             tsUIOpacity25.Checked = true;
         }
 
-        private void tbCurrentFrameScroll_Scroll(object sender, EventArgs e)
+        private void TbCurrentFrameScroll_Scroll(object sender, EventArgs e)
         {
             iCurrentFrameScroll = tbCurrentFrameScroll.Value;
             txtAnimationFrame.Text = iCurrentFrameScroll.ToString();
 
             SetFrameEditorFields();
-            panelModel_Paint(null, null);
+            PanelModel_Paint(null, null);
         }
 
-        private void cbWeapon_SelectedIndexChanged(object sender, EventArgs e)
+        private void CbWeapon_SelectedIndexChanged(object sender, EventArgs e)
         {
             ianimWeaponIndex = -1;
             if (cbWeapon.Text != "EMPTY") ianimWeaponIndex = Int32.Parse(cbWeapon.Text);
-            
-            panelModel_Paint(null, null);
+
+            PanelModel_Paint(null, null);
         }
 
 
-        private void cbBattleAnimation_SelectedIndexChanged(object sender, EventArgs e)
+        private void CbBattleAnimation_SelectedIndexChanged(object sender, EventArgs e)
         {
             ianimIndex = Int32.Parse(cbBattleAnimation.Text);
 
@@ -6209,10 +6259,10 @@ namespace KimeraCS
 
             SetFrameEditorFields();
 
-            panelModel_Paint(null, null);
+            PanelModel_Paint(null, null);
         }
 
-        private void tbCurrentFrameScroll_ValueChanged(object sender, EventArgs e)
+        private void TbCurrentFrameScroll_ValueChanged(object sender, EventArgs e)
         {
             iCurrentFrameScroll = tbCurrentFrameScroll.Value;
             txtAnimationFrame.Text = tbCurrentFrameScroll.Value.ToString();
@@ -6270,16 +6320,16 @@ namespace KimeraCS
             txtRotateBeta.Text = hsbRotateBeta.Value.ToString();
             txtRotateGamma.Text = hsbRotateGamma.Value.ToString();
 
-            panelModel_Paint(null, null);
+            PanelModel_Paint(null, null);
             DoNotAddStateQ = false;
         }
 
-        public void loadSkeletonFromDB()
+        public void LoadSkeletonFromDB()
         {
             Point3D p_min = new Point3D();
             Point3D p_max = new Point3D();
 
-            int iLoadResult = 0;
+            int iLoadResult;
 
             // Check if changes has been commited in PEditor
             if (CheckChangesCommittedPEditor()) return;
@@ -6288,9 +6338,9 @@ namespace KimeraCS
             {
                 // Set Global Paths
                 strGlobalFieldSkeletonName = 
-                        Path.GetDirectoryName(frmFieldDB.strFieldFile) + "\\" + Path.GetFileName(frmFieldDB.strFieldFile).ToUpper();
+                        Path.GetDirectoryName(FrmFieldDB.strFieldFile) + "\\" + Path.GetFileName(FrmFieldDB.strFieldFile).ToUpper();
                 strGlobalFieldAnimationName = 
-                        Path.GetDirectoryName(frmFieldDB.strAnimFile) + "\\" + Path.GetFileName(frmFieldDB.strAnimFile).ToUpper();
+                        Path.GetDirectoryName(FrmFieldDB.strAnimFile) + "\\" + Path.GetFileName(FrmFieldDB.strAnimFile).ToUpper();
 
                 // Initialize OpenGL Context;
                 //InitOpenGLContext();
@@ -6302,25 +6352,25 @@ namespace KimeraCS
                 InitializeWinFormsDataControls();
 
                 // Load Field Skeleton
-                iLoadResult = LoadSkeletonFromDB(frmFieldDB.strFieldFile, frmFieldDB.strAnimFile, true);
+                iLoadResult = LoadFieldSkeletonFromDB(FrmFieldDB.strFieldFile, FrmFieldDB.strAnimFile, true);
 
                 if (iLoadResult == -2)
                 {
-                    MessageBox.Show("Error Destroying Skeleton file " + Path.GetFileName(frmFieldDB.strFieldFile).ToUpper() + ".",
+                    MessageBox.Show("Error Destroying Skeleton file " + Path.GetFileName(FrmFieldDB.strFieldFile).ToUpper() + ".",
                                     "Error");
                     return;
                 }
 
                 if (iLoadResult == -1)
                 {
-                    MessageBox.Show("Error opening Skeleton file " + Path.GetFileName(frmFieldDB.strFieldFile).ToUpper() + ".",
+                    MessageBox.Show("Error opening Skeleton file " + Path.GetFileName(FrmFieldDB.strFieldFile).ToUpper() + ".",
                                     "Error");
                     return;
                 }
 
                 if (iLoadResult == 0)
                 {
-                    MessageBox.Show("The file " + Path.GetFileName(frmFieldDB.strFieldFile).ToUpper() + " has not any known Skeleton format.",
+                    MessageBox.Show("The file " + Path.GetFileName(FrmFieldDB.strFieldFile).ToUpper() + " has not any known Skeleton format.",
                                     "Warning");
                     return;
                 }
@@ -6343,21 +6393,21 @@ namespace KimeraCS
                 PostLoadModelPreparations(ref p_min, ref p_max);
 
                 // We can draw the model in panel
-                panelModel_Paint(null, null);
+                PanelModel_Paint(null, null);
             }
             catch
             {
-                MessageBox.Show("Global error opening Field Skeleton file " + Path.GetFileName(frmFieldDB.strFieldFile).ToUpper() + ".",
+                MessageBox.Show("Global error opening Field Skeleton file " + Path.GetFileName(FrmFieldDB.strFieldFile).ToUpper() + ".",
                                 "Error");
             }
         }
 
-        public void loadSkeletonFromBattleDB(string strfileNameModel, string strfileNameAnim)
+        public void LoadSkeletonFromBattleDB(string strfileNameModel, string strfileNameAnim)
         {
             Point3D p_min = new Point3D();
             Point3D p_max = new Point3D();
 
-            int iLoadResult = 0;
+            int iLoadResult;
 
             // Check if changes has been commited in PEditor
             if (CheckChangesCommittedPEditor()) return;
@@ -6380,7 +6430,7 @@ namespace KimeraCS
                 InitializeWinFormsDataControls();
 
                 // Load Battle Skeleton
-                iLoadResult = LoadSkeletonFromDB(strfileNameModel, strfileNameAnim, true);
+                iLoadResult = LoadFieldSkeletonFromDB(strfileNameModel, strfileNameAnim, true);
 
                 if (iLoadResult == -2)
                 {
@@ -6424,17 +6474,17 @@ namespace KimeraCS
                 PostLoadModelPreparations(ref p_min, ref p_max);
 
                 // We can draw the model in panel
-                panelModel_Paint(null, null);
+                PanelModel_Paint(null, null);
 
             }
             catch
             {
-                MessageBox.Show("Global error opening Battle Skeleton file " + Path.GetFileName(frmFieldDB.strFieldFile).ToUpper() + ".",
+                MessageBox.Show("Global error opening Battle Skeleton file " + Path.GetFileName(FrmFieldDB.strFieldFile).ToUpper() + ".",
                                 "Error");
             }
         }
 
-        public void SetWeaponAnimationAttachedToBone(bool middleQ, frmSkeletonEditor frmSkEditor)
+        public void SetWeaponAnimationAttachedToBone(bool middleQ, FrmSkeletonEditor frmSkEditor)
         {
             int fi, jsp;
             double[] MV_matrix = new double[16];
@@ -6442,7 +6492,7 @@ namespace KimeraCS
 
             AddStateToBuffer(frmSkEditor);
 
-            glMatrixMode(glMatrixModeList.GL_MODELVIEW);
+            glMatrixMode(GLMatrixModeList.GL_MODELVIEW);
             glPushMatrix();
             glLoadIdentity();
 
@@ -6451,7 +6501,7 @@ namespace KimeraCS
                 if (middleQ) jsp = MoveToBattleBoneMiddle(bSkeleton, bAnimationsPack.SkeletonAnimations[ianimIndex].frames[fi], SelectedBone);
                 else jsp = MoveToBattleBoneEnd(bSkeleton, bAnimationsPack.SkeletonAnimations[ianimIndex].frames[fi], SelectedBone);
 
-                glGetDoublev((uint)glCapability.GL_MODELVIEW_MATRIX, MV_matrix);
+                glGetDoublev((uint)GLCapability.GL_MODELVIEW_MATRIX, MV_matrix);
 
                 tmpbFrame = bAnimationsPack.WeaponAnimations[ianimIndex].frames[fi];
                 tmpbFrame.startX = (int)MV_matrix[12];
@@ -6472,7 +6522,7 @@ namespace KimeraCS
             SetFrameEditorFields();
         }
 
-        private void pbTextureViewer_DoubleClick(object sender, EventArgs e)
+        private void PbTextureViewer_DoubleClick(object sender, EventArgs e)
         {
             if (cbTextureSelect.Items.Count > 0 && cbTextureSelect.SelectedIndex > -1)
             {
@@ -6482,7 +6532,7 @@ namespace KimeraCS
                         if (fSkeleton.bones[SelectedBone].fRSDResources[SelectedBonePiece].textures[cbTextureSelect.SelectedIndex].texID == 0xFFFFFFFF)
                             return;
 
-                        frmTexViewer = new frmTextureViewer(this, fSkeleton.bones[SelectedBone].fRSDResources[SelectedBonePiece].Model);
+                        frmTexViewer = new FrmTextureViewer(this, fSkeleton.bones[SelectedBone].fRSDResources[SelectedBonePiece].Model);
 
                         break;
 
@@ -6493,11 +6543,11 @@ namespace KimeraCS
                         if (bSkeleton.wpModels.Count > 0 && SelectedBone == bSkeleton.nBones)
                         {
                             if (ianimWeaponIndex == -1) return;
-                                frmTexViewer = new frmTextureViewer(this, bSkeleton.wpModels[cbWeapon.SelectedIndex]);                           
+                                frmTexViewer = new FrmTextureViewer(this, bSkeleton.wpModels[cbWeapon.SelectedIndex]);                           
                         }
                         else
                         {
-                                frmTexViewer = new frmTextureViewer(this, bSkeleton.bones[SelectedBone].Models[SelectedBonePiece]);
+                                frmTexViewer = new FrmTextureViewer(this, bSkeleton.bones[SelectedBone].Models[SelectedBonePiece]);
                         }
                         break;
                 }
@@ -6507,7 +6557,7 @@ namespace KimeraCS
         }
 
 
-        private void inputFramesDataTXTToolStripMenuItem_Click(object sender, EventArgs e)
+        private void InputFramesDataTXTToolStripMenuItem_Click(object sender, EventArgs e)
         {
             int iOpenResult;
 
@@ -6553,7 +6603,7 @@ namespace KimeraCS
 
                     UpdateMainSkeletonWindowTitle();
 
-                    panelModel_Paint(null, null);
+                    PanelModel_Paint(null, null);
                 }
             }
             catch
@@ -6565,7 +6615,7 @@ namespace KimeraCS
             }
         }
 
-        private void inputFramesDataFromTXTOnlyFieldModelsSelectiveToolStripMenuItem_Click(object sender, EventArgs e)
+        private void InputFramesDataFromTXTOnlyFieldModelsSelectiveToolStripMenuItem_Click(object sender, EventArgs e)
         {
             int iOpenResult;
 
@@ -6611,7 +6661,7 @@ namespace KimeraCS
 
                     UpdateMainSkeletonWindowTitle();
 
-                    panelModel_Paint(null, null);
+                    PanelModel_Paint(null, null);
                 }
             }
             catch
@@ -6623,7 +6673,7 @@ namespace KimeraCS
             }
         }
 
-        private void showVertexNormalsToolStripMenuItem_Click(object sender, EventArgs e)
+        private void ShowVertexNormalsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (showVertexNormalsToolStripMenuItem.Checked)
             {
@@ -6639,10 +6689,10 @@ namespace KimeraCS
                 showVertexNormalsToolStripMenuItem.Checked = false;
             }
 
-            panelModel_Paint(null, null);
+            PanelModel_Paint(null, null);
         }
 
-        private void showFaceNormalsToolStripMenuItem_Click(object sender, EventArgs e)
+        private void ShowFaceNormalsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (showFaceNormalsToolStripMenuItem.Checked)
             {
@@ -6658,40 +6708,40 @@ namespace KimeraCS
                 showFaceNormalsToolStripMenuItem.Checked = false;
             }
 
-            panelModel_Paint(null, null);
+            PanelModel_Paint(null, null);
         }
 
-        private void redToolStripMenuItem_Click(object sender, EventArgs e)
+        private void RedToolStripMenuItem_Click(object sender, EventArgs e)
         {
             int mask = 1 << 0;
 
             if (redToolStripMenuItem.Checked) iNormalsColor |= mask;
             else iNormalsColor &= ~mask;
 
-            panelModel_Paint(null, null);
+            PanelModel_Paint(null, null);
         }
 
-        private void greenToolStripMenuItem_Click(object sender, EventArgs e)
+        private void GreenToolStripMenuItem_Click(object sender, EventArgs e)
         {
             int mask = 1 << 1;
 
             if (greenToolStripMenuItem.Checked) iNormalsColor |= mask;
             else iNormalsColor &= ~mask;
 
-            panelModel_Paint(null, null);
+            PanelModel_Paint(null, null);
         }
 
-        private void blueToolStripMenuItem_Click(object sender, EventArgs e)
+        private void BlueToolStripMenuItem_Click(object sender, EventArgs e)
         {
             int mask = 1 << 2;
 
             if (blueToolStripMenuItem.Checked) iNormalsColor |= mask;
             else iNormalsColor &= ~mask;
 
-            panelModel_Paint(null, null);
+            PanelModel_Paint(null, null);
         }
 
-        private void oneftoolStripMenuItem_Click(object sender, EventArgs e)
+        private void OneftoolStripMenuItem_Click(object sender, EventArgs e)
         {
             fNormalsScale = 1.0f;
 
@@ -6700,10 +6750,10 @@ namespace KimeraCS
             thirtyftoolStripMenuItem.Checked = false;
             thousandftoolStripMenuItem.Checked = false;
 
-            panelModel_Paint(null, null);
+            PanelModel_Paint(null, null);
         }
 
-        private void fiveftoolStripMenuItem_Click(object sender, EventArgs e)
+        private void FiveftoolStripMenuItem_Click(object sender, EventArgs e)
         {
             fNormalsScale = 5.0f;
 
@@ -6712,10 +6762,10 @@ namespace KimeraCS
             thirtyftoolStripMenuItem.Checked = false;
             thousandftoolStripMenuItem.Checked = false;
 
-            panelModel_Paint(null, null);
+            PanelModel_Paint(null, null);
         }
 
-        private void thirtyftoolStripMenuItem_Click(object sender, EventArgs e)
+        private void ThirtyftoolStripMenuItem_Click(object sender, EventArgs e)
         {
             fNormalsScale = 30.0f;
 
@@ -6724,10 +6774,10 @@ namespace KimeraCS
             thirtyftoolStripMenuItem.Checked = true;
             thousandftoolStripMenuItem.Checked = false;
 
-            panelModel_Paint(null, null);
+            PanelModel_Paint(null, null);
         }
 
-        private void thousandftoolStripMenuItem_Click(object sender, EventArgs e)
+        private void ThousandftoolStripMenuItem_Click(object sender, EventArgs e)
         {
             fNormalsScale = 1000.0f;
 
@@ -6736,10 +6786,17 @@ namespace KimeraCS
             thirtyftoolStripMenuItem.Checked = false;
             thousandftoolStripMenuItem.Checked = true;
 
-            panelModel_Paint(null, null);
+            PanelModel_Paint(null, null);
         }
 
-        private void mergeFramesDataTXTOnlyFieldModelsToolStripMenuItem_Click(object sender, EventArgs e)
+        private void Import3DSFixingPositionToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            bAdjust3DSImport = Import3DSFixingPositionToolStripMenuItem.Checked;
+
+            WriteCFGFile();
+        }
+
+        private void MergeFramesDataTXTOnlyFieldModelsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             int iOpenResult;
 
@@ -6785,7 +6842,7 @@ namespace KimeraCS
 
                     UpdateMainSkeletonWindowTitle();
 
-                    panelModel_Paint(null, null);
+                    PanelModel_Paint(null, null);
                 }
             }
             catch
@@ -6806,10 +6863,10 @@ namespace KimeraCS
 
             // We can redraw the model in panel
             panelModel.Update();
-            panelModel_Paint(null, null);
+            PanelModel_Paint(null, null);
         }
 
-        private void addJointToolStripMenuItem_Click(object sender, EventArgs e)
+        private void AddJointToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string tmpText = "";
             if (fAnimation.nFrames > 1)
@@ -6821,12 +6878,12 @@ namespace KimeraCS
 
             if (cbBoneSelector.SelectedIndex != -1) tmpText = cbBoneSelector.Text;
 
-            frmSJ = new frmSkeletonJoints(this, 0, tmpText);
+            frmSJ = new FrmSkeletonJoints(this, 0, tmpText);
             frmSJ.ShowDialog();
             frmSJ.Dispose();
         }
 
-        private void editJointToolStripMenuItem_Click(object sender, EventArgs e)
+        private void EditJointToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (fAnimation.nFrames > 1)
             {
@@ -6837,7 +6894,7 @@ namespace KimeraCS
 
             if (cbBoneSelector.SelectedIndex >= 0)
             {
-                frmSJ = new frmSkeletonJoints(this, 1, cbBoneSelector.Text);
+                frmSJ = new FrmSkeletonJoints(this, 1, cbBoneSelector.Text);
                 frmSJ.ShowDialog();
                 frmSJ.Dispose();
             }
@@ -6869,13 +6926,13 @@ namespace KimeraCS
                     break;
 
                 case K_3DS_MODEL:
-                    Text = Text + " - Model: " + Path.GetFileNameWithoutExtension(strGlobal3DSModelName).ToUpper() + ".P";
+                    Text = STR_APPNAME + " - Model: " + Path.GetFileNameWithoutExtension(strGlobal3DSModelName).ToUpper() + ".P";
                     break;
 
                 default:
 
-                    if (IsTMDModel) Text = Text + " - Model: " + strGlobalTMDModelName.ToUpper();
-                    else Text = Text + " - Model: " + strGlobalPModelName.ToUpper();
+                    if (IsTMDModel) Text = STR_APPNAME + " - Model: " + strGlobalTMDModelName.ToUpper();
+                    else Text = STR_APPNAME + " - Model: " + strGlobalPModelName.ToUpper();
                     break;
             }
 
@@ -6932,7 +6989,7 @@ namespace KimeraCS
             gbSelectedBoneFrame.Enabled = bStatus;
         }
 
-        public void SetBonePieceModifiersPEditor(int SelectedBone, int SelectedBonePiece)
+        public void SetBonePieceModifiersPEditor()
         {
 
             loadingBonePieceModifiersQ = true;
