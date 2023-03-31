@@ -12,7 +12,7 @@ namespace KimeraCS
 
     using Defines;
 
-    using static frmSkeletonEditor;
+    using static FrmSkeletonEditor;
 
     using static FF7Skeleton;
     using static FF7BattleAnimation;
@@ -126,8 +126,10 @@ namespace KimeraCS
 
                                 if (loadGeometryQ)
                                 {
-                                    tmpbBone = new BattleBone();
-                                    tmpbBone.Models = new List<PModel>();
+                                    tmpbBone = new BattleBone() 
+                                    {
+                                        Models = new List<PModel>(),
+                                    };
 
                                     LoadBattleLocationPiece(ref tmpbBone, nBones, 
                                                             strFileDirectoryName, 
@@ -207,10 +209,11 @@ namespace KimeraCS
 
                             for (pSuffix2 = 'C'; pSuffix2 < pSuffix2End; pSuffix2++)
                             {
-                                tmpTEX = new TEX();
+                                tmpTEX = new TEX() 
+                                {
+                                    TEXfileName = baseBattleSkeletonName.ToUpper() + "A" + Convert.ToChar(pSuffix2),
+                                };
                                 
-                                tmpTEX.TEXfileName = baseBattleSkeletonName.ToUpper() + "A" + Convert.ToChar(pSuffix2);
-
                                 if (ReadTEXTexture(ref tmpTEX, strFileDirectoryName + "\\" + tmpTEX.TEXfileName) == 0)
                                 {
                                     LoadTEXTexture(ref tmpTEX);
@@ -292,8 +295,10 @@ namespace KimeraCS
                             {
                                 tSuffix = ".T" + ti.ToString("00");
 
-                                tmpTEX = new TEX();
-                                tmpTEX.TEXfileName = baseMagicSkeletonName.ToUpper() + tSuffix;
+                                tmpTEX = new TEX()
+                                {
+                                    TEXfileName = baseMagicSkeletonName.ToUpper() + tSuffix,
+                                };
 
                                 if (ReadTEXTexture(ref tmpTEX, strFileDirectoryName + "\\" + tmpTEX.TEXfileName) == 0)
                                 {
@@ -391,7 +396,7 @@ namespace KimeraCS
             Point3D p_min_aux_trans = new Point3D();
             Point3D p_max_aux_trans = new Point3D();
 
-            glMatrixMode(glMatrixModeList.GL_MODELVIEW);
+            glMatrixMode(GLMatrixModeList.GL_MODELVIEW);
             glPushMatrix();
             glLoadIdentity();
             glScalef(bBone.resizeX, bBone.resizeY, bBone.resizeZ);
@@ -426,7 +431,7 @@ namespace KimeraCS
                     p_max_aux.y = bBone.Models[mi].BoundingBox.max_y;
                     p_max_aux.z = bBone.Models[mi].BoundingBox.max_z;
 
-                    glGetDoublev((uint)glCapability.GL_MODELVIEW_MATRIX, MV_matrix);
+                    glGetDoublev((uint)GLCapability.GL_MODELVIEW_MATRIX, MV_matrix);
 
                     ComputeTransformedBoxBoundingBox(MV_matrix, ref p_min_aux, ref p_max_aux, ref p_min_aux_trans, ref p_max_aux_trans);
 
@@ -481,7 +486,7 @@ namespace KimeraCS
             p_min.y = (float)INFINITY_SINGLE;
             p_min.z = (float)INFINITY_SINGLE;
 
-            glMatrixMode(glMatrixModeList.GL_MODELVIEW);
+            glMatrixMode(GLMatrixModeList.GL_MODELVIEW);
             glPushMatrix();
             glLoadIdentity();
             glTranslated(bFrame.startX, bFrame.startY, bFrame.startZ);
@@ -509,7 +514,7 @@ namespace KimeraCS
 
                 ComputeBattleBoneBoundingBox(bSkeleton.bones[bi], ref p_min_bone, ref p_max_bone);
 
-                glGetDoublev((uint)glCapability.GL_MODELVIEW_MATRIX, MV_matrix);
+                glGetDoublev((uint)GLCapability.GL_MODELVIEW_MATRIX, MV_matrix);
 
                 ComputeTransformedBoxBoundingBox(MV_matrix, ref p_min_bone, ref p_max_bone, ref p_min_bone_trans, ref p_max_bone_trans);
 
@@ -619,14 +624,14 @@ namespace KimeraCS
             glSelectBuffer(bSkeleton.bones[boneIndex].nModels * 4, selBuff);
             glInitNames();
 
-            glRenderMode(glRenderingMode.GL_SELECT);
+            glRenderMode(GLRenderingMode.GL_SELECT);
 
-            glMatrixMode(glMatrixModeList.GL_PROJECTION);
+            glMatrixMode(GLMatrixModeList.GL_PROJECTION);
             glPushMatrix();
-            glGetDoublev((uint)glCapability.GL_PROJECTION_MATRIX, P_matrix);
+            glGetDoublev((uint)GLCapability.GL_PROJECTION_MATRIX, P_matrix);
             glLoadIdentity();
 
-            glGetIntegerv((uint)glCapability.GL_VIEWPORT, vp);
+            glGetIntegerv((uint)GLCapability.GL_VIEWPORT, vp);
             height = vp[3];
 
             gluPickMatrix(px - 1, height - py + 1, 3, 3, vp);
@@ -637,7 +642,7 @@ namespace KimeraCS
 
             for (mi = 0; mi < bSkeleton.bones[boneIndex].nModels; mi++)
             {
-                glMatrixMode(glMatrixModeList.GL_MODELVIEW);
+                glMatrixMode(GLMatrixModeList.GL_MODELVIEW);
                 glPushMatrix();
                 glTranslatef(bSkeleton.bones[boneIndex].Models[mi].repositionX,
                              bSkeleton.bones[boneIndex].Models[mi].repositionY,
@@ -662,10 +667,10 @@ namespace KimeraCS
 
             for (i = 0; i <= jsp; i++) glPopMatrix();
             glPopMatrix();
-            glMatrixMode(glMatrixModeList.GL_PROJECTION);
+            glMatrixMode(GLMatrixModeList.GL_PROJECTION);
             glPopMatrix();
 
-            nModels = glRenderMode(glRenderingMode.GL_RENDER);
+            nModels = glRenderMode(GLRenderingMode.GL_RENDER);
             iGetClosestBattleboneModelResult = -1;
             min_z = -1;
 
@@ -704,20 +709,20 @@ namespace KimeraCS
             glSelectBuffer(bSkeleton.nBones * 4, selBuff);
             glInitNames();
 
-            glRenderMode(glRenderingMode.GL_SELECT);
+            glRenderMode(GLRenderingMode.GL_SELECT);
 
-            glMatrixMode(glMatrixModeList.GL_PROJECTION);
+            glMatrixMode(GLMatrixModeList.GL_PROJECTION);
             glPushMatrix();
-            glGetDoublev((uint)glCapability.GL_PROJECTION_MATRIX, P_matrix);
+            glGetDoublev((uint)GLCapability.GL_PROJECTION_MATRIX, P_matrix);
             glLoadIdentity();
 
-            glGetIntegerv((uint)glCapability.GL_VIEWPORT, vp);
+            glGetIntegerv((uint)GLCapability.GL_VIEWPORT, vp);
             height = vp[3];
 
             gluPickMatrix(px - 1, height - py + 1, 3, 3, vp);
             //  gluPerspective(60, width/height, 0.1, 1000); //Math.Max(0.1 - DIST, 0.1), ComputeBattleDiameter(bSkeleton) * 4 - DIST
             glMultMatrixd(P_matrix);
-            glMatrixMode(glMatrixModeList.GL_MODELVIEW);
+            glMatrixMode(GLMatrixModeList.GL_MODELVIEW);
 
             glPushMatrix();
             glTranslated(bFrame.startX, bFrame.startY, bFrame.startZ);
@@ -801,10 +806,10 @@ namespace KimeraCS
                 glPopMatrix();
             }
 
-            glMatrixMode(glMatrixModeList.GL_PROJECTION);
+            glMatrixMode(GLMatrixModeList.GL_PROJECTION);
             glPopMatrix();
 
-            nBones = glRenderMode(glRenderingMode.GL_RENDER);
+            nBones = glRenderMode(GLRenderingMode.GL_RENDER);
 
             iGetClosestBattleBoneResult = -1;
             min_z = -1;
@@ -883,14 +888,14 @@ namespace KimeraCS
             {
                 if (bBone.hasModel == 1)
                 {
-                    if (glIsEnabled(glCapability.GL_LIGHTING)) 
+                    if (glIsEnabled(GLCapability.GL_LIGHTING)) 
                     {
                         tmpModel = bBone.Models[mi];
                         ApplyCurrentVColors(ref tmpModel);
                         bBone.Models[mi] = tmpModel;
                     }
 
-                    glMatrixMode(glMatrixModeList.GL_MODELVIEW);
+                    glMatrixMode(GLMatrixModeList.GL_MODELVIEW);
                     glPushMatrix();
 
                     SetCameraModelViewQuat(bBone.Models[mi].repositionX, bBone.Models[mi].repositionY, bBone.Models[mi].repositionZ,
@@ -903,7 +908,7 @@ namespace KimeraCS
                     ApplyPChanges(ref tmpModel, false);
                     bBone.Models[mi] = tmpModel;
 
-                    glMatrixMode(glMatrixModeList.GL_MODELVIEW);
+                    glMatrixMode(GLMatrixModeList.GL_MODELVIEW);
                     glPopMatrix();
                 }
             }
@@ -916,9 +921,9 @@ namespace KimeraCS
 
         public static void ApplyBattleWeaponChanges(ref PModel wpModel)
         {
-            if (glIsEnabled(glCapability.GL_LIGHTING)) ApplyCurrentVColors(ref wpModel);
+            if (glIsEnabled(GLCapability.GL_LIGHTING)) ApplyCurrentVColors(ref wpModel);
 
-            glMatrixMode(glMatrixModeList.GL_MODELVIEW);
+            glMatrixMode(GLMatrixModeList.GL_MODELVIEW);
             glPushMatrix();
 
             SetCameraModelView(wpModel.repositionX, wpModel.repositionY, wpModel.repositionZ,
@@ -929,7 +934,7 @@ namespace KimeraCS
 
             ApplyPChanges(ref wpModel, true);
 
-            glMatrixMode(glMatrixModeList.GL_MODELVIEW);
+            glMatrixMode(GLMatrixModeList.GL_MODELVIEW);
             glPopMatrix();
         }
 
@@ -943,7 +948,7 @@ namespace KimeraCS
             jsp = 0;
             joint_stack[0] = -1;
 
-            glMatrixMode(glMatrixModeList.GL_MODELVIEW);
+            glMatrixMode(GLMatrixModeList.GL_MODELVIEW);
             glPushMatrix();
             // glLoadIdentity();
             glTranslated(bFrame.startX, bFrame.startY, bFrame.startZ);
@@ -994,7 +999,7 @@ namespace KimeraCS
             {
                 PModel tmpwpModel;
 
-                glMatrixMode(glMatrixModeList.GL_MODELVIEW);
+                glMatrixMode(GLMatrixModeList.GL_MODELVIEW);
                 glPushMatrix();
                 //glLoadIdentity();
                 glTranslated(bwpFrame.startX, bwpFrame.startY, bwpFrame.startZ);
@@ -1288,17 +1293,19 @@ namespace KimeraCS
         {
             BattleBone bBoneOut;
 
-            bBoneOut = new BattleBone();
+            bBoneOut = new BattleBone()
+            {
+                hasModel = bBoneIn.hasModel,
+                len = bBoneIn.len,
+                nModels = bBoneIn.nModels,
+                parentBone = bBoneIn.parentBone,
+                resizeX = bBoneIn.resizeX,
+                resizeY = bBoneIn.resizeY,
+                resizeZ = bBoneIn.resizeZ,
 
-            bBoneOut.hasModel = bBoneIn.hasModel;
-            bBoneOut.len = bBoneIn.len;
-            bBoneOut.nModels = bBoneIn.nModels;
-            bBoneOut.parentBone = bBoneIn.parentBone;
-            bBoneOut.resizeX = bBoneIn.resizeX;
-            bBoneOut.resizeY = bBoneIn.resizeY;
-            bBoneOut.resizeZ = bBoneIn.resizeZ;
+                Models = new List<PModel>(),
+            };
 
-            bBoneOut.Models = new List<PModel>();
             foreach (PModel bModel in bBoneIn.Models) bBoneOut.Models.Add(CopyPModel(bModel));
 
             return bBoneOut;
@@ -1308,33 +1315,33 @@ namespace KimeraCS
         {
             BattleSkeleton bSkeletonOut;
 
-            bSkeletonOut = new BattleSkeleton();
+            bSkeletonOut = new BattleSkeleton()
+            {
+                fileName = bSkeletonIn.fileName,
+                IsBattleLocation = bSkeletonIn.IsBattleLocation,
+                CanHaveLimitBreak = bSkeletonIn.CanHaveLimitBreak,
+                nBones = bSkeletonIn.nBones,
+                nJoints = bSkeletonIn.nJoints,
+                nsSkeletonAnims = bSkeletonIn.nsSkeletonAnims,
+                nsWeaponsAnims = bSkeletonIn.nsWeaponsAnims,
+                nTextures = bSkeletonIn.nTextures,
+                nWeapons = bSkeletonIn.nWeapons,
+                skeletonType = bSkeletonIn.skeletonType,
+                TexIDS = bSkeletonIn.TexIDS,
+                unk1 = bSkeletonIn.unk1,
+                unk2 = bSkeletonIn.unk2,
+                unk3 = bSkeletonIn.unk3,
+                unk4 = bSkeletonIn.unk4,
+                unk5 = bSkeletonIn.unk5,
+                unk6 = bSkeletonIn.unk6,
 
-            bSkeletonOut.fileName = bSkeletonIn.fileName;
-            bSkeletonOut.IsBattleLocation = bSkeletonIn.IsBattleLocation;
-            bSkeletonOut.CanHaveLimitBreak = bSkeletonIn.CanHaveLimitBreak;
-            bSkeletonOut.nBones = bSkeletonIn.nBones;
-            bSkeletonOut.nJoints = bSkeletonIn.nJoints;
-            bSkeletonOut.nsSkeletonAnims = bSkeletonIn.nsSkeletonAnims;
-            bSkeletonOut.nsWeaponsAnims = bSkeletonIn.nsWeaponsAnims;
-            bSkeletonOut.nTextures = bSkeletonIn.nTextures;
-            bSkeletonOut.nWeapons = bSkeletonIn.nWeapons;
-            bSkeletonOut.skeletonType = bSkeletonIn.skeletonType;
-            bSkeletonOut.TexIDS = bSkeletonIn.TexIDS;
-            bSkeletonOut.unk1 = bSkeletonIn.unk1;
-            bSkeletonOut.unk2 = bSkeletonIn.unk2;
-            bSkeletonOut.unk3 = bSkeletonIn.unk3;
-            bSkeletonOut.unk4 = bSkeletonIn.unk4;
-            bSkeletonOut.unk5 = bSkeletonIn.unk5;
-            bSkeletonOut.unk6 = bSkeletonIn.unk6;
+                bones = new List<BattleBone>(),
+                wpModels = new List<PModel>(),
+                textures = new List<TEX>(),
+            };
 
-            bSkeletonOut.bones = new List<BattleBone>();
-            foreach (BattleBone itmbBone in bSkeletonIn.bones) bSkeletonOut.bones.Add(CopybBone(itmbBone));
-
-            bSkeletonOut.wpModels = new List<PModel>();
-            foreach (PModel itmbwpModel in bSkeletonIn.wpModels) bSkeletonOut.wpModels.Add(CopyPModel(itmbwpModel));
-
-            bSkeletonOut.textures = new List<TEX>();
+            foreach (BattleBone itmbBone in bSkeletonIn.bones) bSkeletonOut.bones.Add(CopybBone(itmbBone));          
+            foreach (PModel itmbwpModel in bSkeletonIn.wpModels) bSkeletonOut.wpModels.Add(CopyPModel(itmbwpModel));            
             foreach (TEX itmbTex in bSkeletonIn.textures) bSkeletonOut.textures.Add(itmbTex);
 
             return bSkeletonOut;

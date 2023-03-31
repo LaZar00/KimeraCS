@@ -38,7 +38,7 @@ namespace KimeraCS
 	namespace Defines
     {
 		[Flags()]
-		public enum glBlendEquationMode : uint
+		public enum GLBlendEquationMode : uint
 		{
 			GL_FUNC_ADD = 0x8006,
 			GL_FUNC_SUBTRACT = 0x800A,
@@ -47,7 +47,7 @@ namespace KimeraCS
 			GL_MAX = 0x8008,
 		}
 
-		public enum glBGRAEXT : uint
+		public enum GLBGRAEXT : uint
 		{
 			GL_BGR = 0x80E0,
 			GL_BGR_EXT = 0x80E0,
@@ -56,7 +56,7 @@ namespace KimeraCS
 		}
 
 		[Flags()]
-		public enum glDrawElementsType : uint
+		public enum GLDrawElementsType : uint
 		{
 			UNSIGNED_BYTE = 0x1401,
 			UNSIGNED_SHORT = 0x1403,
@@ -64,14 +64,14 @@ namespace KimeraCS
 		}
 
 		[Flags()]
-		public enum glOrientationOrigin : uint
+		public enum GLOrientationOrigin : uint
 		{
 			LOWER_LEFT = 0x8CA1,
 			UPPER_LEFT = 0x8CA2,
 		}
 
 		[Flags()]
-		public enum glPointParameter : uint
+		public enum GLPointParameter : uint
 		{
 			POINT_FADE_THRESHOLD_SIZE = 0x8128,
 			POINT_SPRITE_COORD_ORIGIN = 0x8CA0,
@@ -87,41 +87,41 @@ namespace KimeraCS
 		/// <param name="dstRGB">Factor to the destination color value.</param>
 		/// <param name="srcAlpha">Factor to the source alpha value.</param>
 		/// <param name="dstAlpha">Factor to the destination alpha value.</param>
-		public delegate void glBlendFuncSeparate(glBlendFuncFactor srcRGB, glBlendFuncFactor dstRGB, glBlendFuncFactor srcAlpha, glBlendFuncFactor dstAlpha);
+		public delegate void glBlendFuncSeparate(GLBlendFuncFactor srcRGB, GLBlendFuncFactor dstRGB, GLBlendFuncFactor srcAlpha, GLBlendFuncFactor dstAlpha);
 
 		/// <summary>
 		/// Renders primitives from array.
 		/// </summary>
-		/// <param name="mode">A <see cref="glDrawMode"/> specifying the type of primitive to be rendered.</param>
+		/// <param name="mode">A <see cref="GLDrawMode"/> specifying the type of primitive to be rendered.</param>
 		/// <param name="first">Start indices in the array.</param>
 		/// <param name="count">Numbers of elements to be rendered.</param>
 		/// <param name="drawcount">Number of draws (Length of <paramref name="first"/> and <paramref name="count"/>.</param>
-		public delegate void glMultiDrawArrays(glDrawMode mode, int[] first, int[] count, int drawcount);
+		public delegate void glMultiDrawArrays(GLDrawMode mode, int[] first, int[] count, int drawcount);
 
-		internal delegate void glMultiDrawElements(glDrawMode mode, int[] count, glDrawElementsType type, IntPtr[] indices, int primcount);
+		internal delegate void glMultiDrawElements(GLDrawMode mode, int[] count, GLDrawElementsType type, IntPtr[] indices, int primcount);
 
 		/// <summary>
 		/// Sets point parameters.
 		/// </summary>
-		/// <param name="pname">A <see cref="glPointParameter"/> specifying the parameter.</param>
+		/// <param name="pname">A <see cref="GLPointParameter"/> specifying the parameter.</param>
 		/// <param name="param">The value the point parameter will be set to.</param>
-		public delegate void glPointParameterf(glPointParameter pname, float param);
+		public delegate void glPointParameterf(GLPointParameter pname, float param);
 
 		/// <summary>
 		/// Sets point parameters.
 		/// </summary>
-		/// <param name="pname">A <see cref="glPointParameter"/> specifying the parameter.</param>
+		/// <param name="pname">A <see cref="GLPointParameter"/> specifying the parameter.</param>
 		/// <param name="params">The values the point parameter will be set to.</param>
-		public delegate void glPointParameterfv(glPointParameter pname, params float[] @params);
+		public delegate void glPointParameterfv(GLPointParameter pname, params float[] @params);
 
-		internal delegate void glPointParameteri(glPointParameter pname, int param);
+		internal delegate void glPointParameteri(GLPointParameter pname, int param);
 
 		/// <summary>
 		/// Sets point parameters.
 		/// </summary>
-		/// <param name="pname">A <see cref="glPointParameter"/> specifying the parameter.</param>
+		/// <param name="pname">A <see cref="GLPointParameter"/> specifying the parameter.</param>
 		/// <param name="params">The values the point parameter will be set to.</param>
-		public delegate void glPointParameteriv(glPointParameter pname, params int[] @params);
+		public delegate void glPointParameteriv(GLPointParameter pname, params int[] @params);
 
 		/// <summary>
 		/// Sets the blend color.
@@ -135,8 +135,8 @@ namespace KimeraCS
 		/// <summary>
 		/// Sets the equation for blending of color and alpha values.
 		/// </summary>
-		/// <param name="mode">A <see cref="glBlendEquationMode"/> specifying the blend equation.</param>
-		public delegate void glBlendEquation(glBlendEquationMode mode);
+		/// <param name="mode">A <see cref="GLBlendEquationMode"/> specifying the blend equation.</param>
+		public delegate void glBlendEquation(GLBlendEquationMode mode);
 	}
 
 	public static partial class GLExt
@@ -149,12 +149,12 @@ namespace KimeraCS
 		internal const string DLLName = "OPENGL32.DLL";
 
 		const string platformErrorString = "Value to big for 32bit platform.";
-		static string PlatformErrorString { get { return platformErrorString; } }
+		//static string PlatformErrorString { get { return platformErrorString; } }
 
-		const string platformWrongTypeErrorString = "Plattform is 64bit and value need 64bit to store, but argument is only 32bit.";
-		static string PlatformWrongTypeErrorString { get { return platformWrongTypeErrorString; } }
+		//const string platformWrongTypeErrorString = "Plattform is 64bit and value need 64bit to store, but argument is only 32bit.";
+		//static string PlatformWrongTypeErrorString { get { return platformWrongTypeErrorString; } }
 
-		const string platformArrayErrorString = "A value in the array to big for 32bit platform.";
+		//const string platformArrayErrorString = "A value in the array to big for 32bit platform.";
 		static string PlatformArrayErrorString { get { return platformErrorString; } }
 
 
@@ -216,12 +216,12 @@ namespace KimeraCS
 		/// <summary>
 		/// Renders primitives from array via indices.
 		/// </summary>
-		/// <param name="mode">A <see cref="glDrawMode"/> specifying the type of primitive to render.</param>
+		/// <param name="mode">A <see cref="GLDrawMode"/> specifying the type of primitive to render.</param>
 		/// <param name="count">Numbers of indices.</param>
-		/// <param name="type">A <see cref="glDrawElementsType"/> specifying the data type of the indices.</param>
+		/// <param name="type">A <see cref="GLDrawElementsType"/> specifying the data type of the indices.</param>
 		/// <param name="offsets">The offsets into the array bound to <see cref="glBufferTarget.ELEMENT_ARRAY_BUFFER"/>.</param>
 		/// <param name="drawcount">Number of draws (Length of <paramref name="count"/> and <paramref name="offsets"/>.</param>
-		public static void MultiDrawElements(glDrawMode mode, int[] count, glDrawElementsType type, int[] offsets, int drawcount)
+		public static void MultiDrawElements(GLDrawMode mode, int[] count, GLDrawElementsType type, int[] offsets, int drawcount)
 		{
 			IntPtr[] iOffsets = new IntPtr[drawcount];
 			for (int i = 0; i < drawcount; i++) iOffsets[i] = (IntPtr)offsets[i];
@@ -231,12 +231,12 @@ namespace KimeraCS
 		/// <summary>
 		/// Renders primitives from array via indices.
 		/// </summary>
-		/// <param name="mode">A <see cref="glDrawMode"/> specifying the type of primitive to render.</param>
+		/// <param name="mode">A <see cref="GLDrawMode"/> specifying the type of primitive to render.</param>
 		/// <param name="count">Numbers of indices.</param>
-		/// <param name="type">A <see cref="glDrawElementsType"/> specifying the data type of the indices.</param>
+		/// <param name="type">A <see cref="GLDrawElementsType"/> specifying the data type of the indices.</param>
 		/// <param name="offsets">The offsets into the array bound to <see cref="glBufferTarget.ELEMENT_ARRAY_BUFFER"/>.</param>
 		/// <param name="drawcount">Number of draws (Length of <paramref name="count"/> and <paramref name="offsets"/>.</param>
-		public static void glMultiDrawElements(glDrawMode mode, int[] count, glDrawElementsType type, long[] offsets, int drawcount)
+		public static void GLMultiDrawElements(GLDrawMode mode, int[] count, GLDrawElementsType type, long[] offsets, int drawcount)
 		{
 			IntPtr[] iOffsets = new IntPtr[drawcount];
 			for (int i = 0; i < drawcount; i++)
@@ -252,9 +252,9 @@ namespace KimeraCS
 		/// <summary>
 		/// Sets point parameters.
 		/// </summary>
-		/// <param name="pname">A <see cref="glPointParameter"/> specifying the parameter.</param>
+		/// <param name="pname">A <see cref="GLPointParameter"/> specifying the parameter.</param>
 		/// <param name="param">The value the point parameter will be set to.</param>
-		public static void PointParameteri(glPointParameter pname, int param)
+		public static void PointParameteri(GLPointParameter pname, int param)
 		{
 			_PointParameteri(pname, param);
 		}
@@ -262,9 +262,9 @@ namespace KimeraCS
 		/// <summary>
 		/// Sets point parameters.
 		/// </summary>
-		/// <param name="pname">Must be <see cref="glPointParameter.POINT_SPRITE_COORD_ORIGIN"/>.</param>
-		/// <param name="param">The <see cref="glOrientationOrigin"/> value <see cref="glPointParameter.POINT_SPRITE_COORD_ORIGIN">POINT_SPRITE_COORD_ORIGIN</see> will be set to.</param>
-		public static void PointParameteri(glPointParameter pname, glOrientationOrigin param)
+		/// <param name="pname">Must be <see cref="GLPointParameter.POINT_SPRITE_COORD_ORIGIN"/>.</param>
+		/// <param name="param">The <see cref="glOrientationOrigin"/> value <see cref="GLPointParameter.POINT_SPRITE_COORD_ORIGIN">POINT_SPRITE_COORD_ORIGIN</see> will be set to.</param>
+		public static void PointParameteri(GLPointParameter pname, GLOrientationOrigin param)
 		{
 			_PointParameteri(pname, (int)param);
 		}

@@ -1,7 +1,7 @@
 ﻿
 namespace KimeraCS
 {
-    partial class frmFF7IDFJointsBonesSelection
+    partial class FrmFF7IDFJointsBonesSelection
     {
         /// <summary>
         /// Required designer variable.
@@ -29,7 +29,7 @@ namespace KimeraCS
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmFF7IDFJointsBonesSelection));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmFF7IDFJointsBonesSelection));
             this.chklbJointsBones = new System.Windows.Forms.CheckedListBox();
             this.btnOk = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
@@ -55,7 +55,7 @@ namespace KimeraCS
             this.btnOk.TabIndex = 1;
             this.btnOk.Text = "Ok";
             this.btnOk.UseVisualStyleBackColor = true;
-            this.btnOk.Click += new System.EventHandler(this.btnOk_Click);
+            this.btnOk.Click += new System.EventHandler(this.BtnOk_Click);
             // 
             // btnCancel
             // 
@@ -66,7 +66,7 @@ namespace KimeraCS
             this.btnCancel.TabIndex = 2;
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = true;
-            this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
+            this.btnCancel.Click += new System.EventHandler(this.BtnCancel_Click);
             // 
             // btnUnselectAll
             // 
@@ -78,7 +78,7 @@ namespace KimeraCS
             this.btnUnselectAll.Size = new System.Drawing.Size(24, 24);
             this.btnUnselectAll.TabIndex = 4;
             this.btnUnselectAll.UseVisualStyleBackColor = true;
-            this.btnUnselectAll.Click += new System.EventHandler(this.btnUnselectAll_Click);
+            this.btnUnselectAll.Click += new System.EventHandler(this.BtnUnselectAll_Click);
             // 
             // btnSelectAll
             // 
@@ -90,7 +90,7 @@ namespace KimeraCS
             this.btnSelectAll.Size = new System.Drawing.Size(24, 24);
             this.btnSelectAll.TabIndex = 3;
             this.btnSelectAll.UseVisualStyleBackColor = true;
-            this.btnSelectAll.Click += new System.EventHandler(this.btnSelectAll_Click);
+            this.btnSelectAll.Click += new System.EventHandler(this.BtnSelectAll_Click);
             // 
             // frmFF7IDFJointsBonesSelection
             // 

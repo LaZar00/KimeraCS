@@ -1,7 +1,7 @@
 ﻿
 namespace KimeraCS
 {
-    partial class frmTMDObjList
+    partial class FrmTMDObjList
     {
         /// <summary>
         /// Required designer variable.
@@ -29,7 +29,7 @@ namespace KimeraCS
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmTMDObjList));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmTMDObjList));
             this.lbTMDObjectList = new System.Windows.Forms.ListBox();
             this.btnClose = new System.Windows.Forms.Button();
             this.btnSaveLog = new System.Windows.Forms.Button();
@@ -45,7 +45,7 @@ namespace KimeraCS
             this.lbTMDObjectList.Name = "lbTMDObjectList";
             this.lbTMDObjectList.Size = new System.Drawing.Size(98, 355);
             this.lbTMDObjectList.TabIndex = 0;            
-            this.lbTMDObjectList.DoubleClick += new System.EventHandler(this.lbTMDObjectList_DoubleClick);
+            this.lbTMDObjectList.DoubleClick += new System.EventHandler(this.LbTMDObjectList_DoubleClick);
             // 
             // btnClose
             // 
@@ -56,7 +56,7 @@ namespace KimeraCS
             this.btnClose.TabIndex = 4;
             this.btnClose.Text = "Close";
             this.btnClose.UseVisualStyleBackColor = true;
-            this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
+            this.btnClose.Click += new System.EventHandler(this.BtnClose_Click);
             // 
             // btnSaveLog
             // 
@@ -66,7 +66,7 @@ namespace KimeraCS
             this.btnSaveLog.TabIndex = 3;
             this.btnSaveLog.Text = "Save Log";
             this.btnSaveLog.UseVisualStyleBackColor = true;
-            this.btnSaveLog.Click += new System.EventHandler(this.btnSaveInfo_Click);
+            this.btnSaveLog.Click += new System.EventHandler(this.BtnSaveInfo_Click);
             // 
             // btnCommitPModel
             // 
@@ -77,7 +77,7 @@ namespace KimeraCS
             this.btnCommitPModel.TabIndex = 1;
             this.btnCommitPModel.Text = "Commit P Model";
             this.btnCommitPModel.UseVisualStyleBackColor = true;
-            this.btnCommitPModel.Click += new System.EventHandler(this.btnCommitPModel_Click);
+            this.btnCommitPModel.Click += new System.EventHandler(this.BtnCommitPModel_Click);
             // 
             // btnSaveTMD
             // 
@@ -87,7 +87,7 @@ namespace KimeraCS
             this.btnSaveTMD.TabIndex = 2;
             this.btnSaveTMD.Text = "Save TMD";
             this.btnSaveTMD.UseVisualStyleBackColor = true;
-            this.btnSaveTMD.Click += new System.EventHandler(this.btnSaveTMD_Click);
+            this.btnSaveTMD.Click += new System.EventHandler(this.BtnSaveTMD_Click);
             // 
             // frmTMDObjList
             // 
@@ -110,8 +110,8 @@ namespace KimeraCS
             this.Name = "frmTMDObjList";
             this.ShowInTaskbar = false;
             this.Text = "TMD Obj List";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmTMDObjList_FormClosing);
-            this.Load += new System.EventHandler(this.frmTMDObjList_Load);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FrmTMDObjList_FormClosing);
+            this.Load += new System.EventHandler(this.FrmTMDObjList_Load);
             this.ResumeLayout(false);
 
         }

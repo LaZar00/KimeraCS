@@ -1,7 +1,7 @@
 ﻿
 namespace KimeraCS
 {
-    partial class frmMagicDB
+    partial class FrmMagicDB
     {
         /// <summary>
         /// Required designer variable.
@@ -29,7 +29,7 @@ namespace KimeraCS
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmMagicDB));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmMagicDB));
             this.btnLoadModelAnimation = new System.Windows.Forms.Button();
             this.btnClose = new System.Windows.Forms.Button();
             this.btnSaveMagicDataDir = new System.Windows.Forms.Button();
@@ -52,7 +52,7 @@ namespace KimeraCS
             this.btnLoadModelAnimation.TabIndex = 24;
             this.btnLoadModelAnimation.Text = "Load Model";
             this.btnLoadModelAnimation.UseVisualStyleBackColor = true;
-            this.btnLoadModelAnimation.Click += new System.EventHandler(this.btnLoadModelAnimation_Click);
+            this.btnLoadModelAnimation.Click += new System.EventHandler(this.BtnLoadModelAnimation_Click);
             // 
             // btnClose
             // 
@@ -63,7 +63,7 @@ namespace KimeraCS
             this.btnClose.TabIndex = 23;
             this.btnClose.Text = "Close";
             this.btnClose.UseVisualStyleBackColor = true;
-            this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
+            this.btnClose.Click += new System.EventHandler(this.BtnClose_Click);
             // 
             // btnSaveMagicDataDir
             // 
@@ -74,7 +74,7 @@ namespace KimeraCS
             this.btnSaveMagicDataDir.TabIndex = 22;
             this.btnSaveMagicDataDir.Text = "Save Magic Data Directory";
             this.btnSaveMagicDataDir.UseVisualStyleBackColor = true;
-            this.btnSaveMagicDataDir.Click += new System.EventHandler(this.btnSaveMagicDataDir_Click);
+            this.btnSaveMagicDataDir.Click += new System.EventHandler(this.BtnSaveMagicDataDir_Click);
             // 
             // btnSelectDirBrowser
             // 
@@ -85,7 +85,7 @@ namespace KimeraCS
             this.btnSelectDirBrowser.TabIndex = 21;
             this.btnSelectDirBrowser.Text = "...";
             this.btnSelectDirBrowser.UseVisualStyleBackColor = true;
-            this.btnSelectDirBrowser.Click += new System.EventHandler(this.btnSelectDirBrowser_Click);
+            this.btnSelectDirBrowser.Click += new System.EventHandler(this.BtnSelectDirBrowser_Click);
             // 
             // txtMagicDataDir
             // 
@@ -134,7 +134,7 @@ namespace KimeraCS
             this.dgvMagic.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dgvMagic.Size = new System.Drawing.Size(428, 322);
             this.dgvMagic.TabIndex = 25;
-            this.dgvMagic.DoubleClick += new System.EventHandler(this.dgvMagic_DoubleClick);
+            this.dgvMagic.DoubleClick += new System.EventHandler(this.DgvMagic_DoubleClick);
             // 
             // colNumber
             // 
@@ -193,8 +193,8 @@ namespace KimeraCS
             this.Name = "frmMagicDB";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "FF7 Magic Database";
-            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.frmMagicDB_FormClosed);
-            this.Load += new System.EventHandler(this.frmMagicDB_Load);
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.FrmMagicDB_FormClosed);
+            this.Load += new System.EventHandler(this.FrmMagicDB_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dgvMagic)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();

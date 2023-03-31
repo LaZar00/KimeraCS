@@ -26,24 +26,24 @@ namespace KimeraCS
         {
         }
 
-        public struct POINTAPI
-        {
-            int x;
-            int y;
+        //public struct POINTAPI
+        //{
+        //    int x;
+        //    int y;
 
-            public POINTAPI(int in_x, int in_y)
-            {
-                x = in_x;
-                y = in_y;
-            }
-        }
+        //    public POINTAPI(int in_x, int in_y)
+        //    {
+        //        x = in_x;
+        //        y = in_y;
+        //    }
+        //}
 
-        public struct LOGBRUSH
-        {
-            public int lbStyle;
-            public int lbColor;
-            public int lbHatch;
-        }
+        //public struct LOGBRUSH
+        //{
+        //    int lbStyle;
+        //    int lbColor;
+        //    int lbHatch;
+        //}
 
         [Flags]
         public enum BitCount : ushort
@@ -324,8 +324,8 @@ namespace KimeraCS
         [DllImport(DLLName, EntryPoint = "SetStretchBltMode")]
         public static extern bool SetStretchBltMode(IntPtr hDC, StretchMode iStretchMode);
 
-        [DllImport(DLLName, EntryPoint = "SetBrushOrgEx", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall, SetLastError = true)]
-        public static extern int SetBrushOrgEx(IntPtr hDC, int x, int y, ref POINTAPI p);
+        //[DllImport(DLLName, EntryPoint = "SetBrushOrgEx", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall, SetLastError = true)]
+        //public static extern int SetBrushOrgEx(IntPtr hDC, int x, int y, ref POINTAPI p);
 
         [DllImport(DLLName, EntryPoint = "SetPixelFormat")]
         public static extern bool SetPixelFormat(IntPtr hdc, int iPixelFormat, ref PIXELFORMATDESCRIPTOR ppfd);

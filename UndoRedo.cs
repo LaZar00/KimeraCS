@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace KimeraCS
 {
-    using static frmSkeletonEditor;
+    using static FrmSkeletonEditor;
 
     using static FF7Skeleton;
     using static FF7FieldSkeleton;
@@ -54,7 +54,7 @@ namespace KimeraCS
             RedoCursor = 0;
         }
 
-        public static void AddStateToBuffer(frmSkeletonEditor frmSkEditor)
+        public static void AddStateToBuffer(FrmSkeletonEditor frmSkEditor)
         {
             int si;
 
@@ -77,7 +77,7 @@ namespace KimeraCS
             //RedoCursor = 0;
         }
 
-        public static void Redo(frmPEditor frmIn, frmSkeletonEditor frmSkEditor)
+        public static void Redo(FrmPEditor frmIn, FrmSkeletonEditor frmSkEditor)
         {
             int si;
 
@@ -117,7 +117,7 @@ namespace KimeraCS
 
         }
 
-        public static void Undo(frmPEditor frmIn, frmSkeletonEditor frmSkEditor)
+        public static void Undo(FrmPEditor frmIn, FrmSkeletonEditor frmSkEditor)
         {
             int si;
 
@@ -156,7 +156,7 @@ namespace KimeraCS
             }
         }
         
-        private static void RestoreState(ref SkeletonState sState, frmSkeletonEditor frmSkEditor)
+        private static void RestoreState(ref SkeletonState sState, FrmSkeletonEditor frmSkEditor)
         {
             SelectedBone = sState.URSelectedBone;
             SelectedBonePiece = sState.URSelectedBonePiece;
@@ -240,7 +240,7 @@ namespace KimeraCS
             }
         }
 
-        private static void StoreState(ref SkeletonState sState, frmSkeletonEditor frmSkEditor)
+        private static void StoreState(ref SkeletonState sState, FrmSkeletonEditor frmSkEditor)
         {
             sState.URSelectedBone = SelectedBone;
             sState.URSelectedBonePiece = SelectedBonePiece;

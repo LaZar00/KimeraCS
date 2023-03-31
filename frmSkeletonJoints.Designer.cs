@@ -1,7 +1,7 @@
 ﻿
 namespace KimeraCS
 {
-    partial class frmSkeletonJoints
+    partial class FrmSkeletonJoints
     {
         /// <summary>
         /// Required designer variable.
@@ -29,7 +29,7 @@ namespace KimeraCS
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmSkeletonJoints));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmSkeletonJoints));
             this.label1 = new System.Windows.Forms.Label();
             this.cbBoneAttachedTo = new System.Windows.Forms.ComboBox();
             this.lbLength = new System.Windows.Forms.Label();
@@ -56,6 +56,7 @@ namespace KimeraCS
             // 
             // cbBoneAttachedTo
             // 
+            this.cbBoneAttachedTo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbBoneAttachedTo.FormattingEnabled = true;
             this.cbBoneAttachedTo.Location = new System.Drawing.Point(148, 21);
             this.cbBoneAttachedTo.Name = "cbBoneAttachedTo";
@@ -97,7 +98,7 @@ namespace KimeraCS
             this.btnCommit.TabIndex = 7;
             this.btnCommit.Text = "Commit";
             this.btnCommit.UseVisualStyleBackColor = true;
-            this.btnCommit.Click += new System.EventHandler(this.btnCommit_Click);
+            this.btnCommit.Click += new System.EventHandler(this.BtnCommit_Click);
             // 
             // btnClose
             // 
@@ -108,7 +109,7 @@ namespace KimeraCS
             this.btnClose.TabIndex = 8;
             this.btnClose.Text = "Close";
             this.btnClose.UseVisualStyleBackColor = true;
-            this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
+            this.btnClose.Click += new System.EventHandler(this.BtnClose_Click);
             // 
             // txtBoneName
             // 
@@ -125,7 +126,7 @@ namespace KimeraCS
             this.btnPathRSDFile.TabIndex = 10;
             this.btnPathRSDFile.Text = "...";
             this.btnPathRSDFile.UseVisualStyleBackColor = true;
-            this.btnPathRSDFile.Click += new System.EventHandler(this.btnPathRSDFile_Click);
+            this.btnPathRSDFile.Click += new System.EventHandler(this.BtnPathRSDFile_Click);
             // 
             // lbRSDFile
             // 
@@ -170,8 +171,8 @@ namespace KimeraCS
             this.Name = "frmSkeletonJoints";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Skeleton Joints Data";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmSkeletonJoints_FormClosing);
-            this.Load += new System.EventHandler(this.frmSkeletonJoints_Load);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FrmSkeletonJoints_FormClosing);
+            this.Load += new System.EventHandler(this.FrmSkeletonJoints_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

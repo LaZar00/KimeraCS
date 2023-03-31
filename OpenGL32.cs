@@ -37,7 +37,7 @@ namespace KimeraCS
         }
 
         [Flags()]
-        public enum glBufferMask : uint
+        public enum GLBufferMask : uint
         {
             GL_NONE = 0x00000000,
             GL_DEPTH_BUFFER_BIT = 0x00000100,
@@ -72,7 +72,7 @@ namespace KimeraCS
         }
 
         [Flags()]
-        public enum glBlendFuncFactor : uint
+        public enum GLBlendFuncFactor : uint
         {
             GL_ZERO = 0,
             GL_ONE = 1,
@@ -114,7 +114,7 @@ namespace KimeraCS
         }
 
         [Flags()]
-        public enum glPixelDataType : uint
+        public enum GLPixelDataType : uint
         {
             GL_NONE = 0,
             GL_BYTE = 0x1400,
@@ -131,7 +131,7 @@ namespace KimeraCS
         }
 
         [Flags()]
-        public enum glDrawMode : uint
+        public enum GLDrawMode : uint
         {
             GL_POINTS = 0x0000,
             GL_LINES = 0x0001,
@@ -149,14 +149,14 @@ namespace KimeraCS
         }
 
         [Flags()]
-        public enum glFace : uint
+        public enum GLFace : uint
         {
             GL_FRONT = 0x0404,
             GL_BACK = 0x0405,
             GL_FRONT_AND_BACK = 0x0408,
         }
 
-        public enum glFunc : uint
+        public enum GLFunc : uint
         {
             GL_NEVER = 0x0200,
             GL_LESS = 0x0201,
@@ -169,14 +169,14 @@ namespace KimeraCS
         }
 
         [Flags()]
-        public enum glPolygon : uint
+        public enum GLPolygon : uint
         {
             GL_POINT = 0x1B00,
             GL_LINE = 0x1B01,
             GL_FILL = 0x1B02,
         }
 
-        public enum glBuffer : uint
+        public enum GLBuffer : uint
         {
             GL_NONE = 0,
             GL_FRONT_LEFT = 0x0400,
@@ -276,7 +276,7 @@ namespace KimeraCS
         }
 
         [Flags()]
-        public enum glFrontFaceDirection : uint
+        public enum GLFrontFaceDirection : uint
         {
             GL_CW = 0x0900,
             GL_CCW = 0x0901,
@@ -291,7 +291,7 @@ namespace KimeraCS
         }
 
         [Flags()]
-        public enum glTextureTarget : uint
+        public enum GLTextureTarget : uint
         {
             GL_NONE = 0,
             GL_TEXTURE_1D = 0x0DE0,
@@ -309,7 +309,7 @@ namespace KimeraCS
         }
 
         [Flags()]
-        public enum glTexture2DProxyTarget : uint
+        public enum GLTexture2DProxyTarget : uint
         {
             GL_NONE = 0,
             GL_TEXTURE_1D = 0x0DE0,
@@ -332,7 +332,7 @@ namespace KimeraCS
         }
 
         [Flags()]
-        public enum glPixelStoreParameter : uint
+        public enum GLPixelStoreParameter : uint
         {
             GL_UNPACK_SWAP_BYTES = 0x0CF0,
             [Obsolete("Deprecated since 4.3")]
@@ -363,7 +363,7 @@ namespace KimeraCS
         }
 
         [Flags()]
-        public enum glCapability : uint
+        public enum GLCapability : uint
         {
             GL_CURRENT_COLOR = 0x0B00,
             GL_CURRENT_INDEX = 0x0B01,
@@ -604,7 +604,7 @@ namespace KimeraCS
         }
 
         [Flags()]
-        public enum glLightParameter : uint
+        public enum GLLightParameter : uint
         {
             GL_AMBIENT = 0x1200,
             GL_DIFFUSE = 0x1201,
@@ -619,14 +619,14 @@ namespace KimeraCS
         }
 
         [Flags()]
-        public enum glListMode : uint
+        public enum GLListMode : uint
         {
             GL_COMPILE = 0x1300,
             GL_COMPILE_AND_EXECUTE = 0x1301,
         }
 
         [Flags()]
-        public enum glLogicOpMode : uint
+        public enum GLLogicOpMode : uint
         {
             GL_CLEAR = 0x1500,
             GL_AND = 0x1501,
@@ -647,7 +647,7 @@ namespace KimeraCS
         }
 
         [Flags()]
-        public enum glMaterialParameter : uint
+        public enum GLMaterialParameter : uint
         {
             GL_EMISSION = 0x1600,
             GL_SHININESS = 0x1601,
@@ -656,7 +656,7 @@ namespace KimeraCS
         }
 
         [Flags()]
-        public enum glMatrixModeList : uint
+        public enum GLMatrixModeList : uint
         {
             GL_MODELVIEW = 0x1700,
             GL_PROJECTION = 0x1701,
@@ -671,7 +671,7 @@ namespace KimeraCS
             GL_STENCIL = 0x1802,
         }
 
-        public enum glInternalFormat : uint
+        public enum GLInternalFormat : uint
         {
             GL_NONE = 0,
 
@@ -796,7 +796,7 @@ namespace KimeraCS
         }
 
         [Flags()]
-        public enum glPixelFormat : uint
+        public enum GLPixelFormat : uint
         {
             GL_NONE = 0,
             GL_COLOR_INDEX = 0x1900,
@@ -839,7 +839,7 @@ namespace KimeraCS
         }
 
         [Flags()]
-        public enum glRenderingMode : uint
+        public enum GLRenderingMode : uint
         {
             GL_RENDER = 0x1C00,
             GL_FEEDBACK = 0x1C01,
@@ -847,7 +847,7 @@ namespace KimeraCS
         }
 
         [Flags()]
-        public enum glShadingModel : uint
+        public enum GLShadingModel : uint
         {
             GL_FLAT = 0x1D00,
             GL_SMOOTH = 0x1D01,
@@ -917,7 +917,7 @@ namespace KimeraCS
         }
 
         [Flags()]
-        public enum glTextureMagFilter : uint
+        public enum GLTextureMagFilter : uint
         {
             GL_NEAREST = 0x2600,
             GL_LINEAR = 0x2601,
@@ -949,7 +949,7 @@ namespace KimeraCS
         }
 
         [Flags()]
-        public enum glTextureParameter : uint
+        public enum GLTextureParameter : uint
         {
             GL_DEPTH_STENCIL_TEXTURE_MODE = 0x90EA,
             GL_TEXTURE_BASE_LEVEL = 0x813C,
@@ -999,7 +999,7 @@ namespace KimeraCS
         }
 
         [Flags()]
-        public enum glTextureFormats : uint
+        public enum GLTextureFormats : uint
         {
             GL_RED = 0x1903,
             GL_RGB = 0x1907,
@@ -1036,7 +1036,7 @@ namespace KimeraCS
         }
 
         [Flags()]
-        public enum glTextures : uint
+        public enum GLTextures : uint
         {
             GL_TEXTURE_WRAP_S = 0x2802,
             GL_TEXTURE_WRAP_T = 0x2803,
@@ -1413,7 +1413,7 @@ namespace KimeraCS
             GLU_NURBS_ERROR37 = 100287,
         }
 
-        public enum glGetFloatParameter : uint
+        public enum GLGetFloatParameter : uint
         {
             ALIASED_LINE_WIDTH_RANGE = 0x846E,
             BLEND_COLOR = 0x8005,
@@ -1487,24 +1487,24 @@ namespace KimeraCS
         //[DllImport(DLLName)]
         //public static extern void glAlphaFunc(uint func, float ref_notkeword);
         [DllImport(DLLName, EntryPoint = "glAlphaFunc")]
-        public static extern void glAlphaFunc(glFunc Function, float Reference);
+        public static extern void glAlphaFunc(GLFunc Function, float Reference);
 
         [DllImport(DLLName)]
         public static extern byte glAreTexturesResident(int n, uint[] textures, byte[] residences);
         [DllImport(DLLName)]
         public static extern void glArrayElement(int i);
         [DllImport(DLLName, EntryPoint = "glBegin")]
-        public static extern void glBegin(glDrawMode mode);
+        public static extern void glBegin(GLDrawMode mode);
 
         //[DllImport(DLLName)]
         //public static extern void glBindTexture(uint target, uint texture);
         [DllImport(DLLName, EntryPoint = "glBindTexture")]
-        public static extern void glBindTexture(glTextureTarget target, uint texture);
+        public static extern void glBindTexture(GLTextureTarget target, uint texture);
 
         [DllImport(DLLName)]
         public static extern void glBitmap(int width, int height, float xorig, float yorig, float xmove, float ymove, byte[] bitmap);
         [DllImport(DLLName, EntryPoint = "glBlendFunc")]
-        public static extern void glBlendFunc(glBlendFuncFactor sfactor, glBlendFuncFactor dfactor);
+        public static extern void glBlendFunc(GLBlendFuncFactor sfactor, GLBlendFuncFactor dfactor);
         [DllImport(DLLName)]
         public static extern void glCallList(uint list);
         [DllImport(DLLName)]
@@ -1514,7 +1514,7 @@ namespace KimeraCS
         [DllImport(DLLName)]
         public static extern void glCallLists(int n, uint type, byte[] lists);
         [DllImport(DLLName, EntryPoint = "glClear")]
-        public static extern void glClear(glBufferMask mask);
+        public static extern void glClear(GLBufferMask mask);
         [DllImport(DLLName)]
         public static extern void glClearAccum(float red, float green, float blue, float alpha);
         [DllImport(DLLName)]
@@ -1601,7 +1601,7 @@ namespace KimeraCS
         //[DllImport(DLLName)]
         //public static extern void glColorMaterial(uint face, uint mode);
         [DllImport("opengl32.dll", EntryPoint = "glColorMaterial")]
-        public static extern void glColorMaterial(glFace face, glMaterialParameter mode); // 
+        public static extern void glColorMaterial(GLFace face, GLMaterialParameter mode); // 
 
         [DllImport(DLLName)]
         public static extern void glColorPointer(int size, uint type, int stride, int[] pointer);
@@ -1619,7 +1619,7 @@ namespace KimeraCS
         //[DllImport(DLLName)]
         //public static extern void glCullFace(uint mode);
         [DllImport(DLLName, EntryPoint = "glCullFace")]
-        public static extern void glCullFace(glFace mode);
+        public static extern void glCullFace(GLFace mode);
 
         [DllImport(DLLName)]
         public static extern void glDeleteLists(uint list, int range);
@@ -1628,13 +1628,13 @@ namespace KimeraCS
         public static extern void glDeleteTextures(int n, uint[] textures);
 
         [DllImport(DLLName, EntryPoint = "glDepthFunc")]
-        public static extern void glDepthFunc(glFunc func);
+        public static extern void glDepthFunc(GLFunc func);
         [DllImport(DLLName)]
         public static extern void glDepthMask(byte flag);
         [DllImport(DLLName)]
         public static extern void glDepthRange(double zNear, double zFar);
         [DllImport(DLLName, EntryPoint = "glDisable")]
-        public static extern void glDisable(glCapability cap);
+        public static extern void glDisable(GLCapability cap);
         [DllImport(DLLName)]
         public static extern void glDisableClientState(uint array);
         [DllImport(DLLName)]
@@ -1652,7 +1652,7 @@ namespace KimeraCS
         [DllImport(DLLName)]
         public static extern void glEdgeFlagv(byte[] flag);
         [DllImport(DLLName, EntryPoint = "glEnable")]
-        public static extern void glEnable(glCapability cap);
+        public static extern void glEnable(GLCapability cap);
         [DllImport(DLLName)]
         public static extern void glEnableClientState(uint array);
         [DllImport(DLLName)]
@@ -1691,16 +1691,16 @@ namespace KimeraCS
         public static extern void glFlush();
 
         [DllImport(DLLName, EntryPoint = "glFogf")]
-        public static extern void glFogf(glCapability pname, float param); // 
+        public static extern void glFogf(GLCapability pname, float param); // 
         [DllImport(DLLName, EntryPoint = "glFogfv")]
-        public static extern void glFogfv(glCapability pname, float[] @params); // 
+        public static extern void glFogfv(GLCapability pname, float[] @params); // 
         [DllImport(DLLName, EntryPoint = "glFogi")]
-        public static extern void glFogi(glCapability pname, int param); // 
+        public static extern void glFogi(GLCapability pname, int param); // 
         [DllImport(DLLName, EntryPoint = "glFogiv")]
-        public static extern void glFogiv(glCapability pname, glTextureMagFilter[] @params); // 
+        public static extern void glFogiv(GLCapability pname, GLTextureMagFilter[] @params); // 
 
         [DllImport(DLLName)]
-        public static extern void glFrontFace(glFrontFaceDirection mode);
+        public static extern void glFrontFace(GLFrontFaceDirection mode);
         [DllImport(DLLName)]
         public static extern void glFrustum(double left, double right, double bottom, double top, double zNear, double zFar);
         [DllImport(DLLName)]
@@ -1812,7 +1812,7 @@ namespace KimeraCS
         //public static extern byte glIsEnabled(uint cap);
         [DllImport(DLLName, EntryPoint = "glIsEnabled")]
         [return: MarshalAs(UnmanagedType.I1)]
-        public static extern bool glIsEnabled(glCapability cap);
+        public static extern bool glIsEnabled(GLCapability cap);
 
         [DllImport(DLLName, EntryPoint = "glIsList")]
         public static extern bool glIsList(uint list);
@@ -1832,13 +1832,13 @@ namespace KimeraCS
         [DllImport(DLLName)]
         public static extern void glLightModeliv(uint pname, int[] params_notkeyword);
         [DllImport(DLLName)]
-        public static extern void glLightf(glCapability light, glLightParameter pname, float param);
+        public static extern void glLightf(GLCapability light, GLLightParameter pname, float param);
         [DllImport(DLLName)]
-        public static extern void glLightfv(glCapability light, glLightParameter pname, float[] params_notkeyword);
+        public static extern void glLightfv(GLCapability light, GLLightParameter pname, float[] params_notkeyword);
         [DllImport(DLLName)]
-        public static extern void glLighti(glCapability light, glLightParameter pname, int param);
+        public static extern void glLighti(GLCapability light, GLLightParameter pname, int param);
         [DllImport(DLLName)]
-        public static extern void glLightiv(glCapability light, glLightParameter pname, int[] params_notkeyword);
+        public static extern void glLightiv(GLCapability light, GLLightParameter pname, int[] params_notkeyword);
         [DllImport(DLLName)]
         public static extern void glLineStipple(int factor, ushort pattern);
         [DllImport(DLLName)]
@@ -1854,7 +1854,7 @@ namespace KimeraCS
         [DllImport(DLLName)]
         public static extern void glLoadName(uint name);
         [DllImport(DLLName, EntryPoint = "glLogicOp")]
-        public static extern void LogicOp(glLogicOpMode opcode);
+        public static extern void LogicOp(GLLogicOpMode opcode);
         [DllImport(DLLName)]
         public static extern void glMap1d(uint target, double u1, double u2, int stride, int order, double[] points);
         [DllImport(DLLName)]
@@ -1880,7 +1880,7 @@ namespace KimeraCS
         [DllImport(DLLName)]
         public static extern void glMaterialiv(uint face, uint pname, int[] params_notkeyword);
         [DllImport(DLLName, EntryPoint = "glMatrixMode")]
-        public static extern void glMatrixMode(glMatrixModeList mode);
+        public static extern void glMatrixMode(GLMatrixModeList mode);
         [DllImport(DLLName)]
         public static extern void glMultMatrixd(double[] m);
         [DllImport(DLLName)]
@@ -1889,7 +1889,7 @@ namespace KimeraCS
         //[DllImport(DLLName)]
         //public static extern void glNewList(uint list, uint mode);
         [DllImport(DLLName, EntryPoint = "glNewList")]
-        public static extern void glNewList(uint list, glListMode mode);
+        public static extern void glNewList(uint list, GLListMode mode);
 
         [DllImport(DLLName)]
         public static extern void glNormal3b(byte nx, byte ny, byte nz);
@@ -1929,7 +1929,7 @@ namespace KimeraCS
         //[DllImport(DLLName)]
         //public static extern void glPixelStorei(uint pname, int param);
         [DllImport(DLLName, EntryPoint = "glPixelStorei")]
-        public static extern void glPixelStorei(glPixelStoreParameter pname, int param);
+        public static extern void glPixelStorei(GLPixelStoreParameter pname, int param);
 
         [DllImport(DLLName)]
         public static extern void glPixelTransferf(uint pname, float param);
@@ -1940,7 +1940,7 @@ namespace KimeraCS
         [DllImport(DLLName)]
         public static extern void glPointSize(float size);
         [DllImport(DLLName, EntryPoint = "glPolygonMode")]
-        public static extern void glPolygonMode(glFace face, glPolygon mode);
+        public static extern void glPolygonMode(GLFace face, GLPolygon mode);
         [DllImport(DLLName)]
         public static extern void glPolygonOffset(float factor, float units);
         [DllImport(DLLName)]
@@ -2015,17 +2015,17 @@ namespace KimeraCS
         //[DllImport(DLLName)]
         //public static extern void glReadBuffer(uint mode);
         [DllImport(DLLName, EntryPoint = "glReadBuffer")]
-        public static extern void glReadBuffer(glBuffer src);
+        public static extern void glReadBuffer(GLBuffer src);
 
         //[DllImport(DLLName, EntryPoint = "glReadPixels")]
         //public static extern void glReadPixels(int x, int y, int width, int height, uint format, uint type, byte[] pixels);
         [DllImport(DLLName, EntryPoint = "glReadPixels")]
-        public static extern void glReadPixels(int x, int y, int width, int height, glPixelFormat format, glPixelDataType type, byte[] pixels);
+        public static extern void glReadPixels(int x, int y, int width, int height, GLPixelFormat format, GLPixelDataType type, byte[] pixels);
 
         //[DllImport(DLLName)]
         //public static extern void glReadPixels(int x, int y, int width, int height, uint format, uint type, IntPtr pixels);
         [DllImport(DLLName, EntryPoint = "glReadPixels")]
-        public static extern void glReadPixels(int x, int y, int width, int height, glPixelFormat format, glPixelDataType type, IntPtr pixels);
+        public static extern void glReadPixels(int x, int y, int width, int height, GLPixelFormat format, GLPixelDataType type, IntPtr pixels);
 
         [DllImport(DLLName)]
         public static extern void glRectd(double x1, double y1, double x2, double y2);
@@ -2045,7 +2045,7 @@ namespace KimeraCS
         public static extern void glRectsv(short[] v1, short[] v2);
 
         [DllImport(DLLName)]
-        public static extern int glRenderMode(glRenderingMode mode);
+        public static extern int glRenderMode(GLRenderingMode mode);
 
         [DllImport(DLLName)]
         public static extern void glRotated(double angle, double x, double y, double z);
@@ -2062,12 +2062,12 @@ namespace KimeraCS
         public static extern void glSelectBuffer(int size, int[] buffer);
 
         [DllImport(DLLName, EntryPoint = "glShadeModel")]
-        public static extern void glShadeModel(glShadingModel mode);
+        public static extern void glShadeModel(GLShadingModel mode);
 
         //[DllImport(DLLName)]
         //public static extern void glStencilFunc(uint func, int ref_notkeword, uint mask);
         [DllImport(DLLName, EntryPoint = "glStencilFunc")]
-        public static extern void glStencilFunc(glFunc func, int refvalue, uint mask);
+        public static extern void glStencilFunc(GLFunc func, int refvalue, uint mask);
 
         [DllImport(DLLName)]
         public static extern void glStencilMask(uint mask);
@@ -2167,14 +2167,14 @@ namespace KimeraCS
         //[DllImport(DLLName)]
         //public static extern void glTexImage2D(uint target, int level, int internalformat, int width, int height, int border, uint format, uint type, IntPtr pixels);
         [DllImport(DLLName, EntryPoint = "glTexImage2D")]
-        public static extern void glTexImage2D(glTexture2DProxyTarget target, int level, glInternalFormat internalformat, int width, int height, int border, glPixelFormat format, glPixelDataType type, IntPtr pixels);
+        public static extern void glTexImage2D(GLTexture2DProxyTarget target, int level, GLInternalFormat internalformat, int width, int height, int border, GLPixelFormat format, GLPixelDataType type, IntPtr pixels);
         //[DllImport(DLLName, EntryPoint = "glTexImage2D")]
-        //public static extern void glTexImage2D(glTexture2DProxyTarget target, int level, glInternalFormat internalformat, int width, int height, int border, glPixelFormat format, glPixelDataType type, byte[] pixels);
+        //public static extern void glTexImage2D(glTexture2DProxyTarget target, int level, GLInternalFormat internalformat, int width, int height, int border, GLPixelFormat format, glPixelDataType type, byte[] pixels);
 
         //[DllImport(DLLName)]
         //public static extern void glTexParameterf(uint target, uint pname, float param);
         [DllImport(DLLName, EntryPoint = "glTexParameterf")]
-        public static extern void glTexParameterf(glTextureTarget target, glTextureParameter pname, float param);
+        public static extern void glTexParameterf(GLTextureTarget target, GLTextureParameter pname, float param);
 
         [DllImport(DLLName)]
         public static extern void glTexParameterfv(uint target, uint pname, float[] params_notkeyword);
@@ -2182,7 +2182,7 @@ namespace KimeraCS
         //[DllImport(DLLName)]
         //public static extern void glTexParameteri(uint target, uint pname, int param);
         [DllImport(DLLName, EntryPoint = "glTexParameteri")]
-        public static extern void glTexParameteri(glTextureTarget target, glTextureParameter pname, int param);
+        public static extern void glTexParameteri(GLTextureTarget target, GLTextureParameter pname, int param);
 
         [DllImport(DLLName)]
         public static extern void glTexParameteriv(uint target, uint pname, int[] params_notkeyword);
@@ -2473,18 +2473,18 @@ namespace KimeraCS
 
         public static void SetDefaultOGLRenderState()
         {
-            glPolygonMode(glFace.GL_FRONT, glPolygon.GL_FILL);
-            glPolygonMode(glFace.GL_BACK, glPolygon.GL_FILL);
+            glPolygonMode(GLFace.GL_FRONT, GLPolygon.GL_FILL);
+            glPolygonMode(GLFace.GL_BACK, GLPolygon.GL_FILL);
 
-            glDisable(glCapability.GL_CULL_FACE);
+            glDisable(GLCapability.GL_CULL_FACE);
 
-            glEnable(glCapability.GL_BLEND);
+            glEnable(GLCapability.GL_BLEND);
 
-            GLExt.glBlendEquation(glBlendEquationMode.GL_FUNC_ADD);
+            GLExt.glBlendEquation(GLBlendEquationMode.GL_FUNC_ADD);
 
-            glBlendFunc(glBlendFuncFactor.GL_SRC_ALPHA, glBlendFuncFactor.GL_ONE_MINUS_SRC_ALPHA);
+            glBlendFunc(GLBlendFuncFactor.GL_SRC_ALPHA, GLBlendFuncFactor.GL_ONE_MINUS_SRC_ALPHA);
 
-            glDisable(glCapability.GL_TEXTURE_2D);
+            glDisable(GLCapability.GL_TEXTURE_2D);
         }
 
         public static void DisableOpenGL(HDC hRC)
@@ -2497,7 +2497,7 @@ namespace KimeraCS
         {
             //glClearColor(0.20f, 0.20f, 0.28f, 0);
             glClearColor(0.4f, 0.4f, 0.65f, 0);
-            glClear(glBufferMask.GL_COLOR_BUFFER_BIT | glBufferMask.GL_DEPTH_BUFFER_BIT);
+            glClear(GLBufferMask.GL_COLOR_BUFFER_BIT | GLBufferMask.GL_DEPTH_BUFFER_BIT);
         }
 
 
@@ -2518,9 +2518,9 @@ namespace KimeraCS
             yIn = p.y;
             zIn = p.z;
 
-            glGetDoublev((uint)glCapability.GL_MODELVIEW_MATRIX, mm);
-            glGetDoublev((uint)glCapability.GL_PROJECTION_MATRIX, pm);
-            glGetIntegerv((uint)glCapability.GL_VIEWPORT, vp);
+            glGetDoublev((uint)GLCapability.GL_MODELVIEW_MATRIX, mm);
+            glGetDoublev((uint)GLCapability.GL_PROJECTION_MATRIX, pm);
+            glGetIntegerv((uint)GLCapability.GL_VIEWPORT, vp);
 
             gluUnProject(xIn, vp[3] - yIn, zIn, mm, pm, vp, ref tmpX, ref tmpY, ref tmpZ);
 
@@ -2540,19 +2540,19 @@ namespace KimeraCS
             yIn = p.y;
             zIn = p.z;
 
-            glGetDoublev((uint)glCapability.GL_MODELVIEW_MATRIX, mm);
-            glGetDoublev((uint)glCapability.GL_PROJECTION_MATRIX, pm);
-            glGetIntegerv((uint)glCapability.GL_VIEWPORT, vp);
+            glGetDoublev((uint)GLCapability.GL_MODELVIEW_MATRIX, mm);
+            glGetDoublev((uint)GLCapability.GL_PROJECTION_MATRIX, pm);
+            glGetIntegerv((uint)GLCapability.GL_VIEWPORT, vp);
 
             gluProject(xIn, yIn, zIn, mm, pm, vp, ref tmpX, ref tmpY, ref tmpZ);
 
             return new Point3D((float)tmpX, (float)tmpY, (float)tmpZ);
         }
 
-        public static Point3D GetVertexProjectedCoords(Point3D[] lstVerts, int vi)
+        public static Point3D GetVertexProjectedCoords(Point3D[] lstVerts, int iVertIdx)
         {
-            glClear(glBufferMask.GL_DEPTH_BUFFER_BIT);
-            return GetProjectedCoords(lstVerts[vi]);
+            glClear(GLBufferMask.GL_DEPTH_BUFFER_BIT);
+            return GetProjectedCoords(lstVerts[iVertIdx]);
         }
 
         public static float GetDepthZ(Point3D pUP3D)
@@ -2564,7 +2564,7 @@ namespace KimeraCS
         {
             double[] mm = new double[16];
 
-            glGetDoublev((uint)glCapability.GL_MODELVIEW_MATRIX, mm);
+            glGetDoublev((uint)GLCapability.GL_MODELVIEW_MATRIX, mm);
 
             return new Point3D((float)(p.x * mm[0] + p.y * mm[4] + p.z * mm[8] + mm[12]),
                                (float)(p.x * mm[1] + p.y * mm[5] + p.z * mm[9] + mm[13]),
@@ -2572,36 +2572,34 @@ namespace KimeraCS
 
         }
 
-        public static Color GetVertColor(ref Point3D p, ref Point3D n, ref Color c)
+        public static Color GetVertColor(Point3D p, Point3D n, Color c)
         {
-            byte[] pcolor = new byte[3];
-            int[] vp = new int[4];
+            byte[] pcolor = new byte[4];
             int[] vp0 = new int[4];
-            double[] P_matrix = new double[16];
+            int[] vp = new int[4];
+            //double[] P_matrix = new double[16];
+            Color colGetVertColorResult;
 
-            Color colGetVertColorResult = Color.FromArgb(255, 0, 0, 0);
-
-            glGetIntegerv((uint)glCapability.GL_VIEWPORT, vp0);
+            glGetIntegerv((uint)GLCapability.GL_VIEWPORT, vp0);
             glViewport(0, 0, 3, 3);
-            //glGetIntegerv((uint)glCapability.GL_VIEWPORT, vp);
-            
-            glMatrixMode(glMatrixModeList.GL_PROJECTION);
+
+            glGetIntegerv((uint)GLCapability.GL_VIEWPORT, vp);
+            glMatrixMode(GLMatrixModeList.GL_PROJECTION);
             glPushMatrix();
 
             //  Debug.Print p.X, p.Y, p.z, .X, .Y, c.r, c.g, c.b
-            //glGetDoublev((uint)glCapability.GL_PROJECTION_MATRIX, P_matrix);
+            //glGetDoublev((uint)GLCapability.GL_PROJECTION_MATRIX, P_matrix);
             //glLoadIdentity();
             //gluPickMatrix(GetProjectedCoords(p).x - 1, GetProjectedCoords(p).y - 1, 3, 3, vp);
-            // gluPerspective(60, 1, 0.1, diameter);
             //glMultMatrixd(P_matrix);
 
-            glClear(glBufferMask.GL_COLOR_BUFFER_BIT | glBufferMask.GL_DEPTH_BUFFER_BIT);
+            glClear(GLBufferMask.GL_COLOR_BUFFER_BIT | GLBufferMask.GL_DEPTH_BUFFER_BIT);
 
-            glPointSize(100f);
+            glPointSize(100.0f);
 
-            glBegin(glDrawMode.GL_POINTS);
-                glColor4f(c.R / 255f, c.G / 255f, c.B / 255f, 1f);
-                glColorMaterial(glFace.GL_FRONT_AND_BACK, glMaterialParameter.GL_AMBIENT_AND_DIFFUSE);
+            glBegin(GLDrawMode.GL_POINTS);
+                glColor4f(c.R / 255.0f, c.G / 255.0f, c.B / 255.0f, 1.0f);
+                glColorMaterial(GLFace.GL_FRONT_AND_BACK, GLMaterialParameter.GL_AMBIENT_AND_DIFFUSE);
 
                 glNormal3f(n.x, n.y, n.z);
 
@@ -2609,9 +2607,9 @@ namespace KimeraCS
             glEnd();
 
             glFlush();
-            glReadBuffer(glBuffer.GL_BACK);
+            glReadBuffer(GLBuffer.GL_BACK);
 
-            glReadPixels(1, 1, 1, 1, glPixelFormat.GL_RGB, glPixelDataType.GL_BYTE, pcolor);
+            glReadPixels(1, 1, 1, 1, GLPixelFormat.GL_RGB, GLPixelDataType.GL_BYTE, pcolor);
 
             colGetVertColorResult = Color.FromArgb(255, pcolor[0] * 2, pcolor[1] * 2, pcolor[2] * 2);
 
@@ -2627,8 +2625,8 @@ namespace KimeraCS
 
 
         // HELP FUNCTIONS for C#
-        //public static void TexImage2D(glTexture2DProxyTarget target, int level, glInternalFormat internalformat, 
-        //                              int width, int height, int border, glPixelFormat format, glPixelDataType type, object pixels)
+        //public static void TexImage2D(glTexture2DProxyTarget target, int level, GLInternalFormat internalformat, 
+        //                              int width, int height, int border, GLPixelFormat format, glPixelDataType type, object pixels)
         //{
         //    GCHandle pp_pixels = GCHandle.Alloc(pixels, GCHandleType.Pinned);
         //    try

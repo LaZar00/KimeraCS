@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace KimeraCS
 {
-    using static frmSkeletonEditor;
+    using static FrmSkeletonEditor;
 
     using static FF7Skeleton;
     using static FF7FieldRSDResource;
@@ -21,7 +21,7 @@ namespace KimeraCS
     using static Utils;
     using static GDI32;
 
-    public partial class frmTextureViewer : Form
+    public partial class FrmTextureViewer : Form
     {
         // UV Coordinates movement with mouse structs
         public struct STPoint2DXY
@@ -36,7 +36,7 @@ namespace KimeraCS
         }
 
 
-        private frmSkeletonEditor frmSkelEdit;
+        readonly private FrmSkeletonEditor frmSkelEdit;
 
         public const int I_MAXNUMGROUPS = 128;
         public const int I_TEXTURECOORDVIEWMINSIZE = 512;
@@ -61,7 +61,7 @@ namespace KimeraCS
         Cursor Hand, HandPlus;
 
 
-        public frmTextureViewer(frmSkeletonEditor frmSkelEdit, PModel modelIn)
+        public FrmTextureViewer(FrmSkeletonEditor frmSkelEdit, PModel modelIn)
         {
             InitializeComponent();
 
@@ -77,7 +77,7 @@ namespace KimeraCS
         /////////////////////////////////////////////////////////////
         // ToolTip Helpers:
         // Create the ToolTip and associate with the Form container.
-        ToolTip toolTip1 = new ToolTip();
+        readonly ToolTip toolTip1 = new ToolTip();
 
         public void DefineToolTips()
         {
@@ -211,7 +211,7 @@ namespace KimeraCS
             }
         }
 
-        private void frmTextureViewer_Load(object sender, EventArgs e)
+        private void FrmTextureViewer_Load(object sender, EventArgs e)
         {
             Text = "Texture Coordinates(UVs) Viewer" + " - Model: " + TexViewModel.fileName +
                                                        " - Tex: " + frmSkelEdit.cbTextureSelect.Items[frmSkelEdit.cbTextureSelect.SelectedIndex];
@@ -390,12 +390,12 @@ namespace KimeraCS
             pbTextureView.Refresh();
         }
 
-        private void btnClose_Click(object sender, EventArgs e)
+        private void BtnClose_Click(object sender, EventArgs e)
         {
             Close();
         }
 
-        private void btnCommit_Click(object sender, EventArgs e)
+        private void BtnCommit_Click(object sender, EventArgs e)
         {
             FieldRSDResource tmpfRSDResource;
             PModel tmpPModel;
@@ -437,10 +437,10 @@ namespace KimeraCS
             bChangesDone = true;
             frmSkelEdit.UpdateMainSkeletonWindowTitle();
 
-            frmSkelEdit.panelModel_Paint(null, null);
+            frmSkelEdit.PanelModel_Paint(null, null);
         }
 
-        private void btnFlipH_Click(object sender, EventArgs e)
+        private void BtnFlipH_Click(object sender, EventArgs e)
         {
             int iGroupIdx, iTexID, iUVCounter, iHeight;
             STPoint2DXY tmpP2DXY;
@@ -459,10 +459,11 @@ namespace KimeraCS
                     {
                         for (iUVCounter = 0; iUVCounter < lstUVXYCoords[iGroupIdx].XYCoords.Count; iUVCounter++)
                         {
-                            tmpP2DXY = new STPoint2DXY();
-                            tmpP2DXY.x = lstUVXYCoords[iGroupIdx].XYCoords[iUVCounter].x;
-                            
-                            tmpP2DXY.y = iHeight - lstUVXYCoords[iGroupIdx].XYCoords[iUVCounter].y;
+                            tmpP2DXY = new STPoint2DXY()
+                            {
+                                x = lstUVXYCoords[iGroupIdx].XYCoords[iUVCounter].x,
+                                y = iHeight - lstUVXYCoords[iGroupIdx].XYCoords[iUVCounter].y,
+                            };
 
                             lstUVXYCoords[iGroupIdx].XYCoords[iUVCounter] = tmpP2DXY;
                         }
@@ -473,7 +474,7 @@ namespace KimeraCS
             DrawUVs();
         }
 
-        private void btnFlipV_Click(object sender, EventArgs e)
+        private void BtnFlipV_Click(object sender, EventArgs e)
         {
             int iGroupIdx, iTexID, iUVCounter, iWidth;
             STPoint2DXY tmpP2DXY;
@@ -492,10 +493,11 @@ namespace KimeraCS
                     {
                         for (iUVCounter = 0; iUVCounter < lstUVXYCoords[iGroupIdx].XYCoords.Count; iUVCounter++)
                         {
-                            tmpP2DXY = new STPoint2DXY();
-                            tmpP2DXY.y = lstUVXYCoords[iGroupIdx].XYCoords[iUVCounter].y;
-
-                            tmpP2DXY.x = iWidth - lstUVXYCoords[iGroupIdx].XYCoords[iUVCounter].x;
+                            tmpP2DXY = new STPoint2DXY()
+                            {
+                                y = lstUVXYCoords[iGroupIdx].XYCoords[iUVCounter].y,
+                                x = iWidth - lstUVXYCoords[iGroupIdx].XYCoords[iUVCounter].x,
+                            };
 
                             lstUVXYCoords[iGroupIdx].XYCoords[iUVCounter] = tmpP2DXY;
                         }
@@ -506,7 +508,7 @@ namespace KimeraCS
             DrawUVs();
         }
 
-        private void btnRotateUV_Click(object sender, EventArgs e)
+        private void BtnRotateUV_Click(object sender, EventArgs e)
         {
 
             int iGroupIdx, iUVCounter, iTexID, iHeight;
@@ -526,10 +528,11 @@ namespace KimeraCS
                     {
                         for (iUVCounter = 0; iUVCounter < lstUVXYCoords[iGroupIdx].XYCoords.Count; iUVCounter++)
                         {
-                            tmpP2DXY = new STPoint2DXY();
-                            tmpP2DXY.y = lstUVXYCoords[iGroupIdx].XYCoords[iUVCounter].x;
-
-                            tmpP2DXY.x = iHeight - lstUVXYCoords[iGroupIdx].XYCoords[iUVCounter].y;
+                            tmpP2DXY = new STPoint2DXY()
+                            {
+                                y = lstUVXYCoords[iGroupIdx].XYCoords[iUVCounter].x,
+                                x = iHeight - lstUVXYCoords[iGroupIdx].XYCoords[iUVCounter].y,
+                            };
 
                             lstUVXYCoords[iGroupIdx].XYCoords[iUVCounter] = tmpP2DXY;
                         }
@@ -540,7 +543,7 @@ namespace KimeraCS
             DrawUVs();
         }
 
-        private void btnGreen_CheckedChanged(object sender, EventArgs e)
+        private void BtnGreen_CheckedChanged(object sender, EventArgs e)
         {
             if (btnGreen.Checked)
             {
@@ -668,7 +671,7 @@ namespace KimeraCS
             else btnZoomIn.Enabled = true;
         }
 
-        private void btnZoomOut_Click(object sender, EventArgs e)
+        private void BtnZoomOut_Click(object sender, EventArgs e)
         {
             frmSkelEdit.iTexCoordViewerScale--;
 
@@ -683,7 +686,7 @@ namespace KimeraCS
             DrawUVs();
         }
 
-        private void btnZoomIn_Click(object sender, EventArgs e)
+        private void BtnZoomIn_Click(object sender, EventArgs e)
         {
             frmSkelEdit.iTexCoordViewerScale++;
 
@@ -698,7 +701,7 @@ namespace KimeraCS
             DrawUVs();
         }
 
-        public bool foundXYPosMouse(int X, int Y)
+        public bool FoundXYPosMouse(int X, int Y)
         {
             localGroupIdx = 0;
 
@@ -752,7 +755,7 @@ namespace KimeraCS
             }
         }
 
-        private void pbTextureView_MouseMove(object sender, MouseEventArgs e)
+        private void PbTextureView_MouseMove(object sender, MouseEventArgs e)
         {
             STPoint2DXY tmpP2D;
             
@@ -791,7 +794,7 @@ namespace KimeraCS
             }
             else
             {
-                if (foundXYPosMouse(e.X, e.Y))
+                if (FoundXYPosMouse(e.X, e.Y))
                 {
                     if (shiftPressedQ)
                         pbTextureView.Cursor = HandPlus;
@@ -808,7 +811,7 @@ namespace KimeraCS
             }
         }
 
-        private void pbTextureView_MouseDown(object sender, MouseEventArgs e)
+        private void PbTextureView_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
             {
@@ -823,12 +826,12 @@ namespace KimeraCS
             }
         }
 
-        private void pbTextureView_MouseUp(object sender, MouseEventArgs e)
+        private void PbTextureView_MouseUp(object sender, MouseEventArgs e)
         {
             bMouseLeftClicked = false;
         }
 
-        private void frmTextureViewer_KeyDown(object sender, KeyEventArgs e)
+        private void FrmTextureViewer_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.ShiftKey) shiftPressedQ = true;
 
@@ -841,7 +844,7 @@ namespace KimeraCS
             }
         }
 
-        private void frmTextureViewer_KeyUp(object sender, KeyEventArgs e)
+        private void FrmTextureViewer_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Shift || e.KeyCode == Keys.ShiftKey) shiftPressedQ = false;
 
@@ -854,7 +857,7 @@ namespace KimeraCS
             }
         }
 
-        private void frmTextureViewer_FormClosed(object sender, FormClosedEventArgs e)
+        private void FrmTextureViewer_FormClosed(object sender, FormClosedEventArgs e)
         {
             // Let's clear the List of UV Points.
             foreach (STUVXYCoord itmUVXYCoord in lstUVXYCoords)

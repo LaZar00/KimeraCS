@@ -19,7 +19,7 @@ namespace KimeraCS
     public class FF7FieldAnimation
     {
 
-        public static frmFF7IDFJointsBonesSelection frmFF7IDFJBS;
+        public static FrmFF7IDFJointsBonesSelection frmFF7IDFJBS;
 
         public struct FieldRotation
         {
@@ -223,33 +223,36 @@ namespace KimeraCS
 
                 //joint_stack = new string[fSkeleton.nBones + 1];
                 joint_stack = new string[fSkeleton.bones.Count + 1];
-                
+
                 jsp = 0;
                 joint_stack[jsp] = fSkeleton.bones[0].joint_f;
 
                 // Add frames
                 nFrames = 1;
 
-                frotation = new FieldRotation();
-                frotation.alpha = 90;
-                frotation.beta = 0;
-                frotation.gamma = 180;
+                frotation = new FieldRotation()
+                {
+                    alpha = 90,
+                    beta = 0,
+                    gamma = 180,
+                };
 
-                fframe = new FieldFrame();
-                fframe.rootRotationAlpha = 0;
-                fframe.rootRotationBeta = 0;
-                fframe.rootRotationGamma = 0;
-                fframe.rootTranslationX = 0;
-                fframe.rootTranslationY = 0;
-                fframe.rootTranslationZ = 0;
+                fframe = new FieldFrame()
+                {
+                    rootRotationAlpha = 0,
+                    rootRotationBeta = 0,
+                    rootRotationGamma = 0,
+
+                    rootTranslationX = 0,
+                    rootTranslationY = 0,
+                    rootTranslationZ = 0,
+                };
 
                 // Add List of frame rotations
                 fframe.rotations = new List<FieldRotation> { frotation };
-                //fframe.rotations.Add(frotation);
 
                 // Add List of frame animations
                 frames = new List<FieldFrame> { fframe };
-                //frames.Add(fframe);
 
                 // Add rotationOrder
                 rotationOrder = new byte[3];
@@ -258,7 +261,6 @@ namespace KimeraCS
                 runtime_data = new int[5];
 
                 // Preprocess from 1 bone, we've just done bone 0
-                //for (bi = 1; bi < fSkeleton.nBones; bi++)
                 for (bi = 1; bi < fSkeleton.bones.Count; bi++)
                 {
                     while (!(fSkeleton.bones[bi].joint_f == joint_stack[jsp]) && jsp > 0) jsp--;
@@ -533,8 +535,10 @@ namespace KimeraCS
                     }
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
+                strGlobalExceptionMessage = ex.Message;
+
                 iResult = -1;
             }
 
@@ -682,8 +686,10 @@ namespace KimeraCS
             if (bMerge) tmpfAnimation = CopyfAnimation(fAnimation);
             else
             {
-                tmpfAnimation = new FieldAnimation();
-                tmpfAnimation.frames = new List<FieldFrame>();
+                tmpfAnimation = new FieldAnimation()
+                {
+                    frames = new List<FieldFrame>(),
+                };
             }
 
             fFrame.rotations = new List<FieldRotation>();
@@ -731,20 +737,21 @@ namespace KimeraCS
 
                             if (bMerge) iFrameCounter += fAnimation.frames.Count;
 
-                            fFrame = new FieldFrame();
-                            fFrame.rotations = new List<FieldRotation>();
+                            fFrame = new FieldFrame()
+                            {
+                                rotations = new List<FieldRotation>(),
+                            };
 
                             if (fAnimation.strFieldAnimationFile != "DUMMY.A")
                             {
                                 // Let's put the frame 0 values to all the bones.
                                 foreach (FieldRotation itmfRotation in fAnimation.frames[0].rotations)
-                                {
-                                    fFrame.rotations.Add(itmfRotation);
-                                }
+                                            fFrame.rotations.Add(itmfRotation);
                             }
                             else
                             {
-                                for (int i = 0; i < fSkeleton.nBones; i++) fFrame.rotations.Add(new FieldRotation());
+                                for (int i = 0; i < fSkeleton.nBones; i++) 
+                                            fFrame.rotations.Add(new FieldRotation());
                             }
 
                             break;
@@ -768,11 +775,12 @@ namespace KimeraCS
                         case "BONEROT":
                             if (bFoundBone)
                             {
-                                fRotation = new FieldRotation();
-
-                                fRotation.alpha = float.Parse(strSplitKeyData[1].Split('_')[0], CultureInfo.InvariantCulture.NumberFormat);
-                                fRotation.beta = float.Parse(strSplitKeyData[1].Split('_')[1], CultureInfo.InvariantCulture.NumberFormat);
-                                fRotation.gamma = float.Parse(strSplitKeyData[1].Split('_')[2], CultureInfo.InvariantCulture.NumberFormat);
+                                fRotation = new FieldRotation()
+                                {
+                                    alpha = float.Parse(strSplitKeyData[1].Split('_')[0], CultureInfo.InvariantCulture.NumberFormat),
+                                    beta = float.Parse(strSplitKeyData[1].Split('_')[1], CultureInfo.InvariantCulture.NumberFormat),
+                                    gamma = float.Parse(strSplitKeyData[1].Split('_')[2], CultureInfo.InvariantCulture.NumberFormat),
+                                };
 
                                 fFrame.rotations[iBonePosition] = fRotation;
                             }
@@ -843,7 +851,6 @@ namespace KimeraCS
             bool bFoundBone;
             string[] strSplitKeyData;
             List<string> strJointsList;
-            FieldFrame fFrame;
             FieldRotation fRotation;
             FieldAnimation tmpfAnimation;
 
@@ -902,7 +909,7 @@ namespace KimeraCS
             }
 
             // Now, let's make that the user decide which joints/bones wants to import.
-            frmFF7IDFJBS = new frmFF7IDFJointsBonesSelection(strJointsList);
+            frmFF7IDFJBS = new FrmFF7IDFJointsBonesSelection(strJointsList);
             frmFF7IDFJBS.ShowDialog();
 
             if (frmFF7IDFJBS.chklbJointsBones.Items.Count > 0)
@@ -1297,24 +1304,27 @@ namespace KimeraCS
             FieldRotation tmpfRotation;
             int ri;
 
-            fFrameOut = new FieldFrame();
+            fFrameOut = new FieldFrame()
+            {
+                rootRotationAlpha = fFrameIn.rootRotationAlpha,
+                rootRotationBeta = fFrameIn.rootRotationBeta,
+                rootRotationGamma = fFrameIn.rootRotationGamma,
 
-            fFrameOut.rootRotationAlpha = fFrameIn.rootRotationAlpha;
-            fFrameOut.rootRotationBeta = fFrameIn.rootRotationBeta;
-            fFrameOut.rootRotationGamma = fFrameIn.rootRotationGamma;
+                rootTranslationX = fFrameIn.rootTranslationX,
+                rootTranslationY = fFrameIn.rootTranslationY,
+                rootTranslationZ = fFrameIn.rootTranslationZ,
 
-            fFrameOut.rootTranslationX = fFrameIn.rootTranslationX;
-            fFrameOut.rootTranslationY = fFrameIn.rootTranslationY;
-            fFrameOut.rootTranslationZ = fFrameIn.rootTranslationZ;
-
-            fFrameOut.rotations = new List<FieldRotation>();
+                rotations = new List<FieldRotation>(),
+            };
 
             for (ri = 0; ri < fFrameIn.rotations.Count; ri++)
             {
-                tmpfRotation = new FieldRotation();
-                tmpfRotation.alpha = fFrameIn.rotations[ri].alpha;
-                tmpfRotation.beta = fFrameIn.rotations[ri].beta;
-                tmpfRotation.gamma = fFrameIn.rotations[ri].gamma;
+                tmpfRotation = new FieldRotation()
+                {
+                    alpha = fFrameIn.rotations[ri].alpha,
+                    beta = fFrameIn.rotations[ri].beta,
+                    gamma = fFrameIn.rotations[ri].gamma,
+                };
 
                 fFrameOut.rotations.Add(tmpfRotation);
             }
@@ -1326,13 +1336,15 @@ namespace KimeraCS
         {
             FieldAnimation fAnimDest;
 
-            fAnimDest = new FieldAnimation();
+            fAnimDest = new FieldAnimation()
+            {
+                version = fAnimSource.version,
+                nFrames = fAnimSource.nFrames,
+                nBones = fAnimSource.nBones,
 
-            fAnimDest.version = fAnimSource.version;
-            fAnimDest.nFrames = fAnimSource.nFrames;
-            fAnimDest.nBones = fAnimSource.nBones;
+                rotationOrder = new byte[3],
+            };
 
-            fAnimDest.rotationOrder = new byte[3];
             fAnimSource.rotationOrder.CopyTo(fAnimDest.rotationOrder, 0);
 
             fAnimDest.unused = fAnimSource.unused;
@@ -1344,13 +1356,6 @@ namespace KimeraCS
 
             fAnimDest.frames = new List<FieldFrame>();
             foreach (FieldFrame itmfFrame in fAnimSource.frames) fAnimDest.frames.Add(CopyfFrame(itmfFrame));
-
-            //for (fi = 0; fi < fAnimSource.frames.Count; fi++)
-            //{
-            //    tmpfFrame = new FieldFrame();
-            //    CopyfFrame(ref tmpfFrame, fAnimSource.frames[fi]);
-            //    fAnimDest.frames.Add(tmpfFrame);
-            //}
 
             return fAnimDest;
         }

@@ -10,12 +10,12 @@ using System.Windows.Forms;
 
 namespace KimeraCS
 {
-    public partial class frmFF7IDFJointsBonesSelection : Form
+    public partial class FrmFF7IDFJointsBonesSelection : Form
     {
 
-        ToolTip toolTip1 = new ToolTip();
+        readonly ToolTip toolTip1 = new ToolTip();
 
-        public frmFF7IDFJointsBonesSelection(List<string> strListJoints)
+        public FrmFF7IDFJointsBonesSelection(List<string> strListJoints)
         {
             InitializeComponent();
 
@@ -45,7 +45,7 @@ namespace KimeraCS
         }
 
 
-        private void btnCancel_Click(object sender, EventArgs e)
+        private void BtnCancel_Click(object sender, EventArgs e)
         {
             chklbJointsBones.Items.Clear();
             Close();
@@ -61,17 +61,17 @@ namespace KimeraCS
             }
         }
 
-        private void btnSelectAll_Click(object sender, EventArgs e)
+        private void BtnSelectAll_Click(object sender, EventArgs e)
         {
             SetListItemsState(true);
         }
 
-        private void btnUnselectAll_Click(object sender, EventArgs e)
+        private void BtnUnselectAll_Click(object sender, EventArgs e)
         {
             SetListItemsState(false);
         }
 
-        private void btnOk_Click(object sender, EventArgs e)
+        private void BtnOk_Click(object sender, EventArgs e)
         {
             this.Hide();
         }

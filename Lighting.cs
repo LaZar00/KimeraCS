@@ -9,7 +9,7 @@ namespace KimeraCS
 
     using Defines;
 
-    using static frmSkeletonEditor;
+    using static FrmSkeletonEditor;
 
     using static FF7Skeleton;
     using static FF7FieldSkeleton;
@@ -39,7 +39,7 @@ namespace KimeraCS
             if (!bchkFrontLight && !bchkRearLight &&
                 !bchkRightLight && !bchkLeftLight)
             {
-                glDisable(glCapability.GL_LIGHTING);
+                glDisable(GLCapability.GL_LIGHTING);
                 return;
             }
 
@@ -58,36 +58,35 @@ namespace KimeraCS
 
                 case K_AA_SKELETON:
                 case K_MAGIC_SKELETON:
-                    //ComputeAABoundingBox aa_sk, DAAnims.BodyAnimations(anim_index).Frames(CurrentFrameScroll.value), p_min, p_max
                     ComputeBattleBoundingBox(bSkeleton, bAnimationsPack.SkeletonAnimations[ianimIndex].frames[iCurrentFrameScroll],
                                              ref p_min, ref p_max);
                     break;
             }
 
-            scene_diameter = -(float)(2 * ComputeSceneRadius(p_min, p_max));
+            scene_diameter = (float)(-2 * ComputeSceneRadius(p_min, p_max));
 
             light_x = scene_diameter / LIGHT_STEPS * fLightPosXScroll;
             light_y = scene_diameter / LIGHT_STEPS * fLightPosYScroll;
             light_z = scene_diameter / LIGHT_STEPS * fLightPosZScroll;
 
-            if (bchkRightLight) SetLighting(glCapability.GL_LIGHT0, light_z, light_y, light_x, 0.5f, 0.5f, 0.5f, infinityFarQ);
+            if (bchkRightLight) SetLighting(GLCapability.GL_LIGHT0, light_z, light_y, light_x, 0.5f, 0.5f, 0.5f, infinityFarQ);
             else
-                glDisable(glCapability.GL_LIGHT0);
+                glDisable(GLCapability.GL_LIGHT0);
 
-            if (bchkLeftLight) SetLighting(glCapability.GL_LIGHT1, -light_z, light_y, light_x, 0.5f, 0.5f, 0.5f, infinityFarQ);
+            if (bchkLeftLight) SetLighting(GLCapability.GL_LIGHT1, -light_z, light_y, light_x, 0.5f, 0.5f, 0.5f, infinityFarQ);
             else
-                glDisable(glCapability.GL_LIGHT1);
+                glDisable(GLCapability.GL_LIGHT1);
 
-            if (bchkFrontLight) SetLighting(glCapability.GL_LIGHT2, light_x, light_y, light_z, 1f, 1f, 1f, infinityFarQ);
+            if (bchkFrontLight) SetLighting(GLCapability.GL_LIGHT2, light_x, light_y, light_z, 1f, 1f, 1f, infinityFarQ);
             else
-            glDisable(glCapability.GL_LIGHT2);
+                glDisable(GLCapability.GL_LIGHT2);
 
-            if (bchkRearLight) SetLighting(glCapability.GL_LIGHT3, light_x, light_y, -light_z, 0.75f, 0.75f, 0.75f, infinityFarQ);
+            if (bchkRearLight) SetLighting(GLCapability.GL_LIGHT3, light_x, light_y, -light_z, 0.75f, 0.75f, 0.75f, infinityFarQ);
             else
-            glDisable(glCapability.GL_LIGHT3);
+                glDisable(GLCapability.GL_LIGHT3);
         }
 
-        public static void SetLighting(glCapability lightNumber, float x, float y, float z, float red, float green, float blue, bool infinityFarQ)
+        public static void SetLighting(GLCapability lightNumber, float x, float y, float z, float red, float green, float blue, bool infinityFarQ)
         {
             float[] l_color = new float[4];
             float[] l_pos = new float[4];
@@ -104,11 +103,11 @@ namespace KimeraCS
             l_color[2] = blue;
             l_color[3] = 1;
 
-            glEnable(glCapability.GL_LIGHTING);
+            glEnable(GLCapability.GL_LIGHTING);
             glDisable(lightNumber);
 
-            glLightfv(lightNumber, glLightParameter.GL_POSITION, l_pos);
-            glLightfv(lightNumber, glLightParameter.GL_DIFFUSE, l_color);
+            glLightfv(lightNumber, GLLightParameter.GL_POSITION, l_pos);
+            glLightfv(lightNumber, GLLightParameter.GL_DIFFUSE, l_color);
 
             glEnable(lightNumber);
         }

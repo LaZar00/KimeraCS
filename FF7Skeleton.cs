@@ -11,7 +11,7 @@ namespace KimeraCS
     
     using Defines;
 
-    using static frmSkeletonEditor;
+    using static FrmSkeletonEditor;
 
     using static FF7FieldSkeleton;
     using static FF7FieldAnimation;
@@ -156,7 +156,9 @@ namespace KimeraCS
             return iloadSkeletonResult;
         }
 
-        public static int LoadSkeletonFromDB(string strFileName, string strAnimFileName, bool loadGeometryQ)
+        public static int LoadFieldSkeletonFromDB(string strFileName, 
+                                                  string strAnimFileName, 
+                                                  bool loadGeometryQ)
         {
             int iloadSkeletonResult = 1;
 
@@ -215,6 +217,8 @@ namespace KimeraCS
             }
             catch (Exception ex)
             {
+                strGlobalExceptionMessage = ex.Message;
+
                 iloadSkeletonResult = -1;  // Error loading skeleton
             }
 
@@ -291,6 +295,8 @@ namespace KimeraCS
             }
             catch (Exception ex)
             {
+                strGlobalExceptionMessage = ex.Message;
+
                 isaveSkeletonResult = -1;
             }
 
@@ -388,7 +394,7 @@ namespace KimeraCS
                     case K_P_BATTLE_MODEL:
                     case K_P_MAGIC_MODEL:
                     case K_3DS_MODEL:
-                        glMatrixMode(glMatrixModeList.GL_MODELVIEW);
+                        glMatrixMode(GLMatrixModeList.GL_MODELVIEW);
                         glPushMatrix();
 
                         SetCameraModelViewQuat(fPModel.repositionX, fPModel.repositionY, fPModel.repositionZ,
@@ -404,7 +410,7 @@ namespace KimeraCS
 
                         SetLights();
 
-                        if (glIsEnabled(glCapability.GL_LIGHTING)) ApplyCurrentVColors(ref fPModel);
+                        if (glIsEnabled(GLCapability.GL_LIGHTING)) ApplyCurrentVColors(ref fPModel);
 
                         glPopMatrix();
                         WriteGlobalPModel(ref fPModel, strFileName);
@@ -434,24 +440,28 @@ namespace KimeraCS
             try
             {
                 // Create fSkeleton with 1 bone
-                fSkeleton = new FieldSkeleton();
+                fSkeleton = new FieldSkeleton()
+                {
+                    nBones = 1,
+                    fileName = strRSDName,
+                    name = strRSDName,
 
-                fSkeleton.nBones = 1;
-                fSkeleton.fileName = strRSDName;
-                fSkeleton.name = strRSDName;
-                fSkeleton.bones = new List<FieldBone>();
+                    bones = new List<FieldBone>(),
+                };
 
                 // Load RSD Resource
-                tmpfBone = new FieldBone();
-                tmpfBone.len = 1;
-                tmpfBone.joint_f = "null";
-                tmpfBone.joint_i = "root";
-                tmpfBone.nResources = 1;
-                tmpfBone.fRSDResources = new List<FieldRSDResource>();
+                tmpfBone = new FieldBone()
+                {
+                    len = 1,
+                    joint_f = "null",
+                    joint_i = "root",
+                    nResources = 1,
+                    fRSDResources = new List<FieldRSDResource>(),
 
-                tmpfBone.resizeX = 1;
-                tmpfBone.resizeY = 1;
-                tmpfBone.resizeZ = 1;
+                    resizeX = 1,
+                    resizeY = 1,
+                    resizeZ = 1,
+                };
 
                 tmpfRSDResource = new FieldRSDResource(strRSDName, ref textures_pool, strRSDFolder);
                 tmpfBone.fRSDResources.Add(tmpfRSDResource);
@@ -468,6 +478,8 @@ namespace KimeraCS
             }
             catch (Exception ex)
             {
+                strGlobalExceptionMessage = ex.Message;
+
                 MessageBox.Show("There has been some error loading RSD Resource: " + strRSDName + ".", "Error");
                 
                 iLoadRSDResourceModelResult = -1;
@@ -503,6 +515,8 @@ namespace KimeraCS
             }
             catch (Exception ex)
             {
+                strGlobalExceptionMessage = ex.Message;
+
                 isaveAnimationResult = -1;
             }
 
@@ -549,6 +563,8 @@ namespace KimeraCS
             }
             catch (Exception ex)
             {
+                strGlobalExceptionMessage = ex.Message;
+
                 iinputFrameData = -1;
             }
 
@@ -577,6 +593,8 @@ namespace KimeraCS
             }
             catch (Exception ex)
             {
+                strGlobalExceptionMessage = ex.Message;
+
                 ioutputFrameData = -1;
             }
 
@@ -605,6 +623,8 @@ namespace KimeraCS
             }
             catch (Exception ex)
             {
+                strGlobalExceptionMessage = ex.Message;
+
                 iinputFrameData = -1;
             }
 

@@ -1,7 +1,7 @@
 ﻿
 namespace KimeraCS
 {
-    partial class frmTEXToPNGBatchConversion
+    partial class FrmTEXToPNGBatchConversion
     {
         /// <summary>
         /// Required designer variable.
@@ -29,7 +29,7 @@ namespace KimeraCS
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmTEXToPNGBatchConversion));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmTEXToPNGBatchConversion));
             this.rtbLog = new System.Windows.Forms.RichTextBox();
             this.gbProgress = new System.Windows.Forms.GroupBox();
             this.lblProcessingT2P = new System.Windows.Forms.Label();
@@ -108,7 +108,7 @@ namespace KimeraCS
             this.btnCancel.TabIndex = 8;
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = true;
-            this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
+            this.btnCancel.Click += new System.EventHandler(this.BtnCancel_Click);
             // 
             // gbSettings
             // 
@@ -161,7 +161,7 @@ namespace KimeraCS
             this.btnSaveLog.TabIndex = 4;
             this.btnSaveLog.Text = "Save log";
             this.btnSaveLog.UseVisualStyleBackColor = true;
-            this.btnSaveLog.Click += new System.EventHandler(this.btnSaveLog_Click);
+            this.btnSaveLog.Click += new System.EventHandler(this.BtnSaveLog_Click);
             // 
             // chkShowOnlyNoProcessed
             // 
@@ -194,7 +194,7 @@ namespace KimeraCS
             this.btnClose.TabIndex = 5;
             this.btnClose.Text = "Close";
             this.btnClose.UseVisualStyleBackColor = true;
-            this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
+            this.btnClose.Click += new System.EventHandler(this.BtnClose_Click);
             // 
             // btnSaveOptions
             // 
@@ -206,7 +206,7 @@ namespace KimeraCS
             this.btnSaveOptions.TabIndex = 3;
             this.btnSaveOptions.Text = "Save options";
             this.btnSaveOptions.UseVisualStyleBackColor = true;
-            this.btnSaveOptions.Click += new System.EventHandler(this.btnSaveOptions_Click);
+            this.btnSaveOptions.Click += new System.EventHandler(this.BtnSaveOptions_Click);
             // 
             // btnGo
             // 
@@ -218,7 +218,7 @@ namespace KimeraCS
             this.btnGo.TabIndex = 2;
             this.btnGo.Text = "Go!";
             this.btnGo.UseVisualStyleBackColor = true;
-            this.btnGo.Click += new System.EventHandler(this.btnGo_Click);
+            this.btnGo.Click += new System.EventHandler(this.BtnGo_Click);
             // 
             // txtTEX2PNGBatchPath
             // 
@@ -238,7 +238,7 @@ namespace KimeraCS
             this.btnPath.TabIndex = 1;
             this.btnPath.Text = "...";
             this.btnPath.UseVisualStyleBackColor = true;
-            this.btnPath.Click += new System.EventHandler(this.btnPath_Click);
+            this.btnPath.Click += new System.EventHandler(this.BtnPath_Click);
             // 
             // chkFFNXAALINaming
             // 
@@ -267,8 +267,8 @@ namespace KimeraCS
             this.Name = "frmTEXToPNGBatchConversion";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "TEX2PNG Batch Conversion";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmTEXToPNGBatchConversion_FormClosing);
-            this.Load += new System.EventHandler(this.frmTEXToPNGBatchConversion_Load);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FrmTEXToPNGBatchConversion_FormClosing);
+            this.Load += new System.EventHandler(this.FrmTEXToPNGBatchConversion_Load);
             this.gbProgress.ResumeLayout(false);
             this.gbSettings.ResumeLayout(false);
             this.gbSettings.PerformLayout();

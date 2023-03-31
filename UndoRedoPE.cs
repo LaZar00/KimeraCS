@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace KimeraCS
 {
-    using static frmPEditor;
+    using static FrmPEditor;
 
     using static FF7Skeleton;
     using static FF7FieldSkeleton;
@@ -39,8 +39,8 @@ namespace KimeraCS
 
             public bool PalettizedQ;
             public List<Color> colorTablePE;
-            public pairIB[] translationTablePolysPE;
-            public pairIB[] translationTableVertexPE;
+            public PairIB[] translationTablePolysPE;
+            public PairIB[] translationTableVertexPE;
             public byte iThresholdPE;
         }
 
@@ -58,7 +58,7 @@ namespace KimeraCS
             RedoCursorPE = 0;
         }
 
-        public static void AddStateToBufferPE(frmPEditor frmPEdit)
+        public static void AddStateToBufferPE(FrmPEditor frmPEdit)
         {
             int si;
 
@@ -81,7 +81,7 @@ namespace KimeraCS
             //RedoCursorPE = 0;
         }
 
-        public static void RedoPE(frmPEditor frmPEdit)
+        public static void RedoPE(FrmPEditor frmPEdit)
         {
             int si;
 
@@ -114,7 +114,7 @@ namespace KimeraCS
             }
         }
 
-        public static void UndoPE(frmPEditor frmPEdit)
+        public static void UndoPE(FrmPEditor frmPEdit)
         {
             int si;
 
@@ -147,7 +147,7 @@ namespace KimeraCS
             }
         }
 
-        private static void RestoreStatePE(ref PEState sState, frmPEditor frmPEdit)
+        private static void RestoreStatePE(ref PEState sState, FrmPEditor frmPEdit)
         {
             frmPEdit.loadingModifiersQ = true;
 
@@ -218,7 +218,7 @@ namespace KimeraCS
             frmPEdit.loadingModifiersQ = false;
         }
 
-        private static void StoreStatePE(ref PEState sState, frmPEditor frmPEdit)
+        private static void StoreStatePE(ref PEState sState, FrmPEditor frmPEdit)
         {
             sState.URPEpanX = panXPE;
             sState.URPEpanY = panYPE;

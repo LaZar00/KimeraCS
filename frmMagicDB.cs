@@ -11,19 +11,19 @@ namespace KimeraCS
 {
     using static FileTools;
 
-    public partial class frmMagicDB : Form
+    public partial class FrmMagicDB : Form
     {
         public static string strMagicFile = "", strMagicAnimFile = "";
         public static string strLocalMagicModelName = "";
 
         public static bool bSelectedMagicFileFromDB;
 
-        public frmMagicDB()
+        public FrmMagicDB()
         {
             InitializeComponent();
         }
 
-        private void frmMagicDB_Load(object sender, EventArgs e)
+        private void FrmMagicDB_Load(object sender, EventArgs e)
         {
             int mi;
 
@@ -68,7 +68,7 @@ namespace KimeraCS
             }
         }
 
-        private void btnSelectDirBrowser_Click(object sender, EventArgs e)
+        private void BtnSelectDirBrowser_Click(object sender, EventArgs e)
         {
             FolderBrowserDialogEX fbdMagicDataDirectory = new FolderBrowserDialogEX();
 
@@ -102,12 +102,12 @@ namespace KimeraCS
             fbdMagicDataDirectory.Dispose();
         }
 
-        private void btnSaveMagicDataDir_Click(object sender, EventArgs e)
+        private void BtnSaveMagicDataDir_Click(object sender, EventArgs e)
         {
             WriteCFGFile();
         }
 
-        private void btnClose_Click(object sender, EventArgs e)
+        private void BtnClose_Click(object sender, EventArgs e)
         {
             strLocalMagicModelName = dgvMagic.Rows[dgvMagic.SelectedRows[0].Index].Cells[1].Value.ToString();
 
@@ -117,12 +117,12 @@ namespace KimeraCS
             }
         }
 
-        private void dgvMagic_DoubleClick(object sender, EventArgs e)
+        private void DgvMagic_DoubleClick(object sender, EventArgs e)
         {
             if (dgvMagic.SelectedRows.Count > 0) btnLoadModelAnimation.PerformClick();
         }
 
-        private void frmMagicDB_FormClosed(object sender, FormClosedEventArgs e)
+        private void FrmMagicDB_FormClosed(object sender, FormClosedEventArgs e)
         {
             strLocalMagicModelName = dgvMagic.Rows[dgvMagic.SelectedRows[0].Index].Cells[1].Value.ToString();
 
@@ -132,9 +132,9 @@ namespace KimeraCS
             }
         }
 
-        private void btnLoadModelAnimation_Click(object sender, EventArgs e)
+        private void BtnLoadModelAnimation_Click(object sender, EventArgs e)
         {
-            string strModelName = "";
+            string strModelName;
 
             bSelectedMagicFileFromDB = false;
 

@@ -679,22 +679,26 @@ namespace KimeraCS
             bAnimation.blockSizeShort = 0;
 
             bAnimation.key = 0;
-            //bAnimation.missingNumFramesShort = false;
 
-            tmpbFrameBone = new BattleFrameBone();
-            tmpbFrameBone.accumAlpha = 0;
-            tmpbFrameBone.accumBeta = 0;
-            tmpbFrameBone.accumGamma = 0;
+            tmpbFrameBone = new BattleFrameBone()
+            {
+                accumAlpha = 0,
+                accumBeta = 0,
+                accumGamma = 0,
 
-            tmpbFrameBone.alpha = 0;
-            tmpbFrameBone.beta = 0;
-            tmpbFrameBone.gamma = 0;
+                alpha = 0,
+                beta = 0,
+                gamma = 0,
+            };
 
-            tmpbFrame = new BattleFrame();
-            tmpbFrame.startX = 0;
-            tmpbFrame.startY = 0;
-            tmpbFrame.startZ = 0;
-            tmpbFrame.bones = new List<BattleFrameBone>();
+            tmpbFrame = new BattleFrame()
+            {
+                startX = 0,
+                startY = 0,
+                startZ = 0,
+
+                bones = new List<BattleFrameBone>(),
+            };
 
             for (bi = 0; bi < nBones; bi++)
                 tmpbFrame.bones.Add(tmpbFrameBone);
@@ -719,21 +723,21 @@ namespace KimeraCS
             jsp = 0;
             jsp0 = 0;
 
-            //joint_stack[jsp] = "0xFFFFFFFF";
             joint_stack[jsp] = -1;
 
             stageIndex = 1;
 
             // 1st Bone Frame
-            tmpbFrameBone = new BattleFrameBone();
+            tmpbFrameBone = new BattleFrameBone()
+            {
+                alpha = 90,
+                beta = 0,
+                gamma = 0,
 
-            tmpbFrameBone.alpha = 90;
-            tmpbFrameBone.beta = 0;
-            tmpbFrameBone.gamma = 0;
-
-            tmpbFrameBone.accumAlpha = 0;
-            tmpbFrameBone.accumBeta = 0;
-            tmpbFrameBone.accumGamma = 0;
+                accumAlpha = 0,
+                accumBeta = 0,
+                accumGamma = 0,
+            };
 
             bFrame.bones.Add(tmpbFrameBone);
 
@@ -862,7 +866,7 @@ namespace KimeraCS
                         c2 = (float)(Math.Sqrt(Math.Pow(bSkeleton.bones[bi + 1].len, 2) - Math.Pow(c1, 2)));
                         hipArmAngle = (float)(Math.Atan(c2 / c1) / PI_180);
 
-                        if (hipArmAngle != hipArmAngle) hipArmAngle = 0;
+                        if (float.IsNaN(hipArmAngle) || float.IsInfinity(hipArmAngle)) hipArmAngle = 0;
 
                         tmpbFrameBone.alpha = 0;
                         tmpbFrameBone.beta = hipArmAngle;
@@ -934,11 +938,14 @@ namespace KimeraCS
             //bAnimation.missingNumFramesShort = false;
             bAnimation.frames = new List<BattleFrame>();
 
-            tmpbFrame = new BattleFrame();
-            tmpbFrame.startX = 0;
-            tmpbFrame.startY = 0;
-            tmpbFrame.startZ = 0;
-            tmpbFrame.bones = new List<BattleFrameBone>();
+            tmpbFrame = new BattleFrame()
+            {
+                startX = 0,
+                startY = 0,
+                startZ = 0,
+
+                bones = new List<BattleFrameBone>(),
+            };
 
             CreateCompatibleBattleAnimationFrame(bSkeleton, ref tmpbFrame);
             bAnimation.frames.Add(tmpbFrame);
@@ -1235,19 +1242,20 @@ namespace KimeraCS
         {
             BattleFrameBone bFrameBoneOut;
 
-            bFrameBoneOut = new BattleFrameBone();
+            bFrameBoneOut = new BattleFrameBone()
+            {
+                accumAlpha = bFrameBoneIn.accumAlpha,
+                accumBeta = bFrameBoneIn.accumBeta,
+                accumGamma = bFrameBoneIn.accumGamma,
 
-            bFrameBoneOut.accumAlpha = bFrameBoneIn.accumAlpha;
-            bFrameBoneOut.accumBeta = bFrameBoneIn.accumBeta;
-            bFrameBoneOut.accumGamma = bFrameBoneIn.accumGamma;
+                accumAlphaS = bFrameBoneIn.accumAlphaS,
+                accumBetaS = bFrameBoneIn.accumBetaS,
+                accumGammaS = bFrameBoneIn.accumGammaS,
 
-            bFrameBoneOut.accumAlphaS = bFrameBoneIn.accumAlphaS;
-            bFrameBoneOut.accumBetaS = bFrameBoneIn.accumBetaS;
-            bFrameBoneOut.accumGammaS = bFrameBoneIn.accumGammaS;
-
-            bFrameBoneOut.alpha = bFrameBoneIn.alpha;
-            bFrameBoneOut.beta = bFrameBoneIn.beta;
-            bFrameBoneOut.gamma = bFrameBoneIn.gamma;
+                alpha = bFrameBoneIn.alpha,
+                beta = bFrameBoneIn.beta,
+                gamma = bFrameBoneIn.gamma,
+            };
 
             return bFrameBoneOut;
         }
@@ -1256,14 +1264,17 @@ namespace KimeraCS
         {
             BattleFrame bFrameOut;
 
-            bFrameOut = new BattleFrame();
+            bFrameOut = new BattleFrame()
+            {
+                startX = bFrameIn.startX,
+                startY = bFrameIn.startY,
+                startZ = bFrameIn.startZ,
 
-            bFrameOut.startX = bFrameIn.startX;
-            bFrameOut.startY = bFrameIn.startY;
-            bFrameOut.startZ = bFrameIn.startZ;
-            bFrameOut.bones = new List<BattleFrameBone>();
+                bones = new List<BattleFrameBone>(),
+            };
 
-            foreach (BattleFrameBone itmbFrameBone in bFrameIn.bones) bFrameOut.bones.Add(CopybFrameBone(itmbFrameBone));
+            foreach (BattleFrameBone itmbFrameBone in bFrameIn.bones) 
+                                bFrameOut.bones.Add(CopybFrameBone(itmbFrameBone));
 
             return bFrameOut;
         }
@@ -1272,20 +1283,22 @@ namespace KimeraCS
         {
             BattleAnimation bAnimationOut;
 
-            bAnimationOut = new BattleAnimation();
+            bAnimationOut = new BattleAnimation()
+            {
+                blockSize = bAnimationIn.blockSize,
+                blockSizeShort = bAnimationIn.blockSizeShort,
+                framesRawData = bAnimationIn.framesRawData,
+                key = bAnimationIn.key,
+                nBones = bAnimationIn.nBones,
+                numFrames = bAnimationIn.numFrames,
+                numFramesShort = bAnimationIn.numFramesShort,
+                padding4bytes = bAnimationIn.padding4bytes,
 
-            bAnimationOut.blockSize = bAnimationIn.blockSize;
-            bAnimationOut.blockSizeShort = bAnimationIn.blockSizeShort;          
-            bAnimationOut.framesRawData = bAnimationIn.framesRawData;
-            bAnimationOut.key = bAnimationIn.key;
-            //bAnimationOut.missingNumFramesShort = bAnimationIn.missingNumFramesShort;
-            bAnimationOut.nBones = bAnimationIn.nBones;
-            bAnimationOut.numFrames = bAnimationIn.numFrames;
-            bAnimationOut.numFramesShort = bAnimationIn.numFramesShort;
-            bAnimationOut.padding4bytes = bAnimationIn.padding4bytes;
+                frames = new List<BattleFrame>(),
+            };
 
-            bAnimationOut.frames = new List<BattleFrame>();
-            foreach (BattleFrame itmbFrame in bAnimationIn.frames) bAnimationOut.frames.Add(CopybFrame(itmbFrame));
+            foreach (BattleFrame itmbFrame in bAnimationIn.frames) 
+                            bAnimationOut.frames.Add(CopybFrame(itmbFrame));
 
             return bAnimationOut;
         }

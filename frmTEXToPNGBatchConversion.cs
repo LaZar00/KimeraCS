@@ -13,22 +13,21 @@ using System.Windows.Forms;
 
 namespace KimeraCS
 {
-
-    using static GDI32;
+    using static Utils;
     using static FF7TEXTexture;
     using static FileTools;
 
-    public partial class frmTEXToPNGBatchConversion : Form
+    public partial class FrmTEXToPNGBatchConversion : Form
     {
 
         public bool bCancelPressed;
 
-        public frmTEXToPNGBatchConversion()
+        public FrmTEXToPNGBatchConversion()
         {
             InitializeComponent();
         }
 
-        private void frmTEXToPNGBatchConversion_Load(object sender, EventArgs e)
+        private void FrmTEXToPNGBatchConversion_Load(object sender, EventArgs e)
         {
             if (strGlobalPathTEX2PNGBatch == "") strGlobalPathTEX2PNGBatch = strGlobalPath;
 
@@ -37,19 +36,19 @@ namespace KimeraCS
             bCancelPressed = false;
         }
 
-        private void btnSaveOptions_Click(object sender, EventArgs e)
+        private void BtnSaveOptions_Click(object sender, EventArgs e)
         {
             strGlobalPathTEX2PNGBatch = txtTEX2PNGBatchPath.Text;
 
             WriteCFGFile();
         }
 
-        private void btnClose_Click(object sender, EventArgs e)
+        private void BtnClose_Click(object sender, EventArgs e)
         {
             Close();
         }
 
-        private void btnPath_Click(object sender, EventArgs e)
+        private void BtnPath_Click(object sender, EventArgs e)
         {
             FolderBrowserDialogEX fbdTEXBatchPath = new FolderBrowserDialogEX();
 
@@ -88,7 +87,7 @@ namespace KimeraCS
             fbdTEXBatchPath.Dispose();
         }
 
-        private void btnGo_Click(object sender, EventArgs e)
+        private void BtnGo_Click(object sender, EventArgs e)
         {
 
             lblProcessingT2P.Text = "Processing 0000 / 0000";
@@ -110,6 +109,8 @@ namespace KimeraCS
             }
             catch (Exception ex)
             {
+                strGlobalExceptionMessage = ex.Message;
+
                 MessageBox.Show("There has been some exception error while processing TEX to PNG Batch Conversion feature.",
                 "Error.", MessageBoxButtons.OK);
 
@@ -419,6 +420,8 @@ namespace KimeraCS
             }
             catch (Exception ex)
             {
+                strGlobalExceptionMessage = ex.Message;
+
                 MessageBox.Show("There has been some exception while doing the TEX2PNG Batch Conversion.",
                                 "Error");
 
@@ -426,7 +429,7 @@ namespace KimeraCS
             }
         }
 
-        private void btnCancel_Click(object sender, EventArgs e)
+        private void BtnCancel_Click(object sender, EventArgs e)
         {
             bCancelPressed = true;
             lblProcessingT2P.Text = "Processing 0000 / 0000";
@@ -435,7 +438,7 @@ namespace KimeraCS
             ActivateSettings();
         }
 
-        private void btnSaveLog_Click(object sender, EventArgs e)
+        private void BtnSaveLog_Click(object sender, EventArgs e)
         {
             // Set filter options and filter index.
 
@@ -462,7 +465,7 @@ namespace KimeraCS
             }
         }
 
-        private void frmTEXToPNGBatchConversion_FormClosing(object sender, FormClosingEventArgs e)
+        private void FrmTEXToPNGBatchConversion_FormClosing(object sender, FormClosingEventArgs e)
         {
             bCancelPressed = true;
 

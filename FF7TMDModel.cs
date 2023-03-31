@@ -362,7 +362,7 @@ namespace KimeraCS
             for (iCountObj = 0; iCountObj < mTMDModel.TMDHeader.nObjects; iCountObj++)
             {
                 // Read Object
-                ReadTMDObject(fileBuffer, ref fileBufferPos, ref mTMDModel.TMDObjectList[iCountObj], strTMDFullFileName);
+                ReadTMDObject(fileBuffer, ref fileBufferPos, ref mTMDModel.TMDObjectList[iCountObj]);
 
                 // Read Object Data
                 // Read Primitives
@@ -378,14 +378,12 @@ namespace KimeraCS
                 {
                     // Read Primitive
                     ReadTMDPrimitive(fileBuffer, ref fileBufferPosItems,
-                                     ref mTMDModel.TMDObjectList[iCountObj].TMDPrimitiveList[iCountItem],
-                                     strTMDFullFileName);
+                                     ref mTMDModel.TMDObjectList[iCountObj].TMDPrimitiveList[iCountItem]);
 
                     // Read Primitive Packet
                     ReadTMDPrimitivePacket(fileBuffer, ref fileBufferPosItems, 
                                            mTMDModel.TMDObjectList[iCountObj].TMDPrimitiveList[iCountItem].mode,
-                                           ref mTMDModel.TMDObjectList[iCountObj].TMDPrimitiveListPacket[iCountItem],
-                                           strTMDFullFileName);
+                                           ref mTMDModel.TMDObjectList[iCountObj].TMDPrimitiveListPacket[iCountItem]);
                 }
 
 
@@ -396,8 +394,7 @@ namespace KimeraCS
                 fileBufferPosItems = mTMDModel.TMDObjectList[iCountObj].offsetVerts + TMD_PADDING;
 
                 ReadTMDVertices(fileBuffer, fileBufferPosItems, mTMDModel.TMDObjectList[iCountObj].nVerts,                                         
-                                ref mTMDModel.TMDObjectList[iCountObj].TMDVertexList,
-                                strTMDFullFileName);
+                                ref mTMDModel.TMDObjectList[iCountObj].TMDVertexList);
 
 
                 // Read Normals
@@ -407,8 +404,7 @@ namespace KimeraCS
                 fileBufferPosItems = mTMDModel.TMDObjectList[iCountObj].offsetNormals + TMD_PADDING;
 
                 ReadTMDNormals(fileBuffer, fileBufferPosItems, mTMDModel.TMDObjectList[iCountObj].nNormals,
-                               ref mTMDModel.TMDObjectList[iCountObj].TMDNormalList,
-                               strTMDFullFileName);
+                               ref mTMDModel.TMDObjectList[iCountObj].TMDNormalList);
             }
 
         }
@@ -442,7 +438,7 @@ namespace KimeraCS
             return 1;
         }
 
-        public static void ReadTMDObject(byte[] fileBuffer, ref long pos, ref TMD_OBJECT TMDObject, string fileName)
+        public static void ReadTMDObject(byte[] fileBuffer, ref long pos, ref TMD_OBJECT TMDObject)
         {
             using (var fileMemory = new MemoryStream(fileBuffer))
             {
@@ -464,7 +460,7 @@ namespace KimeraCS
         }
 
         public static void ReadTMDPrimitive(byte[] fileBuffer, ref long pos, 
-                                            ref TMD_PRIMITIVE_HEADER TMDPrimitive, string fileName)
+                                            ref TMD_PRIMITIVE_HEADER TMDPrimitive)
         {
             using (var fileMemory = new MemoryStream(fileBuffer))
             {
@@ -483,7 +479,7 @@ namespace KimeraCS
         }
 
         public static void ReadTMDPrimitivePacket(byte[] fileBuffer, ref long pos, int mode,
-                                                  ref TMD_PRIMITIVE_PACKET TMDPrimitivePacket, string fileName)
+                                                  ref TMD_PRIMITIVE_PACKET TMDPrimitivePacket)
         {
             using (var fileMemory = new MemoryStream(fileBuffer))
             {
@@ -494,50 +490,54 @@ namespace KimeraCS
                     switch (mode)
                     {
                         case 0x25:
-                            TMDPrimitivePacket.tmd3txnsfp = new TMD_3_TX_NS_FP();
+                            TMDPrimitivePacket.tmd3txnsfp = new TMD_3_TX_NS_FP()
+                            {
+                                U0 = memReader.ReadByte(),
+                                V0 = memReader.ReadByte(),
+                                CBA = memReader.ReadUInt16(),
+                                U1 = memReader.ReadByte(),
+                                V1 = memReader.ReadByte(),
+                                TSB = memReader.ReadUInt16(),
+                                U2 = memReader.ReadByte(),
+                                V2 = memReader.ReadByte(),
+                                pad1 = memReader.ReadUInt16(),
+                                R = memReader.ReadByte(),
+                                G = memReader.ReadByte(),
+                                B = memReader.ReadByte(),
+                                pad2 = memReader.ReadByte(),
+                                Vertex0 = memReader.ReadUInt16(),
+                                Vertex1 = memReader.ReadUInt16(),
+                                Vertex2 = memReader.ReadUInt16(),
+                                pad = memReader.ReadUInt16(),
+                            };
 
-                            TMDPrimitivePacket.tmd3txnsfp.U0 = memReader.ReadByte();
-                            TMDPrimitivePacket.tmd3txnsfp.V0 = memReader.ReadByte();
-                            TMDPrimitivePacket.tmd3txnsfp.CBA = memReader.ReadUInt16();
-                            TMDPrimitivePacket.tmd3txnsfp.U1 = memReader.ReadByte();
-                            TMDPrimitivePacket.tmd3txnsfp.V1 = memReader.ReadByte();
-                            TMDPrimitivePacket.tmd3txnsfp.TSB = memReader.ReadUInt16();
-                            TMDPrimitivePacket.tmd3txnsfp.U2 = memReader.ReadByte();
-                            TMDPrimitivePacket.tmd3txnsfp.V2 = memReader.ReadByte();
-                            TMDPrimitivePacket.tmd3txnsfp.pad1 = memReader.ReadUInt16();
-                            TMDPrimitivePacket.tmd3txnsfp.R = memReader.ReadByte();
-                            TMDPrimitivePacket.tmd3txnsfp.G = memReader.ReadByte();
-                            TMDPrimitivePacket.tmd3txnsfp.B = memReader.ReadByte();
-                            TMDPrimitivePacket.tmd3txnsfp.pad2 = memReader.ReadByte();
-                            TMDPrimitivePacket.tmd3txnsfp.Vertex0 = memReader.ReadUInt16();
-                            TMDPrimitivePacket.tmd3txnsfp.Vertex1 = memReader.ReadUInt16();
-                            TMDPrimitivePacket.tmd3txnsfp.Vertex2 = memReader.ReadUInt16();
-                            TMDPrimitivePacket.tmd3txnsfp.pad = memReader.ReadUInt16();
                             break;
 
                         case 0x31:
-                            TMDPrimitivePacket.tmd3nsgp = new TMD_3_NS_GP();
+                            TMDPrimitivePacket.tmd3nsgp = new TMD_3_NS_GP()
+                            {
+                                R0 = memReader.ReadByte(),
+                                G0 = memReader.ReadByte(),
+                                B0 = memReader.ReadByte(),
+                                mode2 = memReader.ReadByte(),
+                                R1 = memReader.ReadByte(),
+                                G1 = memReader.ReadByte(),
+                                B1 = memReader.ReadByte(),
+                                pad1 = memReader.ReadByte(),
+                                R2 = memReader.ReadByte(),
+                                G2 = memReader.ReadByte(),
+                                B2 = memReader.ReadByte(),
+                                pad2 = memReader.ReadByte(),
+                                Vertex0 = memReader.ReadUInt16(),
+                                Vertex1 = memReader.ReadUInt16(),
+                                Vertex2 = memReader.ReadUInt16(),
+                                pad = memReader.ReadUInt16(),
+                            };
 
-                            TMDPrimitivePacket.tmd3nsgp.R0 = memReader.ReadByte();
-                            TMDPrimitivePacket.tmd3nsgp.G0 = memReader.ReadByte();
-                            TMDPrimitivePacket.tmd3nsgp.B0 = memReader.ReadByte();
-                            TMDPrimitivePacket.tmd3nsgp.mode2 = memReader.ReadByte();
-                            TMDPrimitivePacket.tmd3nsgp.R1 = memReader.ReadByte();
-                            TMDPrimitivePacket.tmd3nsgp.G1 = memReader.ReadByte();
-                            TMDPrimitivePacket.tmd3nsgp.B1= memReader.ReadByte();
-                            TMDPrimitivePacket.tmd3nsgp.pad1 = memReader.ReadByte();
-                            TMDPrimitivePacket.tmd3nsgp.R2 = memReader.ReadByte();
-                            TMDPrimitivePacket.tmd3nsgp.G2 = memReader.ReadByte();
-                            TMDPrimitivePacket.tmd3nsgp.B2 = memReader.ReadByte();
-                            TMDPrimitivePacket.tmd3nsgp.pad2 = memReader.ReadByte();
-                            TMDPrimitivePacket.tmd3nsgp.Vertex0 = memReader.ReadUInt16();
-                            TMDPrimitivePacket.tmd3nsgp.Vertex1 = memReader.ReadUInt16();
-                            TMDPrimitivePacket.tmd3nsgp.Vertex2 = memReader.ReadUInt16();
-                            TMDPrimitivePacket.tmd3nsgp.pad = memReader.ReadUInt16();
                             break;
 
                         default:
-                            int i = 0;
+
                             break;
                     }
 
@@ -547,7 +547,7 @@ namespace KimeraCS
         }
 
         public static void ReadTMDVertices(byte[] fileBuffer, long pos, int numVerts,
-                                           ref TMD_VERTEX[] TMDVertexList, string fileName)
+                                           ref TMD_VERTEX[] TMDVertexList)
         {
             int i;
 
@@ -569,7 +569,7 @@ namespace KimeraCS
         }
 
         public static void ReadTMDNormals(byte[] fileBuffer, long pos, int numNormals,
-                                          ref TMD_NORMAL[] TMDNormalList, string fileName)
+                                          ref TMD_NORMAL[] TMDNormalList)
         {
             int i;
 
@@ -599,8 +599,7 @@ namespace KimeraCS
         //  -------------------------------------------------------------------------------------------------
         private static int FindVertexIdxByColorVArray(byte inR, byte inG, byte inB, Color[] vcolorsV,
                                                       short inX, short inY, short inZ,
-                                                      short sVertex, Point3D[] vertsV,                                                      
-                                                      int mode)
+                                                      Point3D[] vertsV, int mode)
         {
             int iVertexIdx = -1, iCountColor;
             bool bFound = false;
@@ -625,8 +624,9 @@ namespace KimeraCS
                         else iCountColor++;
 
                         break;
+
                     default:
-                        int i = 0;
+
                         break;
                 }
             }
@@ -655,22 +655,22 @@ namespace KimeraCS
                                            out Color[] vcolorsV, out Color[] pcolorsV, 
                                            out Point2D[] TexCoords)
         {
-            int fi, vi, ci, iFoundColorVArray;
-            short sVertex = 0;
+            int iPolyIdx, iVertIdx, iVColorIdx, iFoundColorVArray;
+            short sVertex;
 
             // Let's populate vertices
             vertsV = new Point3D[TMDVertices.Length];
             vcolorsV = new Color[TMDVertices.Length];
 
-            for (vi = 0; vi < TMDVertices.Length; vi++)
+            for (iVertIdx = 0; iVertIdx < TMDVertices.Length; iVertIdx++)
             {
-                vertsV[vi].x = TMDVertices[vi].vx;
-                vertsV[vi].y = TMDVertices[vi].vy;
-                vertsV[vi].z = TMDVertices[vi].vz;
+                vertsV[iVertIdx].x = TMDVertices[iVertIdx].vx;
+                vertsV[iVertIdx].y = TMDVertices[iVertIdx].vy;
+                vertsV[iVertIdx].z = TMDVertices[iVertIdx].vz;
             }
 
-            for (ci = 0; ci < TMDVertices.Length; ci++)
-                vcolorsV[ci] = Color.FromArgb(128, 255, 255, 255);
+            for (iVColorIdx = 0; iVColorIdx < TMDVertices.Length; iVColorIdx++)
+                vcolorsV[iVColorIdx] = Color.FromArgb(128, 255, 255, 255);
 
 
             // Let's populate faces
@@ -686,58 +686,61 @@ namespace KimeraCS
             else TexCoords = null;
 
 
-            for (fi = 0; fi < TMDPrimitiveHeaders.Length; fi++)
+            for (iPolyIdx = 0; iPolyIdx < TMDPrimitiveHeaders.Length; iPolyIdx++)
             {
-                facesV[fi].tag1 = 0;
-                facesV[fi].tag2 = 0xCFCEA00;
+                facesV[iPolyIdx].tag1 = 0;
+                facesV[iPolyIdx].tag2 = PPOLY_TAG2;
 
                 // Prepare PPolygon
-                facesV[fi].Verts = new short[3];
-                facesV[fi].Normals = new short[3];
-                facesV[fi].Edges = new short[3];
+                facesV[iPolyIdx].Verts = new short[3];
+                facesV[iPolyIdx].Normals = new short[3];
+                facesV[iPolyIdx].Edges = new short[3];
 
-                switch (TMDPrimitiveHeaders[fi].mode)
+                switch (TMDPrimitiveHeaders[iPolyIdx].mode)
                 {
                     case 0x25:          // Texturized
-                        facesV[fi].Verts[0] = (short)TMDPrimitivePackets[fi].tmd3txnsfp.Vertex0;
-                        facesV[fi].Verts[1] = (short)TMDPrimitivePackets[fi].tmd3txnsfp.Vertex1;
-                        facesV[fi].Verts[2] = (short)TMDPrimitivePackets[fi].tmd3txnsfp.Vertex2;
+                        facesV[iPolyIdx].Verts[0] = 
+                            (short)TMDPrimitivePackets[iPolyIdx].tmd3txnsfp.Vertex0;
+                        facesV[iPolyIdx].Verts[1] = 
+                            (short)TMDPrimitivePackets[iPolyIdx].tmd3txnsfp.Vertex1;
+                        facesV[iPolyIdx].Verts[2] = 
+                            (short)TMDPrimitivePackets[iPolyIdx].tmd3txnsfp.Vertex2;
 
-                        pcolorsV[fi] = Color.FromArgb(255,
-                                                      TMDPrimitivePackets[fi].tmd3txnsfp.R,
-                                                      TMDPrimitivePackets[fi].tmd3txnsfp.G,
-                                                      TMDPrimitivePackets[fi].tmd3txnsfp.B);
+                        pcolorsV[iPolyIdx] = Color.FromArgb(255,
+                                                      TMDPrimitivePackets[iPolyIdx].tmd3txnsfp.R,
+                                                      TMDPrimitivePackets[iPolyIdx].tmd3txnsfp.G,
+                                                      TMDPrimitivePackets[iPolyIdx].tmd3txnsfp.B);
 
-                        vcolorsV[TMDPrimitivePackets[fi].tmd3txnsfp.Vertex0] =
+                        vcolorsV[TMDPrimitivePackets[iPolyIdx].tmd3txnsfp.Vertex0] =
                             Color.FromArgb(255,
-                                           TMDPrimitivePackets[fi].tmd3txnsfp.R,
-                                           TMDPrimitivePackets[fi].tmd3txnsfp.G,
-                                           TMDPrimitivePackets[fi].tmd3txnsfp.B);
-                        vcolorsV[TMDPrimitivePackets[fi].tmd3txnsfp.Vertex1] =
+                                           TMDPrimitivePackets[iPolyIdx].tmd3txnsfp.R,
+                                           TMDPrimitivePackets[iPolyIdx].tmd3txnsfp.G,
+                                           TMDPrimitivePackets[iPolyIdx].tmd3txnsfp.B);
+                        vcolorsV[TMDPrimitivePackets[iPolyIdx].tmd3txnsfp.Vertex1] =
                             Color.FromArgb(255,
-                                           TMDPrimitivePackets[fi].tmd3txnsfp.R,
-                                           TMDPrimitivePackets[fi].tmd3txnsfp.G,
-                                           TMDPrimitivePackets[fi].tmd3txnsfp.B);
-                        vcolorsV[TMDPrimitivePackets[fi].tmd3txnsfp.Vertex2] =
+                                           TMDPrimitivePackets[iPolyIdx].tmd3txnsfp.R,
+                                           TMDPrimitivePackets[iPolyIdx].tmd3txnsfp.G,
+                                           TMDPrimitivePackets[iPolyIdx].tmd3txnsfp.B);
+                        vcolorsV[TMDPrimitivePackets[iPolyIdx].tmd3txnsfp.Vertex2] =
                             Color.FromArgb(255,
-                                           TMDPrimitivePackets[fi].tmd3txnsfp.R,
-                                           TMDPrimitivePackets[fi].tmd3txnsfp.G,
-                                           TMDPrimitivePackets[fi].tmd3txnsfp.B);
+                                           TMDPrimitivePackets[iPolyIdx].tmd3txnsfp.R,
+                                           TMDPrimitivePackets[iPolyIdx].tmd3txnsfp.G,
+                                           TMDPrimitivePackets[iPolyIdx].tmd3txnsfp.B);
 
-                        TexCoords[TMDPrimitivePackets[fi].tmd3txnsfp.Vertex0].x =
-                            TMDPrimitivePackets[fi].tmd3txnsfp.U0 / 64f;
-                        TexCoords[TMDPrimitivePackets[fi].tmd3txnsfp.Vertex0].y =
-                            TMDPrimitivePackets[fi].tmd3txnsfp.V0 / 64f;
+                        TexCoords[TMDPrimitivePackets[iPolyIdx].tmd3txnsfp.Vertex0].x =
+                            TMDPrimitivePackets[iPolyIdx].tmd3txnsfp.U0 / 64f;
+                        TexCoords[TMDPrimitivePackets[iPolyIdx].tmd3txnsfp.Vertex0].y =
+                            TMDPrimitivePackets[iPolyIdx].tmd3txnsfp.V0 / 64f;
 
-                        TexCoords[TMDPrimitivePackets[fi].tmd3txnsfp.Vertex1].x =
-                            TMDPrimitivePackets[fi].tmd3txnsfp.U1 / 64f;
-                        TexCoords[TMDPrimitivePackets[fi].tmd3txnsfp.Vertex1].y =
-                            TMDPrimitivePackets[fi].tmd3txnsfp.V1 / 64f;
+                        TexCoords[TMDPrimitivePackets[iPolyIdx].tmd3txnsfp.Vertex1].x =
+                            TMDPrimitivePackets[iPolyIdx].tmd3txnsfp.U1 / 64f;
+                        TexCoords[TMDPrimitivePackets[iPolyIdx].tmd3txnsfp.Vertex1].y =
+                            TMDPrimitivePackets[iPolyIdx].tmd3txnsfp.V1 / 64f;
 
-                        TexCoords[TMDPrimitivePackets[fi].tmd3txnsfp.Vertex2].x =
-                            TMDPrimitivePackets[fi].tmd3txnsfp.U2 / 64f;
-                        TexCoords[TMDPrimitivePackets[fi].tmd3txnsfp.Vertex2].y =
-                            TMDPrimitivePackets[fi].tmd3txnsfp.V2 / 64f;
+                        TexCoords[TMDPrimitivePackets[iPolyIdx].tmd3txnsfp.Vertex2].x =
+                            TMDPrimitivePackets[iPolyIdx].tmd3txnsfp.U2 / 64f;
+                        TexCoords[TMDPrimitivePackets[iPolyIdx].tmd3txnsfp.Vertex2].y =
+                            TMDPrimitivePackets[iPolyIdx].tmd3txnsfp.V2 / 64f;
 
                         break;
 
@@ -745,34 +748,38 @@ namespace KimeraCS
                         // Vertex 0
                         // Check if exists the RGB color in vcolorsV array
 
-                        if (vcolorsV[TMDPrimitivePackets[fi].tmd3nsgp.Vertex0].A == 128)
+                        if (vcolorsV[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex0].A == 128)
                         {
-                            sVertex = (short)TMDPrimitivePackets[fi].tmd3nsgp.Vertex0;
+                            sVertex = (short)TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex0;
 
                             vcolorsV[sVertex] = Color.FromArgb(255,
-                                                               TMDPrimitivePackets[fi].tmd3nsgp.R0,
-                                                               TMDPrimitivePackets[fi].tmd3nsgp.G0,
-                                                               TMDPrimitivePackets[fi].tmd3nsgp.B0);
+                                                    TMDPrimitivePackets[iPolyIdx].tmd3nsgp.R0,
+                                                    TMDPrimitivePackets[iPolyIdx].tmd3nsgp.G0,
+                                                    TMDPrimitivePackets[iPolyIdx].tmd3nsgp.B0);
                         }
                         else
                         {
-                            if (vcolorsV[TMDPrimitivePackets[fi].tmd3nsgp.Vertex0].R == TMDPrimitivePackets[fi].tmd3nsgp.R0 &&
-                                vcolorsV[TMDPrimitivePackets[fi].tmd3nsgp.Vertex0].G == TMDPrimitivePackets[fi].tmd3nsgp.G0 &&
-                                vcolorsV[TMDPrimitivePackets[fi].tmd3nsgp.Vertex0].B == TMDPrimitivePackets[fi].tmd3nsgp.B0)
+                            if (vcolorsV[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex0].R == 
+                                                            TMDPrimitivePackets[iPolyIdx].tmd3nsgp.R0 &&
+                                vcolorsV[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex0].G == 
+                                                            TMDPrimitivePackets[iPolyIdx].tmd3nsgp.G0 &&
+                                vcolorsV[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex0].B == 
+                                                            TMDPrimitivePackets[iPolyIdx].tmd3nsgp.B0)
                             {
-                                sVertex = (short)TMDPrimitivePackets[fi].tmd3nsgp.Vertex0;
+                                sVertex = (short)TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex0;
                             }
                             else
                             {
-                                iFoundColorVArray = FindVertexIdxByColorVArray(TMDPrimitivePackets[fi].tmd3nsgp.R0,
-                                                                               TMDPrimitivePackets[fi].tmd3nsgp.G0,
-                                                                               TMDPrimitivePackets[fi].tmd3nsgp.B0,
-                                                                               vcolorsV,
-                                                                               TMDVertices[TMDPrimitivePackets[fi].tmd3nsgp.Vertex0].vx,
-                                                                               TMDVertices[TMDPrimitivePackets[fi].tmd3nsgp.Vertex0].vy,
-                                                                               TMDVertices[TMDPrimitivePackets[fi].tmd3nsgp.Vertex0].vz,
-                                                                               (short)TMDPrimitivePackets[fi].tmd3nsgp.Vertex0, vertsV,
-                                                                                TMDPrimitiveHeaders[fi].mode);
+                                iFoundColorVArray = 
+                                    FindVertexIdxByColorVArray(TMDPrimitivePackets[iPolyIdx].tmd3nsgp.R0,
+                                                               TMDPrimitivePackets[iPolyIdx].tmd3nsgp.G0,
+                                                               TMDPrimitivePackets[iPolyIdx].tmd3nsgp.B0,
+                                                               vcolorsV,
+                                                               TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex0].vx,
+                                                               TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex0].vy,
+                                                               TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex0].vz,
+                                                               vertsV,
+                                                               TMDPrimitiveHeaders[iPolyIdx].mode);
 
                                 if (iFoundColorVArray == -1)
                                 {
@@ -781,16 +788,19 @@ namespace KimeraCS
 
                                     // Add vertex to P Model vertex array
                                     Array.Resize(ref vertsV, vertsV.Length + 1);
-                                    vertsV[vertsV.Length - 1].x = TMDVertices[TMDPrimitivePackets[fi].tmd3nsgp.Vertex0].vx;
-                                    vertsV[vertsV.Length - 1].y = TMDVertices[TMDPrimitivePackets[fi].tmd3nsgp.Vertex0].vy;
-                                    vertsV[vertsV.Length - 1].z = TMDVertices[TMDPrimitivePackets[fi].tmd3nsgp.Vertex0].vz;
+                                    vertsV[vertsV.Length - 1].x = 
+                                        TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex0].vx;
+                                    vertsV[vertsV.Length - 1].y = 
+                                        TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex0].vy;
+                                    vertsV[vertsV.Length - 1].z = 
+                                        TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex0].vz;
 
                                     // Add color to P Model vertices color array
                                     Array.Resize(ref vcolorsV, vcolorsV.Length + 1);
                                     vcolorsV[vcolorsV.Length - 1] = Color.FromArgb(255,
-                                                                                   TMDPrimitivePackets[fi].tmd3nsgp.R0,
-                                                                                   TMDPrimitivePackets[fi].tmd3nsgp.G0,
-                                                                                   TMDPrimitivePackets[fi].tmd3nsgp.B0);
+                                                            TMDPrimitivePackets[iPolyIdx].tmd3nsgp.R0,
+                                                            TMDPrimitivePackets[iPolyIdx].tmd3nsgp.G0,
+                                                            TMDPrimitivePackets[iPolyIdx].tmd3nsgp.B0);
                                 }
                                 else
                                 {
@@ -799,39 +809,42 @@ namespace KimeraCS
                             }
                         }
 
-                        facesV[fi].Verts[0] = sVertex;
+                        facesV[iPolyIdx].Verts[0] = sVertex;
 
 
                         // Vertex 1
                         // Check if exists the RGB color in vcolorsV array
-                        if (vcolorsV[TMDPrimitivePackets[fi].tmd3nsgp.Vertex1].A == 128)
+                        if (vcolorsV[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex1].A == 128)
                         {
-                            sVertex = (short)TMDPrimitivePackets[fi].tmd3nsgp.Vertex1;
+                            sVertex = (short)TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex1;
 
                             vcolorsV[sVertex] = Color.FromArgb(255,
-                                                               TMDPrimitivePackets[fi].tmd3nsgp.R1,
-                                                               TMDPrimitivePackets[fi].tmd3nsgp.G1,
-                                                               TMDPrimitivePackets[fi].tmd3nsgp.B1);
+                                                        TMDPrimitivePackets[iPolyIdx].tmd3nsgp.R1,
+                                                        TMDPrimitivePackets[iPolyIdx].tmd3nsgp.G1,
+                                                        TMDPrimitivePackets[iPolyIdx].tmd3nsgp.B1);
                         }
                         else
                         {
-                            if (vcolorsV[TMDPrimitivePackets[fi].tmd3nsgp.Vertex1].R == TMDPrimitivePackets[fi].tmd3nsgp.R1 &&
-                                vcolorsV[TMDPrimitivePackets[fi].tmd3nsgp.Vertex1].G == TMDPrimitivePackets[fi].tmd3nsgp.G1 &&
-                                vcolorsV[TMDPrimitivePackets[fi].tmd3nsgp.Vertex1].B == TMDPrimitivePackets[fi].tmd3nsgp.B1)
+                            if (vcolorsV[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex1].R == 
+                                                        TMDPrimitivePackets[iPolyIdx].tmd3nsgp.R1 &&
+                                vcolorsV[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex1].G == 
+                                                        TMDPrimitivePackets[iPolyIdx].tmd3nsgp.G1 &&
+                                vcolorsV[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex1].B == 
+                                                        TMDPrimitivePackets[iPolyIdx].tmd3nsgp.B1)
                             {
-                                sVertex = (short)TMDPrimitivePackets[fi].tmd3nsgp.Vertex1;
+                                sVertex = (short)TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex1;
                             }
                             else
                             {
-                                iFoundColorVArray = FindVertexIdxByColorVArray(TMDPrimitivePackets[fi].tmd3nsgp.R1,
-                                                                               TMDPrimitivePackets[fi].tmd3nsgp.G1,
-                                                                               TMDPrimitivePackets[fi].tmd3nsgp.B1,
-                                                                               vcolorsV,
-                                                                               TMDVertices[TMDPrimitivePackets[fi].tmd3nsgp.Vertex1].vx,
-                                                                               TMDVertices[TMDPrimitivePackets[fi].tmd3nsgp.Vertex1].vy,
-                                                                               TMDVertices[TMDPrimitivePackets[fi].tmd3nsgp.Vertex1].vz,
-                                                                               (short)TMDPrimitivePackets[fi].tmd3nsgp.Vertex1, vertsV,
-                                                                               TMDPrimitiveHeaders[fi].mode);
+                                iFoundColorVArray = 
+                                    FindVertexIdxByColorVArray(TMDPrimitivePackets[iPolyIdx].tmd3nsgp.R1,
+                                                               TMDPrimitivePackets[iPolyIdx].tmd3nsgp.G1,
+                                                               TMDPrimitivePackets[iPolyIdx].tmd3nsgp.B1,
+                                                               vcolorsV,
+                                                               TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex1].vx,
+                                                               TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex1].vy,
+                                                               TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex1].vz,
+                                                               vertsV, TMDPrimitiveHeaders[iPolyIdx].mode);
 
                                 if (iFoundColorVArray == -1)
                                 {
@@ -840,16 +853,19 @@ namespace KimeraCS
 
                                     // Add vertex to P Model vertex array
                                     Array.Resize(ref vertsV, vertsV.Length + 1);
-                                    vertsV[vertsV.Length - 1].x = TMDVertices[TMDPrimitivePackets[fi].tmd3nsgp.Vertex1].vx;
-                                    vertsV[vertsV.Length - 1].y = TMDVertices[TMDPrimitivePackets[fi].tmd3nsgp.Vertex1].vy;
-                                    vertsV[vertsV.Length - 1].z = TMDVertices[TMDPrimitivePackets[fi].tmd3nsgp.Vertex1].vz;
+                                    vertsV[vertsV.Length - 1].x = 
+                                        TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex1].vx;
+                                    vertsV[vertsV.Length - 1].y = 
+                                        TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex1].vy;
+                                    vertsV[vertsV.Length - 1].z = 
+                                        TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex1].vz;
 
                                     // Add color to P Model vertices color array
                                     Array.Resize(ref vcolorsV, vcolorsV.Length + 1);
                                     vcolorsV[vcolorsV.Length - 1] = Color.FromArgb(255,
-                                                                                   TMDPrimitivePackets[fi].tmd3nsgp.R1,
-                                                                                   TMDPrimitivePackets[fi].tmd3nsgp.G1,
-                                                                                   TMDPrimitivePackets[fi].tmd3nsgp.B1);
+                                                            TMDPrimitivePackets[iPolyIdx].tmd3nsgp.R1,
+                                                            TMDPrimitivePackets[iPolyIdx].tmd3nsgp.G1,
+                                                            TMDPrimitivePackets[iPolyIdx].tmd3nsgp.B1);
                                 }
                                 else
                                 {
@@ -858,39 +874,42 @@ namespace KimeraCS
                             }
                         }
 
-                        facesV[fi].Verts[1] = sVertex;
+                        facesV[iPolyIdx].Verts[1] = sVertex;
 
 
                         // Vertex 2
                         // Check if exists the RGB color in vcolorsV array
-                        if (vcolorsV[TMDPrimitivePackets[fi].tmd3nsgp.Vertex2].A == 128)
+                        if (vcolorsV[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex2].A == 128)
                         {
-                            sVertex = (short)TMDPrimitivePackets[fi].tmd3nsgp.Vertex2;
+                            sVertex = (short)TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex2;
 
                             vcolorsV[sVertex] = Color.FromArgb(255,
-                                                               TMDPrimitivePackets[fi].tmd3nsgp.R2,
-                                                               TMDPrimitivePackets[fi].tmd3nsgp.G2,
-                                                               TMDPrimitivePackets[fi].tmd3nsgp.B2);
+                                                    TMDPrimitivePackets[iPolyIdx].tmd3nsgp.R2,
+                                                    TMDPrimitivePackets[iPolyIdx].tmd3nsgp.G2,
+                                                    TMDPrimitivePackets[iPolyIdx].tmd3nsgp.B2);
                         }
                         else
                         {
-                            if (vcolorsV[TMDPrimitivePackets[fi].tmd3nsgp.Vertex2].R == TMDPrimitivePackets[fi].tmd3nsgp.R2 &&
-                                vcolorsV[TMDPrimitivePackets[fi].tmd3nsgp.Vertex2].G == TMDPrimitivePackets[fi].tmd3nsgp.G2 &&
-                                vcolorsV[TMDPrimitivePackets[fi].tmd3nsgp.Vertex2].B == TMDPrimitivePackets[fi].tmd3nsgp.B2)
+                            if (vcolorsV[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex2].R == 
+                                                         TMDPrimitivePackets[iPolyIdx].tmd3nsgp.R2 &&
+                                vcolorsV[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex2].G == 
+                                                         TMDPrimitivePackets[iPolyIdx].tmd3nsgp.G2 &&
+                                vcolorsV[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex2].B == 
+                                                         TMDPrimitivePackets[iPolyIdx].tmd3nsgp.B2)
                             {
-                                sVertex = (short)TMDPrimitivePackets[fi].tmd3nsgp.Vertex2;
+                                sVertex = (short)TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex2;
                             }
                             else
                             {
-                                iFoundColorVArray = FindVertexIdxByColorVArray(TMDPrimitivePackets[fi].tmd3nsgp.R2,
-                                                                               TMDPrimitivePackets[fi].tmd3nsgp.G2,
-                                                                               TMDPrimitivePackets[fi].tmd3nsgp.B2,
-                                                                               vcolorsV,
-                                                                               TMDVertices[TMDPrimitivePackets[fi].tmd3nsgp.Vertex2].vx,
-                                                                               TMDVertices[TMDPrimitivePackets[fi].tmd3nsgp.Vertex2].vy,
-                                                                               TMDVertices[TMDPrimitivePackets[fi].tmd3nsgp.Vertex2].vz,
-                                                                               (short)TMDPrimitivePackets[fi].tmd3nsgp.Vertex2, vertsV,
-                                                                               TMDPrimitiveHeaders[fi].mode);
+                                iFoundColorVArray = 
+                                    FindVertexIdxByColorVArray(TMDPrimitivePackets[iPolyIdx].tmd3nsgp.R2,
+                                                               TMDPrimitivePackets[iPolyIdx].tmd3nsgp.G2,
+                                                               TMDPrimitivePackets[iPolyIdx].tmd3nsgp.B2,
+                                                               vcolorsV,
+                                                               TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex2].vx,
+                                                               TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex2].vy,
+                                                               TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex2].vz,
+                                                               vertsV, TMDPrimitiveHeaders[iPolyIdx].mode);
 
                                 if (iFoundColorVArray == -1)
                                 {
@@ -899,16 +918,19 @@ namespace KimeraCS
 
                                     // Add vertex to P Model vertex array
                                     Array.Resize(ref vertsV, vertsV.Length + 1);
-                                    vertsV[vertsV.Length - 1].x = TMDVertices[TMDPrimitivePackets[fi].tmd3nsgp.Vertex2].vx;
-                                    vertsV[vertsV.Length - 1].y = TMDVertices[TMDPrimitivePackets[fi].tmd3nsgp.Vertex2].vy;
-                                    vertsV[vertsV.Length - 1].z = TMDVertices[TMDPrimitivePackets[fi].tmd3nsgp.Vertex2].vz;
+                                    vertsV[vertsV.Length - 1].x = 
+                                        TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex2].vx;
+                                    vertsV[vertsV.Length - 1].y = 
+                                        TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex2].vy;
+                                    vertsV[vertsV.Length - 1].z = 
+                                        TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex2].vz;
 
                                     // Add color to P Model vertices color array
                                     Array.Resize(ref vcolorsV, vcolorsV.Length + 1);
                                     vcolorsV[vcolorsV.Length - 1] = Color.FromArgb(255,
-                                                                                   TMDPrimitivePackets[fi].tmd3nsgp.R2,
-                                                                                   TMDPrimitivePackets[fi].tmd3nsgp.G2,
-                                                                                   TMDPrimitivePackets[fi].tmd3nsgp.B2);
+                                                    TMDPrimitivePackets[iPolyIdx].tmd3nsgp.R2,
+                                                    TMDPrimitivePackets[iPolyIdx].tmd3nsgp.G2,
+                                                    TMDPrimitivePackets[iPolyIdx].tmd3nsgp.B2);
                                 }
                                 else
                                 {
@@ -917,19 +939,25 @@ namespace KimeraCS
                             }
                         }
 
-                        facesV[fi].Verts[2] = sVertex;
+                        facesV[iPolyIdx].Verts[2] = sVertex;
 
 
-                        pcolorsV[fi] = Color.FromArgb(255,
-                                                      (TMDPrimitivePackets[fi].tmd3nsgp.R0 + TMDPrimitivePackets[fi].tmd3nsgp.R1 + TMDPrimitivePackets[fi].tmd3nsgp.R2) / 3,
-                                                      (TMDPrimitivePackets[fi].tmd3nsgp.G0 + TMDPrimitivePackets[fi].tmd3nsgp.G1 + TMDPrimitivePackets[fi].tmd3nsgp.G2) / 3,
-                                                      (TMDPrimitivePackets[fi].tmd3nsgp.B0 + TMDPrimitivePackets[fi].tmd3nsgp.B1 + TMDPrimitivePackets[fi].tmd3nsgp.B2) / 3);
+                        pcolorsV[iPolyIdx] = Color.FromArgb(255,
+                                                      (TMDPrimitivePackets[iPolyIdx].tmd3nsgp.R0 + 
+                                                       TMDPrimitivePackets[iPolyIdx].tmd3nsgp.R1 + 
+                                                       TMDPrimitivePackets[iPolyIdx].tmd3nsgp.R2) / 3,
+                                                      (TMDPrimitivePackets[iPolyIdx].tmd3nsgp.G0 + 
+                                                       TMDPrimitivePackets[iPolyIdx].tmd3nsgp.G1 + 
+                                                       TMDPrimitivePackets[iPolyIdx].tmd3nsgp.G2) / 3,
+                                                      (TMDPrimitivePackets[iPolyIdx].tmd3nsgp.B0 + 
+                                                       TMDPrimitivePackets[iPolyIdx].tmd3nsgp.B1 + 
+                                                       TMDPrimitivePackets[iPolyIdx].tmd3nsgp.B2) / 3);
 
 
                         break;
 
                     default:
-                        int i = 0;
+
                         break;
                 }
             }
@@ -944,22 +972,17 @@ namespace KimeraCS
             // In the other P Models (Field, Battle or Magic) we will have this unknown data, but not when converting a 3DS to PModel.s
             outPModel.Header.unknown = new int[16];
 
-            Point3D[] vertsV;
-            PPolygon[] facesV;
-            Point2D[] texcoordsV;
-            Color[] vcolorsV;
-            Color[] pcolorsV;
-
             PopulatePModel(inTMDModel.TMDObjectList[iModelIdx].TMDVertexList,
                            inTMDModel.TMDObjectList[iModelIdx].TMDPrimitiveList,
                            inTMDModel.TMDObjectList[iModelIdx].TMDPrimitiveListPacket,
-                           out vertsV, out facesV, out vcolorsV, out pcolorsV, out texcoordsV);
+                           out Point3D[] vertsV, out PPolygon[] facesV, out Color[] vcolorsV, 
+                           out Color[] pcolorsV, out Point2D[]  texcoordsV);
 
             //texcoordsV = null;
             //texcoordsV = new Point2D[vertsV.Length];
             //GetTexCoords(mesh, out texcoordsV);
 
-            AddGroup(ref outPModel, vertsV, facesV, texcoordsV, vcolorsV, pcolorsV);          
+            AddGroup(ref outPModel, vertsV, facesV, texcoordsV, vcolorsV, pcolorsV, 0);          
 
             // Kimera own working vars of the model
             outPModel.resizeX = 1;
@@ -1024,7 +1047,6 @@ namespace KimeraCS
         {
             int iCounter, iSizeAccum, iVertexIndexDuplicated;
 
-            PModel tmpPModel;
             TMD_OBJECT newTMDObj = new TMD_OBJECT();
 
             // Before create the TMD Object, as it does not uses Groups,
@@ -1032,7 +1054,7 @@ namespace KimeraCS
             // one unique Group if needed.
             if (inPModel.Header.numGroups > 1)
             {
-                MergeGroupsIntoOne(inPModel, out tmpPModel);
+                MergeGroupsIntoOne(inPModel, out PModel tmpPModel, true);
 
                 inPModel = tmpPModel;
             }
@@ -1144,7 +1166,7 @@ namespace KimeraCS
                         break;
 
                     default:
-                        int i = 0;
+
                         break;
                 }
 
@@ -1300,7 +1322,7 @@ namespace KimeraCS
                                         break;
 
                                     default:
-                                        int i = 0;
+
                                         break;
                                 }
 
@@ -1350,6 +1372,8 @@ namespace KimeraCS
             }
             catch (Exception ex)
             {
+                strGlobalExceptionMessage = ex.Message;
+
                 iWriteTMDResult = -1;
             }
 
@@ -1364,7 +1388,7 @@ namespace KimeraCS
 
         public static void WriteTMDLOG()
         {
-            int iCountObj = 0, iCountPrim = 0;
+            int iCountObj = 0, iCountPrim;
             StringBuilder strTMDLOG = new StringBuilder();
 
             try
@@ -1500,7 +1524,7 @@ namespace KimeraCS
                                 break;
 
                             default:
-                                int i = 0;
+
                                 break;
                         }
 

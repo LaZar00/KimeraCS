@@ -186,6 +186,8 @@ namespace KimeraCS
             }
             catch (Exception ex)
             {
+                strGlobalExceptionMessage = ex.Message;
+
                 MessageBox.Show("Error reading Battle Animation Pack file " + Path.GetFileName(strAnimsPackFullFileName) + ".",
                                 "Error", MessageBoxButtons.OK);
             }

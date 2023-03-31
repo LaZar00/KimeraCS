@@ -12,11 +12,13 @@ namespace KimeraCS
 
     using static FileTools;
 
-    public partial class frmBattleDB : Form
+    public partial class FrmBattleDB : Form
     {
 
         public static string strBattleFile = "", strBattleAnimFile = "";
-        public static string strLocalEnemyModelName = "", strLocalLocationModelName = "", strLocalMainPCModelName = "";
+        public static string strLocalEnemyModelName = "", 
+                             strLocalLocationModelName = "", 
+                             strLocalMainPCModelName = "";
         
         public static bool bSelectedBattleFileFromDB;
 
@@ -26,12 +28,12 @@ namespace KimeraCS
         DataGridViewColumn tmpdgvEnemiesSortColumn;
         SortOrder tmpdgvEnemiesSortOrder;
 
-        public frmBattleDB()
+        public FrmBattleDB()
         {
             InitializeComponent();
         }
 
-        private void frmBattleDB_Load(object sender, EventArgs e)
+        private void FrmBattleDB_Load(object sender, EventArgs e)
         {
             int mi;
 
@@ -171,7 +173,7 @@ namespace KimeraCS
             }
         }
 
-        private void btnSelectDirBrowser_Click(object sender, EventArgs e)
+        private void BtnSelectDirBrowser_Click(object sender, EventArgs e)
         {
             FolderBrowserDialogEX fbdBattleDataDirectory = new FolderBrowserDialogEX();
 
@@ -205,22 +207,22 @@ namespace KimeraCS
             fbdBattleDataDirectory.Dispose();
         }
 
-        private void dgvLocations_DoubleClick(object sender, EventArgs e)
+        private void DgvLocations_DoubleClick(object sender, EventArgs e)
         {
             if (dgvLocations.SelectedRows.Count > 0) btnLoadModelAnimation.PerformClick();
         }
 
-        private void dgvMainPCs_DoubleClick(object sender, EventArgs e)
+        private void DgvMainPCs_DoubleClick(object sender, EventArgs e)
         {
             if (dgvMainPCs.SelectedRows.Count > 0) btnLoadModelAnimation.PerformClick();
         }
 
-        private void dgvEnemies_DoubleClick(object sender, EventArgs e)
+        private void DgvEnemies_DoubleClick(object sender, EventArgs e)
         {
             if (dgvEnemies.SelectedRows.Count > 0) btnLoadModelAnimation.PerformClick();
         }
 
-        private void dgvEnemies_KeyPress(object sender, KeyPressEventArgs e)
+        private void DgvEnemies_KeyPress(object sender, KeyPressEventArgs e)
         {
             if (Char.IsLetter(e.KeyChar) || Char.IsWhiteSpace(e.KeyChar))
             {
@@ -244,23 +246,23 @@ namespace KimeraCS
             }
         }
 
-        private void tcBattleDB_SelectedIndexChanged(object sender, EventArgs e)
+        private void TcBattleDB_SelectedIndexChanged(object sender, EventArgs e)
         {
             iTabPageSelected = tcBattleDB.TabIndex;
         }
 
-        private void dgvEnemies_Click(object sender, EventArgs e)
+        private void DgvEnemies_Click(object sender, EventArgs e)
         {
             typedChars = "";
         }
 
-        private void dgvEnemies_Sorted(object sender, EventArgs e)
+        private void DgvEnemies_Sorted(object sender, EventArgs e)
         {
             tmpdgvEnemiesSortColumn = dgvEnemies.SortedColumn;
             tmpdgvEnemiesSortOrder = dgvEnemies.SortOrder;
         }
 
-        private void btnClose_Click(object sender, EventArgs e)
+        private void BtnClose_Click(object sender, EventArgs e)
         {
             strLocalEnemyModelName = dgvEnemies.Rows[dgvEnemies.SelectedRows[0].Index].Cells[0].Value.ToString();
             strLocalLocationModelName = dgvLocations.Rows[dgvLocations.SelectedRows[0].Index].Cells[0].Value.ToString();
@@ -274,12 +276,12 @@ namespace KimeraCS
             }
         }
 
-        private void btnSaveBattleDataDir_Click(object sender, EventArgs e)
+        private void BtnSaveBattleDataDir_Click(object sender, EventArgs e)
         {
             WriteCFGFile();
         }
 
-        private void frmBattleDB_FormClosed(object sender, FormClosedEventArgs e)
+        private void FrmBattleDB_FormClosed(object sender, FormClosedEventArgs e)
         {
             switch(tcBattleDB.SelectedIndex)
             {
@@ -302,7 +304,7 @@ namespace KimeraCS
             }
         }
 
-        private void btnLoadModelAnimation_Click(object sender, EventArgs e)
+        private void BtnLoadModelAnimation_Click(object sender, EventArgs e)
         {
             string strModelName = "";
 

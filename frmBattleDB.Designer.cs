@@ -1,7 +1,7 @@
 ﻿
 namespace KimeraCS
 {
-    partial class frmBattleDB
+    partial class FrmBattleDB
     {
         /// <summary>
         /// Required designer variable.
@@ -29,7 +29,7 @@ namespace KimeraCS
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmBattleDB));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmBattleDB));
             this.btnClose = new System.Windows.Forms.Button();
             this.btnSaveBattleDataDir = new System.Windows.Forms.Button();
             this.btnSelectDirBrowser = new System.Windows.Forms.Button();
@@ -67,7 +67,7 @@ namespace KimeraCS
             this.btnClose.TabIndex = 7;
             this.btnClose.Text = "Close";
             this.btnClose.UseVisualStyleBackColor = true;
-            this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
+            this.btnClose.Click += new System.EventHandler(this.BtnClose_Click);
             // 
             // btnSaveBattleDataDir
             // 
@@ -78,7 +78,7 @@ namespace KimeraCS
             this.btnSaveBattleDataDir.TabIndex = 5;
             this.btnSaveBattleDataDir.Text = "Save Battle Data Directory";
             this.btnSaveBattleDataDir.UseVisualStyleBackColor = true;
-            this.btnSaveBattleDataDir.Click += new System.EventHandler(this.btnSaveBattleDataDir_Click);
+            this.btnSaveBattleDataDir.Click += new System.EventHandler(this.BtnSaveBattleDataDir_Click);
             // 
             // btnSelectDirBrowser
             // 
@@ -89,7 +89,7 @@ namespace KimeraCS
             this.btnSelectDirBrowser.TabIndex = 4;
             this.btnSelectDirBrowser.Text = "...";
             this.btnSelectDirBrowser.UseVisualStyleBackColor = true;
-            this.btnSelectDirBrowser.Click += new System.EventHandler(this.btnSelectDirBrowser_Click);
+            this.btnSelectDirBrowser.Click += new System.EventHandler(this.BtnSelectDirBrowser_Click);
             // 
             // txtBattleDataDir
             // 
@@ -119,7 +119,7 @@ namespace KimeraCS
             this.btnLoadModelAnimation.TabIndex = 6;
             this.btnLoadModelAnimation.Text = "Load Model";
             this.btnLoadModelAnimation.UseVisualStyleBackColor = true;
-            this.btnLoadModelAnimation.Click += new System.EventHandler(this.btnLoadModelAnimation_Click);
+            this.btnLoadModelAnimation.Click += new System.EventHandler(this.BtnLoadModelAnimation_Click);
             // 
             // tcBattleDB
             // 
@@ -133,7 +133,7 @@ namespace KimeraCS
             this.tcBattleDB.SelectedIndex = 0;
             this.tcBattleDB.Size = new System.Drawing.Size(425, 312);
             this.tcBattleDB.TabIndex = 1;
-            this.tcBattleDB.SelectedIndexChanged += new System.EventHandler(this.tcBattleDB_SelectedIndexChanged);
+            this.tcBattleDB.SelectedIndexChanged += new System.EventHandler(this.TcBattleDB_SelectedIndexChanged);
             // 
             // tabPage1
             // 
@@ -174,10 +174,10 @@ namespace KimeraCS
             this.dgvEnemies.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dgvEnemies.Size = new System.Drawing.Size(419, 281);
             this.dgvEnemies.TabIndex = 2;
-            this.dgvEnemies.Sorted += new System.EventHandler(this.dgvEnemies_Sorted);
-            this.dgvEnemies.Click += new System.EventHandler(this.dgvEnemies_Click);
-            this.dgvEnemies.DoubleClick += new System.EventHandler(this.dgvEnemies_DoubleClick);
-            this.dgvEnemies.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.dgvEnemies_KeyPress);
+            this.dgvEnemies.Sorted += new System.EventHandler(this.DgvEnemies_Sorted);
+            this.dgvEnemies.Click += new System.EventHandler(this.DgvEnemies_Click);
+            this.dgvEnemies.DoubleClick += new System.EventHandler(this.DgvEnemies_DoubleClick);
+            this.dgvEnemies.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.DgvEnemies_KeyPress);
             // 
             // colFileName
             // 
@@ -240,7 +240,7 @@ namespace KimeraCS
             this.dgvLocations.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dgvLocations.Size = new System.Drawing.Size(419, 281);
             this.dgvLocations.TabIndex = 8;
-            this.dgvLocations.DoubleClick += new System.EventHandler(this.dgvLocations_DoubleClick);
+            this.dgvLocations.DoubleClick += new System.EventHandler(this.DgvLocations_DoubleClick);
             // 
             // dataGridViewTextBoxColumn1
             // 
@@ -302,7 +302,7 @@ namespace KimeraCS
             this.dgvMainPCs.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dgvMainPCs.Size = new System.Drawing.Size(419, 281);
             this.dgvMainPCs.TabIndex = 9;
-            this.dgvMainPCs.DoubleClick += new System.EventHandler(this.dgvMainPCs_DoubleClick);
+            this.dgvMainPCs.DoubleClick += new System.EventHandler(this.DgvMainPCs_DoubleClick);
             // 
             // dataGridViewTextBoxColumn3
             // 
@@ -351,8 +351,8 @@ namespace KimeraCS
             this.Name = "frmBattleDB";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "FF7 Battle Database";
-            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.frmBattleDB_FormClosed);
-            this.Load += new System.EventHandler(this.frmBattleDB_Load);
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.FrmBattleDB_FormClosed);
+            this.Load += new System.EventHandler(this.FrmBattleDB_Load);
             this.tcBattleDB.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgvEnemies)).EndInit();

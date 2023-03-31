@@ -17,7 +17,7 @@ namespace KimeraCS
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             //Application.AddMessageFilter(new MenuFilter()); // Add a message filter for avoid Menu key.
-            Application.Run(new frmSkeletonEditor());
+            Application.Run(new FrmSkeletonEditor());
         }
     }
 

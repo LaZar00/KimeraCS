@@ -1,7 +1,7 @@
 ﻿
 namespace KimeraCS
 {
-    partial class frmFieldDB
+    partial class FrmFieldDB
     {
         /// <summary>
         /// Required designer variable.
@@ -29,7 +29,7 @@ namespace KimeraCS
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmFieldDB));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmFieldDB));
             this.lblModel = new System.Windows.Forms.Label();
             this.cbModel = new System.Windows.Forms.ComboBox();
             this.gbModelNames = new System.Windows.Forms.GroupBox();
@@ -64,8 +64,8 @@ namespace KimeraCS
             this.cbModel.Name = "cbModel";
             this.cbModel.Size = new System.Drawing.Size(173, 24);
             this.cbModel.TabIndex = 1;
-            this.cbModel.SelectedValueChanged += new System.EventHandler(this.cbModel_SelectedValueChanged);
-            this.cbModel.TextChanged += new System.EventHandler(this.cbModel_TextChanged);
+            this.cbModel.SelectedValueChanged += new System.EventHandler(this.CbModel_SelectedValueChanged);
+            this.cbModel.TextChanged += new System.EventHandler(this.CbModel_TextChanged);
             // 
             // gbModelNames
             // 
@@ -98,7 +98,7 @@ namespace KimeraCS
             this.btnLoadModelAnimation.TabIndex = 3;
             this.btnLoadModelAnimation.Text = "Load Model and Animation";
             this.btnLoadModelAnimation.UseVisualStyleBackColor = true;
-            this.btnLoadModelAnimation.Click += new System.EventHandler(this.btnLoadModelAnimation_Click);
+            this.btnLoadModelAnimation.Click += new System.EventHandler(this.BtnLoadModelAnimation_Click);
             // 
             // lblAnimations
             // 
@@ -147,7 +147,7 @@ namespace KimeraCS
             this.btnSelectDirBrowser.TabIndex = 8;
             this.btnSelectDirBrowser.Text = "...";
             this.btnSelectDirBrowser.UseVisualStyleBackColor = true;
-            this.btnSelectDirBrowser.Click += new System.EventHandler(this.btnSelectDirBrowser_Click);
+            this.btnSelectDirBrowser.Click += new System.EventHandler(this.BtnSelectDirBrowser_Click);
             // 
             // btnSaveFieldDataDir
             // 
@@ -158,7 +158,7 @@ namespace KimeraCS
             this.btnSaveFieldDataDir.TabIndex = 9;
             this.btnSaveFieldDataDir.Text = "Save Field Data Directory";
             this.btnSaveFieldDataDir.UseVisualStyleBackColor = true;
-            this.btnSaveFieldDataDir.Click += new System.EventHandler(this.btnSaveFieldDataDir_Click);
+            this.btnSaveFieldDataDir.Click += new System.EventHandler(this.BtnSaveFieldDataDir_Click);
             // 
             // lblLine
             // 
@@ -179,7 +179,7 @@ namespace KimeraCS
             this.btnClose.TabIndex = 11;
             this.btnClose.Text = "Close";
             this.btnClose.UseVisualStyleBackColor = true;
-            this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
+            this.btnClose.Click += new System.EventHandler(this.BtnClose_Click);
             // 
             // frmFieldDB
             // 
@@ -211,8 +211,8 @@ namespace KimeraCS
             this.Name = "frmFieldDB";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "FF7 Field Database";
-            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.frmFieldDB_FormClosed);
-            this.Load += new System.EventHandler(this.frmFieldDB_Load);
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.FrmFieldDB_FormClosed);
+            this.Load += new System.EventHandler(this.FrmFieldDB_Load);
             this.gbModelNames.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();

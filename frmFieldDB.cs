@@ -15,18 +15,18 @@ namespace KimeraCS
     using static FileTools;
     using static FolderBrowserDialogEX;
 
-    public partial class frmFieldDB : Form
+    public partial class FrmFieldDB : Form
     {
 
         public static string strFieldFile = "", strAnimFile = "", strLocalModelName = "", strLocalAnimName = "";
         public static bool bSelectedFileFromDB = false;
 
-        public frmFieldDB()
+        public FrmFieldDB()
         {
             InitializeComponent();
         }
 
-        private void frmFieldDB_Load(object sender, EventArgs e)
+        private void FrmFieldDB_Load(object sender, EventArgs e)
         {
             int mi;
 
@@ -66,12 +66,12 @@ namespace KimeraCS
             cbModel.SelectAll();
         }
 
-        private void btnSaveFieldDataDir_Click(object sender, EventArgs e)
+        private void BtnSaveFieldDataDir_Click(object sender, EventArgs e)
         {
             WriteCFGFile();
         }
 
-        private void btnSelectDirBrowser_Click(object sender, EventArgs e)
+        private void BtnSelectDirBrowser_Click(object sender, EventArgs e)
         {
             FolderBrowserDialogEX fbdFieldDataDirectory = new FolderBrowserDialogEX();
 
@@ -119,9 +119,10 @@ namespace KimeraCS
             lblModelNames.Text = "";
             for (ni = 0; ni < lstCharLGPRegisters[cbModel.SelectedIndex].lstNames.Count - 1; ni++)
             {
-                lblModelNames.Text = lblModelNames.Text + lstCharLGPRegisters[cbModel.SelectedIndex].lstNames[ni] + Environment.NewLine;
+                lblModelNames.Text += lstCharLGPRegisters[cbModel.SelectedIndex].lstNames[ni] + 
+                                      Environment.NewLine;
             }
-            lblModelNames.Text = lblModelNames.Text + lstCharLGPRegisters[cbModel.SelectedIndex].lstNames[ni];
+            lblModelNames.Text += lstCharLGPRegisters[cbModel.SelectedIndex].lstNames[ni];
 
             strLocalModelName = cbModel.Text;
             lbAnimation.SetSelected(0, true);
@@ -130,12 +131,12 @@ namespace KimeraCS
             cbModel.SelectAll();
         }
 
-        private void cbModel_SelectedValueChanged(object sender, EventArgs e)
+        private void CbModel_SelectedValueChanged(object sender, EventArgs e)
         {
             UpdatelbAnimation();
         }
 
-        private void cbModel_TextChanged(object sender, EventArgs e)
+        private void CbModel_TextChanged(object sender, EventArgs e)
         {
             int iModelIdx;
 
@@ -147,7 +148,7 @@ namespace KimeraCS
             }
         }
 
-        private void frmFieldDB_FormClosed(object sender, FormClosedEventArgs e)
+        private void FrmFieldDB_FormClosed(object sender, FormClosedEventArgs e)
         {
             strLocalModelName = cbModel.Text;
             strLocalAnimName = lbAnimation.Text;
@@ -159,7 +160,7 @@ namespace KimeraCS
             }
         }
 
-        private void btnLoadModelAnimation_Click(object sender, EventArgs e)
+        private void BtnLoadModelAnimation_Click(object sender, EventArgs e)
         {
 
             bSelectedFileFromDB = false;
@@ -202,7 +203,7 @@ namespace KimeraCS
             Close();
         }
 
-        private void btnClose_Click(object sender, EventArgs e)
+        private void BtnClose_Click(object sender, EventArgs e)
         {
             Close();
         }

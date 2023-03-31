@@ -1,7 +1,7 @@
 ﻿
 namespace KimeraCS
 {
-    partial class frmInterpolateAll
+    partial class FrmInterpolateAll
     {
         /// <summary>
         /// Required designer variable.
@@ -29,7 +29,7 @@ namespace KimeraCS
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmInterpolateAll));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmInterpolateAll));
             this.lblExtractedCharLGP = new System.Windows.Forms.Label();
             this.lblExtractedBattleLGP = new System.Windows.Forms.Label();
             this.lblExtractedMagicLGP = new System.Windows.Forms.Label();
@@ -166,7 +166,7 @@ namespace KimeraCS
             this.btnGo.TabIndex = 19;
             this.btnGo.Text = "Go!";
             this.btnGo.UseVisualStyleBackColor = true;
-            this.btnGo.Click += new System.EventHandler(this.btnGo_Click);
+            this.btnGo.Click += new System.EventHandler(this.BtnGo_Click);
             // 
             // btnSaveOptions
             // 
@@ -178,7 +178,7 @@ namespace KimeraCS
             this.btnSaveOptions.TabIndex = 1;
             this.btnSaveOptions.Text = "Save options";
             this.btnSaveOptions.UseVisualStyleBackColor = true;
-            this.btnSaveOptions.Click += new System.EventHandler(this.btnSaveOptions_Click);
+            this.btnSaveOptions.Click += new System.EventHandler(this.BtnSaveOptions_Click);
             // 
             // btnClose
             // 
@@ -191,7 +191,7 @@ namespace KimeraCS
             this.btnClose.TabIndex = 20;
             this.btnClose.Text = "Close";
             this.btnClose.UseVisualStyleBackColor = true;
-            this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
+            this.btnClose.Click += new System.EventHandler(this.BtnClose_Click);
             // 
             // nudInterpFrameField
             // 
@@ -297,7 +297,7 @@ namespace KimeraCS
             this.btnExtCharLGPSrc.TabIndex = 3;
             this.btnExtCharLGPSrc.Text = "...";
             this.btnExtCharLGPSrc.UseVisualStyleBackColor = true;
-            this.btnExtCharLGPSrc.Click += new System.EventHandler(this.btnExtCharLGPSrc_Click);
+            this.btnExtCharLGPSrc.Click += new System.EventHandler(this.BtnExtCharLGPSrc_Click);
             // 
             // btnExtCharLGPDst
             // 
@@ -309,7 +309,7 @@ namespace KimeraCS
             this.btnExtCharLGPDst.TabIndex = 5;
             this.btnExtCharLGPDst.Text = "...";
             this.btnExtCharLGPDst.UseVisualStyleBackColor = true;
-            this.btnExtCharLGPDst.Click += new System.EventHandler(this.btnExtCharLGPDst_Click);
+            this.btnExtCharLGPDst.Click += new System.EventHandler(this.BtnExtCharLGPDst_Click);
             // 
             // btnExtBattleLGPSrc
             // 
@@ -321,7 +321,7 @@ namespace KimeraCS
             this.btnExtBattleLGPSrc.TabIndex = 7;
             this.btnExtBattleLGPSrc.Text = "...";
             this.btnExtBattleLGPSrc.UseVisualStyleBackColor = true;
-            this.btnExtBattleLGPSrc.Click += new System.EventHandler(this.btnExtBattleLGPSrc_Click);
+            this.btnExtBattleLGPSrc.Click += new System.EventHandler(this.BtnExtBattleLGPSrc_Click);
             // 
             // btnExtBattleLGPDst
             // 
@@ -333,7 +333,7 @@ namespace KimeraCS
             this.btnExtBattleLGPDst.TabIndex = 9;
             this.btnExtBattleLGPDst.Text = "...";
             this.btnExtBattleLGPDst.UseVisualStyleBackColor = true;
-            this.btnExtBattleLGPDst.Click += new System.EventHandler(this.btnExtBattleLGPDst_Click);
+            this.btnExtBattleLGPDst.Click += new System.EventHandler(this.BtnExtBattleLGPDst_Click);
             // 
             // btnExtMagicLGPSrc
             // 
@@ -345,7 +345,7 @@ namespace KimeraCS
             this.btnExtMagicLGPSrc.TabIndex = 11;
             this.btnExtMagicLGPSrc.Text = "...";
             this.btnExtMagicLGPSrc.UseVisualStyleBackColor = true;
-            this.btnExtMagicLGPSrc.Click += new System.EventHandler(this.btnExtMagicLGPSrc_Click);
+            this.btnExtMagicLGPSrc.Click += new System.EventHandler(this.BtnExtMagicLGPSrc_Click);
             // 
             // btnExtMagicLGPDst
             // 
@@ -357,7 +357,7 @@ namespace KimeraCS
             this.btnExtMagicLGPDst.TabIndex = 13;
             this.btnExtMagicLGPDst.Text = "...";
             this.btnExtMagicLGPDst.UseVisualStyleBackColor = true;
-            this.btnExtMagicLGPDst.Click += new System.EventHandler(this.btnExtMagicLGPDst_Click);
+            this.btnExtMagicLGPDst.Click += new System.EventHandler(this.BtnExtMagicLGPDst_Click);
             // 
             // chkProcessCharLGP
             // 
@@ -444,7 +444,7 @@ namespace KimeraCS
             this.btnCancel.TabIndex = 26;
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = true;
-            this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
+            this.btnCancel.Click += new System.EventHandler(this.BtnCancel_Click);
             // 
             // progBarIntAllAnim
             // 
@@ -510,7 +510,7 @@ namespace KimeraCS
             this.btnSaveLog.TabIndex = 26;
             this.btnSaveLog.Text = "Save log";
             this.btnSaveLog.UseVisualStyleBackColor = true;
-            this.btnSaveLog.Click += new System.EventHandler(this.btnSaveLog_Click);
+            this.btnSaveLog.Click += new System.EventHandler(this.BtnSaveLog_Click);
             // 
             // chkShowOnlyNoProcessed
             // 
@@ -574,9 +574,9 @@ namespace KimeraCS
             this.Name = "frmInterpolateAll";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Interpolate All Animations";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmInterpolateAll_FormClosing);
-            this.Load += new System.EventHandler(this.frmInterpolateAll_Load);
-            this.Shown += new System.EventHandler(this.frmInterpolateAll_Shown);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FrmInterpolateAll_FormClosing);
+            this.Load += new System.EventHandler(this.FrmInterpolateAll_Load);
+            this.Shown += new System.EventHandler(this.FrmInterpolateAll_Shown);
             ((System.ComponentModel.ISupportInitialize)(this.nudInterpFrameField)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudInterpFrameBattleMagic)).EndInit();
             this.gbSettings.ResumeLayout(false);

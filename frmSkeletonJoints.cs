@@ -14,26 +14,27 @@ namespace KimeraCS
 {
     using Defines;
 
-    using static frmSkeletonEditor;
+    using static FrmSkeletonEditor;
 
     using static FF7Skeleton;
     using static FF7FieldSkeleton;
     using static FF7FieldAnimation;
     using static FF7FieldRSDResource;
 
+    using static Utils;
     using static FileTools;
 
-    public partial class frmSkeletonJoints : Form
+    public partial class FrmSkeletonJoints : Form
     {
 
-        private frmSkeletonEditor frmSkelEdit;
+        readonly private FrmSkeletonEditor frmSkelEdit;
 
         public static string strAttachedTo, strAttachedName;
         public static int iMode;                        // Mode: 0 - Add Joint / 1 - Edit Joint
         public static int iNumBoneSelected;
 
 
-        public frmSkeletonJoints(frmSkeletonEditor frmSkelEdit, int iMenuMode, string strJoint)
+        public FrmSkeletonJoints(FrmSkeletonEditor frmSkelEdit, int iMenuMode, string strJoint)
         {
             InitializeComponent();
 
@@ -86,7 +87,7 @@ namespace KimeraCS
                 txtLength.Text = fSkeleton.bones[iNumBoneSelected].len.ToString();
         }
 
-        private void frmSkeletonJoints_Load(object sender, EventArgs e)
+        private void FrmSkeletonJoints_Load(object sender, EventArgs e)
         {
 
             // We will fill the combo boxes with the list of bones
@@ -127,7 +128,7 @@ namespace KimeraCS
             List<FieldBone> lstTmpBones = new List<FieldBone>();
             List<FieldRotation> lstTmpBonesAnim = new List<FieldRotation>();
 
-            iBoneCounter = 0; iMoveCounter = 0; iStoppedCounter = 0; iJumpedCounter = 0;
+            iBoneCounter = 0;
 
             while (iBoneCounter < fSkeleton.nBones)
             {
@@ -155,7 +156,6 @@ namespace KimeraCS
                         lstTmpBonesAnim.Add(new FieldRotation(fAnimation.frames[0].rotations[iMoveCounter].alpha,
                                                               fAnimation.frames[0].rotations[iMoveCounter].beta,
                                                               fAnimation.frames[0].rotations[iMoveCounter].gamma));
-                        iMoveCounter++;
                     }
 
                     while (iStoppedCounter < iNumBoneSelected)
@@ -296,6 +296,8 @@ namespace KimeraCS
             }
             catch (Exception ex)
             {
+                strGlobalExceptionMessage = ex.Message;
+
                 MessageBox.Show("There has been some error in the Edit Joint process.", "Error");
             }
         }
@@ -307,8 +309,6 @@ namespace KimeraCS
         {
             FieldBone tmpfBone;
             FieldRSDResource tmpfRSDResource;
-
-            float ftmpLen;
 
             // First let's check things to be sure we can proceed like:
             // - bone attached to selected, text bone name, float len or .rsd file)
@@ -325,25 +325,27 @@ namespace KimeraCS
             }
 
             if (!float.TryParse(txtLength.Text, NumberStyles.Any, 
-                                CultureInfo.InvariantCulture.NumberFormat, out ftmpLen)) 
+                                CultureInfo.InvariantCulture.NumberFormat, out float ftmpLen)) 
             {
                 MessageBox.Show("Is not possible to parse the specified length.", "Information");
                 return;
             }
-            
+
 
             // We have to create the Bone and/or the .RSD part structure if needed.
-            tmpfBone = new FieldBone();
-            tmpfBone.len = ftmpLen;
-            tmpfBone.joint_f = cbBoneAttachedTo.Text;
-            tmpfBone.joint_i = txtBoneName.Text;
+            tmpfBone = new FieldBone()
+            {
+                len = ftmpLen,
+                joint_f = cbBoneAttachedTo.Text,
+                joint_i = txtBoneName.Text,
 
-            tmpfBone.nResources = 0;
-            tmpfBone.fRSDResources = new List<FieldRSDResource>();
+                nResources = 0,
+                fRSDResources = new List<FieldRSDResource>(),
 
-            tmpfBone.resizeX = 1;
-            tmpfBone.resizeY = 1;
-            tmpfBone.resizeZ = 1;
+                resizeX = 1,
+                resizeY = 1,
+                resizeZ = 1,
+            };
 
             // We have to add the .RSD part structure in the bone list of the Skeleton
             // if the user has selected one
@@ -378,7 +380,7 @@ namespace KimeraCS
             FillJointInfo();
         }
 
-        private void btnCommit_Click(object sender, EventArgs e)
+        private void BtnCommit_Click(object sender, EventArgs e)
         {
             if (iMode == 1)
             {
@@ -392,7 +394,7 @@ namespace KimeraCS
             }
         }
 
-        private void btnPathRSDFile_Click(object sender, EventArgs e)
+        private void BtnPathRSDFile_Click(object sender, EventArgs e)
         {
             // Set filter options and filter index.
             openFile.Title = "Open RSD Resource";
@@ -427,18 +429,20 @@ namespace KimeraCS
             }
             catch (Exception ex)
             {
+                strGlobalExceptionMessage = ex.Message;
+
                 MessageBox.Show("Error opening Model file " + openFile.FileName.ToUpper() + ".",
                                 "Error");
                 return;
             }
         }
 
-        private void btnClose_Click(object sender, EventArgs e)
+        private void BtnClose_Click(object sender, EventArgs e)
         {
             Close();
         }
 
-        private void frmSkeletonJoints_FormClosing(object sender, FormClosingEventArgs e)
+        private void FrmSkeletonJoints_FormClosing(object sender, FormClosingEventArgs e)
         {
             cbBoneAttachedTo.SelectedIndex = -1;
             strAttachedName = "";

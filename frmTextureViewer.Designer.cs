@@ -1,7 +1,7 @@
 ﻿
 namespace KimeraCS
 {
-    partial class frmTextureViewer
+    partial class FrmTextureViewer
     {
         /// <summary>
         /// Required designer variable.
@@ -29,7 +29,7 @@ namespace KimeraCS
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmTextureViewer));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmTextureViewer));
             this.panelTextureViewer = new System.Windows.Forms.Panel();
             this.pbTextureView = new System.Windows.Forms.PictureBox();
             this.panelButtons = new System.Windows.Forms.Panel();
@@ -71,9 +71,9 @@ namespace KimeraCS
             this.pbTextureView.Size = new System.Drawing.Size(512, 512);
             this.pbTextureView.TabIndex = 1;
             this.pbTextureView.TabStop = false;
-            this.pbTextureView.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pbTextureView_MouseDown);
-            this.pbTextureView.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pbTextureView_MouseMove);
-            this.pbTextureView.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pbTextureView_MouseUp);
+            this.pbTextureView.MouseDown += new System.Windows.Forms.MouseEventHandler(this.PbTextureView_MouseDown);
+            this.pbTextureView.MouseMove += new System.Windows.Forms.MouseEventHandler(this.PbTextureView_MouseMove);
+            this.pbTextureView.MouseUp += new System.Windows.Forms.MouseEventHandler(this.PbTextureView_MouseUp);
             // 
             // panelButtons
             // 
@@ -123,7 +123,7 @@ namespace KimeraCS
             this.btnZoomIn.Size = new System.Drawing.Size(34, 34);
             this.btnZoomIn.TabIndex = 17;
             this.btnZoomIn.UseVisualStyleBackColor = true;
-            this.btnZoomIn.Click += new System.EventHandler(this.btnZoomIn_Click);
+            this.btnZoomIn.Click += new System.EventHandler(this.BtnZoomIn_Click);
             // 
             // btnZoomOut
             // 
@@ -136,7 +136,7 @@ namespace KimeraCS
             this.btnZoomOut.Size = new System.Drawing.Size(34, 34);
             this.btnZoomOut.TabIndex = 16;
             this.btnZoomOut.UseVisualStyleBackColor = true;
-            this.btnZoomOut.Click += new System.EventHandler(this.btnZoomOut_Click);
+            this.btnZoomOut.Click += new System.EventHandler(this.BtnZoomOut_Click);
             // 
             // btnClose
             // 
@@ -150,7 +150,7 @@ namespace KimeraCS
             this.btnClose.TabIndex = 15;
             this.btnClose.Text = "Close";
             this.btnClose.UseVisualStyleBackColor = true;
-            this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
+            this.btnClose.Click += new System.EventHandler(this.BtnClose_Click);
             // 
             // btnGreen
             // 
@@ -162,7 +162,7 @@ namespace KimeraCS
             this.btnGreen.Size = new System.Drawing.Size(34, 34);
             this.btnGreen.TabIndex = 13;
             this.btnGreen.UseVisualStyleBackColor = false;
-            this.btnGreen.CheckedChanged += new System.EventHandler(this.btnGreen_CheckedChanged);
+            this.btnGreen.CheckedChanged += new System.EventHandler(this.BtnGreen_CheckedChanged);
             // 
             // btnRotateUV
             // 
@@ -174,7 +174,7 @@ namespace KimeraCS
             this.btnRotateUV.Size = new System.Drawing.Size(34, 34);
             this.btnRotateUV.TabIndex = 12;
             this.btnRotateUV.UseVisualStyleBackColor = true;
-            this.btnRotateUV.Click += new System.EventHandler(this.btnRotateUV_Click);
+            this.btnRotateUV.Click += new System.EventHandler(this.BtnRotateUV_Click);
             // 
             // btnFlipV
             // 
@@ -186,7 +186,7 @@ namespace KimeraCS
             this.btnFlipV.Size = new System.Drawing.Size(34, 34);
             this.btnFlipV.TabIndex = 11;
             this.btnFlipV.UseVisualStyleBackColor = true;
-            this.btnFlipV.Click += new System.EventHandler(this.btnFlipV_Click);
+            this.btnFlipV.Click += new System.EventHandler(this.BtnFlipV_Click);
             // 
             // btnFlipH
             // 
@@ -198,7 +198,7 @@ namespace KimeraCS
             this.btnFlipH.Size = new System.Drawing.Size(34, 34);
             this.btnFlipH.TabIndex = 10;
             this.btnFlipH.UseVisualStyleBackColor = true;
-            this.btnFlipH.Click += new System.EventHandler(this.btnFlipH_Click);
+            this.btnFlipH.Click += new System.EventHandler(this.BtnFlipH_Click);
             // 
             // btnCommit
             // 
@@ -211,7 +211,7 @@ namespace KimeraCS
             this.btnCommit.TabIndex = 9;
             this.btnCommit.Text = "Commit";
             this.btnCommit.UseVisualStyleBackColor = true;
-            this.btnCommit.Click += new System.EventHandler(this.btnCommit_Click);
+            this.btnCommit.Click += new System.EventHandler(this.BtnCommit_Click);
             // 
             // frmTextureViewer
             // 
@@ -233,10 +233,10 @@ namespace KimeraCS
             this.Padding = new System.Windows.Forms.Padding(2);
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "TexCoord (UVs) Viewer";
-            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.frmTextureViewer_FormClosed);
-            this.Load += new System.EventHandler(this.frmTextureViewer_Load);
-            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.frmTextureViewer_KeyDown);
-            this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.frmTextureViewer_KeyUp);
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.FrmTextureViewer_FormClosed);
+            this.Load += new System.EventHandler(this.FrmTextureViewer_Load);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FrmTextureViewer_KeyDown);
+            this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.FrmTextureViewer_KeyUp);
             this.panelTextureViewer.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pbTextureView)).EndInit();
             this.panelButtons.ResumeLayout(false);

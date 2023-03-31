@@ -21,12 +21,13 @@ namespace KimeraCS
     using static FF7BattleAnimation;
 
     using static FileTools;
+    using static Utils;
     using static GDI32;
 
-    public partial class frmInterpolateAll : Form
+    public partial class FrmInterpolateAll : Form
     {
 
-        public struct stSkeletonAnimationNames
+        public struct STSkeletonAnimationNames
         {
             public string strAnimation;
             public string strSkeleton;
@@ -39,17 +40,17 @@ namespace KimeraCS
         public bool bCancelPressed;
         public int numTotalAnims;
 
-        public frmInterpolateAll()
+        public FrmInterpolateAll()
         {
             InitializeComponent();          
         }
 
-        private void btnClose_Click(object sender, EventArgs e)
+        private void BtnClose_Click(object sender, EventArgs e)
         {
             Close();
         }
 
-        private void frmInterpolateAll_Load(object sender, EventArgs e)
+        private void FrmInterpolateAll_Load(object sender, EventArgs e)
         {
             if (strCharLGPPathSrc == "") strCharLGPPathSrc = strGlobalPath;
             if (strCharLGPPathDest == "") strCharLGPPathDest = strGlobalPath;
@@ -79,13 +80,13 @@ namespace KimeraCS
 
         }
 
-        private void frmInterpolateAll_Shown(object sender, EventArgs e)
+        private void FrmInterpolateAll_Shown(object sender, EventArgs e)
         {
             nudInterpFrameField.Value = idefaultFieldInterpFrames;
             nudInterpFrameBattleMagic.Value = idefaultBattleInterpFrames;
         }
 
-        private void btnSaveOptions_Click(object sender, EventArgs e)
+        private void BtnSaveOptions_Click(object sender, EventArgs e)
         {
             strCharLGPPathSrc = txtExtractedCharLGPSrc.Text;
             strCharLGPPathDest = txtExtractedCharLGPDest.Text;
@@ -102,7 +103,7 @@ namespace KimeraCS
             WriteCFGFile();
         }
 
-        private void btnExtCharLGPSrc_Click(object sender, EventArgs e)
+        private void BtnExtCharLGPSrc_Click(object sender, EventArgs e)
         {
             FolderBrowserDialogEX fbdCharSrcDirectory = new FolderBrowserDialogEX();
 
@@ -136,7 +137,7 @@ namespace KimeraCS
             fbdCharSrcDirectory.Dispose();
         }
 
-        private void btnExtCharLGPDst_Click(object sender, EventArgs e)
+        private void BtnExtCharLGPDst_Click(object sender, EventArgs e)
         {
             FolderBrowserDialogEX fbdCharDestDirectory = new FolderBrowserDialogEX();
 
@@ -170,7 +171,7 @@ namespace KimeraCS
             fbdCharDestDirectory.Dispose();
         }
 
-        private void btnExtBattleLGPSrc_Click(object sender, EventArgs e)
+        private void BtnExtBattleLGPSrc_Click(object sender, EventArgs e)
         {
             FolderBrowserDialogEX fbdBattleSrcDirectory = new FolderBrowserDialogEX();
 
@@ -204,7 +205,7 @@ namespace KimeraCS
             fbdBattleSrcDirectory.Dispose();
         }
 
-        private void btnExtBattleLGPDst_Click(object sender, EventArgs e)
+        private void BtnExtBattleLGPDst_Click(object sender, EventArgs e)
         {
             FolderBrowserDialogEX fbdBattleDestDirectory = new FolderBrowserDialogEX();
 
@@ -238,7 +239,7 @@ namespace KimeraCS
             fbdBattleDestDirectory.Dispose();
         }
 
-        private void btnExtMagicLGPSrc_Click(object sender, EventArgs e)
+        private void BtnExtMagicLGPSrc_Click(object sender, EventArgs e)
         {
             FolderBrowserDialogEX fbdMagicSrcDirectory = new FolderBrowserDialogEX();
 
@@ -272,7 +273,7 @@ namespace KimeraCS
             fbdMagicSrcDirectory.Dispose();
         }
 
-        private void btnExtMagicLGPDst_Click(object sender, EventArgs e)
+        private void BtnExtMagicLGPDst_Click(object sender, EventArgs e)
         {
             FolderBrowserDialogEX fbdMagicDestDirectory = new FolderBrowserDialogEX();
 
@@ -306,7 +307,7 @@ namespace KimeraCS
             fbdMagicDestDirectory.Dispose();
         }
 
-        private void btnGo_Click(object sender, EventArgs e)
+        private void BtnGo_Click(object sender, EventArgs e)
         {
             bCancelPressed = false;
             btnCancel.Enabled = true;
@@ -321,6 +322,8 @@ namespace KimeraCS
             }
             catch (Exception ex)
             {
+                strGlobalExceptionMessage = ex.Message;
+
                 MessageBox.Show("There has been some exception error with Interpolate All Animations feature.",
                                 "Error.", MessageBoxButtons.OK);
 
@@ -340,7 +343,7 @@ namespace KimeraCS
             //progBarIntAllAnim.Value = 0;
         }
 
-        private void btnCancel_Click(object sender, EventArgs e)
+        private void BtnCancel_Click(object sender, EventArgs e)
         {
             bCancelPressed = true;
             lblProcessing.Text = "Processing 0000 / 0000";
@@ -349,7 +352,7 @@ namespace KimeraCS
             ActivateSettings();
         }
 
-        public void ListAllUniqueCharAnimations(ref List<stSkeletonAnimationNames> lstUniqueCharSkAnim)
+        public void ListAllUniqueCharAnimations(ref List<STSkeletonAnimationNames> lstUniqueCharSkAnim)
         {
             HashSet<string> hsUniqueCharAnims = new HashSet<string>();
 
@@ -361,10 +364,11 @@ namespace KimeraCS
                 {
                     if (hsUniqueCharAnims.Add(itmAnim))
                     {
-                        stSkeletonAnimationNames itmSkAnim = new stSkeletonAnimationNames();
-
-                        itmSkAnim.strAnimation = itmAnim + ".A";
-                        itmSkAnim.strSkeleton = itmRegister.fileName + ".HRC";
+                        STSkeletonAnimationNames itmSkAnim = new STSkeletonAnimationNames()
+                        {
+                            strAnimation = itmAnim + ".A",
+                            strSkeleton = itmRegister.fileName + ".HRC",
+                        };
 
                         lstUniqueCharSkAnim.Add(itmSkAnim);
                     }
@@ -411,7 +415,7 @@ namespace KimeraCS
                 rtbLog.ScrollToCaret();
 
                 //  Prepare an animation list with duples <ANIMATION, SKELETON> with unique animations
-                List<stSkeletonAnimationNames> lstUniqueCharSkAnim = new List<stSkeletonAnimationNames>();
+                List<STSkeletonAnimationNames> lstUniqueCharSkAnim = new List<STSkeletonAnimationNames>();
                 ListAllUniqueCharAnimations(ref lstUniqueCharSkAnim);
                 
                 // This line helps to check a concrete field animation.
@@ -425,7 +429,7 @@ namespace KimeraCS
 
                 oldSkeletonName = "";
 
-                foreach (stSkeletonAnimationNames itmSkAnim in lstUniqueCharSkAnim) 
+                foreach (STSkeletonAnimationNames itmSkAnim in lstUniqueCharSkAnim) 
                 {
                     // Check if cancel has been pressed
                     if (bCancelPressed) break;
@@ -713,7 +717,7 @@ namespace KimeraCS
             //End Sub
         }
 
-        private void frmInterpolateAll_FormClosing(object sender, FormClosingEventArgs e)
+        private void FrmInterpolateAll_FormClosing(object sender, FormClosingEventArgs e)
         {
             bCancelPressed = true;
 
@@ -725,7 +729,7 @@ namespace KimeraCS
             gbProgress.Enabled = false;
         }
 
-        private void btnSaveLog_Click(object sender, EventArgs e)
+        private void BtnSaveLog_Click(object sender, EventArgs e)
         {
             // Set filter options and filter index.
             

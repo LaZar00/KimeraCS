@@ -15,6 +15,7 @@ namespace KimeraCS
 
     using Defines;
 
+    using static Utils;
     using static User32;
     using static OpenGL32;
     using static GDI32;
@@ -287,55 +288,55 @@ namespace KimeraCS
             IntPtr hTIPtr;
             byte[] textureImg = null;
 
-            glPixelFormat format = 0x0;
-            glInternalFormat internalformat = 0x0;
+            GLPixelFormat format = 0x0;
+            GLInternalFormat internalformat = 0x0;
 
             glGenTextures(1, ref inTEXTexture.texID);
-            glBindTexture(glTextureTarget.GL_TEXTURE_2D, inTEXTexture.texID);
+            glBindTexture(GLTextureTarget.GL_TEXTURE_2D, inTEXTexture.texID);
 
-            glTexParameterf(glTextureTarget.GL_TEXTURE_2D, glTextureParameter.GL_TEXTURE_MAG_FILTER, (float)glTextureMagFilter.GL_LINEAR);
-            glTexParameterf(glTextureTarget.GL_TEXTURE_2D, glTextureParameter.GL_TEXTURE_MIN_FILTER, (float)glTextureMagFilter.GL_LINEAR);
+            glTexParameterf(GLTextureTarget.GL_TEXTURE_2D, GLTextureParameter.GL_TEXTURE_MAG_FILTER, (float)GLTextureMagFilter.GL_LINEAR);
+            glTexParameterf(GLTextureTarget.GL_TEXTURE_2D, GLTextureParameter.GL_TEXTURE_MIN_FILTER, (float)GLTextureMagFilter.GL_LINEAR);
 
             switch (inTEXTexture.bitDepth)
             {
                 case 1:
-                    format = glPixelFormat.GL_BGRA;
-                    internalformat = glInternalFormat.GL_RGBA;
+                    format = GLPixelFormat.GL_BGRA;
+                    internalformat = GLInternalFormat.GL_RGBA;
                     break;
 
                 case 2:
-                    format = glPixelFormat.GL_BGRA;
-                    internalformat = glInternalFormat.GL_RGBA;
+                    format = GLPixelFormat.GL_BGRA;
+                    internalformat = GLInternalFormat.GL_RGBA;
                     break;
 
                 case 4:
-                    format = glPixelFormat.GL_BGRA;
-                    internalformat = glInternalFormat.GL_RGBA;
+                    format = GLPixelFormat.GL_BGRA;
+                    internalformat = GLInternalFormat.GL_RGBA;
                     break;
 
                 case 8:
-                    format = glPixelFormat.GL_BGRA;
-                    internalformat = glInternalFormat.GL_RGBA;
+                    format = GLPixelFormat.GL_BGRA;
+                    internalformat = GLInternalFormat.GL_RGBA;
                     break;
 
                 case 16:
-                    format = glPixelFormat.GL_RGBA;
-                    internalformat = glInternalFormat.GL_RGB5;
+                    format = GLPixelFormat.GL_RGBA;
+                    internalformat = GLInternalFormat.GL_RGB5;
                     break;
 
                 case 24:
-                    format = glPixelFormat.GL_BGR;
-                    internalformat = glInternalFormat.GL_RGB;
+                    format = GLPixelFormat.GL_BGR;
+                    internalformat = GLInternalFormat.GL_RGB;
                     break;
 
                 case 32:
-                    format = glPixelFormat.GL_BGRA;
-                    internalformat = glInternalFormat.GL_RGBA;
+                    format = GLPixelFormat.GL_BGRA;
+                    internalformat = GLInternalFormat.GL_RGBA;
                     break;
 
             }
 
-            glPixelStorei(glPixelStoreParameter.GL_UNPACK_ALIGNMENT, 1);
+            glPixelStorei(GLPixelStoreParameter.GL_UNPACK_ALIGNMENT, 1);
 
             GetTEXTexturev(ref inTEXTexture, ref textureImg);
 
@@ -346,8 +347,9 @@ namespace KimeraCS
             GCHandle pinnedArray = GCHandle.Alloc(textureImg, GCHandleType.Pinned);
             hTIPtr = pinnedArray.AddrOfPinnedObject();
 
-            glTexImage2D(glTexture2DProxyTarget.GL_TEXTURE_2D, 0, internalformat,
-                         inTEXTexture.width, inTEXTexture.height, 0, format, glPixelDataType.GL_UNSIGNED_BYTE, hTIPtr);
+            glTexImage2D(GLTexture2DProxyTarget.GL_TEXTURE_2D, 0, internalformat,
+                         inTEXTexture.width, inTEXTexture.height, 0, format, 
+                         GLPixelDataType.GL_UNSIGNED_BYTE, hTIPtr);
 
             pinnedArray.Free();
         }
@@ -742,6 +744,8 @@ namespace KimeraCS
             }
             catch (Exception ex)
             {
+                strGlobalExceptionMessage = ex.Message;
+
                 ReleaseDC(IntPtr.Zero, mDC);
             }
         }

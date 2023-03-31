@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace KimeraCS
 {
-    using static frmSkeletonEditor;
+    using static FrmSkeletonEditor;
 
     using static FF7Skeleton;
 
@@ -21,12 +21,12 @@ namespace KimeraCS
     using static Utils;
     using static FileTools;
 
-    public partial class frmTMDObjList : Form
+    public partial class FrmTMDObjList : Form
     {
-        private frmSkeletonEditor frmSkelEdit;
+        readonly private FrmSkeletonEditor frmSkelEdit;
 
 
-        public frmTMDObjList(frmSkeletonEditor frmSkelEdit)
+        public FrmTMDObjList(FrmSkeletonEditor frmSkelEdit)
         {
             InitializeComponent();
 
@@ -34,7 +34,7 @@ namespace KimeraCS
             Owner = frmSkelEdit;
         }
 
-        private void frmTMDObjList_Load(object sender, EventArgs e)
+        private void FrmTMDObjList_Load(object sender, EventArgs e)
         {
             Location = new Point(Owner.Location.X + Owner.Width - Width,
                                  Owner.Location.Y + Owner.Height - Height);
@@ -42,7 +42,7 @@ namespace KimeraCS
             lbTMDObjectList.SelectedIndex = 0;
         }
 
-        private void btnClose_Click(object sender, EventArgs e)
+        private void BtnClose_Click(object sender, EventArgs e)
         {
             Close();
         }
@@ -66,7 +66,7 @@ namespace KimeraCS
             }
         }
 
-        private void lbTMDObjectList_DoubleClick(object sender, EventArgs e)
+        private void LbTMDObjectList_DoubleClick(object sender, EventArgs e)
         {
             Point3D p_min = new Point3D();
             Point3D p_max = new Point3D();
@@ -78,9 +78,11 @@ namespace KimeraCS
 
                 // Now let's convert the TMD model into P model.
                 DestroyPModelResources(ref fPModel);
-                fPModel = new PModel();
+                fPModel = new PModel()
+                {
+                    fileName = Path.GetFileNameWithoutExtension(strGlobalTMDModelName) + "_" + (lbTMDObjectList.SelectedIndex + 1).ToString("000"),
+                };
 
-                fPModel.fileName = Path.GetFileNameWithoutExtension(strGlobalTMDModelName) + "_" + (lbTMDObjectList.SelectedIndex + 1).ToString("000");
                 ConvertTMD2PModel(ref fPModel, mTMDModel, lbTMDObjectList.SelectedIndex);
 
                 ComputePModelBoundingBox(fPModel, ref p_min, ref p_max);
@@ -113,11 +115,11 @@ namespace KimeraCS
                 frmSkelEdit.PostLoadModelPreparations(ref p_min, ref p_max);
 
                 // We can draw the model in panel
-                frmSkelEdit.panelModel_Paint(null, null);
+                frmSkelEdit.PanelModel_Paint(null, null);
             }
         }
 
-        private void frmTMDObjList_FormClosing(object sender, FormClosingEventArgs e)
+        private void FrmTMDObjList_FormClosing(object sender, FormClosingEventArgs e)
         {
             
             if (e.CloseReason != CloseReason.FormOwnerClosing)
@@ -127,12 +129,12 @@ namespace KimeraCS
             }
         }
 
-        private void btnSaveInfo_Click(object sender, EventArgs e)
+        private void BtnSaveInfo_Click(object sender, EventArgs e)
         {
             WriteTMDLOG();
         }
 
-        private void btnSaveTMD_Click(object sender, EventArgs e)
+        private void BtnSaveTMD_Click(object sender, EventArgs e)
         {
             //string saveAnimationFileName;
             int iSaveResult;
@@ -189,13 +191,13 @@ namespace KimeraCS
             }
         }
 
-        private void btnCommitPModel_Click(object sender, EventArgs e)
+        private void BtnCommitPModel_Click(object sender, EventArgs e)
         {
             if (lbTMDObjectList.SelectedIndex > -1)
             {
                 ConvertPModel2TMD(fPModel, lbTMDObjectList.SelectedIndex);
 
-                lbTMDObjectList_DoubleClick(lbTMDObjectList, EventArgs.Empty);
+                LbTMDObjectList_DoubleClick(lbTMDObjectList, EventArgs.Empty);
             }
         }
     }
