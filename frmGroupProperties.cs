@@ -10,16 +10,16 @@ using System.Windows.Forms;
 
 namespace KimeraCS
 {
-    using static frmPEditor;
+    using static FrmPEditor;
 
-    public partial class frmGroupProperties : Form
+    public partial class FrmGroupProperties : Form
     {
 
-        private frmPEditor frmPEdit;
+        readonly private FrmPEditor frmPEdit;
 
         public int SelectedGroup;
 
-        public frmGroupProperties(frmPEditor frmPEdit, int iGroupIdx)
+        public FrmGroupProperties(FrmPEditor frmPEdit, int iGroupIdx)
         {
             InitializeComponent();
 
@@ -33,7 +33,7 @@ namespace KimeraCS
         public void SetRSValuesEnabled()
         {
             chkTrueV_WIRE.Enabled = chkV_WIREFRAME.Checked;
-            chkTrueV_TEX.Enabled = chkV_TEXTURE.Checked;
+            //chkTrueV_TEX.Enabled = chkV_TEXTURE.Checked;
             chkTrueV_LINEAR.Enabled = chkV_LINEARFILTER.Checked;
             chkTrueV_NOCULL.Enabled = chkV_NOCULL.Checked;
             chkCullBackFacing.Enabled = chkV_CULLFACE.Checked;
@@ -75,86 +75,98 @@ namespace KimeraCS
                     break;
             }
 
+            if (EditedPModel.Groups[SelectedGroup].polyType == 1) rb1.Checked = true;
+            else if (EditedPModel.Groups[SelectedGroup].polyType == 2) rb2.Checked = true;
+            else rb3.Checked = true;
+
             changeRenderStateValues = EditedPModel.Hundrets[SelectedGroup].field_8;
             renderStateValues = EditedPModel.Hundrets[SelectedGroup].field_C;
 
-            chkV_WIREFRAME.Checked = (changeRenderStateValues & 0x01) == 0 ? false : true;
-            chkV_TEXTURE.Checked = (changeRenderStateValues & 0x02) == 0 ? false : true;
-            chkV_LINEARFILTER.Checked = (changeRenderStateValues & 0x04) == 0 ? false : true;
-            chkV_NOCULL.Checked = (changeRenderStateValues & 0x4000) == 0 ? false : true;
-            chkV_CULLFACE.Checked = (changeRenderStateValues & 0x2000) == 0 ? false : true;
-            chkV_DEPTHTEST.Checked = (changeRenderStateValues & 0x8000) == 0 ? false : true;
-            chkV_DEPTHMASK.Checked = (changeRenderStateValues & 0x10000) == 0 ? false : true;
-            chkV_ALPHABLEND.Checked = (changeRenderStateValues & 0x400) == 0 ? false : true;
-            chkV_SHADEMODE.Checked = (changeRenderStateValues & 0x020000) == 0 ? false : true;
+            chkV_WIREFRAME.Checked = (changeRenderStateValues & 0x01) != 0;
+            chkV_TEXTURE.Checked = (changeRenderStateValues & 0x02) != 0;
+            chkV_LINEARFILTER.Checked = (changeRenderStateValues & 0x04) != 0;
+            chkV_NOCULL.Checked = (changeRenderStateValues & 0x4000) != 0;
+            chkV_CULLFACE.Checked = (changeRenderStateValues & 0x2000) != 0;
+            chkV_DEPTHTEST.Checked = (changeRenderStateValues & 0x8000) != 0;
+            chkV_DEPTHMASK.Checked = (changeRenderStateValues & 0x10000) != 0;
+            chkV_ALPHABLEND.Checked = (changeRenderStateValues & 0x400) != 0;
+            chkV_SHADEMODE.Checked = (changeRenderStateValues & 0x020000) != 0;
 
-            chkTrueV_WIRE.Checked = (renderStateValues & 0x1) == 0 ? false : true;
-            chkTrueV_TEX.Checked = (renderStateValues & 0x2) == 0 ? false : true;
-            chkTrueV_LINEAR.Checked = (renderStateValues & 0x4) == 0 ? false : true;
-            chkTrueV_NOCULL.Checked = (renderStateValues & 0x4000) == 0 ? false : true;
-            chkCullBackFacing.Checked = (renderStateValues & 0x2000) == 0 ? false : true;
-            chkTrueV_DEPTHTEST.Checked = (renderStateValues & 0x8000) == 0 ? false : true;
-            chkTrueV_DEPTHMASK.Checked = (renderStateValues & 0x10000) == 0 ? false : true;
-            chkTrueV_ALPHA.Checked = (renderStateValues & 0x400) == 0 ? false : true;
-            chkLighted.Checked = (renderStateValues & 0x20000) == 0 ? false : true;
+            chkTrueV_WIRE.Checked = (renderStateValues & 0x1) != 0;
+            chkTrueV_TEX.Checked = (renderStateValues & 0x2) != 0;
+            chkTrueV_LINEAR.Checked = (renderStateValues & 0x4) != 0;
+            chkTrueV_NOCULL.Checked = (renderStateValues & 0x4000) != 0;
+            chkCullBackFacing.Checked = (renderStateValues & 0x2000) != 0;
+            chkTrueV_DEPTHTEST.Checked = (renderStateValues & 0x8000) != 0;
+            chkTrueV_DEPTHMASK.Checked = (renderStateValues & 0x10000) != 0;
+            chkTrueV_ALPHA.Checked = (renderStateValues & 0x400) != 0;
+            chkLighted.Checked = (renderStateValues & 0x20000) != 0;
 
             SetRSValuesEnabled();
         }
 
-        private void chkV_WIREFRAME_CheckedChanged(object sender, EventArgs e)
+        private void ChkV_WIREFRAME_CheckedChanged(object sender, EventArgs e)
         {
             SetRSValuesEnabled();
         }
 
-        private void chkV_TEXTURE_CheckedChanged(object sender, EventArgs e)
+        private void ChkV_TEXTURE_CheckedChanged(object sender, EventArgs e)
         {
-            if (chkV_TEXTURE.Checked) nudTextureID.Enabled = true;
-            else nudTextureID.Enabled = false;
+            if (chkV_TEXTURE.Checked)
+            {
+                nudTextureID.Enabled = true;
+                rb2.Checked = true;
+            }
+            else
+            {
+                nudTextureID.Enabled = false;
+                rb1.Checked = true;
+            }
 
             SetRSValuesEnabled();
         }
 
-        private void chkV_LINEARFILTER_CheckedChanged(object sender, EventArgs e)
+        private void ChkV_LINEARFILTER_CheckedChanged(object sender, EventArgs e)
         {
             SetRSValuesEnabled();
         }
 
-        private void chkV_NOCULL_CheckedChanged(object sender, EventArgs e)
+        private void ChkV_NOCULL_CheckedChanged(object sender, EventArgs e)
         {
             SetRSValuesEnabled();
         }
 
-        private void chkV_CULLFACE_CheckedChanged(object sender, EventArgs e)
+        private void ChkV_CULLFACE_CheckedChanged(object sender, EventArgs e)
         {
             SetRSValuesEnabled();
         }
 
-        private void chkV_DEPTHTEST_CheckedChanged(object sender, EventArgs e)
+        private void ChkV_DEPTHTEST_CheckedChanged(object sender, EventArgs e)
         {
             SetRSValuesEnabled();
         }
 
-        private void chkV_DEPTHMASK_CheckedChanged(object sender, EventArgs e)
+        private void ChkV_DEPTHMASK_CheckedChanged(object sender, EventArgs e)
         {
             SetRSValuesEnabled();
         }
 
-        private void chkV_ALPHABLEND_CheckedChanged(object sender, EventArgs e)
+        private void ChkV_ALPHABLEND_CheckedChanged(object sender, EventArgs e)
         {
             SetRSValuesEnabled();
         }
 
-        private void chkV_SHADEMODE_CheckedChanged(object sender, EventArgs e)
+        private void ChkV_SHADEMODE_CheckedChanged(object sender, EventArgs e)
         {
             SetRSValuesEnabled();
         }
 
-        private void btnClose_Click(object sender, EventArgs e)
+        private void BtnClose_Click(object sender, EventArgs e)
         {
             Close();
         }
 
-        private void btnAccept_Click(object sender, EventArgs e)
+        private void BtnAccept_Click(object sender, EventArgs e)
         {
             int changeRenderStateValues, renderStateValues, mask, invMaskFull;
 
@@ -164,18 +176,23 @@ namespace KimeraCS
             if (rbUnknown.Checked) EditedPModel.Hundrets[SelectedGroup].blend_mode = 3;
             if (rbNone.Checked) EditedPModel.Hundrets[SelectedGroup].blend_mode = 4;
 
+            if (rb1.Checked) EditedPModel.Groups[SelectedGroup].polyType = 1;
+            if (rb2.Checked) EditedPModel.Groups[SelectedGroup].polyType = 2;
+            if (rb3.Checked) EditedPModel.Groups[SelectedGroup].polyType = 3;
+
+            if (EditedPModel.Groups[SelectedGroup].polyType == 1) rb1.Checked = true;
+            else if (EditedPModel.Groups[SelectedGroup].polyType == 2) rb2.Checked = true;
+            else rb3.Checked = true;
+
             if (chkV_TEXTURE.Checked)
             {
                 EditedPModel.Groups[SelectedGroup].texFlag = 1;
-                EditedPModel.Groups[SelectedGroup].polyType = 2;    // We will suppose it has always normals.
                 EditedPModel.Groups[SelectedGroup].texID = (int)nudTextureID.Value;
                 EditedPModel.Hundrets[SelectedGroup].texID = (int)nudTextureID.Value;
-
             }
             else
             {
                 EditedPModel.Groups[SelectedGroup].texFlag = 0;
-                EditedPModel.Groups[SelectedGroup].polyType = 1;    // We will suppose it has never normals.
                 EditedPModel.Groups[SelectedGroup].texID = 0;
                 EditedPModel.Hundrets[SelectedGroup].texID = 0;
             }
@@ -221,35 +238,9 @@ namespace KimeraCS
             frmPEdit.FillGroupsList();
 
             frmPEdit.ChangeGroupEnable(false);
-            frmPEdit.panelEditorPModel_Paint(null, null);
+            frmPEdit.PanelEditorPModel_Paint(null, null);
 
             Close();
-
-
-            // We have changed the logic and close the Group Properties window when
-            // accepting changes. So the next lines are not needed.
-
-            //chkV_WIREFRAME.Checked = (changeRenderStateValues & 0x01) == 0 ? false : true;
-            //chkV_TEXTURE.Checked = (changeRenderStateValues & 0x02) == 0 ? false : true;
-            //chkV_LINEARFILTER.Checked = (changeRenderStateValues & 0x04) == 0 ? false : true;
-            //chkV_NOCULL.Checked = (changeRenderStateValues & 0x4000) == 0 ? false : true;
-            //chkV_CULLFACE.Checked = (changeRenderStateValues & 0x2000) == 0 ? false : true;
-            //chkV_DEPTHTEST.Checked = (changeRenderStateValues & 0x8000) == 0 ? false : true;
-            //chkV_DEPTHMASK.Checked = (changeRenderStateValues & 0x10000) == 0 ? false : true;
-            //chkV_ALPHABLEND.Checked = (changeRenderStateValues & 0x400) == 0 ? false : true;
-            //chkV_SHADEMODE.Checked = (changeRenderStateValues & 0x020000) == 0 ? false : true;
-
-            //SetRSValuesEnabled();
-
-            //chkTrueV_WIRE.Checked = (renderStateValues & 0x1) == 0 ? false : true;
-            //chkTrueV_TEX.Checked = (renderStateValues & 0x2) == 0 ? false : true;
-            //chkTrueV_LINEAR.Checked = (renderStateValues & 0x4) == 0 ? false : true;
-            //chkTrueV_NOCULL.Checked = (renderStateValues & 0x4000) == 0 ? false : true;
-            //chkCullBackFacing.Checked = (renderStateValues & 0x2000) == 0 ? false : true;
-            //chkTrueV_DEPTHTEST.Checked = (renderStateValues & 0x8000) == 0 ? false : true;
-            //chkTrueV_DEPTHMASK.Checked = (renderStateValues & 0x10000) == 0 ? false : true;
-            //chkTrueV_ALPHA.Checked = (renderStateValues & 0x400) == 0 ? false : true;
-            //chkLighted.Checked = (renderStateValues & 0x20000) == 0 ? false : true; 
         }
     }
 }
