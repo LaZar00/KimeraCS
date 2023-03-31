@@ -247,7 +247,7 @@ namespace KimeraCS
             p_min_field.y = (float)INFINITY_SINGLE;
             p_min_field.z = (float)INFINITY_SINGLE;
 
-            glMatrixMode(glMatrixModeList.GL_MODELVIEW);
+            glMatrixMode(GLMatrixModeList.GL_MODELVIEW);
             glPushMatrix();
             glLoadIdentity();
 
@@ -273,7 +273,7 @@ namespace KimeraCS
 
                 ComputeFieldBoneBoundingBox(fSkeleton.bones[bi], ref p_min_bone, ref p_max_bone);
 
-                glGetDoublev((uint)glCapability.GL_MODELVIEW_MATRIX, MV_matrix);
+                glGetDoublev((uint)GLCapability.GL_MODELVIEW_MATRIX, MV_matrix);
 
                 ComputeTransformedBoxBoundingBox(MV_matrix, ref p_min_bone, ref p_max_bone, ref p_min_bone_trans, ref p_max_bone_trans);
 
@@ -362,7 +362,7 @@ namespace KimeraCS
             int i, jsp;
             double[] rot_mat = new double[16];
 
-            glMatrixMode(glMatrixModeList.GL_MODELVIEW);
+            glMatrixMode(GLMatrixModeList.GL_MODELVIEW);
             glPushMatrix();
 
             glTranslated(fFrame.rootTranslationX, 0, 0);
@@ -408,21 +408,21 @@ namespace KimeraCS
             glSelectBuffer(fSkeleton.bones.Count * 4, selBuff);
             glInitNames();
 
-            glRenderMode(glRenderingMode.GL_SELECT);
+            glRenderMode(GLRenderingMode.GL_SELECT);
 
-            glMatrixMode(glMatrixModeList.GL_PROJECTION);
+            glMatrixMode(GLMatrixModeList.GL_PROJECTION);
             glPushMatrix();
-            glGetDoublev((uint)glCapability.GL_PROJECTION_MATRIX, P_matrix);
+            glGetDoublev((uint)GLCapability.GL_PROJECTION_MATRIX, P_matrix);
             glLoadIdentity();
 
-            glGetIntegerv((uint)glCapability.GL_VIEWPORT, vp);
+            glGetIntegerv((uint)GLCapability.GL_VIEWPORT, vp);
             height = vp[3];
 
             gluPickMatrix(px - 1, height - py + 1, 3, 3, vp);
             //gluPerspective(60, (float)width / height, 0.1, 10000); //'max(0.1 - DIST, 0.1), ComputeHRCDiameter(obj) * 2 - DIST
             glMultMatrixd(P_matrix);
 
-            glMatrixMode(glMatrixModeList.GL_MODELVIEW);
+            glMatrixMode(GLMatrixModeList.GL_MODELVIEW);
             glPushMatrix();
 
             glTranslated(fFrame.rootTranslationX, 0, 0);
@@ -466,10 +466,10 @@ namespace KimeraCS
             }
             glPopMatrix();
 
-            glMatrixMode(glMatrixModeList.GL_PROJECTION);
+            glMatrixMode(GLMatrixModeList.GL_PROJECTION);
             glPopMatrix();
 
-            nBones = glRenderMode(glRenderingMode.GL_RENDER);
+            nBones = glRenderMode(GLRenderingMode.GL_RENDER);
 
             iGetClosestFieldBoneResult = -1;
             min_z = -1;
@@ -487,34 +487,34 @@ namespace KimeraCS
         }
 
         public static int GetClosestFieldBonePiece(FieldSkeleton fSkeleton, FieldFrame fFrame,
-                                                   int b_index, int px, int py)
+                                                   int iBoneSelected, int px, int py)
         {
             int iGetClosestFieldBonePieceResult;
 
-            int bi, pi, nPieces, width, height, jsp;
+            int iBoneIdx, iPolyIdx, iNumPieces, width, height, jsp;
             float min_z;
 
             int[] vp = new int[4];
             double[] P_matrix = new double[16];
             double[] rot_mat = new double[16];
 
-            int[] selBuff = new int[fSkeleton.bones[b_index].nResources * 4];
+            int[] selBuff = new int[fSkeleton.bones[iBoneSelected].nResources * 4];
 
             //string[] joint_stack = new string[Skeleton.nBones];
             string[] joint_stack = new string[fSkeleton.bones.Count];
             jsp = 0;
 
-            glSelectBuffer(fSkeleton.bones[b_index].nResources * 4, selBuff);
+            glSelectBuffer(fSkeleton.bones[iBoneSelected].nResources * 4, selBuff);
             glInitNames();
 
-            glRenderMode(glRenderingMode.GL_SELECT);
+            glRenderMode(GLRenderingMode.GL_SELECT);
 
-            glMatrixMode(glMatrixModeList.GL_PROJECTION);
+            glMatrixMode(GLMatrixModeList.GL_PROJECTION);
             glPushMatrix();
-            glGetDoublev((uint)glCapability.GL_PROJECTION_MATRIX, P_matrix);
+            glGetDoublev((uint)GLCapability.GL_PROJECTION_MATRIX, P_matrix);
             glLoadIdentity();
 
-            glGetIntegerv((uint)glCapability.GL_VIEWPORT, vp);
+            glGetIntegerv((uint)GLCapability.GL_VIEWPORT, vp);
             width = vp[2];
             height = vp[3];
 
@@ -522,7 +522,7 @@ namespace KimeraCS
             gluPerspective(60, (float)width / height, 0.1, 10000);        // max(0.1 - DIST, 0.1) , ComputeFieldDiameter(ref Skeleton) * 2 - DIST);
             //glMultMatrixd(P_matrix);
 
-            glMatrixMode(glMatrixModeList.GL_MODELVIEW);
+            glMatrixMode(GLMatrixModeList.GL_MODELVIEW);
             glPushMatrix();
 
             glTranslated(fFrame.rootTranslationX, 0, 0);
@@ -532,9 +532,9 @@ namespace KimeraCS
             BuildRotationMatrixWithQuaternions(fFrame.rootRotationAlpha, fFrame.rootRotationBeta, fFrame.rootRotationGamma, ref rot_mat);
             glMultMatrixd(rot_mat);
 
-            for (bi = 0; bi < b_index; bi++)
+            for (iBoneIdx = 0; iBoneIdx < iBoneSelected; iBoneIdx++)
             {
-                while (!(fSkeleton.bones[bi].joint_f == joint_stack[jsp]) && jsp > 0)
+                while (!(fSkeleton.bones[iBoneIdx].joint_f == joint_stack[jsp]) && jsp > 0)
                 {
                     glPopMatrix();
                     jsp--;
@@ -545,32 +545,34 @@ namespace KimeraCS
                 //  glRotated Frame.Rotations(bi).Alpha, 1#, 0#, 0#
                 //  glRotated Frame.Rotations(bi).Gamma, 0#, 0#, 1#
 
-                BuildRotationMatrixWithQuaternions(fFrame.rotations[bi].alpha, fFrame.rotations[bi].beta, fFrame.rotations[bi].gamma, ref rot_mat);
+                BuildRotationMatrixWithQuaternions(fFrame.rotations[iBoneIdx].alpha, 
+                                                   fFrame.rotations[iBoneIdx].beta, 
+                                                   fFrame.rotations[iBoneIdx].gamma, ref rot_mat);
                 glMultMatrixd(rot_mat);
 
-                glTranslated(0, 0, -fSkeleton.bones[bi].len);
+                glTranslated(0, 0, -fSkeleton.bones[iBoneIdx].len);
 
                 jsp++;
-                joint_stack[jsp] = fSkeleton.bones[bi].joint_i;
+                joint_stack[jsp] = fSkeleton.bones[iBoneIdx].joint_i;
             }
 
-            while (!(fSkeleton.bones[b_index].joint_f == joint_stack[jsp]) && jsp > 0)
+            while (!(fSkeleton.bones[iBoneSelected].joint_f == joint_stack[jsp]) && jsp > 0)
             {
                 glPopMatrix();
                 jsp--;
             }
             glPushMatrix();
 
-            glRotated(fFrame.rotations[b_index].beta, 0, 1, 0);
-            glRotated(fFrame.rotations[b_index].alpha, 1, 0, 0);
-            glRotated(fFrame.rotations[b_index].gamma, 0, 0, 1);
+            glRotated(fFrame.rotations[iBoneSelected].beta, 0, 1, 0);
+            glRotated(fFrame.rotations[iBoneSelected].alpha, 1, 0, 0);
+            glRotated(fFrame.rotations[iBoneSelected].gamma, 0, 0, 1);
             jsp++;
 
-            for (pi = 0; pi < fSkeleton.bones[b_index].nResources; pi++)
+            for (iPolyIdx = 0; iPolyIdx < fSkeleton.bones[iBoneSelected].nResources; iPolyIdx++)
             {
-                glPushName((uint)pi);
+                glPushName((uint)iPolyIdx);
 
-                DrawRSDResource(fSkeleton.bones[b_index].fRSDResources[pi], false);
+                DrawRSDResource(fSkeleton.bones[iBoneSelected].fRSDResources[iPolyIdx], false);
 
                 glPopName();
             }
@@ -581,19 +583,19 @@ namespace KimeraCS
                 jsp--;
             }
             glPopMatrix();
-            glMatrixMode(glMatrixModeList.GL_PROJECTION);
+            glMatrixMode(GLMatrixModeList.GL_PROJECTION);
             glPopMatrix();
 
-            nPieces = glRenderMode(glRenderingMode.GL_RENDER);
+            iNumPieces = glRenderMode(GLRenderingMode.GL_RENDER);
             iGetClosestFieldBonePieceResult = -1;
             min_z = -1;
 
-            for (pi = 0; pi < nPieces; pi++)
+            for (iPolyIdx = 0; iPolyIdx < iNumPieces; iPolyIdx++)
             {
-                if (CompareLongs((long)min_z, selBuff[pi * 4 + 1]))
+                if (CompareLongs((long)min_z, selBuff[iPolyIdx * 4 + 1]))
                 {
-                    min_z = selBuff[pi * 4 + 1];
-                    iGetClosestFieldBonePieceResult = (int)selBuff[pi * 4 + 3];
+                    min_z = selBuff[iPolyIdx * 4 + 1];
+                    iGetClosestFieldBonePieceResult = selBuff[iPolyIdx * 4 + 3];
                 }
             }
             //  Debug.Print GetClosestHRCBonePiece, nPieces
@@ -603,11 +605,12 @@ namespace KimeraCS
 
         public static void AddFieldBone(ref FieldBone fBone, ref PModel Model)
         {
-            FieldRSDResource tmpRSDResource = new FieldRSDResource();
-
-            tmpRSDResource.ID = "@RSD940102";
-            tmpRSDResource.textures = new List<TEX>();
-            tmpRSDResource.Model = Model;
+            FieldRSDResource tmpRSDResource = new FieldRSDResource()
+            {
+                ID = "@RSD940102",
+                textures = new List<TEX>(),
+                Model = Model,
+            };
 
             if (fBone.nResources > 0)
             {
@@ -680,13 +683,13 @@ namespace KimeraCS
         //  ---------------------------------------------------------------------------------------------------
         public static void MergeResources(ref FieldBone fBone)
         {
-            int ri;
+            int iResourceIdx;
             FieldRSDResource tmpRSDResource;
 
-            for (ri = 1; ri < fBone.nResources; ri++)
+            for (iResourceIdx = 1; iResourceIdx < fBone.nResources; iResourceIdx++)
             {
                 tmpRSDResource = fBone.fRSDResources[0];
-                MergeFieldRSDResources(ref tmpRSDResource, fBone.fRSDResources[ri]);
+                MergeFieldRSDResources(ref tmpRSDResource, fBone.fRSDResources[iResourceIdx]);
                 fBone.fRSDResources[0] = tmpRSDResource;
             }
         }
@@ -699,14 +702,14 @@ namespace KimeraCS
             for (ri = 0; ri < fBone.nResources; ri++)
             {
                 //  Debug.Print "File=", bone.Resources(ri).res_file, bone.Resources(ri).Model.fileName
-                if (glIsEnabled(glCapability.GL_LIGHTING))
+                if (glIsEnabled(GLCapability.GL_LIGHTING))
                 {
                     tmpRSDResource = fBone.fRSDResources[ri];
                     ApplyCurrentVColors(ref tmpRSDResource.Model);
                     fBone.fRSDResources[ri] = tmpRSDResource;
                 }
 
-                glMatrixMode(glMatrixModeList.GL_MODELVIEW);
+                glMatrixMode(GLMatrixModeList.GL_MODELVIEW);
                 glPushMatrix();
 
                 SetCameraModelViewQuat(fBone.fRSDResources[ri].Model.repositionX, fBone.fRSDResources[ri].Model.repositionY, fBone.fRSDResources[ri].Model.repositionZ,
@@ -719,7 +722,7 @@ namespace KimeraCS
                 ApplyPChanges(ref tmpRSDResource.Model, false);
                 fBone.fRSDResources[ri] = tmpRSDResource;
 
-                glMatrixMode(glMatrixModeList.GL_MODELVIEW);
+                glMatrixMode(GLMatrixModeList.GL_MODELVIEW);
                 glPopMatrix();
             }
 
@@ -750,7 +753,7 @@ namespace KimeraCS
             jsp = 0;
             joint_stack[jsp] = fSkeleton.bones[0].joint_f;
 
-            glMatrixMode(glMatrixModeList.GL_MODELVIEW);
+            glMatrixMode(GLMatrixModeList.GL_MODELVIEW);
 
             //for (bi = 0; bi < fSkeleton.nBones; bi++)
             for (bi = 0; bi < fSkeleton.bones.Count; bi++)
@@ -784,7 +787,8 @@ namespace KimeraCS
             }
         }
 
-        public static void WriteFieldBone(ref StringBuilder strHRCContent, ref FieldBone fBone)
+        public static void WriteFieldBone(ref StringBuilder strHRCContent, ref FieldBone fBone,
+                                          string strDirectoryPath)
         {
             int ri;
             string strRSDList;
@@ -808,10 +812,10 @@ namespace KimeraCS
 
                     strRSDList = strRSDList + " " + tmpRSDResource.res_file.ToUpper();
 
-                    WriteRSDResource(tmpRSDResource, strGlobalPathSaveSkeletonFolder + "\\" + fBone.fRSDResources[ri].res_file.ToUpper() + ".RSD");
+                    WriteRSDResource(tmpRSDResource, strDirectoryPath + "\\" + fBone.fRSDResources[ri].res_file.ToUpper() + ".RSD");
 
                     if (tmpRSDResource.Model.Polys != null)
-                        WriteGlobalPModel(ref tmpRSDResource.Model, strGlobalPathSaveSkeletonFolder + "\\" + fBone.fRSDResources[ri].Model.fileName.ToUpper());
+                        WriteGlobalPModel(ref tmpRSDResource.Model, strDirectoryPath + "\\" + fBone.fRSDResources[ri].Model.fileName.ToUpper());
 
                     fBone.fRSDResources[ri] = tmpRSDResource;
                 }
@@ -835,7 +839,7 @@ namespace KimeraCS
             for (bi = 0; bi < fSkeleton.bones.Count; bi++)
             {
                 tmpfBone = fSkeleton.bones[bi];
-                WriteFieldBone(ref strHRCContent, ref tmpfBone);
+                WriteFieldBone(ref strHRCContent, ref tmpfBone, Path.GetDirectoryName(fileName));
                 fSkeleton.bones[bi] = tmpfBone;
             }
 
@@ -918,16 +922,18 @@ namespace KimeraCS
         {
             FieldRSDResource fResourceOut;
 
-            fResourceOut = new FieldRSDResource();
+            fResourceOut = new FieldRSDResource()
+            {
+                ID = fResourceIn.ID,
+                numTextures = fResourceIn.numTextures,
+                res_file = fResourceIn.res_file,
 
-            fResourceOut.ID = fResourceIn.ID;
-            fResourceOut.numTextures = fResourceIn.numTextures;
-            fResourceOut.res_file = fResourceIn.res_file;
+                textures = new List<TEX>(fResourceIn.textures),
 
-            fResourceOut.textures = new List<TEX>(fResourceIn.textures);
+                Model = CopyPModel(fResourceIn.Model),
+            };
+
             foreach (TEX itmTex in fResourceIn.textures) fResourceOut.textures.Add(itmTex);
-
-            fResourceOut.Model = CopyPModel(fResourceIn.Model);
 
             return fResourceOut;
         }
@@ -936,17 +942,20 @@ namespace KimeraCS
         {
             FieldBone fBoneOut;
 
-            fBoneOut = new FieldBone();
+            fBoneOut = new FieldBone()
+            {
+                joint_f = fBoneIn.joint_f,
+                joint_i = fBoneIn.joint_i,
+                len = fBoneIn.len,
+                nResources = fBoneIn.nResources,
 
-            fBoneOut.joint_f = fBoneIn.joint_f;
-            fBoneOut.joint_i = fBoneIn.joint_i;
-            fBoneOut.len = fBoneIn.len;
-            fBoneOut.nResources = fBoneIn.nResources;
-            fBoneOut.resizeX = fBoneIn.resizeX;
-            fBoneOut.resizeY = fBoneIn.resizeY;
-            fBoneOut.resizeZ = fBoneIn.resizeZ;
+                resizeX = fBoneIn.resizeX,
+                resizeY = fBoneIn.resizeY,
+                resizeZ = fBoneIn.resizeZ,
+            };
 
             fBoneOut.fRSDResources = new List<FieldRSDResource>();
+
             foreach (FieldRSDResource itmfRSDResource in fBoneIn.fRSDResources) fBoneOut.fRSDResources.Add(CopyfRSDResource(itmfRSDResource));
 
             return fBoneOut;
@@ -956,13 +965,15 @@ namespace KimeraCS
         {
             FieldSkeleton fSkeletonOut;
 
-            fSkeletonOut = new FieldSkeleton();
+            fSkeletonOut = new FieldSkeleton()
+            {
+                fileName = fSkeletonIn.fileName,
+                name = fSkeletonIn.name,
+                nBones = fSkeletonIn.nBones,
 
-            fSkeletonOut.fileName = fSkeletonIn.fileName;
-            fSkeletonOut.name = fSkeletonIn.name;
-            fSkeletonOut.nBones = fSkeletonIn.nBones;
+                bones = new List<FieldBone>(),
+            };
 
-            fSkeletonOut.bones = new List<FieldBone>();
             foreach (FieldBone itmfBone in fSkeletonIn.bones) fSkeletonOut.bones.Add(CopyfBone(itmfBone));
 
             return fSkeletonOut;
