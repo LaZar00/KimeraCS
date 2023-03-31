@@ -20,27 +20,27 @@ namespace KimeraCS
 
     class Model_3DS
     {
-        public struct rgb3DS
+        public struct Rgb3DS
         {
             public byte red;
             public byte green;
             public byte blue;
         }
 
-        public struct vert3DS
+        public struct Vert3DS
         {
             public float x;
             public float z; // z and y are swapped
             public float y;
         }
 
-        public struct texcoord3DS
+        public struct Texcoord3DS
         {
             public float u;
             public float v;
         }
 
-        public struct face3DS
+        public struct Face3DS
         {
             public ushort vertA;
             public ushort vertB;
@@ -59,7 +59,7 @@ namespace KimeraCS
                                      // Bit 15: Selection of the face in selection 1
         }
 
-        public struct map_list_node
+        public struct Map_list_node
         {
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 256)]
             public byte[] textureFileName;     // Mapping filename (Texture)
@@ -70,17 +70,17 @@ namespace KimeraCS
             public float rotation;             // Rotation angle
         }
 
-        public struct mat_list_node
+        public struct Mat_list_node
         {
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 200)]
             public byte[] materialName;        // Material name
-            public rgb3DS ambient;             // Ambient color
-            public rgb3DS diffuse;             // Diffuse color
-            public rgb3DS specular;            // Specular color
-            public map_list_node[] textureMapsV;       // Texture maps
+            public Rgb3DS ambient;             // Ambient color
+            public Rgb3DS diffuse;             // Diffuse color
+            public Rgb3DS specular;            // Specular color
+            public Map_list_node[] textureMapsV;       // Texture maps
         }
 
-        public struct face_mat_node
+        public struct Face_mat_node
         {
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 200)]
             public byte[] materialName;        // Material name
@@ -88,19 +88,19 @@ namespace KimeraCS
             public ushort[] facesV;         // Faces assigned to this material
         }
 
-        public struct mesh_object_node
+        public struct Mesh_object_node
         {
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 200)]
             public byte[] meshName;                    // Object name
-            public vert3DS[] vertsV;               // Vertex list
-            public face3DS[] facesV;               // Face list
+            public Vert3DS[] vertsV;               // Vertex list
+            public Face3DS[] facesV;               // Face list
             public ushort numVerts;                     // Num of vertices
             public ushort numFaces;                     // Num of faces
             public ushort numMappedVerts;               // Num of vertices having mapping coords.
-            public texcoord3DS[] texCoordsV;       // Mapping coords. as U,V pairs (actual texture coordinates)
+            public Texcoord3DS[] texCoordsV;       // Mapping coords. as U,V pairs (actual texture coordinates)
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 11)]
             public float[] localTransformationMatrix;  // Local transformation matrix (last row is allways 0 0 0 1)
-            public face_mat_node[] faceMaterialsV;
+            public Face_mat_node[] faceMaterialsV;
             public ushort[] faceMaterialIndicesV;   // Index of material for every face
         }
 
@@ -109,201 +109,202 @@ namespace KimeraCS
             //public string modelName;
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 12)]
             //public float[] translationMatrix;          // Translation matrix for objects (last row is allways 0 0 0 1)
-            public mesh_object_node[] meshesV;
-            public mat_list_node[] materialsV;
+            public Mesh_object_node[] meshesV;
+            public Mat_list_node[] materialsV;
         }
 
 
-        public static void ReadMaterial3DS(BinaryReader memReader, ref int offset, int fileLength, int length, ref mat_list_node[] materialsV)
+        public static void ReadMaterial3DS(BinaryReader memReader, 
+                                           ref int offset, int fileLength, int length, 
+                                           ref Mat_list_node[] materialsV)
         {
-            int ci, count, llen, matIndex, mapIndex;
-            ushort id;
-            bool doneQ, isAmbientQ, isDiffuseQ; //, isSpecularQ;
+            int iVColorIdx, iCount, iLlen, iMatIndex, iMapIndex;
+            ushort usID;
+            bool bDoneQ, bIsAmbientQ, bIsDiffuseQ; //, bIsSpecularQ;
 
-            isAmbientQ = false;
-            isDiffuseQ = false;
+            bIsAmbientQ = false;
+            bIsDiffuseQ = false;
             //isSpecularQ = false;
-            doneQ = false;
-            count = offset + length - 6;
+            bDoneQ = false;
+            iCount = offset + length - 6;
 
             if (materialsV != null)
             {
-                matIndex = materialsV.Length;
+                iMatIndex = materialsV.Length;
                 Array.Resize(ref materialsV, materialsV.Length + 1);
-                materialsV[matIndex] = new mat_list_node();
+                materialsV[iMatIndex] = new Mat_list_node();
             }
             else
             {
-                materialsV = new mat_list_node[1];
-                matIndex = 0;
+                materialsV = new Mat_list_node[1];
+                iMatIndex = 0;
             }
 
            do
            {
                 memReader.BaseStream.Position = offset;
-                id = memReader.ReadUInt16();
+                usID = memReader.ReadUInt16();
                 offset += 2;
 
-                if (offset >= fileLength)
-                {
-                    doneQ = true;
-                    break;
-                }
+                if (offset >= fileLength) break;
 
                 memReader.BaseStream.Position = offset;
-                llen = memReader.ReadInt32();
+                iLlen = memReader.ReadInt32();
                 offset += 4;
 
-                switch(id)
+                switch(usID)
                 {
                     case 0xA000:
                         //  Read material name
-                        ci = 0;
+                        iVColorIdx = 0;
 
-                        materialsV[matIndex].materialName = new byte[200];
+                        materialsV[iMatIndex].materialName = new byte[200];
                         do
                         {
                             memReader.BaseStream.Position = offset;
-                            materialsV[matIndex].materialName[ci] = memReader.ReadByte();
+                            materialsV[iMatIndex].materialName[iVColorIdx] = memReader.ReadByte();
                             offset++;
-                            ci++;
-                        } while (materialsV[matIndex].materialName[ci - 1] != 0);
+                            iVColorIdx++;
+                        } while (materialsV[iMatIndex].materialName[iVColorIdx - 1] != 0);
 
                         break;
 
                     case 0xA010:
                         //  Hey! AMBIENT
-                        isDiffuseQ = false;
+                        bIsDiffuseQ = false;
                         //isSpecularQ = false;
-                        isAmbientQ = true;
-                        materialsV[matIndex].ambient.red = 0;
-                        materialsV[matIndex].ambient.green = 0;
-                        materialsV[matIndex].ambient.blue = 0;
+                        bIsAmbientQ = true;
+                        materialsV[iMatIndex].ambient.red = 0;
+                        materialsV[iMatIndex].ambient.green = 0;
+                        materialsV[iMatIndex].ambient.blue = 0;
                         break;
 
                     case 0xA020:
                         //  Hey! DIFFUSE
-                        isDiffuseQ = true;
+                        bIsDiffuseQ = true;
                         //isSpecularQ = false;
-                        isAmbientQ = false;
-                        materialsV[matIndex].diffuse.red = 0;
-                        materialsV[matIndex].diffuse.green = 0;
-                        materialsV[matIndex].diffuse.blue = 0;
+                        bIsAmbientQ = false;
+                        materialsV[iMatIndex].diffuse.red = 0;
+                        materialsV[iMatIndex].diffuse.green = 0;
+                        materialsV[iMatIndex].diffuse.blue = 0;
                         break;
 
                     case 0xA030:
                         //  Hey! SPECULAR
-                        isDiffuseQ = false;
+                        bIsDiffuseQ = false;
                         //isSpecularQ = true;
-                        isAmbientQ = false;
-                        materialsV[matIndex].specular.red = 0;
-                        materialsV[matIndex].specular.green = 0;
-                        materialsV[matIndex].specular.blue = 0;
+                        bIsAmbientQ = false;
+                        materialsV[iMatIndex].specular.red = 0;
+                        materialsV[iMatIndex].specular.green = 0;
+                        materialsV[iMatIndex].specular.blue = 0;
                         break;
 
                     case 0xA200:
                         // Texture
-                        if (materialsV[matIndex].textureMapsV != null)
+                        if (materialsV[iMatIndex].textureMapsV != null)
                         {
-                            mapIndex = materialsV[matIndex].textureMapsV.Length + 1;
-                            Array.Resize(ref materialsV[matIndex].textureMapsV, mapIndex);
-                            materialsV[matIndex].textureMapsV[mapIndex] = new map_list_node();
+                            iMapIndex = materialsV[iMatIndex].textureMapsV.Length + 1;
+                            Array.Resize(ref materialsV[iMatIndex].textureMapsV, iMapIndex);
+                            materialsV[iMatIndex].textureMapsV[iMapIndex] = new Map_list_node();
                         }
                         else
                         {
-                            materialsV[matIndex].textureMapsV = new map_list_node[1];
-                            mapIndex = 0;
+                            materialsV[iMatIndex].textureMapsV = new Map_list_node[1];
+                            iMapIndex = 0;
                         }
                        
-                        materialsV[matIndex].textureMapsV[mapIndex].u = 0;
-                        materialsV[matIndex].textureMapsV[mapIndex].v = 0;
-                        materialsV[matIndex].textureMapsV[mapIndex].uOff = 0;
-                        materialsV[matIndex].textureMapsV[mapIndex].vOff = 0;
-                        materialsV[matIndex].textureMapsV[mapIndex].rotation = 0;
+                        materialsV[iMatIndex].textureMapsV[iMapIndex].u = 0;
+                        materialsV[iMatIndex].textureMapsV[iMapIndex].v = 0;
+                        materialsV[iMatIndex].textureMapsV[iMapIndex].uOff = 0;
+                        materialsV[iMatIndex].textureMapsV[iMapIndex].vOff = 0;
+                        materialsV[iMatIndex].textureMapsV[iMapIndex].rotation = 0;
 
                         break;
 
                     case 0xA300:
                         //  Texture name (filename without path)
-                        mapIndex = materialsV[matIndex].textureMapsV.Length - 1;
-                        ci = 0;
+                        iMapIndex = materialsV[iMatIndex].textureMapsV.Length - 1;
+                        iVColorIdx = 0;
 
-                        materialsV[matIndex].textureMapsV[mapIndex].textureFileName = new byte[256];
+                        materialsV[iMatIndex].textureMapsV[iMapIndex].textureFileName = new byte[256];
                         do
                         {
                             memReader.BaseStream.Position = offset;
 
-                            materialsV[matIndex].textureMapsV[mapIndex].textureFileName[ci] = memReader.ReadByte();
+                            materialsV[iMatIndex].textureMapsV[iMapIndex].textureFileName[iVColorIdx] = 
+                                                    memReader.ReadByte();
                             offset++;
-                            ci++;
-                        } while (materialsV[matIndex].textureMapsV[mapIndex].textureFileName[ci - 1] != 0);
+                            iVColorIdx++;
+
+                        } while (materialsV[iMatIndex].textureMapsV[iMapIndex].
+                                            textureFileName[iVColorIdx - 1] != 0);
 
                         break;
 
                     case 0xA354:
                         //  V coords
-                        mapIndex = materialsV[matIndex].textureMapsV.Length;
+                        iMapIndex = materialsV[iMatIndex].textureMapsV.Length;
 
                         memReader.BaseStream.Position = offset;
-                        materialsV[matIndex].textureMapsV[mapIndex].v = memReader.ReadSingle();
+                        materialsV[iMatIndex].textureMapsV[iMapIndex].v = memReader.ReadSingle();
                         offset += 4;
                         break;
 
                     case 0xA356:
                         //  U coords
-                        mapIndex = materialsV[matIndex].textureMapsV.Length;
+                        iMapIndex = materialsV[iMatIndex].textureMapsV.Length;
 
                         memReader.BaseStream.Position = offset;
-                        materialsV[matIndex].textureMapsV[mapIndex].u = memReader.ReadSingle();
+                        materialsV[iMatIndex].textureMapsV[iMapIndex].u = memReader.ReadSingle();
                         offset += 4;
                         break;
 
                     case 0xA358:
                         //  U offset
-                        mapIndex = materialsV[matIndex].textureMapsV.Length;
+                        iMapIndex = materialsV[iMatIndex].textureMapsV.Length;
 
                         memReader.BaseStream.Position = offset;
-                        materialsV[matIndex].textureMapsV[mapIndex].uOff = memReader.ReadSingle();
+                        materialsV[iMatIndex].textureMapsV[iMapIndex].uOff = memReader.ReadSingle();
                         offset += 4;
                         break;
 
                     case 0xA35A:
                         //  V offset
-                        mapIndex = materialsV[matIndex].textureMapsV.Length;
+                        iMapIndex = materialsV[iMatIndex].textureMapsV.Length;
 
                         memReader.BaseStream.Position = offset;
-                        materialsV[matIndex].textureMapsV[mapIndex].vOff = memReader.ReadSingle();
+                        materialsV[iMatIndex].textureMapsV[iMapIndex].vOff = memReader.ReadSingle();
                         offset += 4;
                         break;
 
                     case 0xA35C:
                         //  Texture rotation angle
-                        mapIndex = materialsV[matIndex].textureMapsV.Length;
+                        iMapIndex = materialsV[iMatIndex].textureMapsV.Length;
 
                         memReader.BaseStream.Position = offset;
-                        materialsV[matIndex].textureMapsV[mapIndex].rotation = memReader.ReadSingle();
+                        materialsV[iMatIndex].textureMapsV[iMapIndex].rotation = memReader.ReadSingle();
                         offset += 4;
                        break;
 
                     case 0x11:
                         //  Read colors
-                        if (isDiffuseQ)
+                        if (bIsDiffuseQ)
                         {
-                            materialsV[matIndex].diffuse.red = memReader.ReadByte();
-                            materialsV[matIndex].diffuse.green = memReader.ReadByte();
-                            materialsV[matIndex].diffuse.blue = memReader.ReadByte();
+                            materialsV[iMatIndex].diffuse.red = memReader.ReadByte();
+                            materialsV[iMatIndex].diffuse.green = memReader.ReadByte();
+                            materialsV[iMatIndex].diffuse.blue = memReader.ReadByte();
                         }
-                        else if (isAmbientQ)
+                        else if (bIsAmbientQ)
                         {
-                            materialsV[matIndex].ambient.red = memReader.ReadByte();
-                            materialsV[matIndex].ambient.green = memReader.ReadByte();
-                            materialsV[matIndex].ambient.blue = memReader.ReadByte();
+                            materialsV[iMatIndex].ambient.red = memReader.ReadByte();
+                            materialsV[iMatIndex].ambient.green = memReader.ReadByte();
+                            materialsV[iMatIndex].ambient.blue = memReader.ReadByte();
                         }
                         else
                         {
-                            materialsV[matIndex].specular.red = memReader.ReadByte();
-                            materialsV[matIndex].specular.green = memReader.ReadByte();
-                            materialsV[matIndex].specular.blue = memReader.ReadByte();
+                            materialsV[iMatIndex].specular.red = memReader.ReadByte();
+                            materialsV[iMatIndex].specular.green = memReader.ReadByte();
+                            materialsV[iMatIndex].specular.blue = memReader.ReadByte();
                         }
 
                         offset += 3;
@@ -311,69 +312,68 @@ namespace KimeraCS
 
                     default:
                         //  Unknown chunk
-                        if (offset - 6 >= count)
+                        if (offset - 6 >= iCount)
                         {
                             offset -= 6;
-                            doneQ = true;
+                            bDoneQ = true;
                         }
                         else
                         {
-                            offset = offset + llen - 6;
-                            doneQ = offset >= fileLength;
+                            offset = offset + iLlen - 6;
+                            bDoneQ = offset >= fileLength;
                         }
 
                         break;
                 }
 
-            } while(!doneQ);
+            } while(!bDoneQ);
         }
 
-        public static void ReadMesh3DS(BinaryReader memReader, ref int offset, int fileLength, int length, ref mesh_object_node[] meshesV)
+        public static void ReadMesh3DS(BinaryReader memReader, ref int offset, int fileLength, int length, ref Mesh_object_node[] meshesV)
         {
-            int ci, count, llen, i, matIndex, meshIndex;
-            ushort id;
-            bool doneQ;
-            mesh_object_node tmpMesh;
+            int iVColorIdx, iCount, iLlen, iVertIdx, iPolyIdx;
+            int iMatCounter, iTexCoordIdx, iLocalTransMatrxIdx, iMatIndex, iMeshIndex;
+            ushort usID;
+            bool bDoneQ;
+            Mesh_object_node tmpMesh;
 
             //string test_str;
 
-            count = offset + length - 6;
-            doneQ = false;
+            iCount = offset + length - 6;
+            bDoneQ = false;
 
-            ci = 0;
+            iVColorIdx = 0;
 
-            tmpMesh = new mesh_object_node();
-            tmpMesh.numVerts = 0;
-            tmpMesh.meshName = null;
-            tmpMesh.faceMaterialsV = null;
-            tmpMesh.localTransformationMatrix = new float[12];
+            tmpMesh = new Mesh_object_node()
+            {
+                numVerts = 0,
+                faceMaterialsV = null,
 
-            tmpMesh.meshName = new byte[200];
+                localTransformationMatrix = new float[12],
+                meshName = new byte[200],
+            };
+
             do
             {
                 memReader.BaseStream.Position = offset;
-                tmpMesh.meshName[ci] = memReader.ReadByte();
+                tmpMesh.meshName[iVColorIdx] = memReader.ReadByte();
                 offset++;
-                ci++;
-            } while (tmpMesh.meshName[ci - 1] != 0);
+                iVColorIdx++;
+            } while (tmpMesh.meshName[iVColorIdx - 1] != 0);
 
             do
             {
                 memReader.BaseStream.Position = offset;
-                id = memReader.ReadUInt16();
+                usID = memReader.ReadUInt16();
                 offset += 2;
 
-                if (offset >= fileLength)
-                {
-                    doneQ = true;
-                    break;
-                }
+                if (offset >= fileLength) break;
 
                 memReader.BaseStream.Position = offset;
-                llen = memReader.ReadInt32();
+                iLlen = memReader.ReadInt32();
                 offset += 4;
 
-                switch(id)
+                switch(usID)
                 {
                     case 0x4100:
                         // Object mesh. Do nothing.
@@ -385,17 +385,17 @@ namespace KimeraCS
                         tmpMesh.numVerts = memReader.ReadUInt16();
                         offset += 2;
 
-                        tmpMesh.vertsV = new vert3DS[tmpMesh.numVerts];
+                        tmpMesh.vertsV = new Vert3DS[tmpMesh.numVerts];
                         memReader.BaseStream.Position = offset;
 
-                        for (i = 0; i < tmpMesh.numVerts; i++)
+                        for (iVertIdx = 0; iVertIdx < tmpMesh.numVerts; iVertIdx++)
                         {
-                            tmpMesh.vertsV[i].x = memReader.ReadSingle();
-                            tmpMesh.vertsV[i].y = memReader.ReadSingle();
-                            tmpMesh.vertsV[i].z = memReader.ReadSingle();
+                            tmpMesh.vertsV[iVertIdx].x = memReader.ReadSingle();
+                            tmpMesh.vertsV[iVertIdx].y = memReader.ReadSingle();
+                            tmpMesh.vertsV[iVertIdx].z = memReader.ReadSingle();
                         }
 
-                        offset = offset + 3 * 4 * tmpMesh.numVerts;
+                        offset += 3 * 4 * tmpMesh.numVerts;
                         break;
 
                     case 0x4120:
@@ -404,58 +404,65 @@ namespace KimeraCS
                         tmpMesh.numFaces = memReader.ReadUInt16();
                         offset += 2;
 
-                        tmpMesh.facesV = new face3DS[tmpMesh.numFaces];
+                        tmpMesh.facesV = new Face3DS[tmpMesh.numFaces];
                         memReader.BaseStream.Position = offset;
 
-                        for (i = 0; i < tmpMesh.numFaces; i++)
+                        for (iPolyIdx = 0; iPolyIdx < tmpMesh.numFaces; iPolyIdx++)
                         {
-                            tmpMesh.facesV[i].vertA = memReader.ReadUInt16();
-                            tmpMesh.facesV[i].vertB = memReader.ReadUInt16();
-                            tmpMesh.facesV[i].vertC = memReader.ReadUInt16();
-                            tmpMesh.facesV[i].flags = memReader.ReadUInt16();
+                            tmpMesh.facesV[iPolyIdx].vertA = memReader.ReadUInt16();
+                            tmpMesh.facesV[iPolyIdx].vertB = memReader.ReadUInt16();
+                            tmpMesh.facesV[iPolyIdx].vertC = memReader.ReadUInt16();
+                            tmpMesh.facesV[iPolyIdx].flags = memReader.ReadUInt16();
                         }
 
-                        offset = offset + 4 * 2 * tmpMesh.numFaces;
+                        offset += 4 * 2 * tmpMesh.numFaces;
                         break;
 
                     case 0x4130:
                         // Read material mapping info
                         if (tmpMesh.faceMaterialsV != null)
                         {
-                            matIndex = tmpMesh.faceMaterialsV.Length;
-                            Array.Resize(ref tmpMesh.faceMaterialsV, matIndex + 1);
-                            tmpMesh.faceMaterialsV[matIndex] = new face_mat_node();
+                            iMatIndex = tmpMesh.faceMaterialsV.Length;
+                            Array.Resize(ref tmpMesh.faceMaterialsV, iMatIndex + 1);
+                            tmpMesh.faceMaterialsV[iMatIndex] = new Face_mat_node();
                         }
                         else 
                         {
-                            tmpMesh.faceMaterialsV = new face_mat_node[1];
-                            matIndex = 0;
+                            tmpMesh.faceMaterialsV = new Face_mat_node[1];
+                            iMatIndex = 0;
                         }
 
-                        ci = 0;
+                        iVColorIdx = 0;
 
-                        tmpMesh.faceMaterialsV[matIndex].materialName = new byte[200];
+                        tmpMesh.faceMaterialsV[iMatIndex].materialName = new byte[200];
                         do
                         {
+
                             memReader.BaseStream.Position = offset;
-                            tmpMesh.faceMaterialsV[matIndex].materialName[ci] = memReader.ReadByte();
+                            tmpMesh.faceMaterialsV[iMatIndex].materialName[iVColorIdx] = 
+                                                memReader.ReadByte();
                             offset++;
-                            ci++;
-                        } while(tmpMesh.faceMaterialsV[matIndex].materialName[ci - 1] != 0);
+                            iVColorIdx++;
+
+                        } while(tmpMesh.faceMaterialsV[iMatIndex].materialName[iVColorIdx - 1] != 0);
 
                         memReader.BaseStream.Position = offset;
-                        tmpMesh.faceMaterialsV[matIndex].numEntries = memReader.ReadUInt16();
+                        tmpMesh.faceMaterialsV[iMatIndex].numEntries = memReader.ReadUInt16();
                         offset += 2;
 
-                        tmpMesh.faceMaterialsV[matIndex].facesV = new ushort[tmpMesh.faceMaterialsV[matIndex].numEntries];
+                        tmpMesh.faceMaterialsV[iMatIndex].facesV = 
+                                    new ushort[tmpMesh.faceMaterialsV[iMatIndex].numEntries];
 
                         memReader.BaseStream.Position = offset;
-                        for (i = 0; i < tmpMesh.faceMaterialsV[matIndex].numEntries; i++)
+                        for (iMatCounter = 0; 
+                             iMatCounter < tmpMesh.faceMaterialsV[iMatIndex].numEntries; 
+                             iMatCounter++)
                         {
-                            tmpMesh.faceMaterialsV[matIndex].facesV[i] = memReader.ReadUInt16();
+                            tmpMesh.faceMaterialsV[iMatIndex].facesV[iMatCounter] = 
+                                                memReader.ReadUInt16();
                         }
 
-                        offset = offset + 2 * tmpMesh.faceMaterialsV[matIndex].numEntries;
+                        offset += 2 * tmpMesh.faceMaterialsV[iMatIndex].numEntries;
                         break;
 
                     case 0x4140:
@@ -465,197 +472,195 @@ namespace KimeraCS
                         tmpMesh.numMappedVerts = memReader.ReadUInt16();
                         offset += 2;
 
-                        tmpMesh.texCoordsV = new texcoord3DS[tmpMesh.numMappedVerts];
-                        for (i = 0; i < tmpMesh.numMappedVerts; i++)
+                        tmpMesh.texCoordsV = new Texcoord3DS[tmpMesh.numMappedVerts];
+                        for (iTexCoordIdx = 0; iTexCoordIdx < tmpMesh.numMappedVerts; iTexCoordIdx++)
                         {
-                            tmpMesh.texCoordsV[i].u = memReader.ReadSingle();
-                            tmpMesh.texCoordsV[i].v = memReader.ReadSingle();
+                            tmpMesh.texCoordsV[iTexCoordIdx].u = memReader.ReadSingle();
+                            tmpMesh.texCoordsV[iTexCoordIdx].v = memReader.ReadSingle();
                         }
 
-                        offset = offset + 2 * 4 * tmpMesh.numMappedVerts;
+                        offset += 2 * 4 * tmpMesh.numMappedVerts;
                         break;
 
                     case 0x4160:
                         // Local transformation matrix
                         memReader.BaseStream.Position = offset;
 
-                        for (i = 0; i < 12; i++)
-                            tmpMesh.localTransformationMatrix[i] = memReader.ReadSingle();
+                        for (iLocalTransMatrxIdx = 0; iLocalTransMatrxIdx < 12; iLocalTransMatrxIdx++)
+                            tmpMesh.localTransformationMatrix[iLocalTransMatrxIdx] = memReader.ReadSingle();
 
-                        offset = offset + 12 * 4;
+                        offset += 12 * 4;
                         break;
 
                     case 0x4000:
                         // Object
                         offset -= 6;
-                        doneQ = true;
+                        bDoneQ = true;
                         break;
 
                     default:
                         // Unknown chunk
-                        if (offset - 6 >= count)
+                        if (offset - 6 >= iCount)
                         {
                             offset -= 6;
-                            doneQ = true;
+                            bDoneQ = true;
                         }
                         else
                         {
-                            offset = offset + llen - 6;
-                            doneQ = offset >= fileLength;
+                            offset = offset + iLlen - 6;
+                            bDoneQ = offset >= fileLength;
                         }
                         break;
                 }
 
-            } while (!doneQ);
+            } while (!bDoneQ);
 
             if (tmpMesh.numVerts > 0)
             {
                 if (meshesV != null)
                 {
-                    meshIndex = meshesV.Length;
-                    Array.Resize(ref meshesV, meshIndex + 1);
-                    meshesV[meshIndex] = new mesh_object_node();
+                    iMeshIndex = meshesV.Length;
+                    Array.Resize(ref meshesV, iMeshIndex + 1);
+                    meshesV[iMeshIndex] = new Mesh_object_node();
                 }
                 else
                 {
-                    meshesV = new mesh_object_node[1];
-                    meshIndex = 0;
+                    meshesV = new Mesh_object_node[1];
+                    iMeshIndex = 0;
                 }
 
-                meshesV[meshIndex] = tmpMesh;
+                meshesV[iMeshIndex] = tmpMesh;
 
                 // Debug.Print test_str; " "; temp_mesh.NumVerts; " "; temp_mesh.NumFaces
             }
         }
 
-        public static void ReadObject3DS(BinaryReader memReader, ref int offset, int fileLength, int length, ref Model3DS[] modelsV)
+        public static void ReadObject3DS(BinaryReader memReader, 
+                                         ref int offset, int fileLength, int length, 
+                                         ref Model3DS[] modelsV)
         {
-            int count, llen, modelIndex;
-            ushort id;
-            bool doneQ;
+            int iCount, iLlen, iModelIndex;
+            ushort usId;
+            bool bDoneQ;
 
-            count = offset + length - 6;
-            doneQ = false;
+            iCount = offset + length - 6;
+            bDoneQ = false;
 
             if (modelsV != null)
             {
-                modelIndex = modelsV.Length;
-                Array.Resize(ref modelsV, modelIndex + 1);
-                modelsV[modelIndex] = new Model3DS();
+                iModelIndex = modelsV.Length;
+                Array.Resize(ref modelsV, iModelIndex + 1);
+                modelsV[iModelIndex] = new Model3DS();
             }
             else
             {
                 modelsV = new Model3DS[1];
-                modelIndex = 0;
+                iModelIndex = 0;
             }          
 
             do
             {
                 memReader.BaseStream.Position = offset;
 
-                if (offset >= fileLength)
-                {
-                    doneQ = true;
-                    break;
-                }
+                if (offset >= fileLength) break;
 
-                id = memReader.ReadUInt16();
+                usId = memReader.ReadUInt16();
                 offset += 2;
 
                 memReader.BaseStream.Position = offset;
-                llen = memReader.ReadInt32();
+                iLlen = memReader.ReadInt32();
                 offset += 4;
 
-                switch(id)
+                switch(usId)
                 {
                     case 0x4000:
                         // Some object chunk (probably a mesh)
-                        ReadMesh3DS(memReader, ref offset, fileLength, llen, ref modelsV[modelIndex].meshesV);
+                        ReadMesh3DS(memReader, ref offset, fileLength, iLlen, 
+                                    ref modelsV[iModelIndex].meshesV);
                         break;
 
                     case 0xAFFF:
                         // Material chunk
-                        ReadMaterial3DS(memReader, ref offset, fileLength, llen, ref modelsV[modelIndex].materialsV);
+                        ReadMaterial3DS(memReader, ref offset, fileLength, iLlen, 
+                                        ref modelsV[iModelIndex].materialsV);
                         break;
 
                     default:
                         // Unknown chunk
-                        if (offset -6 >= count)
+                        if (offset -6 >= iCount)
                         {
                             offset -= 6;
-                            doneQ = true;
+                            bDoneQ = true;
                         }
                         else
                         {
-                            offset = offset + llen - 6;
-                            doneQ = offset >= fileLength;
+                            offset = offset + iLlen - 6;
+                            bDoneQ = offset >= fileLength;
                         }
                         break;
                 }
             }
-            while (!doneQ);
+            while (!bDoneQ);
         }
 
-        public static void Read3DS(BinaryReader memReader, ref int offset, int fileLength, ref Model3DS[] modelsV)
+        public static void Read3DS(BinaryReader memReader, ref int offset, int fileLength, 
+                                   ref Model3DS[] modelsV)
         {
-            ushort id;
-            int  llen;
-            bool doneQ;
+            ushort usId;
+            int  iLlen;
+            bool bDoneQ;
 
-            doneQ = false;
+            bDoneQ = false;
 
             do
             {
                 memReader.BaseStream.Position = offset;
 
-                if (offset >= fileLength)
-                {
-                    doneQ = true;
-                    break;
-                }
+                if (offset >= fileLength) break;
 
-                id = memReader.ReadUInt16();
+                usId = memReader.ReadUInt16();
                 offset += 2;
 
-                llen = memReader.ReadInt32();
+                iLlen = memReader.ReadInt32();
                 offset += 4;
 
-                switch(id)
+                switch(usId)
                 {
                     case 0xFFFF:
-                        doneQ = true;
+                        bDoneQ = true;
                         break;
 
                     case 0x3D3D:
                         // Object chunk
-                        ReadObject3DS(memReader, ref offset, fileLength, llen, ref modelsV);
+                        ReadObject3DS(memReader, ref offset, fileLength, iLlen, ref modelsV);
                         break;
 
                     default:
                         // Unknown chunk
-                        offset = (int)(offset + llen - 6);
-                        doneQ = offset >= fileLength;
+                        offset = (int)(offset + iLlen - 6);
+                        bDoneQ = offset >= fileLength;
                         break;
                 }
             }
-            while (!doneQ);
+            while (!bDoneQ);
         }
 
-        public static bool ReadPrimaryChunk3DS(BinaryReader memReader, ref int offset, int fileLength, ref Model3DS[] modelsV)
+        public static bool ReadPrimaryChunk3DS(BinaryReader memReader, ref int offset, int fileLength, 
+                                               ref Model3DS[] modelsV)
         {
-            byte version;
-            short flag;
+
+            short sFlag;
             bool bReadPrimaryChunk3DSResult = false;
 
             memReader.BaseStream.Position = offset;
 
-            flag = memReader.ReadInt16();
+            sFlag = memReader.ReadInt16();
 
-            if (flag == 0x4D4D)
+            if (sFlag == 0x4D4D)
             {
                 offset = 28;
                 memReader.BaseStream.Position = offset;
-                version = memReader.ReadByte();
+                memReader.ReadByte();       // version - not used
 
                 offset = 16;
                 Read3DS(memReader, ref offset, fileLength, ref modelsV);
@@ -670,55 +675,58 @@ namespace KimeraCS
         {
             //  Build the list of material indices for every face
 
-            int numMeshes, numMaterials, mei, mfi, ci, fi;
-            ushort mai;
-            bool foundQ;
-            int numFaceMatGroups, numFaces;
+            int iNumMeshes, iNumMaterials, iMeshIdx, iFaceMatIdx, iVColorIdx, iPolyIdx;
+            int iNumFaceMatGroups, iNumFaces;
+            ushort iMaterialIdx;
+            bool bFoundQ;
 
-            numMeshes = Model.meshesV.Length;
+            iNumMeshes = Model.meshesV.Length;
 
             if (Model.materialsV != null)
-                numMaterials = Model.materialsV.Length;
+                iNumMaterials = Model.materialsV.Length;
             else
-                numMaterials = 0;
+                iNumMaterials = 0;
 
-            for (mei = 0; mei < numMeshes; mei++)
+            for (iMeshIdx = 0; iMeshIdx < iNumMeshes; iMeshIdx++)
             {
-                if (Model.meshesV[mei].faceMaterialsV != null)
+                if (Model.meshesV[iMeshIdx].faceMaterialsV != null)
                 {
-                    numFaceMatGroups = Model.meshesV[mei].faceMaterialsV.Length;
+                    iNumFaceMatGroups = Model.meshesV[iMeshIdx].faceMaterialsV.Length;
 
-                    Array.Resize(ref Model.meshesV[mei].faceMaterialIndicesV, Model.meshesV[mei].numFaces);
+                    Array.Resize(ref Model.meshesV[iMeshIdx].faceMaterialIndicesV, 
+                                 Model.meshesV[iMeshIdx].numFaces);
 
-                    for (mfi = 0; mfi < numFaceMatGroups; mfi++)
+                    for (iFaceMatIdx = 0; iFaceMatIdx < iNumFaceMatGroups; iFaceMatIdx++)
                     {
-                        mai = 0;
-                        foundQ = false;
-
+                        iMaterialIdx = 0;
+                        
                         do
                         {
-                            ci = 0;
+                            iVColorIdx = 0;
 
-                            while (Model.meshesV[mei].faceMaterialsV[mfi].materialName[ci] == Model.materialsV[mai].materialName[ci] &&
-                                   Model.meshesV[mei].faceMaterialsV[mfi].materialName[ci] != 0 &&
-                                   Model.materialsV[mai].materialName[ci] != 0)
+                            while (Model.meshesV[iMeshIdx].faceMaterialsV[iFaceMatIdx].materialName[iVColorIdx] == Model.materialsV[iMaterialIdx].materialName[iVColorIdx] &&
+                                   Model.meshesV[iMeshIdx].faceMaterialsV[iFaceMatIdx].materialName[iVColorIdx] != 0 &&
+                                   Model.materialsV[iMaterialIdx].materialName[iVColorIdx] != 0)
                             {
-                                ci++;
+                                iVColorIdx++;
                             }
 
-                            foundQ = Model.meshesV[mei].faceMaterialsV[mfi].materialName[ci] == Model.materialsV[mai].materialName[ci];
+                            bFoundQ = 
+                                Model.meshesV[iMeshIdx].faceMaterialsV[iFaceMatIdx].materialName[iVColorIdx] == 
+                                Model.materialsV[iMaterialIdx].materialName[iVColorIdx];
 
-                            mai++;
+                            iMaterialIdx++;
 
-                        } while (!foundQ && mai == numMaterials);
+                        } while (!bFoundQ && iMaterialIdx != iNumMaterials);
 
-                        mai--;
+                        iMaterialIdx--;
 
-                        numFaces = Model.meshesV[mei].faceMaterialsV[mfi].numEntries;
+                        iNumFaces = Model.meshesV[iMeshIdx].faceMaterialsV[iFaceMatIdx].numEntries;
 
-                        for (fi = 0; fi < numFaces; fi++)
+                        for (iPolyIdx = 0; iPolyIdx < iNumFaces; iPolyIdx++)
                         {
-                            Model.meshesV[mei].faceMaterialIndicesV[Model.meshesV[mei].faceMaterialsV[mfi].facesV[fi]] = mai;
+                            Model.meshesV[iMeshIdx].faceMaterialIndicesV[Model.meshesV[iMeshIdx].
+                                faceMaterialsV[iFaceMatIdx].facesV[iPolyIdx]] = iMaterialIdx;
                         }
                     }
                 }
@@ -727,9 +735,9 @@ namespace KimeraCS
 
         public static int Load3DS(string fileName, out Model3DS[] modelsV)
         {
-            int iLoad3DSResult = 0;
+            int iLoad3DSResult;
             byte[] fileBuffer;
-            int offset, fileLength, numModels, mi;
+            int iOffset, iFileLength, iNumModels, iModelIdx;
 
             modelsV = null;
 
@@ -739,25 +747,25 @@ namespace KimeraCS
                 // Read All 3DS Model file into memory
                 fileBuffer = File.ReadAllBytes(fileName);
 
-                offset = 0;
-                fileLength = fileBuffer.Length;
+                iOffset = 0;
+                iFileLength = fileBuffer.Length;
 
                 using (var fileMemory = new MemoryStream(fileBuffer))
                 {
                     using (var memReader = new BinaryReader(fileMemory))
                     {
-                        while (ReadPrimaryChunk3DS(memReader, ref offset, fileLength, ref modelsV) &&
-                               offset < fileLength);
+                        while (ReadPrimaryChunk3DS(memReader, ref iOffset, iFileLength, ref modelsV) &&
+                               iOffset < iFileLength) ;
                     }
                 }              
 
-                if (modelsV.Length != 0) numModels = modelsV.Length;
-                else numModels = 0;
+                if (modelsV.Length != 0) iNumModels = modelsV.Length;
+                else iNumModels = 0;
 
-                for (mi = 0; mi < numModels; mi++)
+                for (iModelIdx = 0; iModelIdx < iNumModels; iModelIdx++)
                 {
-                    if (modelsV[mi].meshesV != null)
-                        BuildFaceMaterialList(ref modelsV[mi]);
+                    if (modelsV[iModelIdx].meshesV != null)
+                        BuildFaceMaterialList(ref modelsV[iModelIdx]);
                 }
 
                 iLoad3DSResult = 1;
@@ -778,7 +786,7 @@ namespace KimeraCS
         //  ---------------------------------------------------------------------------------------------------------
         //  ---------------------------------------- 3Ds => PModel --------------------------------------------------
         //  ---------------------------------------------------------------------------------------------------------
-        private static void GetVerts(mesh_object_node mesh, out Point3D[] vertsV)
+        private static void GetVerts(Mesh_object_node mesh, out Point3D[] vertsV)
         {
             int i;
 
@@ -792,7 +800,7 @@ namespace KimeraCS
             }
         }
 
-        private static void GetFaces(mesh_object_node mesh, out PPolygon[] facesV)
+        private static void GetFaces(Mesh_object_node mesh, out PPolygon[] facesV)
         {
             int fi;
 
@@ -801,7 +809,7 @@ namespace KimeraCS
             for (fi = 0; fi < mesh.numFaces; fi++)
             {
                 facesV[fi].tag1 = 0;
-                facesV[fi].tag2 = 0xCFCEA00;
+                facesV[fi].tag2 = PPOLY_TAG2; // 0xCFCEA00
 
                 facesV[fi].Verts = new short[3];
                 facesV[fi].Verts[0] = (short)mesh.facesV[fi].vertC;
@@ -813,7 +821,7 @@ namespace KimeraCS
             }
         }
 
-        private static void GetTexCoords(mesh_object_node mesh, out Point2D[] texCoordsV)
+        private static void GetTexCoords(Mesh_object_node mesh, out Point2D[] texCoordsV)
         {
             int i;
 
@@ -831,123 +839,140 @@ namespace KimeraCS
             }
         }
 
-        private static void GetVColors(mesh_object_node mesh, mat_list_node[] materialsV, out Color[] vcolorsV)
+        private static void GetVColors(Mesh_object_node mesh, Mat_list_node[] materialsV, 
+                                       out Color[] vcolorsV)
         {
-            int ci, fi;
-            stIntVector[] faces_per_vert;
-            long temp_r, temp_g, temp_b;
+            int iVColorIdx, iPolyIdx;
+            STIntVector[] stFacesPerVert;
+            int iTmpR, iTmpG, iTmpB;
 
-            int v_index, face_index;
+            int iVertIdx, iPolyCounterIdx;
 
-            faces_per_vert = new stIntVector[mesh.numVerts];
+            stFacesPerVert = new STIntVector[mesh.numVerts];
 
-            for (fi = 0; fi < mesh.numFaces; fi++)
+            for (iPolyIdx = 0; iPolyIdx < mesh.numFaces; iPolyIdx++)
             {
-                v_index = mesh.facesV[fi].vertA;
-                face_index = faces_per_vert[v_index].length;
-                Array.Resize(ref faces_per_vert[v_index].vector, face_index + 1);
-                faces_per_vert[v_index].vector[face_index] = fi;
-                faces_per_vert[v_index].length = face_index + 1;
+                iVertIdx = mesh.facesV[iPolyIdx].vertA;
+                iPolyCounterIdx = stFacesPerVert[iVertIdx].length;
+                Array.Resize(ref stFacesPerVert[iVertIdx].vector, iPolyCounterIdx + 1);
+                stFacesPerVert[iVertIdx].vector[iPolyCounterIdx] = iPolyIdx;
+                stFacesPerVert[iVertIdx].length = iPolyCounterIdx + 1;
 
-                v_index = mesh.facesV[fi].vertB;
-                face_index = faces_per_vert[v_index].length;
-                Array.Resize(ref faces_per_vert[v_index].vector, face_index + 1);
-                faces_per_vert[v_index].vector[face_index] = fi;
-                faces_per_vert[v_index].length = face_index + 1;
+                iVertIdx = mesh.facesV[iPolyIdx].vertB;
+                iPolyCounterIdx = stFacesPerVert[iVertIdx].length;
+                Array.Resize(ref stFacesPerVert[iVertIdx].vector, iPolyCounterIdx + 1);
+                stFacesPerVert[iVertIdx].vector[iPolyCounterIdx] = iPolyIdx;
+                stFacesPerVert[iVertIdx].length = iPolyCounterIdx + 1;
 
-                v_index = mesh.facesV[fi].vertC;
-                face_index = faces_per_vert[v_index].length;
-                Array.Resize(ref faces_per_vert[v_index].vector, face_index + 1);
-                faces_per_vert[v_index].vector[face_index] = fi;
-                faces_per_vert[v_index].length = face_index + 1;
+                iVertIdx = mesh.facesV[iPolyIdx].vertC;
+                iPolyCounterIdx = stFacesPerVert[iVertIdx].length;
+                Array.Resize(ref stFacesPerVert[iVertIdx].vector, iPolyCounterIdx + 1);
+                stFacesPerVert[iVertIdx].vector[iPolyCounterIdx] = iPolyIdx;
+                stFacesPerVert[iVertIdx].length = iPolyCounterIdx + 1;
             }
 
             vcolorsV = new Color[mesh.numVerts];
 
-            for (ci = 0; ci < mesh.numVerts; ci++)
+            for (iVColorIdx = 0; iVColorIdx < mesh.numVerts; iVColorIdx++)
             {
-                temp_r = 0;
-                temp_g = 0;
-                temp_b = 0;
+                iTmpR = 0;
+                iTmpG = 0;
+                iTmpB = 0;
 
-                for (fi = 0; fi < faces_per_vert[ci].length; fi++)
+                for (iPolyIdx = 0; iPolyIdx < stFacesPerVert[iVColorIdx].length; iPolyIdx++)
                 {
                     if (mesh.faceMaterialIndicesV != null)
                     {
-                        temp_r = temp_r + materialsV[mesh.faceMaterialIndicesV[faces_per_vert[ci].vector[fi]]].diffuse.red;
-                        temp_g = temp_g + materialsV[mesh.faceMaterialIndicesV[faces_per_vert[ci].vector[fi]]].diffuse.green;
-                        temp_b = temp_b + materialsV[mesh.faceMaterialIndicesV[faces_per_vert[ci].vector[fi]]].diffuse.blue;
+                        iTmpR += materialsV[mesh.faceMaterialIndicesV[stFacesPerVert[iVColorIdx].
+                                        vector[iPolyIdx]]].diffuse.red;
+                        iTmpG += materialsV[mesh.faceMaterialIndicesV[stFacesPerVert[iVColorIdx].
+                                        vector[iPolyIdx]]].diffuse.green;
+                        iTmpB += materialsV[mesh.faceMaterialIndicesV[stFacesPerVert[iVColorIdx].
+                                        vector[iPolyIdx]]].diffuse.blue;
                     }
                 }
 
-                if (faces_per_vert[ci].length != 0)
+                if (stFacesPerVert[iVColorIdx].length != 0)
                 {
-                    vcolorsV[ci] = Color.FromArgb(255,
-                                                  (int)(temp_r / faces_per_vert[ci].length),
-                                                  (int)(temp_g / faces_per_vert[ci].length),
-                                                  (int)(temp_b / faces_per_vert[ci].length));
+                    vcolorsV[iVColorIdx] = Color.FromArgb(255,
+                                                  iTmpR / stFacesPerVert[iVColorIdx].length,
+                                                  iTmpG / stFacesPerVert[iVColorIdx].length,
+                                                  iTmpB / stFacesPerVert[iVColorIdx].length);
                 }
             }
         }
 
-        private static void GetPColors(mesh_object_node mesh, mat_list_node[] materialsV, out Color[] pcolorsV)
+        private static void GetPColors(Mesh_object_node mesh, Mat_list_node[] materialsV, out Color[] pcolorsV)
         {
-            int ci;
+            int iPColorIdx;
 
             pcolorsV = new Color[mesh.numFaces];
 
-            for (ci = 0; ci < mesh.numFaces; ci++)
+            for (iPColorIdx = 0; iPColorIdx < mesh.numFaces; iPColorIdx++)
             {
                 if (mesh.faceMaterialIndicesV != null)
                 {
-                    pcolorsV[ci] = Color.FromArgb(pcolorsV[ci].R + materialsV[mesh.faceMaterialIndicesV[ci]].diffuse.red,
-                                                  pcolorsV[ci].G + materialsV[mesh.faceMaterialIndicesV[ci]].diffuse.green,
-                                                  pcolorsV[ci].B + materialsV[mesh.faceMaterialIndicesV[ci]].diffuse.blue);
+                    pcolorsV[iPColorIdx] = Color.FromArgb(255,
+                        pcolorsV[iPColorIdx].R + materialsV[mesh.faceMaterialIndicesV[iPColorIdx]].diffuse.red,
+                        pcolorsV[iPColorIdx].G + materialsV[mesh.faceMaterialIndicesV[iPColorIdx]].diffuse.green,
+                        pcolorsV[iPColorIdx].B + materialsV[mesh.faceMaterialIndicesV[iPColorIdx]].diffuse.blue);
                 }
             }
         }
 
-        private static void ConvertMesh3DSToPModel(mesh_object_node mesh, mat_list_node[] materialsV, ref PModel Model)
+        private static void ConvertMesh3DSToPModel(Mesh_object_node mesh, Mat_list_node[] materialsV, ref PModel Model)
         {
-            Point3D[] vertsV;
-            PPolygon[] facesV;
-            Point2D[] texcoordsV;
-            Color[] vcolorsV;
-            Color[] pcolorsV;
 
-            GetVerts(mesh, out vertsV);
-            GetFaces(mesh, out facesV);
-            GetTexCoords(mesh, out texcoordsV);
-            GetVColors(mesh, materialsV, out vcolorsV);
-            GetPColors(mesh, materialsV, out pcolorsV);
+            GetVerts(mesh, out Point3D[] vertsV);
+            GetFaces(mesh, out PPolygon[] facesV);
+            GetTexCoords(mesh, out Point2D[] texcoordsV);
+            GetVColors(mesh, materialsV, out Color[] vcolorsV);
+            GetPColors(mesh, materialsV, out Color[] pcolorsV);
 
-            AddGroup(ref Model, vertsV, facesV, texcoordsV, vcolorsV, pcolorsV);
+            AddGroup(ref Model, vertsV, facesV, texcoordsV, vcolorsV, pcolorsV, 0);
+
         }
 
-        public static void ConvertModel3DSToPModel(Model3DS Model, ref PModel outModel)
+        public static void ConvertModel3DSToPModel(Model3DS Model, ref PModel outModel, bool bAdjust3DSModel)
         {
-            int mi, numMeshes;
+            int iMeshIdx, iNumMeshes;
 
             if (Model.meshesV != null)
             {
-                numMeshes = Model.meshesV.Length;
+                iNumMeshes = Model.meshesV.Length;
 
-                for (mi = 0; mi < numMeshes; mi++)
+                for (iMeshIdx = 0; iMeshIdx < iNumMeshes; iMeshIdx++)
                 {
-                    ConvertMesh3DSToPModel(Model.meshesV[mi], Model.materialsV, ref outModel);
+                    ConvertMesh3DSToPModel(Model.meshesV[iMeshIdx], Model.materialsV, ref outModel);
+
+                    if (bAdjust3DSModel)
+                    {
+                        // Let's mirror and rotate to put the mesh in correct FF7 models position
+                        // Mirror model on Z plane
+                        MirrorGroupRelativeToPlane(ref outModel, outModel.Header.numGroups - 1,
+                                                   0, 0, 1, 0);
+                    }
                 }
             }
         }
 
-        public static void ConvertModels3DSToPModel(Model3DS[] modelsV, ref PModel outModel)
+        public static void ConvertModels3DSToPModel(Model3DS[] modelsV, ref PModel outModel, 
+                                                    bool bAdjust3DSModel)
         {
-            int mi, numModels;
+            int iModelIdx, iNumModels;
 
-            numModels = modelsV.Length;
+            iNumModels = modelsV.Length;
 
-            for (mi = 0; mi < numModels; mi++)
+            for (iModelIdx = 0; iModelIdx < iNumModels; iModelIdx++)
             {
-                ConvertModel3DSToPModel(modelsV[mi], ref outModel);
+                ConvertModel3DSToPModel(modelsV[iModelIdx], ref outModel, bAdjust3DSModel);
+
+                // Rotate 180º Y axis will do this here, after adding the group
+                // when importing .3ds file
+                if (bAdjust3DSModel)
+                {
+                    outModel.Groups[outModel.Header.numGroups - 1].rotGroupGamma = 180;
+                }
             }
 
             outModel.Header.version = 1;
@@ -971,9 +996,9 @@ namespace KimeraCS
             outModel.rotationQuaternion.z = 0;
             outModel.rotationQuaternion.w = 1;
 
-            ComputeNormals(ref outModel);
-            ComputeBoundingBox(ref outModel);
-            ComputeEdges(ref outModel);
+            //ComputeNormals(ref outModel);
+            //ComputeBoundingBox(ref outModel);
+            //ComputeEdges(ref outModel);
         }
     }
 }
