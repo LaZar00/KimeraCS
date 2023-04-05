@@ -181,7 +181,7 @@ namespace KimeraCS
                                         {
                                             tmpWPModel = new PModel();
 
-                                            LoadPModel(ref tmpWPModel, strFileDirectoryName, weaponFileName);
+                                            LoadPModel(ref tmpWPModel, strFileDirectoryName, weaponFileName, true);
                                             wpModels.Add(tmpWPModel);
                                         }
 
@@ -352,7 +352,7 @@ namespace KimeraCS
                         nModels = 1;
 
                         tmpbPModel = new PModel();
-                        LoadPModel(ref tmpbPModel, strDirectoryName, modelName);
+                        LoadPModel(ref tmpbPModel, strDirectoryName, modelName, true);
                         Models.Add(tmpbPModel);
                     }
                 }
@@ -372,7 +372,7 @@ namespace KimeraCS
             bBone.nModels = 1;
 
             bLocBone = new PModel();
-            LoadPModel(ref bLocBone, strDirectoryName, modelName);
+            LoadPModel(ref bLocBone, strDirectoryName, modelName, true);
             bBone.Models.Add(bLocBone);
 
             bBone.len = ComputeDiameter(bLocBone.BoundingBox) / 2;
