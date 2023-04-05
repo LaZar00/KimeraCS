@@ -53,13 +53,13 @@ namespace KimeraCS
         public struct PEdge
         {
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
-            public short[] Verts;
+            public ushort[] Verts;
 
             // This is for create a new deep copy of PEdge
             // We will use normally the creator like '= new PEdge();' but there are some exceptions
             public PEdge(PEdge pedgeIn)
             {
-                Verts = new short[pedgeIn.Verts.Length];
+                Verts = new ushort[pedgeIn.Verts.Length];
                 pedgeIn.Verts.CopyTo(Verts, 0);
             }
         }
@@ -68,11 +68,11 @@ namespace KimeraCS
         {
             public short tag1;
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
-            public short[] Verts;
+            public ushort[] Verts;
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
-            public short[] Normals;
+            public ushort[] Normals;
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
-            public short[] Edges;
+            public ushort[] Edges;
             public int tag2;
 
             // This is for create a new empty PPolygon with arrays defined
@@ -81,9 +81,9 @@ namespace KimeraCS
                 tag1 = 0;
                 tag2 = tag2In;
 
-                Verts = new short[3];
-                Normals = new short[3];
-                Edges = new short[3];
+                Verts = new ushort[3];
+                Normals = new ushort[3];
+                Edges = new ushort[3];
             }
 
             // This is for create a new deep copy of PPolygon
@@ -93,13 +93,13 @@ namespace KimeraCS
                 tag1 = ppolygonIn.tag1;
                 tag2 = ppolygonIn.tag2;
 
-                Verts = new short[ppolygonIn.Verts.Length];
+                Verts = new ushort[ppolygonIn.Verts.Length];
                 ppolygonIn.Verts.CopyTo(Verts, 0);
 
-                Normals = new short[ppolygonIn.Normals.Length];
+                Normals = new ushort[ppolygonIn.Normals.Length];
                 ppolygonIn.Normals.CopyTo(Normals, 0);
 
-                Edges = new short[ppolygonIn.Edges.Length];
+                Edges = new ushort[ppolygonIn.Edges.Length];
                 ppolygonIn.Edges.CopyTo(Edges, 0);
             }
         }
@@ -232,7 +232,7 @@ namespace KimeraCS
         }
 
 
-        public static void LoadPModel(ref PModel Model, string strPFolder, string strPFileName)
+        public static void LoadPModel(ref PModel Model, string strPFolder, string strPFileName, bool bComputeNormals)
         {
             byte[] fileBuffer;
             long fileBufferPos = 0;
@@ -344,8 +344,13 @@ namespace KimeraCS
             RepairPolys(ref Model);
             KillUnusedVertices(ref Model);
             ComputeBoundingBox(ref Model);
-            ComputeEdges(ref Model);
-            ComputeNormals(ref Model);
+
+            if (bComputeNormals)
+            {
+                ComputeEdges(ref Model);
+                ComputeNormals(ref Model);
+            }
+
             CreateDListsFromPModel(ref Model);
         }
 
@@ -516,10 +521,10 @@ namespace KimeraCS
 
                     for (var i = 0; i < numEdges; i++)
                     {
-                        Edges[i].Verts = new short[2];
+                        Edges[i].Verts = new ushort[2];
 
-                        Edges[i].Verts[0] = memReader.ReadInt16();
-                        Edges[i].Verts[1] = memReader.ReadInt16();
+                        Edges[i].Verts[0] = memReader.ReadUInt16();
+                        Edges[i].Verts[1] = memReader.ReadUInt16();
                     }
 
                     pos = memReader.BaseStream.Position;
@@ -539,20 +544,20 @@ namespace KimeraCS
                     {
                         Polys[i].tag1 = memReader.ReadInt16();
 
-                        Polys[i].Verts = new short[3];
-                        Polys[i].Verts[0] = memReader.ReadInt16();
-                        Polys[i].Verts[1] = memReader.ReadInt16();
-                        Polys[i].Verts[2] = memReader.ReadInt16();
+                        Polys[i].Verts = new ushort[3];
+                        Polys[i].Verts[0] = memReader.ReadUInt16();
+                        Polys[i].Verts[1] = memReader.ReadUInt16();
+                        Polys[i].Verts[2] = memReader.ReadUInt16();
 
-                        Polys[i].Normals = new short[3];
-                        Polys[i].Normals[0] = memReader.ReadInt16();
-                        Polys[i].Normals[1] = memReader.ReadInt16();
-                        Polys[i].Normals[2] = memReader.ReadInt16();
+                        Polys[i].Normals = new ushort[3];
+                        Polys[i].Normals[0] = memReader.ReadUInt16();
+                        Polys[i].Normals[1] = memReader.ReadUInt16();
+                        Polys[i].Normals[2] = memReader.ReadUInt16();
 
-                        Polys[i].Edges = new short[3];
-                        Polys[i].Edges[0] = memReader.ReadInt16();
-                        Polys[i].Edges[1] = memReader.ReadInt16();
-                        Polys[i].Edges[2] = memReader.ReadInt16();
+                        Polys[i].Edges = new ushort[3];
+                        Polys[i].Edges[0] = memReader.ReadUInt16();
+                        Polys[i].Edges[1] = memReader.ReadUInt16();
+                        Polys[i].Edges[2] = memReader.ReadUInt16();
 
                         Polys[i].tag2 = memReader.ReadInt32();
                     }
@@ -972,9 +977,9 @@ namespace KimeraCS
                          iPolyCounter < inPModel.Groups[iGroupIdx].numPoly + inPModel.Groups[iGroupIdx].offsetPoly;
                          iPolyCounter++)
                 {
-                    outPModel.Polys[iPolyCounter].Verts[0] += (short)inPModel.Groups[iGroupIdx].offsetVert;
-                    outPModel.Polys[iPolyCounter].Verts[1] += (short)inPModel.Groups[iGroupIdx].offsetVert;
-                    outPModel.Polys[iPolyCounter].Verts[2] += (short)inPModel.Groups[iGroupIdx].offsetVert;
+                    outPModel.Polys[iPolyCounter].Verts[0] += (ushort)inPModel.Groups[iGroupIdx].offsetVert;
+                    outPModel.Polys[iPolyCounter].Verts[1] += (ushort)inPModel.Groups[iGroupIdx].offsetVert;
+                    outPModel.Polys[iPolyCounter].Verts[2] += (ushort)inPModel.Groups[iGroupIdx].offsetVert;
 
                 }
 
@@ -1601,33 +1606,42 @@ namespace KimeraCS
             Model.BoundingBox.min_y = (float)INFINITY_SINGLE;
             Model.BoundingBox.min_z = (float)INFINITY_SINGLE;
 
-            for (iGroupIdx = 0; iGroupIdx < Model.Header.numGroups; iGroupIdx++)
+            try
             {
-                for (iPolyIdx = Model.Groups[iGroupIdx].offsetPoly;
-                     iPolyIdx < Model.Groups[iGroupIdx].offsetPoly + Model.Groups[iGroupIdx].numPoly; 
-                     iPolyIdx++)
+                for (iGroupIdx = 0; iGroupIdx < Model.Header.numGroups; iGroupIdx++)
                 {
-                    for (iVertIdx = 0; iVertIdx < 3; iVertIdx++)
+                    for (iPolyIdx = Model.Groups[iGroupIdx].offsetPoly;
+                         iPolyIdx < Model.Groups[iGroupIdx].offsetPoly + Model.Groups[iGroupIdx].numPoly;
+                         iPolyIdx++)
                     {
-                        if (Model.Verts[Model.Polys[iPolyIdx].Verts[iVertIdx] + Model.Groups[iGroupIdx].offsetVert].x > Model.BoundingBox.max_x)
-                            Model.BoundingBox.max_x = Model.Verts[Model.Polys[iPolyIdx].Verts[iVertIdx] + Model.Groups[iGroupIdx].offsetVert].x;
-                        if (Model.Verts[Model.Polys[iPolyIdx].Verts[iVertIdx] + Model.Groups[iGroupIdx].offsetVert].y > Model.BoundingBox.max_y)
-                            Model.BoundingBox.max_y = Model.Verts[Model.Polys[iPolyIdx].Verts[iVertIdx] + Model.Groups[iGroupIdx].offsetVert].y;
-                        if (Model.Verts[Model.Polys[iPolyIdx].Verts[iVertIdx] + Model.Groups[iGroupIdx].offsetVert].z > Model.BoundingBox.max_z)
-                            Model.BoundingBox.max_z = Model.Verts[Model.Polys[iPolyIdx].Verts[iVertIdx] + Model.Groups[iGroupIdx].offsetVert].z;
+                        for (iVertIdx = 0; iVertIdx < 3; iVertIdx++)
+                        {
+                            if (Model.Verts[Model.Polys[iPolyIdx].Verts[iVertIdx] + Model.Groups[iGroupIdx].offsetVert].x > Model.BoundingBox.max_x)
+                                Model.BoundingBox.max_x = Model.Verts[Model.Polys[iPolyIdx].Verts[iVertIdx] + Model.Groups[iGroupIdx].offsetVert].x;
+                            if (Model.Verts[Model.Polys[iPolyIdx].Verts[iVertIdx] + Model.Groups[iGroupIdx].offsetVert].y > Model.BoundingBox.max_y)
+                                Model.BoundingBox.max_y = Model.Verts[Model.Polys[iPolyIdx].Verts[iVertIdx] + Model.Groups[iGroupIdx].offsetVert].y;
+                            if (Model.Verts[Model.Polys[iPolyIdx].Verts[iVertIdx] + Model.Groups[iGroupIdx].offsetVert].z > Model.BoundingBox.max_z)
+                                Model.BoundingBox.max_z = Model.Verts[Model.Polys[iPolyIdx].Verts[iVertIdx] + Model.Groups[iGroupIdx].offsetVert].z;
 
-                        if (Model.Verts[Model.Polys[iPolyIdx].Verts[iVertIdx] + Model.Groups[iGroupIdx].offsetVert].x < Model.BoundingBox.min_x)
-                            Model.BoundingBox.min_x = Model.Verts[Model.Polys[iPolyIdx].Verts[iVertIdx] + Model.Groups[iGroupIdx].offsetVert].x;
-                        if (Model.Verts[Model.Polys[iPolyIdx].Verts[iVertIdx] + Model.Groups[iGroupIdx].offsetVert].y < Model.BoundingBox.min_y)
-                            Model.BoundingBox.min_y = Model.Verts[Model.Polys[iPolyIdx].Verts[iVertIdx] + Model.Groups[iGroupIdx].offsetVert].y;
-                        if (Model.Verts[Model.Polys[iPolyIdx].Verts[iVertIdx] + Model.Groups[iGroupIdx].offsetVert].z < Model.BoundingBox.min_z)
-                            Model.BoundingBox.min_z = Model.Verts[Model.Polys[iPolyIdx].Verts[iVertIdx] + Model.Groups[iGroupIdx].offsetVert].z;
+                            if (Model.Verts[Model.Polys[iPolyIdx].Verts[iVertIdx] + Model.Groups[iGroupIdx].offsetVert].x < Model.BoundingBox.min_x)
+                                Model.BoundingBox.min_x = Model.Verts[Model.Polys[iPolyIdx].Verts[iVertIdx] + Model.Groups[iGroupIdx].offsetVert].x;
+                            if (Model.Verts[Model.Polys[iPolyIdx].Verts[iVertIdx] + Model.Groups[iGroupIdx].offsetVert].y < Model.BoundingBox.min_y)
+                                Model.BoundingBox.min_y = Model.Verts[Model.Polys[iPolyIdx].Verts[iVertIdx] + Model.Groups[iGroupIdx].offsetVert].y;
+                            if (Model.Verts[Model.Polys[iPolyIdx].Verts[iVertIdx] + Model.Groups[iGroupIdx].offsetVert].z < Model.BoundingBox.min_z)
+                                Model.BoundingBox.min_z = Model.Verts[Model.Polys[iPolyIdx].Verts[iVertIdx] + Model.Groups[iGroupIdx].offsetVert].z;
+                        }
                     }
                 }
+
+                Model.diameter = (float)Math.Sqrt(Math.Pow(Model.BoundingBox.max_x, 2) + Math.Pow(Model.BoundingBox.max_y, 2) + Math.Pow(Model.BoundingBox.max_z, 2) +
+                                                  Math.Pow(Model.BoundingBox.min_x, 2) + Math.Pow(Model.BoundingBox.min_y, 2) + Math.Pow(Model.BoundingBox.min_z, 2));
+            }
+            catch (Exception ex)
+            {
+                strGlobalExceptionMessage = ex.Message;
             }
 
-            Model.diameter = (float)Math.Sqrt(Math.Pow(Model.BoundingBox.max_x, 2) + Math.Pow(Model.BoundingBox.max_y, 2) + Math.Pow(Model.BoundingBox.max_z, 2) +
-                                              Math.Pow(Model.BoundingBox.min_x, 2) + Math.Pow(Model.BoundingBox.min_y, 2) + Math.Pow(Model.BoundingBox.min_z, 2));
+
         }
 
         public static void ComputeCurrentBoundingBox(ref PModel Model)
@@ -1703,7 +1717,7 @@ namespace KimeraCS
 
                         polys_per_vert[iActualVertIdx] += 1;
 
-                        Model.Polys[iPolyIdx].Normals[iVertIdx] = (short)iActualVertIdx;
+                        Model.Polys[iPolyIdx].Normals[iVertIdx] = (ushort)iActualVertIdx;
 
                     }
                 }
@@ -1857,7 +1871,7 @@ namespace KimeraCS
             Model.Edges = new PEdge[Model.Header.numPolys * 3];
 
             for (iGroupIdx = 0; iGroupIdx < Model.Header.numPolys * 3; iGroupIdx++) 
-                Model.Edges[iGroupIdx].Verts = new short[2];
+                Model.Edges[iGroupIdx].Verts = new ushort[2];
 
             for (iGroupIdx = 0; iGroupIdx < Model.Header.numGroups; iGroupIdx++)
             {
@@ -3343,7 +3357,7 @@ namespace KimeraCS
             {
                 iTmp = Model.Polys[iPolyIdx].Verts[0];
                 Model.Polys[iPolyIdx].Verts[0] = Model.Polys[iPolyIdx].Verts[1];
-                Model.Polys[iPolyIdx].Verts[1] = (short)iTmp;
+                Model.Polys[iPolyIdx].Verts[1] = (ushort)iTmp;
             }
         }
 
@@ -3649,7 +3663,7 @@ namespace KimeraCS
         }
 
         // iArrayVNP = VertexNewPoly
-        public static int AddPolygon(ref PModel Model, ref int[] iArrayVNP)
+        public static int AddPolygon(ref PModel Model, ref short[] iArrayVNP)
         {
             //  -------- Warning! Can cause the Normals to be inconsistent if lights are disabled.-----
             //  ---------------------------------Must call ComputeNormals -----------------------------
@@ -3661,9 +3675,9 @@ namespace KimeraCS
             // Define new Poly
             tmpPPoly = new PPolygon()
             {
-                Edges = new short[3] { 0, 0, 0 },          // This does not seem to be used in FF7 PC Port
-                Normals = new short[3] { 0, 0, 0 },        // This will be calculated later with ComputeNormals
-                Verts = new short[3],                      // We will assign the selected vertices
+                Edges = new ushort[3] { 0, 0, 0 },          // This does not seem to be used in FF7 PC Port
+                Normals = new ushort[3] { 0, 0, 0 },        // This will be calculated later with ComputeNormals
+                Verts = new ushort[3],                      // We will assign the selected vertices
                 tag1 = 0,
                 tag2 = PPOLY_TAG2,
             };
@@ -3676,19 +3690,19 @@ namespace KimeraCS
 
             if (iVertResult != -1)
             {
-                tmpPPoly.Verts[0] = (short)iVertResult;
+                tmpPPoly.Verts[0] = (ushort)iVertResult;
 
                 iVertResult = AddVertex(ref Model, iGroupIdx, Model.Verts[iArrayVNP[1]], Model.Vcolors[iArrayVNP[1]]);
 
                 if (iVertResult != -1)
                 {
-                    tmpPPoly.Verts[1] = (short)iVertResult;
+                    tmpPPoly.Verts[1] = (ushort)iVertResult;
 
                     iVertResult = AddVertex(ref Model, iGroupIdx, Model.Verts[iArrayVNP[2]], Model.Vcolors[iArrayVNP[2]]);
 
                     if (iVertResult != -1)
                     {
-                        tmpPPoly.Verts[2] = (short)iVertResult;
+                        tmpPPoly.Verts[2] = (ushort)iVertResult;
                     }
                 }
             }
@@ -3717,10 +3731,10 @@ namespace KimeraCS
         }
 
         //public static void OrderVertices(PModel Model, ref int[] vertBuff)
-        public static void OrderVertices(Point3D[] inP3DVertexArray, ref int[] iPolyIndices)
+        public static void OrderVertices(Point3D[] inP3DVertexArray, ref short[] iPolyIndices)
         {
             Point3D v1, v2, v3;
-            int iTmpPolyIdx;
+            short iTmpPolyIdx;
 
             // -- Commented in KimeraVB6
             //glMatrixMode(GLMatrixModeList.GL_MODELVIEW);
@@ -3778,8 +3792,8 @@ namespace KimeraCS
         public static bool CutEdgeAtPoint(ref PModel Model, int iPolyIdx, int iEdgeIdx, Point3D intersectionPoint, Point2D intersectionTexCoord)
         {
             int iGroupIdx, iVertIdx1, iVertIdx2, iVertIdx3, iVertIdxNew;
-            int[] vBuff1 = new int[3];
-            int[] vBuff2 = new int[3];
+            short[] vBuff1 = new short[3];
+            short[] vBuff2 = new short[3];
             Color tmpColor = new Color();
 
             iGroupIdx = GetPolygonGroup(Model, iPolyIdx);
@@ -3823,33 +3837,33 @@ namespace KimeraCS
             switch (iEdgeIdx)
             {
                 case 0:
-                    vBuff1[0] = iVertIdx1;
-                    vBuff1[1] = iVertIdxNew;
-                    vBuff1[2] = iVertIdx3;
+                    vBuff1[0] = (short)iVertIdx1;
+                    vBuff1[1] = (short)iVertIdxNew;
+                    vBuff1[2] = (short)iVertIdx3;
 
-                    vBuff2[2] = iVertIdx3;
-                    vBuff2[1] = iVertIdx2;
-                    vBuff2[0] = iVertIdxNew;
+                    vBuff2[2] = (short)iVertIdx3;
+                    vBuff2[1] = (short)iVertIdx2;
+                    vBuff2[0] = (short)iVertIdxNew;
                     break;
 
                 case 1:
-                    vBuff1[0] = iVertIdx1;
-                    vBuff1[1] = iVertIdx2;
-                    vBuff1[2] = iVertIdxNew;
+                    vBuff1[0] = (short)iVertIdx1;
+                    vBuff1[1] = (short)iVertIdx2;
+                    vBuff1[2] = (short)iVertIdxNew;
 
-                    vBuff2[2] = iVertIdx3;
-                    vBuff2[1] = iVertIdxNew;
-                    vBuff2[0] = iVertIdx1;
+                    vBuff2[2] = (short)iVertIdx3;
+                    vBuff2[1] = (short)iVertIdxNew;
+                    vBuff2[0] = (short)iVertIdx1;
                     break;
 
                 case 2:
-                    vBuff1[0] = iVertIdx1;
-                    vBuff1[1] = iVertIdx2;
-                    vBuff1[2] = iVertIdxNew;
+                    vBuff1[0] = (short)iVertIdx1;
+                    vBuff1[1] = (short)iVertIdx2;
+                    vBuff1[2] = (short)iVertIdxNew;
 
-                    vBuff2[2] = iVertIdx3;
-                    vBuff2[1] = iVertIdx2;
-                    vBuff2[0] = iVertIdxNew;
+                    vBuff2[2] = (short)iVertIdx3;
+                    vBuff2[1] = (short)iVertIdx2;
+                    vBuff2[0] = (short)iVertIdxNew;
                     break;
             }
 
