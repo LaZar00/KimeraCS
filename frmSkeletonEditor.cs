@@ -158,9 +158,6 @@ namespace KimeraCS
         // SaveAs global variable
         public static string strGlobalPathSaveAsSkeletonFolder;
 
-        // FF8 vars
-        public static bool IsFF8Model;
-
 
         /////////////////////////////////////////////////////////////
         // Main Skeleton Editor class creator:
@@ -562,8 +559,6 @@ namespace KimeraCS
             // Init vars
             ianimIndex = 0;
             ianimWeaponIndex = 0;
-
-            IsFF8Model = false;
 
             SelectedBone = -1;
             SelectedBonePiece = -1;
