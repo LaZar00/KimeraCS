@@ -514,7 +514,7 @@ namespace KimeraCS
         //  ---------------------------------------------------------------------------------------------------
         public static int MoveToFieldBone(FieldSkeleton fSkeleton, FieldFrame fFrame, int b_index)
         {
-            int bi, jsp;
+            int iBoneIdx, jsp;
             string[] joint_stack = new string[fSkeleton.bones.Count];
 
             glMatrixMode(GLMatrixModeList.GL_MODELVIEW);
@@ -522,23 +522,23 @@ namespace KimeraCS
             jsp = 0;
             joint_stack[jsp] = fSkeleton.bones[0].joint_f;
 
-            for (bi = 0; bi < b_index; bi++)
+            for (iBoneIdx = 0; iBoneIdx < b_index; iBoneIdx++)
             {
-                while (!(fSkeleton.bones[bi].joint_f == joint_stack[jsp]) && jsp > 0)
+                while (!(fSkeleton.bones[iBoneIdx].joint_f == joint_stack[jsp]) && jsp > 0)
                 {
                     glPopMatrix();
                     jsp--;
                 }
                 glPushMatrix();
 
-                glRotated(fFrame.rotations[bi].beta, 0, 1, 0);
-                glRotated(fFrame.rotations[bi].alpha, 1, 0, 0);
-                glRotated(fFrame.rotations[bi].gamma, 0, 0, 1);
+                glRotated(fFrame.rotations[iBoneIdx].beta, 0, 1, 0);
+                glRotated(fFrame.rotations[iBoneIdx].alpha, 1, 0, 0);
+                glRotated(fFrame.rotations[iBoneIdx].gamma, 0, 0, 1);
 
-                glTranslated(0, 0, -fSkeleton.bones[bi].len);
+                glTranslated(0, 0, -fSkeleton.bones[iBoneIdx].len);
 
                 jsp++;
-                joint_stack[jsp] = fSkeleton.bones[bi].joint_i;
+                joint_stack[jsp] = fSkeleton.bones[iBoneIdx].joint_i;
             }
 
             while (!(fSkeleton.bones[b_index].joint_f == joint_stack[jsp]) && jsp > 0)
@@ -627,7 +627,7 @@ namespace KimeraCS
 
         public static void DrawFieldBoneBoundingBox(FieldBone bone)
         {
-            int ri;
+            int iResourceIdx;
 
             float max_x, max_y, max_z;
             float min_x, min_y, min_z;
@@ -657,15 +657,21 @@ namespace KimeraCS
                 min_y = (float)INFINITY_SINGLE;
                 min_z = (float)INFINITY_SINGLE;
 
-                for (ri = 0; ri < bone.nResources; ri++)
+                for (iResourceIdx = 0; iResourceIdx < bone.nResources; iResourceIdx++)
                 {
-                    if (max_x < bone.fRSDResources[ri].Model.BoundingBox.max_x) max_x = bone.fRSDResources[ri].Model.BoundingBox.max_x;
-                    if (max_y < bone.fRSDResources[ri].Model.BoundingBox.max_y) max_y = bone.fRSDResources[ri].Model.BoundingBox.max_y;
-                    if (max_z < bone.fRSDResources[ri].Model.BoundingBox.max_z) max_z = bone.fRSDResources[ri].Model.BoundingBox.max_z;
+                    if (max_x < bone.fRSDResources[iResourceIdx].Model.BoundingBox.max_x) 
+                            max_x = bone.fRSDResources[iResourceIdx].Model.BoundingBox.max_x;
+                    if (max_y < bone.fRSDResources[iResourceIdx].Model.BoundingBox.max_y) 
+                            max_y = bone.fRSDResources[iResourceIdx].Model.BoundingBox.max_y;
+                    if (max_z < bone.fRSDResources[iResourceIdx].Model.BoundingBox.max_z) 
+                            max_z = bone.fRSDResources[iResourceIdx].Model.BoundingBox.max_z;
 
-                    if (min_x > bone.fRSDResources[ri].Model.BoundingBox.min_x) min_x = bone.fRSDResources[ri].Model.BoundingBox.min_x;
-                    if (min_y > bone.fRSDResources[ri].Model.BoundingBox.min_x) min_y = bone.fRSDResources[ri].Model.BoundingBox.min_y;
-                    if (min_z > bone.fRSDResources[ri].Model.BoundingBox.min_x) min_z = bone.fRSDResources[ri].Model.BoundingBox.min_z;
+                    if (min_x > bone.fRSDResources[iResourceIdx].Model.BoundingBox.min_x) 
+                            min_x = bone.fRSDResources[iResourceIdx].Model.BoundingBox.min_x;
+                    if (min_y > bone.fRSDResources[iResourceIdx].Model.BoundingBox.min_x) 
+                            min_y = bone.fRSDResources[iResourceIdx].Model.BoundingBox.min_y;
+                    if (min_z > bone.fRSDResources[iResourceIdx].Model.BoundingBox.min_x) 
+                            min_z = bone.fRSDResources[iResourceIdx].Model.BoundingBox.min_z;
                 }
 
                 glDisable(GLCapability.GL_DEPTH_TEST);
@@ -676,7 +682,7 @@ namespace KimeraCS
 
         public static void DrawFieldSkeletonBones(FieldSkeleton fSkeleton, FieldFrame fFrame)
         {
-            int bi, jsp;
+            int iBoneIdx, jsp;
             string[] joint_stack = new string[fSkeleton.bones.Count + 1];
             double[] rot_mat = new double[16];
 
@@ -697,9 +703,9 @@ namespace KimeraCS
             joint_stack[jsp] = fSkeleton.bones[0].joint_f;
 
             //for (bi = 0; bi < fSkeleton.nBones; bi++)
-            for (bi = 0; bi < fSkeleton.bones.Count; bi++)
+            for (iBoneIdx = 0; iBoneIdx < fSkeleton.bones.Count; iBoneIdx++)
             {
-                while ((fSkeleton.bones[bi].joint_f != joint_stack[jsp]) && jsp > 0)
+                while ((fSkeleton.bones[iBoneIdx].joint_f != joint_stack[jsp]) && jsp > 0)
                 {
                     glPopMatrix();
                     jsp--;
@@ -711,23 +717,26 @@ namespace KimeraCS
                 //glRotated(fFrame.rotations[bi].beta, 0, 1, 0);
                 //glRotated(fFrame.rotations[bi].alpha, 1, 0, 0);
                 //glRotated(fFrame.rotations[bi].gamma, 0, 0, 1);
-                BuildRotationMatrixWithQuaternions(fFrame.rotations[bi].alpha, fFrame.rotations[bi].beta, fFrame.rotations[bi].gamma, ref rot_mat);
+                BuildRotationMatrixWithQuaternions(fFrame.rotations[iBoneIdx].alpha, 
+                                                   fFrame.rotations[iBoneIdx].beta, 
+                                                   fFrame.rotations[iBoneIdx].gamma, 
+                                                   ref rot_mat);
                 glMultMatrixd(rot_mat);
 
                 glBegin(GLDrawMode.GL_POINTS);
                     glVertex3f(0, 0, 0);
-                    glVertex3f(0, 0, (float)-fSkeleton.bones[bi].len);
+                    glVertex3f(0, 0, (float)-fSkeleton.bones[iBoneIdx].len);
                 glEnd();
 
                 glBegin(GLDrawMode.GL_LINES);
                     glVertex3f(0, 0, 0);
-                    glVertex3f(0, 0, (float)-fSkeleton.bones[bi].len);
+                    glVertex3f(0, 0, (float)-fSkeleton.bones[iBoneIdx].len);
                 glEnd();
 
-                glTranslated(0, 0, -fSkeleton.bones[bi].len);
+                glTranslated(0, 0, -fSkeleton.bones[iBoneIdx].len);
 
                 jsp++;
-                joint_stack[jsp] = fSkeleton.bones[bi].joint_i;
+                joint_stack[jsp] = fSkeleton.bones[iBoneIdx].joint_i;
             }
 
             while (jsp > 0)
@@ -740,15 +749,15 @@ namespace KimeraCS
 
         public static void DrawRSDResource(FieldRSDResource fRSDResource, bool bDListsEnable)
         {
-            int ti;
+            int iTextureIdx;
             uint[] tex_ids;
             double[] rot_mat = new double[16];
 
             tex_ids = new uint[fRSDResource.numTextures];
 
-            for (ti = 0; ti < fRSDResource.numTextures; ti++)
+            for (iTextureIdx = 0; iTextureIdx < fRSDResource.numTextures; iTextureIdx++)
             {
-                tex_ids[ti] = fRSDResource.textures[ti].texID;
+                tex_ids[iTextureIdx] = fRSDResource.textures[iTextureIdx].texID;
             }
 
             glMatrixMode(GLMatrixModeList.GL_MODELVIEW);
@@ -770,22 +779,22 @@ namespace KimeraCS
         public static void DrawFieldBone(FieldBone bone, bool bDListsEnable)
         {
 
-            int ri;
+            int iResourceIdx;
 
             glMatrixMode(GLMatrixModeList.GL_MODELVIEW);
             glPushMatrix();
 
             glScalef(bone.resizeX, bone.resizeY, bone.resizeZ);
 
-            for (ri = 0; ri < bone.nResources; ri++)
-                DrawRSDResource(bone.fRSDResources[ri], bDListsEnable);
+            for (iResourceIdx = 0; iResourceIdx < bone.nResources; iResourceIdx++)
+                DrawRSDResource(bone.fRSDResources[iResourceIdx], bDListsEnable);
 
             glPopMatrix();
         }
 
         public static void DrawFieldSkeleton(FieldSkeleton fSkeleton, FieldFrame fFrame, bool bDListsEnable)
         {
-            int bi;
+            int iBoneIdx;
             string[] joint_stack = new string[fSkeleton.bones.Count + 1];
             int jsp;
             double[] rot_mat = new double[16];
@@ -805,9 +814,9 @@ namespace KimeraCS
             joint_stack[jsp] = fSkeleton.bones[0].joint_f;
 
             //for (bi = 0; bi < Skeleton.nBones; bi++)
-            for (bi = 0; bi < fSkeleton.bones.Count; bi++)
+            for (iBoneIdx = 0; iBoneIdx < fSkeleton.bones.Count; iBoneIdx++)
             {
-                while (!(fSkeleton.bones[bi].joint_f == joint_stack[jsp]) && jsp > 0)
+                while (!(fSkeleton.bones[iBoneIdx].joint_f == joint_stack[jsp]) && jsp > 0)
                 {
                     glPopMatrix();
                     jsp--;
@@ -817,17 +826,19 @@ namespace KimeraCS
 
                 glPushMatrix();
 
-                BuildRotationMatrixWithQuaternions(fFrame.rotations[bi].alpha, fFrame.rotations[bi].beta, fFrame.rotations[bi].gamma, 
+                BuildRotationMatrixWithQuaternions(fFrame.rotations[iBoneIdx].alpha, 
+                                                   fFrame.rotations[iBoneIdx].beta, 
+                                                   fFrame.rotations[iBoneIdx].gamma, 
                                                    ref rot_mat);
 
                 glMultMatrixd(rot_mat);
 
-                DrawFieldBone(fSkeleton.bones[bi], bDListsEnable);
+                DrawFieldBone(fSkeleton.bones[iBoneIdx], bDListsEnable);
 
-                glTranslated(0, 0, -fSkeleton.bones[bi].len);
+                glTranslated(0, 0, -fSkeleton.bones[iBoneIdx].len);
 
                 jsp++;
-                joint_stack[jsp] = fSkeleton.bones[bi].joint_i;
+                joint_stack[jsp] = fSkeleton.bones[iBoneIdx].joint_i;
             }
 
             while (jsp > 0)
@@ -844,7 +855,7 @@ namespace KimeraCS
         //  ---------------------------------------------------------------------------------------------------
         public static int MoveToBattleBone(BattleSkeleton bSkeleton, BattleFrame bFrame, int boneIndex)
         {
-            int bi, jsp, itmpbones;
+            int iBoneIdx, jsp, itmpbones;
             int[] joint_stack = new int[bSkeleton.nBones * 4];
             double[] rot_mat = new double[16];
 
@@ -861,11 +872,11 @@ namespace KimeraCS
             BuildRotationMatrixWithQuaternions(bFrame.bones[0].alpha, bFrame.bones[0].beta, bFrame.bones[0].gamma, ref rot_mat);
             glMultMatrixd(rot_mat);
 
-            for (bi = 0; bi < boneIndex; bi++)
+            for (iBoneIdx = 0; iBoneIdx < boneIndex; iBoneIdx++)
             {
-                glPushName((uint)bi);
+                glPushName((uint)iBoneIdx);
 
-                while (!(bSkeleton.bones[bi].parentBone == joint_stack[jsp]) && jsp > 0)
+                while (!(bSkeleton.bones[iBoneIdx].parentBone == joint_stack[jsp]) && jsp > 0)
                 {
                     glPopMatrix();
                     jsp--;
@@ -877,20 +888,20 @@ namespace KimeraCS
                 //  glRotated(bFrame.bones[bi + 1].alpha, 1, 0, 0);
                 //  glRotated(bFrame.bones[bi + 1].gamma, 0, 0, 1);
 
-                BuildRotationMatrixWithQuaternions(bFrame.bones[bi + itmpbones].alpha, 
-                                                       bFrame.bones[bi + itmpbones].beta, 
-                                                       bFrame.bones[bi + itmpbones].gamma, ref rot_mat);
+                BuildRotationMatrixWithQuaternions(bFrame.bones[iBoneIdx + itmpbones].alpha, 
+                                                       bFrame.bones[iBoneIdx + itmpbones].beta, 
+                                                       bFrame.bones[iBoneIdx + itmpbones].gamma, ref rot_mat);
                 glMultMatrixd(rot_mat);
 
-                glTranslated(0, 0, bSkeleton.bones[bi].len);
+                glTranslated(0, 0, bSkeleton.bones[iBoneIdx].len);
 
                 jsp++;
-                joint_stack[jsp] = bi;
+                joint_stack[jsp] = iBoneIdx;
 
                 glPopName();
             }
 
-            while (!(bSkeleton.bones[bi].parentBone == joint_stack[jsp]) && jsp > 0)
+            while (!(bSkeleton.bones[iBoneIdx].parentBone == joint_stack[jsp]) && jsp > 0)
             {
                 glPopMatrix();
                 jsp--;
@@ -1024,7 +1035,7 @@ namespace KimeraCS
 
         public static void DrawBattleSkeletonBones(BattleSkeleton bSkeleton, BattleFrame bFrame)
         {
-            int bi, jsp, itmpbones;
+            int iBoneIdx, jsp, itmpbones;
             int[] joint_stack;
             double[] rot_mat = new double[16];
 
@@ -1045,9 +1056,9 @@ namespace KimeraCS
             BuildRotationMatrixWithQuaternions(bFrame.bones[0].alpha, bFrame.bones[0].beta, bFrame.bones[0].gamma, ref rot_mat);
             glMultMatrixd(rot_mat);
 
-            for (bi = 0; bi < bSkeleton.nBones; bi++)
+            for (iBoneIdx = 0; iBoneIdx < bSkeleton.nBones; iBoneIdx++)
             {
-                while (!(bSkeleton.bones[bi].parentBone == joint_stack[jsp]) && jsp > 0)
+                while (!(bSkeleton.bones[iBoneIdx].parentBone == joint_stack[jsp]) && jsp > 0)
                 {
                     glPopMatrix();
                     jsp--;
@@ -1059,26 +1070,26 @@ namespace KimeraCS
                 //glRotated(bFrame.bones[bi + 1].alpha, 1, 0, 0);
                 //glRotated(bFrame.bones[bi + 1].gamma, 0, 0, 1);
 
-                BuildRotationMatrixWithQuaternions(bFrame.bones[bi + itmpbones].alpha,
-                                                   bFrame.bones[bi + itmpbones].beta,
-                                                   bFrame.bones[bi + itmpbones].gamma,
+                BuildRotationMatrixWithQuaternions(bFrame.bones[iBoneIdx + itmpbones].alpha,
+                                                   bFrame.bones[iBoneIdx + itmpbones].beta,
+                                                   bFrame.bones[iBoneIdx + itmpbones].gamma,
                                                    ref rot_mat);
                 glMultMatrixd(rot_mat);
 
                 glBegin(GLDrawMode.GL_POINTS);
                     glVertex3f(0, 0, 0);
-                    glVertex3f(0, 0, bSkeleton.bones[bi].len);
+                    glVertex3f(0, 0, bSkeleton.bones[iBoneIdx].len);
                 glEnd();
 
                 glBegin(GLDrawMode.GL_LINES);
                     glVertex3f(0, 0, 0);
-                    glVertex3f(0, 0, bSkeleton.bones[bi].len);
+                    glVertex3f(0, 0, bSkeleton.bones[iBoneIdx].len);
                 glEnd();
 
-                glTranslated(0, 0, bSkeleton.bones[bi].len);
+                glTranslated(0, 0, bSkeleton.bones[iBoneIdx].len);
 
                 jsp++;
-                joint_stack[jsp] = bi;
+                joint_stack[jsp] = iBoneIdx;
             }
 
             if (!bSkeleton.IsBattleLocation)
@@ -1094,7 +1105,7 @@ namespace KimeraCS
 
         public static void DrawBattleSkeletonBone(BattleBone bBone, uint[] texIDS, bool bDListsEnable)
         {
-            int mi;
+            int iModelIdx;
             PModel tmpbModel = new PModel();
 
             glMatrixMode(GLMatrixModeList.GL_MODELVIEW);
@@ -1105,41 +1116,49 @@ namespace KimeraCS
             {
                 if (!bDListsEnable)
                 {
-                    for (mi = 0; mi < bBone.nModels; mi++)
+                    for (iModelIdx = 0; iModelIdx < bBone.nModels; iModelIdx++)
                     {
 
                         glPushMatrix();
-                        glTranslatef(bBone.Models[mi].repositionX, bBone.Models[mi].repositionY, bBone.Models[mi].repositionZ);
+                        glTranslatef(bBone.Models[iModelIdx].repositionX, 
+                                     bBone.Models[iModelIdx].repositionY, 
+                                     bBone.Models[iModelIdx].repositionZ);
 
-                        glRotated(bBone.Models[mi].rotateAlpha, 1, 0, 0);
-                        glRotated(bBone.Models[mi].rotateBeta, 0, 1, 0);
-                        glRotated(bBone.Models[mi].rotateGamma, 0, 0, 1);
+                        glRotated(bBone.Models[iModelIdx].rotateAlpha, 1, 0, 0);
+                        glRotated(bBone.Models[iModelIdx].rotateBeta, 0, 1, 0);
+                        glRotated(bBone.Models[iModelIdx].rotateGamma, 0, 0, 1);
 
-                        glScalef(bBone.Models[mi].resizeX, bBone.Models[mi].resizeY, bBone.Models[mi].resizeZ);
+                        glScalef(bBone.Models[iModelIdx].resizeX, 
+                                 bBone.Models[iModelIdx].resizeY, 
+                                 bBone.Models[iModelIdx].resizeZ);
 
-                        tmpbModel = bBone.Models[mi];
+                        tmpbModel = bBone.Models[iModelIdx];
                         DrawPModel(ref tmpbModel, ref texIDS, false);
-                        bBone.Models[mi] = tmpbModel;
+                        bBone.Models[iModelIdx] = tmpbModel;
 
                         glPopMatrix();
                     }
                 }
                 else
                 {
-                    for (mi = 0; mi < bBone.nModels; mi++)
+                    for (iModelIdx = 0; iModelIdx < bBone.nModels; iModelIdx++)
                     {
                         glPushMatrix();
-                        glTranslatef(bBone.Models[mi].repositionX, bBone.Models[mi].repositionY, bBone.Models[mi].repositionZ);
+                        glTranslatef(bBone.Models[iModelIdx].repositionX, 
+                                     bBone.Models[iModelIdx].repositionY, 
+                                     bBone.Models[iModelIdx].repositionZ);
 
-                        glRotated(bBone.Models[mi].rotateAlpha, 1, 0, 0);
-                        glRotated(bBone.Models[mi].rotateBeta, 0, 1, 0);
-                        glRotated(bBone.Models[mi].rotateGamma, 0, 0, 1);
+                        glRotated(bBone.Models[iModelIdx].rotateAlpha, 1, 0, 0);
+                        glRotated(bBone.Models[iModelIdx].rotateBeta, 0, 1, 0);
+                        glRotated(bBone.Models[iModelIdx].rotateGamma, 0, 0, 1);
 
-                        glScalef(bBone.Models[mi].resizeX, bBone.Models[mi].resizeY, bBone.Models[mi].resizeZ);
+                        glScalef(bBone.Models[iModelIdx].resizeX, 
+                                 bBone.Models[iModelIdx].resizeY, 
+                                 bBone.Models[iModelIdx].resizeZ);
 
-                        tmpbModel = bBone.Models[mi];
+                        tmpbModel = bBone.Models[iModelIdx];
                         DrawPModelDLists(ref tmpbModel, ref texIDS);
-                        bBone.Models[mi] = tmpbModel;
+                        bBone.Models[iModelIdx] = tmpbModel;
 
                         glPopMatrix();
                     }
@@ -1152,7 +1171,7 @@ namespace KimeraCS
         public static void DrawBattleSkeleton(BattleSkeleton bSkeleton, BattleFrame bFrame, BattleFrame wpFrame,
                                               int weaponIndex, bool bDListsEnable)
         {
-            int bi, jsp, itmpbones;
+            int iBoneIdx, jsp, itmpbones;
             int[] joint_stack = new int[bSkeleton.nBones + 1];
             double[] rot_mat = new double[16];
 
@@ -1170,15 +1189,15 @@ namespace KimeraCS
             BuildRotationMatrixWithQuaternions(bFrame.bones[0].alpha, bFrame.bones[0].beta, bFrame.bones[0].gamma, ref rot_mat);
             glMultMatrixd(rot_mat);
 
-            for (bi = 0; bi < bSkeleton.nBones; bi++)
+            for (iBoneIdx = 0; iBoneIdx < bSkeleton.nBones; iBoneIdx++)
             {
                 if (bSkeleton.IsBattleLocation)
                 {
-                    DrawBattleSkeletonBone(bSkeleton.bones[bi], bSkeleton.TexIDS, false);
+                    DrawBattleSkeletonBone(bSkeleton.bones[iBoneIdx], bSkeleton.TexIDS, false);
                 }
                 else
                 {
-                    while (!(bSkeleton.bones[bi].parentBone == joint_stack[jsp]) && jsp > 0)
+                    while (!(bSkeleton.bones[iBoneIdx].parentBone == joint_stack[jsp]) && jsp > 0)
                     {
                         glPopMatrix();
                         jsp--;
@@ -1191,18 +1210,18 @@ namespace KimeraCS
                     //glRotated(bFrame.bones[bi + 1].alpha, 1, 0, 0);
                     //glRotated(bFrame.bones[bi + 1].gamma, 0, 0, 1);
 
-                    BuildRotationMatrixWithQuaternions(bFrame.bones[bi + itmpbones].alpha,
-                                                       bFrame.bones[bi + itmpbones].beta,
-                                                       bFrame.bones[bi + itmpbones].gamma,
+                    BuildRotationMatrixWithQuaternions(bFrame.bones[iBoneIdx + itmpbones].alpha,
+                                                       bFrame.bones[iBoneIdx + itmpbones].beta,
+                                                       bFrame.bones[iBoneIdx + itmpbones].gamma,
                                                        ref rot_mat);
                     glMultMatrixd(rot_mat);
 
-                    DrawBattleSkeletonBone(bSkeleton.bones[bi], bSkeleton.TexIDS, bDListsEnable);
+                    DrawBattleSkeletonBone(bSkeleton.bones[iBoneIdx], bSkeleton.TexIDS, bDListsEnable);
 
-                    glTranslated(0, 0, bSkeleton.bones[bi].len);
+                    glTranslated(0, 0, bSkeleton.bones[iBoneIdx].len);
 
                     jsp++;
-                    joint_stack[jsp] = bi;
+                    joint_stack[jsp] = iBoneIdx;
                 }
             }
 
@@ -2168,8 +2187,8 @@ namespace KimeraCS
             for (iVertIdx = 0; iVertIdx < 3; iVertIdx++)
             {
                 Model.Polys[iPolyIdx].Verts[iVertIdx] = 
-                    (short)PaintVertex(ref Model, iGroupIdx, iPolyIdx, iVertIdx, bR, bG, bB,
-                                       Model.Groups[iGroupIdx].texFlag == 1);
+                    (ushort)PaintVertex(ref Model, iGroupIdx, iPolyIdx, iVertIdx, bR, bG, bB,
+                                        Model.Groups[iGroupIdx].texFlag == 1);
                 //  'Debug.Print "Vert(:", .Verts(vi), ",", Group, ")", obj.Verts(.Verts(vi) + obj.Groups(Group).offVert).x, obj.Verts(.Verts(vi) + obj.Groups(Group).offVert).y, obj.Verts(.Verts(vi) + obj.Groups(Group).offVert).z
             }
 
@@ -2197,6 +2216,7 @@ namespace KimeraCS
 
             return Color.FromArgb(iTmpA / 3, iTmpR / 3, iTmpG / 3, iTmpB / 3);
         }
+
 
 
 
