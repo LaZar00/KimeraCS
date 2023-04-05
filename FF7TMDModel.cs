@@ -656,7 +656,7 @@ namespace KimeraCS
                                            out Point2D[] TexCoords)
         {
             int iPolyIdx, iVertIdx, iVColorIdx, iFoundColorVArray;
-            short sVertex;
+            ushort usVertex;
 
             // Let's populate vertices
             vertsV = new Point3D[TMDVertices.Length];
@@ -692,19 +692,19 @@ namespace KimeraCS
                 facesV[iPolyIdx].tag2 = PPOLY_TAG2;
 
                 // Prepare PPolygon
-                facesV[iPolyIdx].Verts = new short[3];
-                facesV[iPolyIdx].Normals = new short[3];
-                facesV[iPolyIdx].Edges = new short[3];
+                facesV[iPolyIdx].Verts = new ushort[3];
+                facesV[iPolyIdx].Normals = new ushort[3];
+                facesV[iPolyIdx].Edges = new ushort[3];
 
                 switch (TMDPrimitiveHeaders[iPolyIdx].mode)
                 {
                     case 0x25:          // Texturized
                         facesV[iPolyIdx].Verts[0] = 
-                            (short)TMDPrimitivePackets[iPolyIdx].tmd3txnsfp.Vertex0;
+                            (ushort)TMDPrimitivePackets[iPolyIdx].tmd3txnsfp.Vertex0;
                         facesV[iPolyIdx].Verts[1] = 
-                            (short)TMDPrimitivePackets[iPolyIdx].tmd3txnsfp.Vertex1;
+                            (ushort)TMDPrimitivePackets[iPolyIdx].tmd3txnsfp.Vertex1;
                         facesV[iPolyIdx].Verts[2] = 
-                            (short)TMDPrimitivePackets[iPolyIdx].tmd3txnsfp.Vertex2;
+                            (ushort)TMDPrimitivePackets[iPolyIdx].tmd3txnsfp.Vertex2;
 
                         pcolorsV[iPolyIdx] = Color.FromArgb(255,
                                                       TMDPrimitivePackets[iPolyIdx].tmd3txnsfp.R,
@@ -750,9 +750,9 @@ namespace KimeraCS
 
                         if (vcolorsV[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex0].A == 128)
                         {
-                            sVertex = (short)TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex0;
+                            usVertex = TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex0;
 
-                            vcolorsV[sVertex] = Color.FromArgb(255,
+                            vcolorsV[usVertex] = Color.FromArgb(255,
                                                     TMDPrimitivePackets[iPolyIdx].tmd3nsgp.R0,
                                                     TMDPrimitivePackets[iPolyIdx].tmd3nsgp.G0,
                                                     TMDPrimitivePackets[iPolyIdx].tmd3nsgp.B0);
@@ -766,7 +766,7 @@ namespace KimeraCS
                                 vcolorsV[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex0].B == 
                                                             TMDPrimitivePackets[iPolyIdx].tmd3nsgp.B0)
                             {
-                                sVertex = (short)TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex0;
+                                usVertex = TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex0;
                             }
                             else
                             {
@@ -784,7 +784,7 @@ namespace KimeraCS
                                 if (iFoundColorVArray == -1)
                                 {
                                     // We need to add a new vertex/colorV and reassign the poly vertex index of the poly.
-                                    sVertex = (short)vertsV.Length;
+                                    usVertex = (ushort)vertsV.Length;
 
                                     // Add vertex to P Model vertex array
                                     Array.Resize(ref vertsV, vertsV.Length + 1);
@@ -804,21 +804,21 @@ namespace KimeraCS
                                 }
                                 else
                                 {
-                                    sVertex = (short)iFoundColorVArray;
+                                    usVertex = (ushort)iFoundColorVArray;
                                 }
                             }
                         }
 
-                        facesV[iPolyIdx].Verts[0] = sVertex;
+                        facesV[iPolyIdx].Verts[0] = usVertex;
 
 
                         // Vertex 1
                         // Check if exists the RGB color in vcolorsV array
                         if (vcolorsV[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex1].A == 128)
                         {
-                            sVertex = (short)TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex1;
+                            usVertex = TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex1;
 
-                            vcolorsV[sVertex] = Color.FromArgb(255,
+                            vcolorsV[usVertex] = Color.FromArgb(255,
                                                         TMDPrimitivePackets[iPolyIdx].tmd3nsgp.R1,
                                                         TMDPrimitivePackets[iPolyIdx].tmd3nsgp.G1,
                                                         TMDPrimitivePackets[iPolyIdx].tmd3nsgp.B1);
@@ -832,7 +832,7 @@ namespace KimeraCS
                                 vcolorsV[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex1].B == 
                                                         TMDPrimitivePackets[iPolyIdx].tmd3nsgp.B1)
                             {
-                                sVertex = (short)TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex1;
+                                usVertex = TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex1;
                             }
                             else
                             {
@@ -849,7 +849,7 @@ namespace KimeraCS
                                 if (iFoundColorVArray == -1)
                                 {
                                     // We need to add a new vertex/colorV and reassign the poly vertex index of the poly.
-                                    sVertex = (short)vertsV.Length;
+                                    usVertex = (ushort)vertsV.Length;
 
                                     // Add vertex to P Model vertex array
                                     Array.Resize(ref vertsV, vertsV.Length + 1);
@@ -869,21 +869,21 @@ namespace KimeraCS
                                 }
                                 else
                                 {
-                                    sVertex = (short)iFoundColorVArray;
+                                    usVertex = (ushort)iFoundColorVArray;
                                 }
                             }
                         }
 
-                        facesV[iPolyIdx].Verts[1] = sVertex;
+                        facesV[iPolyIdx].Verts[1] = usVertex;
 
 
                         // Vertex 2
                         // Check if exists the RGB color in vcolorsV array
                         if (vcolorsV[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex2].A == 128)
                         {
-                            sVertex = (short)TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex2;
+                            usVertex = TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex2;
 
-                            vcolorsV[sVertex] = Color.FromArgb(255,
+                            vcolorsV[usVertex] = Color.FromArgb(255,
                                                     TMDPrimitivePackets[iPolyIdx].tmd3nsgp.R2,
                                                     TMDPrimitivePackets[iPolyIdx].tmd3nsgp.G2,
                                                     TMDPrimitivePackets[iPolyIdx].tmd3nsgp.B2);
@@ -897,7 +897,7 @@ namespace KimeraCS
                                 vcolorsV[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex2].B == 
                                                          TMDPrimitivePackets[iPolyIdx].tmd3nsgp.B2)
                             {
-                                sVertex = (short)TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex2;
+                                usVertex = TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex2;
                             }
                             else
                             {
@@ -914,7 +914,7 @@ namespace KimeraCS
                                 if (iFoundColorVArray == -1)
                                 {
                                     // We need to add a new vertex/colorV and reassign the poly vertex index of the poly.
-                                    sVertex = (short)vertsV.Length;
+                                    usVertex = (ushort)vertsV.Length;
 
                                     // Add vertex to P Model vertex array
                                     Array.Resize(ref vertsV, vertsV.Length + 1);
@@ -934,12 +934,12 @@ namespace KimeraCS
                                 }
                                 else
                                 {
-                                    sVertex = (short)iFoundColorVArray;
+                                    usVertex = (ushort)iFoundColorVArray;
                                 }
                             }
                         }
 
-                        facesV[iPolyIdx].Verts[2] = sVertex;
+                        facesV[iPolyIdx].Verts[2] = usVertex;
 
 
                         pcolorsV[iPolyIdx] = Color.FromArgb(255,
