@@ -301,7 +301,7 @@ namespace KimeraCS
 
         public static float ComputeFieldBoneDiameter(FieldBone bone)
         {
-            int ri;
+            int iResourceIdx;
             float computeDiameter = 0;
 
             Point3D p_max = new Point3D();
@@ -317,21 +317,21 @@ namespace KimeraCS
                 p_min.y = (float)INFINITY_SINGLE;
                 p_min.z = (float)INFINITY_SINGLE;
 
-                for (ri = 0; ri < bone.nResources; ri++)
+                for (iResourceIdx = 0; iResourceIdx < bone.nResources; iResourceIdx++)
                 {
-                    if (p_max.x < bone.fRSDResources[ri].Model.BoundingBox.max_x)
-                        p_max.x = bone.fRSDResources[ri].Model.BoundingBox.max_x;
-                    if (p_max.y < bone.fRSDResources[ri].Model.BoundingBox.max_y)
-                        p_max.y = bone.fRSDResources[ri].Model.BoundingBox.max_y;
-                    if (p_max.z < bone.fRSDResources[ri].Model.BoundingBox.max_z)
-                        p_max.z = bone.fRSDResources[ri].Model.BoundingBox.max_z;
+                    if (p_max.x < bone.fRSDResources[iResourceIdx].Model.BoundingBox.max_x)
+                        p_max.x = bone.fRSDResources[iResourceIdx].Model.BoundingBox.max_x;
+                    if (p_max.y < bone.fRSDResources[iResourceIdx].Model.BoundingBox.max_y)
+                        p_max.y = bone.fRSDResources[iResourceIdx].Model.BoundingBox.max_y;
+                    if (p_max.z < bone.fRSDResources[iResourceIdx].Model.BoundingBox.max_z)
+                        p_max.z = bone.fRSDResources[iResourceIdx].Model.BoundingBox.max_z;
 
-                    if (p_min.x > bone.fRSDResources[ri].Model.BoundingBox.min_x)
-                        p_min.x = bone.fRSDResources[ri].Model.BoundingBox.min_x;
-                    if (p_min.y > bone.fRSDResources[ri].Model.BoundingBox.min_y)
-                        p_min.y = bone.fRSDResources[ri].Model.BoundingBox.min_y;
-                    if (p_min.z > bone.fRSDResources[ri].Model.BoundingBox.min_z)
-                        p_min.z = bone.fRSDResources[ri].Model.BoundingBox.min_z;
+                    if (p_min.x > bone.fRSDResources[iResourceIdx].Model.BoundingBox.min_x)
+                        p_min.x = bone.fRSDResources[iResourceIdx].Model.BoundingBox.min_x;
+                    if (p_min.y > bone.fRSDResources[iResourceIdx].Model.BoundingBox.min_y)
+                        p_min.y = bone.fRSDResources[iResourceIdx].Model.BoundingBox.min_y;
+                    if (p_min.z > bone.fRSDResources[iResourceIdx].Model.BoundingBox.min_z)
+                        p_min.z = bone.fRSDResources[iResourceIdx].Model.BoundingBox.min_z;
                 }
 
                 computeDiameter = CalculateDistance(p_max, p_min);
@@ -342,14 +342,14 @@ namespace KimeraCS
 
         public static float ComputeFieldDiameter(FieldSkeleton Skeleton)
         {
-            int bi;
+            int iBoneIdx;
             float aux_diam;
             float fcomputeFieldDiameterResult = 0;
 
             //for (bi = 0; bi < Skeleton.nBones; bi++)
-            for (bi = 0; bi < Skeleton.bones.Count; bi++)
+            for (iBoneIdx = 0; iBoneIdx < Skeleton.bones.Count; iBoneIdx++)
             {
-                aux_diam = ComputeFieldBoneDiameter(Skeleton.bones[bi]);
+                aux_diam = ComputeFieldBoneDiameter(Skeleton.bones[iBoneIdx]);
 
                 fcomputeFieldDiameterResult += aux_diam;
             }

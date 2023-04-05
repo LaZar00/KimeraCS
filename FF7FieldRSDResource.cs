@@ -96,7 +96,7 @@ namespace KimeraCS
                     }
                     else
                     {
-                        LoadPModel(ref Model, strFolderName, polyFileName);
+                        LoadPModel(ref Model, strFolderName, polyFileName, true);
                     }
 
 

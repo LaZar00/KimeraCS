@@ -56,7 +56,7 @@ namespace KimeraCS
     public partial class FrmSkeletonEditor : Form
     {
 
-        public const string STR_APPNAME = "KimeraCS 1.8";
+        public const string STR_APPNAME = "KimeraCS 1.8b";
 
         public static int modelWidth;
         public static int modelHeight;
@@ -158,6 +158,9 @@ namespace KimeraCS
         // SaveAs global variable
         public static string strGlobalPathSaveAsSkeletonFolder;
 
+        // FF8 vars
+        public static bool IsFF8Model;
+
 
         /////////////////////////////////////////////////////////////
         // Main Skeleton Editor class creator:
@@ -167,7 +170,7 @@ namespace KimeraCS
 
             strGlobalPath = Application.StartupPath;
         }
-       
+
         /////////////////////////////////////////////////////////////
         // OpenGL methods:
         public void SetOGLSettings()
@@ -260,7 +263,7 @@ namespace KimeraCS
                 case 0:
                     MessageBox.Show("Caution: " + BATTLEENEMIES_LGP_FILTER_FILE_NAME + " file does not exists. Battle Enemies Database NOT available.", "Warning", MessageBoxButtons.OK);
 
-                    bDBEnemiesLoaded = false;                    
+                    bDBEnemiesLoaded = false;
                     break;
 
                 case -1:
@@ -316,7 +319,7 @@ namespace KimeraCS
             {
                 showBattlelgpToolStripMenuItem.Enabled = true;
                 frmBattleDatabase = new FrmBattleDB();
-            }                
+            }
             else
             {
                 showBattlelgpToolStripMenuItem.Enabled = false;
@@ -342,7 +345,7 @@ namespace KimeraCS
                 default:
                     showMagiclgpToolStripMenuItem.Enabled = true;
                     bDBMagicLoaded = true;
-                    
+
                     frmMagicDatabase = new FrmMagicDB();
                     break;
             }
@@ -404,7 +407,7 @@ namespace KimeraCS
             hsbLightPosY.Minimum = -Lighting.LIGHT_STEPS;
             hsbLightPosZ.Maximum = Lighting.LIGHT_STEPS;
             hsbLightPosZ.Minimum = -Lighting.LIGHT_STEPS;
-            
+
             textureViewerDC = GetDC(pbTextureViewer.Handle);
 
             bLoaded = false;
@@ -497,7 +500,7 @@ namespace KimeraCS
                             }
                             else
                             {
-                                if (bSkeleton.bones[SelectedBone].Models.Count > 0)
+                                if (bSkeleton.bones[SelectedBone].hasModel == 1)
                                     SelectedBonePiece = 0;
                             }
 
@@ -505,7 +508,7 @@ namespace KimeraCS
                     }
 
                     PanelModel_DoubleClick(sender, e);
-                }                   
+                }
 
             if (e.KeyCode == Keys.F2)
                 if (IsTMDModel) frmTMDOL.Show();
@@ -560,10 +563,12 @@ namespace KimeraCS
             ianimIndex = 0;
             ianimWeaponIndex = 0;
 
+            IsFF8Model = false;
+
             SelectedBone = -1;
             SelectedBonePiece = -1;
             Text = STR_APPNAME;
-            
+
 
             // UndoRedo
             UndoCursor = 0;
@@ -585,7 +590,7 @@ namespace KimeraCS
             txtAnimationFrame.Text = iCurrentFrameScroll.ToString();
             tbCurrentFrameScroll.Maximum = 0;
             tbCurrentFrameScroll.Visible = false;
-            
+
             chkShowBones.Visible = false;
             btnCopyFrame.Visible = false;
             btnPasteFrame.Visible = false;
@@ -707,7 +712,7 @@ namespace KimeraCS
 
                     tbCurrentFrameScroll.Value = 0;
                     tbCurrentFrameScroll.Minimum = 0;
-                    
+
                     tbCurrentFrameScroll.Maximum = fAnimation.nFrames - 1;
 
                     tbCurrentFrameScroll.Enabled = true;
@@ -767,7 +772,7 @@ namespace KimeraCS
                         if (bSkeleton.wpModels[wi].Polys != null)
                             cbWeapon.Items.Add(wi.ToString());
                         else
-                            cbWeapon.Items.Add("EMPTY"); 
+                            cbWeapon.Items.Add("EMPTY");
                     }
 
                     if (!bSkeleton.IsBattleLocation)
@@ -1022,7 +1027,7 @@ namespace KimeraCS
 
                 SetOGLSettings();
 
-                glViewport(0, 0, panelModel.ClientRectangle.Width, 
+                glViewport(0, 0, panelModel.ClientRectangle.Width,
                                  panelModel.ClientRectangle.Height);
                 ClearPanel();
                 SetDefaultOGLRenderState();
@@ -1110,7 +1115,7 @@ namespace KimeraCS
                 if (SelectedBone > -1)
                 {
                     SetBoneModifiers();
-                    if (!FindWindowOpened("frmPEditor")) 
+                    if (!FindWindowOpened("frmPEditor"))
                     {
                         gbSelectedBoneFrame.Enabled = true;
 
@@ -1134,25 +1139,37 @@ namespace KimeraCS
 
         public static void FillBoneSelector(ComboBox cbIn)
         {
-            int bi;
+            int iBoneIdx;
 
             switch (modelType)
             {
                 case K_HRC_SKELETON:
-                    //for (bi = 0; bi < fSkeleton.nBones; bi++)
-                    for (bi = 0; bi < fSkeleton.bones.Count; bi++)
+                    for (iBoneIdx = 0; iBoneIdx < fSkeleton.bones.Count; iBoneIdx++)
                     {
-                        cbIn.Items.Add(fSkeleton.bones[bi].joint_i + "-" + fSkeleton.bones[bi].joint_f);
+                        cbIn.Items.Add(fSkeleton.bones[iBoneIdx].joint_i + "-" + fSkeleton.bones[iBoneIdx].joint_f);
                     }
 
                     cbIn.Enabled = true;
                     break;
 
                 case K_AA_SKELETON:
-                case K_MAGIC_SKELETON:
-                    for (bi = 0; bi < bSkeleton.nBones; bi++)
+                    for (iBoneIdx = 0; iBoneIdx < bSkeleton.nBones; iBoneIdx++)
                     {
-                        cbIn.Items.Add("Joint" + bSkeleton.bones[bi].parentBone.ToString() + "- Joint" + bi.ToString());
+                        if (bSkeleton.bones[iBoneIdx].hasModel == 1)
+                            cbIn.Items.Add(bSkeleton.bones[iBoneIdx].Models[0].fileName);
+                        else
+                            cbIn.Items.Add("----");
+                    }
+
+                    if (bSkeleton.wpModels.Count > 0 && bAnimationsPack.WeaponAnimations.Count > 0) cbIn.Items.Add("WEAPON");
+
+                    cbIn.Enabled = true;
+                    break;
+
+                case K_MAGIC_SKELETON:
+                    for (iBoneIdx = 0; iBoneIdx < bSkeleton.nBones; iBoneIdx++)
+                    {
+                        cbIn.Items.Add("Joint" + bSkeleton.bones[iBoneIdx].parentBone.ToString() + "- Joint" + iBoneIdx.ToString());
                     }
 
                     if (bSkeleton.wpModels.Count > 0 && bAnimationsPack.WeaponAnimations.Count > 0) cbIn.Items.Add("Weapon");
@@ -1503,7 +1520,7 @@ namespace KimeraCS
 
                         if (iBoneIdx > -1 && iBoneIdx < bSkeleton.nBones)
                         {
-                            if (selectBoneForWeaponAttachmentQ) 
+                            if (selectBoneForWeaponAttachmentQ)
                                 SetWeaponAnimationAttachedToBone(e.Button == MouseButtons.Right, this);
 
                             if (bSkeleton.IsBattleLocation)
@@ -1744,14 +1761,20 @@ namespace KimeraCS
                 // So, we restore to SelectedBone and SelectedBonePiece its values.
                 if (SelectedBone == -1 || SelectedBonePiece == -1)
                 {
-                    SelectedBone = EditedBone;
-                    SelectedBonePiece = EditedBonePiece;
+                    if (FindWindowOpened("frmPEditor"))
+                    {
+                        SelectedBone = EditedBone;
+                        SelectedBonePiece = EditedBonePiece;
+                        cbBoneSelector.SelectedIndex = SelectedBone;
+                    }
+
                     return;
                 }
                 else
                 {
                     EditedBone = SelectedBone;
                     EditedBonePiece = SelectedBonePiece;
+                    cbBoneSelector.SelectedIndex = SelectedBone;
                 }
 
                 switch (modelType)
@@ -1978,7 +2001,7 @@ namespace KimeraCS
 
             if (strGlobalPathBattleSkeletonFolder != "")
                 openFile.InitialDirectory = strGlobalPathBattleSkeletonFolder;
-                
+
             if (modelType == K_MAGIC_SKELETON)
                 if (strGlobalPathMagicSkeletonFolder != "")
                     openFile.InitialDirectory = strGlobalPathMagicSkeletonFolder;
@@ -2130,7 +2153,7 @@ namespace KimeraCS
 
                         // Load the RSD Resource
                         // We need to prepare some type of "FAKE" or RSD only fSkeleton
-                        LoadRSDResourceModel(strGlobalPathRSDResourceFolder, 
+                        LoadRSDResourceModel(strGlobalPathRSDResourceFolder,
                                              Path.GetFileNameWithoutExtension(strGlobalRSDResourceName));
 
                         // Enable/Make Visible Win Forms Data controls
@@ -2220,13 +2243,14 @@ namespace KimeraCS
                         // Load the Model
                         if (Path.GetExtension(openFile.FileName).ToUpper() != ".TMD")
                         {
-                                    // Set Global Paths
+                            // Set Global Paths
                             strGlobalPathPModelFolder = Path.GetDirectoryName(openFile.FileName);
                             strGlobalPModelName = Path.GetFileName(openFile.FileName).ToUpper();
 
                             fPModel = new PModel();
                             LoadPModel(ref fPModel, strGlobalPathPModelFolder,
-                                       Path.GetFileName(strGlobalPModelName));
+                                       Path.GetFileName(strGlobalPModelName),
+                                       true);
                         }
 
                         // Decide the modelType
@@ -2515,7 +2539,7 @@ namespace KimeraCS
                                 if (strGlobalPathSaveAsSkeletonFolder == "")
                                     strGlobalPathSaveAsSkeletonFolder = strGlobalPathRSDResourceFolder;
 
-                                saveFileName = strGlobalPathSaveAsSkeletonFolder + "\\" + strGlobalRSDResourceName.ToUpper();                                
+                                saveFileName = strGlobalPathSaveAsSkeletonFolder + "\\" + strGlobalRSDResourceName.ToUpper();
                             }
                             else
                             {
@@ -2524,7 +2548,7 @@ namespace KimeraCS
                                 if (strGlobalPathSaveAsSkeletonFolder == "")
                                     strGlobalPathSaveAsSkeletonFolder = strGlobalPathFieldSkeletonFolder;
 
-                                saveFileName = strGlobalPathSaveAsSkeletonFolder + "\\" + strGlobalFieldSkeletonFileName.ToUpper();                                
+                                saveFileName = strGlobalPathSaveAsSkeletonFolder + "\\" + strGlobalFieldSkeletonFileName.ToUpper();
                             }
 
                             break;
@@ -2546,7 +2570,7 @@ namespace KimeraCS
                                 strGlobalPathSaveAsSkeletonFolder = strGlobalPathMagicSkeletonFolder;
 
                             saveFileName = strGlobalPathSaveAsSkeletonFolder + "\\" + strGlobalMagicSkeletonFileName.ToUpper();
-                            
+
                             break;
                     }
 
@@ -2580,7 +2604,7 @@ namespace KimeraCS
                         MessageBox.Show("There has been some error saving the " + modelTypeStr + " " +
                                         Path.GetFileName(saveFileName).ToUpper() + ".",
                                         "Information");
-                    } 
+                    }
                 }
             }
             catch
@@ -2920,7 +2944,7 @@ namespace KimeraCS
                         UpdateMainSkeletonWindowTitle();
 
                         // Let's stop the Animation
-                        btnPlayStopAnim.Checked = false;                      
+                        btnPlayStopAnim.Checked = false;
 
                         // Let's initialize some things like Battle Animations ComboBox
                         if (modelType == K_MAGIC_SKELETON) lblBattleAnimation.Text = "Magic Animation:";
@@ -3083,7 +3107,7 @@ namespace KimeraCS
                     }
                     else if (iSaveResult == -1)
                     {
-                        MessageBox.Show("It has been some problem when saving " + modelTypeStr + " file " + 
+                        MessageBox.Show("It has been some problem when saving " + modelTypeStr + " file " +
                                         Path.GetFileName(saveFile.FileName).ToUpper() + ".",
                                         "Error");
                     }
@@ -3091,7 +3115,7 @@ namespace KimeraCS
             }
             catch
             {
-                MessageBox.Show("Error exception saving " + modelTypeStr + " file " + 
+                MessageBox.Show("Error exception saving " + modelTypeStr + " file " +
                                 Path.GetFileName(saveFile.FileName).ToUpper() + ".",
                                 "Error");
                 return;
@@ -3213,7 +3237,7 @@ namespace KimeraCS
                                     cbTextureSelect.SelectedIndex =
                                         bSkeleton.bones[SelectedBone].Models[SelectedBonePiece].Groups[iGroupIdx].texID;
                                 }
-                            }                        
+                            }
                         }
                     }
                     else gbTexturesFrame.Enabled = false;
@@ -4326,7 +4350,7 @@ namespace KimeraCS
                     openFile.FilterIndex = 3;
                     break;
             }
-            
+
             openFile.FileName = null;
 
             // Check Initial Directory
@@ -4368,7 +4392,7 @@ namespace KimeraCS
                         }
                         else
                         {
-                            LoadPModel(ref AdditionalP, strGlobalPathPartModelFolder, strGlobalPartModelName);
+                            LoadPModel(ref AdditionalP, strGlobalPathPartModelFolder, strGlobalPartModelName, true);
                         }
 
                         if (AdditionalP.Header.numVerts > 0)
@@ -4435,7 +4459,7 @@ namespace KimeraCS
 
                 SelectedBonePiece = -1;
                 gbSelectedPieceFrame.Enabled = false;
-                
+
                 SetBoneModifiers();
                 SetTextureEditorFields();
                 PanelModel_Paint(null, null);
@@ -5522,7 +5546,7 @@ namespace KimeraCS
                 }
             }
             else return;
-            
+
 
             // Update interpolated frames value in Kimera.cfg file
             if (modelType == K_HRC_SKELETON)
@@ -5541,7 +5565,7 @@ namespace KimeraCS
                     WriteCFGFile();
                 }
             }
-                
+
 
             // Interpolate frames processing
             currentFrame = tbCurrentFrameScroll.Value;
@@ -5886,7 +5910,7 @@ namespace KimeraCS
 
                     prev_ts = current_ts;
                 }
-                
+
                 Application.DoEvents();
                 if (!this.Focused && !bthisFocus)
                 {
@@ -5919,7 +5943,7 @@ namespace KimeraCS
                 toolStripFPS15.Checked = false;
                 toolStripFPS30.Checked = true;
                 toolStripFPS60.Checked = false;
-                
+
                 iFPS = 30;
                 fFPS = 1000 / iFPS;
             }
@@ -5959,7 +5983,7 @@ namespace KimeraCS
         private void BtnCopyFrame_Click(object sender, EventArgs e)
         {
 
-            switch(modelType)
+            switch (modelType)
             {
                 case K_HRC_SKELETON:
                     if (txtAnimationFrame.Text != "")
@@ -5996,7 +6020,7 @@ namespace KimeraCS
 
             AddStateToBuffer(this);
 
-            switch(modelType)
+            switch (modelType)
             {
                 case K_HRC_SKELETON:
                     if (txtAnimationFrame.Text != "")
@@ -6060,7 +6084,7 @@ namespace KimeraCS
 
             loadingBonePieceModifiersQ = true;
 
-            switch(modelType)
+            switch (modelType)
             {
                 case K_HRC_SKELETON:
                     Model = fSkeleton.bones[SelectedBone].fRSDResources[SelectedBonePiece].Model;
@@ -6275,7 +6299,7 @@ namespace KimeraCS
             if (!DoNotAddStateQ) AddStateToBuffer(this);
             DoNotAddStateQ = true;
 
-            switch(modelType)
+            switch (modelType)
             {
                 case K_HRC_SKELETON:
                     FieldBone tmpfBone = fSkeleton.bones[SelectedBone];
@@ -6337,9 +6361,9 @@ namespace KimeraCS
             try
             {
                 // Set Global Paths
-                strGlobalFieldSkeletonName = 
+                strGlobalFieldSkeletonName =
                         Path.GetDirectoryName(FrmFieldDB.strFieldFile) + "\\" + Path.GetFileName(FrmFieldDB.strFieldFile).ToUpper();
-                strGlobalFieldAnimationName = 
+                strGlobalFieldAnimationName =
                         Path.GetDirectoryName(FrmFieldDB.strAnimFile) + "\\" + Path.GetFileName(FrmFieldDB.strAnimFile).ToUpper();
 
                 // Initialize OpenGL Context;
@@ -6543,11 +6567,11 @@ namespace KimeraCS
                         if (bSkeleton.wpModels.Count > 0 && SelectedBone == bSkeleton.nBones)
                         {
                             if (ianimWeaponIndex == -1) return;
-                                frmTexViewer = new FrmTextureViewer(this, bSkeleton.wpModels[cbWeapon.SelectedIndex]);                           
+                            frmTexViewer = new FrmTextureViewer(this, bSkeleton.wpModels[cbWeapon.SelectedIndex]);
                         }
                         else
                         {
-                                frmTexViewer = new FrmTextureViewer(this, bSkeleton.bones[SelectedBone].Models[SelectedBonePiece]);
+                            frmTexViewer = new FrmTextureViewer(this, bSkeleton.bones[SelectedBone].Models[SelectedBonePiece]);
                         }
                         break;
                 }
@@ -6905,13 +6929,13 @@ namespace KimeraCS
 
         public void UpdateMainSkeletonWindowTitle()
         {
-            switch(modelType)
+            switch (modelType)
             {
                 case K_HRC_SKELETON:
 
                     if (IsRSDResource) Text = STR_APPNAME + " - Model: " + strGlobalRSDResourceName.ToUpper();
                     else
-                        Text = STR_APPNAME + " - Model: " + strGlobalFieldSkeletonFileName.ToUpper() + 
+                        Text = STR_APPNAME + " - Model: " + strGlobalFieldSkeletonFileName.ToUpper() +
                                              " / Anim: " + strGlobalFieldAnimationName.ToUpper();
                     break;
 
@@ -6937,7 +6961,7 @@ namespace KimeraCS
             }
 
             if (bChangesDone)
-                    Text += "  *";
+                Text += "  *";
         }
 
         public void UpdateScrollBars(int rszX, int rszY, int rszZ,
@@ -7015,7 +7039,7 @@ namespace KimeraCS
             txtRepositionZ.Text = "1";
 
             txtRotateAlpha.Text = "0";
-            txtRotateBeta.Text = "0"; 
+            txtRotateBeta.Text = "0";
             txtRotateGamma.Text = "0";
 
             hsbResizePieceX.Refresh();
@@ -7044,6 +7068,9 @@ namespace KimeraCS
 
             loadingBonePieceModifiersQ = false;
         }
+
+
+
 
     }
 }
