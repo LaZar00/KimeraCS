@@ -106,7 +106,7 @@ namespace KimeraCS
 
         // PEditor drawing main DoFunction vars
         public static int VCountNewPoly;
-        public static int[] tmpVNewPoly = new int[3];
+        public static short[] tmpVNewPoly = new short[3];
         public static double dblPickedVertexZ;
         List<int> lstPickedVertices = new List<int>();
         int[] lstAdjacentPolys;
@@ -1211,6 +1211,8 @@ namespace KimeraCS
         private void BtnCommitChanges_Click(object sender, EventArgs e)
         {
             // Apply changes to the actual EditedPModel local PEditor variable.
+            ComputeBoundingBox(ref EditedPModel);
+
             CommitContextualizedPChanges(false);
 
             // Apply changes to the Skeleton in frmSkeletonEditor (fSkeleton, bSkeleton, fPModel)
@@ -1506,7 +1508,8 @@ namespace KimeraCS
                         else
                         {
                             LoadPModel(ref EditedPModel, strGlobalPathPModelFolderPE,
-                                       Path.GetFileName(strGlobalPModelNamePE));
+                                       Path.GetFileName(strGlobalPModelNamePE),
+                                       true);
                         }
 
                         // Assign old filename to the PModel
@@ -1604,7 +1607,8 @@ namespace KimeraCS
                         else
                         {
                             LoadPModel(ref GroupModel, strGlobalPathPModelFolderPE,
-                                       Path.GetFileName(strGlobalPModelNamePE));
+                                       Path.GetFileName(strGlobalPModelNamePE),
+                                       false);
 
                         }                     
 
@@ -1657,8 +1661,6 @@ namespace KimeraCS
                             }
 
                             DestroyPModelResources(ref GroupModel);
-
-                            ComputeBoundingBox(ref EditedPModel);
 
                             FillGroupsList();
 
@@ -2274,6 +2276,8 @@ namespace KimeraCS
                 iBrightnessFactor += 5;
                 ChangeBrightness(ref EditedPModel, iBrightnessFactor, vcolorsOriginal, pcolorsOriginal);
 
+                CommitContextualizedPChanges(false);
+
                 PanelEditorPModel_Paint(null, null);
             }
         }
@@ -2286,6 +2290,8 @@ namespace KimeraCS
 
                 iBrightnessFactor -= 5;
                 ChangeBrightness(ref EditedPModel, iBrightnessFactor, vcolorsOriginal, pcolorsOriginal);
+
+                CommitContextualizedPChanges(false);
 
                 PanelEditorPModel_Paint(null, null);
             }
@@ -2899,8 +2905,8 @@ namespace KimeraCS
 
             float tmpDist, modelDiameterNormalized;
 
-            ComputeNormals(ref EditedPModel);
-            ComputeEdges(ref EditedPModel);
+            //ComputeNormals(ref EditedPModel);
+            //ComputeEdges(ref EditedPModel);
 
             AddStateToBufferPE(this);
 
@@ -3788,7 +3794,7 @@ namespace KimeraCS
                         if (iVertIdx > -1)
                         {
                             // We will check if vertex is legit (if it is not repeated for example)
-                            tmpVNewPoly[VCountNewPoly] = iVertIdx;
+                            tmpVNewPoly[VCountNewPoly] = (short)iVertIdx;
                             VCountNewPoly++;
 
                             if (!ValidateAddPolygonVertices(EditedPModel, tmpVNewPoly, VCountNewPoly))
