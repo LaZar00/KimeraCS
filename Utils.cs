@@ -803,10 +803,17 @@ namespace KimeraCS
         public static float CalculateAngle2Vectors3D(Point3D v1, Point3D v2)
         {
             double dAngleRadians;
+            float fCalculateAngle2Vectors3DResult;
 
             dAngleRadians = Math.Acos(DotProduct3D(v1, v2) / (CalculateLength3D(v1) * CalculateLength3D(v2)));
 
-            return (float)Math.Abs(dAngleRadians * (180 / PI));
+            fCalculateAngle2Vectors3DResult = (float)RadToDeg(dAngleRadians);
+
+            if (float.IsNaN(fCalculateAngle2Vectors3DResult) ||
+                float.IsInfinity(fCalculateAngle2Vectors3DResult))
+                    fCalculateAngle2Vectors3DResult = 0;
+
+            return fCalculateAngle2Vectors3DResult;
         }
 
         public static float CalculateAreaPoly3D(Point3D v0, Point3D v1, Point3D v2)
@@ -1632,7 +1639,7 @@ namespace KimeraCS
         // This function will check if there are any duplicated vertices or duplicated polys indexes
         // in Add Polygon feature of PEditor.
         // iArrayVNP = VertexNewPoly        iVCNP = VertexCountNewPoly
-        public static bool ValidateAddPolygonVertices(PModel Model, int[] iArrayVNP, int iVCNP)
+        public static bool ValidateAddPolygonVertices(PModel Model, short[] iArrayVNP, int iVCNP)
         {
             bool bValidateVerts = true;
             int iGrpv0, iGrpv1, iGrpv2;
@@ -1674,6 +1681,11 @@ namespace KimeraCS
 
             return bValidateVerts;
         }
+
+
+
+
+
 
     }
 }
