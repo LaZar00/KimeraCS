@@ -811,13 +811,13 @@ namespace KimeraCS
                 facesV[fi].tag1 = 0;
                 facesV[fi].tag2 = PPOLY_TAG2; // 0xCFCEA00
 
-                facesV[fi].Verts = new short[3];
-                facesV[fi].Verts[0] = (short)mesh.facesV[fi].vertC;
-                facesV[fi].Verts[1] = (short)mesh.facesV[fi].vertB;
-                facesV[fi].Verts[2] = (short)mesh.facesV[fi].vertA;
+                facesV[fi].Verts = new ushort[3];
+                facesV[fi].Verts[0] = (ushort)mesh.facesV[fi].vertC;
+                facesV[fi].Verts[1] = (ushort)mesh.facesV[fi].vertB;
+                facesV[fi].Verts[2] = (ushort)mesh.facesV[fi].vertA;
 
-                facesV[fi].Normals = new short[3];
-                facesV[fi].Edges = new short[3];
+                facesV[fi].Normals = new ushort[3];
+                facesV[fi].Edges = new ushort[3];
             }
         }
 
@@ -839,8 +839,68 @@ namespace KimeraCS
             }
         }
 
-        private static void GetVColors(Mesh_object_node mesh, Mat_list_node[] materialsV, 
-                                       out Color[] vcolorsV)
+        //private static void GetVColors(Mesh_object_node mesh, Mat_list_node[] materialsV,
+        //                               out Color[] vcolorsV)
+        //{
+        //    int iVColorIdx, iPolyIdx;
+        //    STIntVector[] stFacesPerVert;
+        //    int iTmpR, iTmpG, iTmpB, iVectorCount;
+
+        //    int iVertIdx, iPolyCounterIdx;
+
+        //    stFacesPerVert = new STIntVector[mesh.numVerts];
+
+        //    for (iPolyIdx = 0; iPolyIdx < mesh.numFaces; iPolyIdx++)
+        //    {
+        //        iVertIdx = mesh.facesV[iPolyIdx].vertA;
+        //        iPolyCounterIdx = stFacesPerVert[iVertIdx].length;
+        //        Array.Resize(ref stFacesPerVert[iVertIdx].vector, iPolyCounterIdx + 1);
+        //        stFacesPerVert[iVertIdx].vector[iPolyCounterIdx] = iPolyIdx;
+        //        stFacesPerVert[iVertIdx].length = iPolyCounterIdx + 1;
+
+        //        iVertIdx = mesh.facesV[iPolyIdx].vertB;
+        //        iPolyCounterIdx = stFacesPerVert[iVertIdx].length;
+        //        Array.Resize(ref stFacesPerVert[iVertIdx].vector, iPolyCounterIdx + 1);
+        //        stFacesPerVert[iVertIdx].vector[iPolyCounterIdx] = iPolyIdx;
+        //        stFacesPerVert[iVertIdx].length = iPolyCounterIdx + 1;
+
+        //        iVertIdx = mesh.facesV[iPolyIdx].vertC;
+        //        iPolyCounterIdx = stFacesPerVert[iVertIdx].length;
+        //        Array.Resize(ref stFacesPerVert[iVertIdx].vector, iPolyCounterIdx + 1);
+        //        stFacesPerVert[iVertIdx].vector[iPolyCounterIdx] = iPolyIdx;
+        //        stFacesPerVert[iVertIdx].length = iPolyCounterIdx + 1;
+        //    }
+
+        //    vcolorsV = new Color[mesh.numVerts];
+
+        //    if (mesh.faceMaterialIndicesV != null)
+        //    {
+
+        //        for (iVColorIdx = 0; iVColorIdx < mesh.numVerts; iVColorIdx++)
+        //        {
+
+        //            iTmpR = iTmpG = iTmpB = 0;
+        //            iVectorCount = 0;
+
+        //            foreach (int iVectIdx in stFacesPerVert[iVColorIdx].vector)
+        //            {
+        //                iTmpR += materialsV[mesh.faceMaterialIndicesV[iVectIdx]].diffuse.red;
+        //                iTmpG += materialsV[mesh.faceMaterialIndicesV[iVectIdx]].diffuse.green;
+        //                iTmpB += materialsV[mesh.faceMaterialIndicesV[iVectIdx]].diffuse.blue;
+
+        //                iVectorCount++;
+        //            }
+
+        //            vcolorsV[iVColorIdx] = Color.FromArgb(255, iTmpR / iVectorCount, 
+        //                                                       iTmpG / iVectorCount, 
+        //                                                       iTmpB / iVectorCount);
+
+        //        }
+        //    }
+        //}
+
+        private static void GetVColors(Mesh_object_node mesh, Mat_list_node[] materialsV,
+                               out Color[] vcolorsV)
         {
             int iVColorIdx, iPolyIdx;
             STIntVector[] stFacesPerVert;
@@ -901,6 +961,22 @@ namespace KimeraCS
                 }
             }
         }
+
+        //private static void GetPColors(Mesh_object_node mesh, Mat_list_node[] materialsV, out Color[] pcolorsV)
+        //{
+        //    int iPColorIdx;
+
+        //    pcolorsV = new Color[mesh.numFaces];
+
+        //    for (iPColorIdx = 0; iPColorIdx < mesh.numFaces; iPColorIdx++)
+        //    {
+        //        if (mesh.faceMaterialIndicesV != null)                
+        //            pcolorsV[iPColorIdx] = Color.FromArgb(255,
+        //                materialsV[mesh.faceMaterialIndicesV[iPColorIdx]].diffuse.red,
+        //                materialsV[mesh.faceMaterialIndicesV[iPColorIdx]].diffuse.green,
+        //                materialsV[mesh.faceMaterialIndicesV[iPColorIdx]].diffuse.blue);
+        //    }
+        //}
 
         private static void GetPColors(Mesh_object_node mesh, Mat_list_node[] materialsV, out Color[] pcolorsV)
         {
