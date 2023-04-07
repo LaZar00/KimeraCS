@@ -140,16 +140,6 @@ namespace KimeraCS
                                       Vcolors[Polys[iPolyIdx].Verts[iVertIdx] + Group.offsetVert].B / 255.0f,
                                       1.0f);
 
-                        //if (Normals.Length > 0)
-                        //    glNormal3f(Normals[Polys[iPolyIdx].Normals[iVertIdx] + Group.offsetVert].x,
-                        //               Normals[Polys[iPolyIdx].Normals[iVertIdx] + Group.offsetVert].y,
-                        //               Normals[Polys[iPolyIdx].Normals[iVertIdx] + Group.offsetVert].z);
-
-                        //if (Normals.Length > 0)
-                        //    glNormal3f(Normals[Polys[iPolyIdx].Normals[iVertIdx]].x,
-                        //               Normals[Polys[iPolyIdx].Normals[iVertIdx]].y,
-                        //               Normals[Polys[iPolyIdx].Normals[iVertIdx]].z);
-
                         if (Normals.Length > 0)
                             glNormal3f(Normals[NormalsIndex[Polys[iPolyIdx].Verts[iVertIdx] + Group.offsetVert]].x,
                                        Normals[NormalsIndex[Polys[iPolyIdx].Verts[iVertIdx] + Group.offsetVert]].y,
@@ -224,13 +214,15 @@ namespace KimeraCS
 
             texEnabled = glIsEnabled(GLCapability.GL_TEXTURE_2D);
 
+            glEnable(GLCapability.GL_COLOR_MATERIAL);
+
             for (iGroupIdx = 0; iGroupIdx < Model.Header.numGroups; iGroupIdx++)
             {
                 // ShadeMode
-                if (Model.Hundrets[iGroupIdx].shademode == 1) glShadeModel(GLShadingModel.GL_FLAT);
-                else glShadeModel(GLShadingModel.GL_SMOOTH);
+                glShadeModel(GLShadingModel.GL_FLAT);
 
-                glEnable(GLCapability.GL_COLOR_MATERIAL);
+                if ((Model.Hundrets[iGroupIdx].field_8 & 0x020000) != 0) 
+                    glShadeModel(GLShadingModel.GL_SMOOTH);
 
                 //  Set the render states acording to the hundrets information
                 //  V_WIREFRAME
@@ -1901,9 +1893,9 @@ namespace KimeraCS
                 ComputePModelBoundingBox(EditedPModel, ref p_min, ref p_max);
                 modelDiameterNormalized = (-2 * ComputeSceneRadius(p_min, p_max)) / FrmPEditor.LIGHT_STEPS;
 
-                SetLighting(GLCapability.GL_LIGHT0, modelDiameterNormalized * iLightX,
-                                                    modelDiameterNormalized * iLightY,
-                                                    modelDiameterNormalized * iLightZ,
+                SetLighting(GLCapability.GL_LIGHT0, modelDiameterNormalized * FrmPEditor.iLightX,
+                                                    modelDiameterNormalized * FrmPEditor.iLightY,
+                                                    modelDiameterNormalized * FrmPEditor.iLightZ,
                                                     1, 1, 1, false);
             }
             else glDisable(GLCapability.GL_LIGHTING);
@@ -2204,13 +2196,14 @@ namespace KimeraCS
 
             for (iVertIdx = 0; iVertIdx < 3; iVertIdx++)
             {
-                iTmpA += Model.Vcolors[Model.Polys[iPolyIdx].Verts[iVertIdx] + 
+
+                iTmpA += Model.Vcolors[Model.Polys[iPolyIdx].Verts[iVertIdx] +
                                        Model.Groups[iGroupIdx].offsetVert].A;
-                iTmpR += Model.Vcolors[Model.Polys[iPolyIdx].Verts[iVertIdx] + 
+                iTmpR += Model.Vcolors[Model.Polys[iPolyIdx].Verts[iVertIdx] +
                                        Model.Groups[iGroupIdx].offsetVert].R;
-                iTmpG += Model.Vcolors[Model.Polys[iPolyIdx].Verts[iVertIdx] + 
+                iTmpG += Model.Vcolors[Model.Polys[iPolyIdx].Verts[iVertIdx] +
                                        Model.Groups[iGroupIdx].offsetVert].G;
-                iTmpB += Model.Vcolors[Model.Polys[iPolyIdx].Verts[iVertIdx] + 
+                iTmpB += Model.Vcolors[Model.Polys[iPolyIdx].Verts[iVertIdx] +
                                        Model.Groups[iGroupIdx].offsetVert].B;
             }
 
