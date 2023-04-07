@@ -1559,23 +1559,26 @@ namespace KimeraCS
 
         public static void ChangeBrightness(ref PModel Model, int iFactor, Color[] vcolorsOriginal, Color[] pcolorsOriginal)
         {
-            int iPolyIdx, iVertIdx;
+            int iVertIdx;
 
             for (iVertIdx = 0; iVertIdx < Model.Header.numVerts; iVertIdx++)
             {
-                Model.Vcolors[iVertIdx] = Color.FromArgb(255,
-                                 Math.Max(0, Math.Min(255, vcolorsOriginal[iVertIdx].R + iFactor)),
-                                 Math.Max(0, Math.Min(255, vcolorsOriginal[iVertIdx].G + iFactor)),
-                                 Math.Max(0, Math.Min(255, vcolorsOriginal[iVertIdx].B + iFactor)));
+
+                Model.Vcolors[iVertIdx] = Color.FromArgb(vcolorsOriginal[iVertIdx].A,       // 255
+                                Math.Max(0, Math.Min(255, vcolorsOriginal[iVertIdx].R + iFactor)),
+                                Math.Max(0, Math.Min(255, vcolorsOriginal[iVertIdx].G + iFactor)),
+                                Math.Max(0, Math.Min(255, vcolorsOriginal[iVertIdx].B + iFactor)));
             }
 
-            for (iPolyIdx = 0; iPolyIdx < Model.Header.numPolys; iPolyIdx++)
-            {
-                Model.Pcolors[iPolyIdx] = Color.FromArgb(255,
-                                     Math.Max(0, Math.Min(255, pcolorsOriginal[iPolyIdx].R + iFactor)),
-                                     Math.Max(0, Math.Min(255, pcolorsOriginal[iPolyIdx].G + iFactor)),
-                                     Math.Max(0, Math.Min(255, pcolorsOriginal[iPolyIdx].B + iFactor)));
-            }
+            ComputePColors(ref Model);
+
+            //for (iPolyIdx = 0; iPolyIdx < Model.Header.numPolys; iPolyIdx++)
+            //{
+            //    Model.Pcolors[iPolyIdx] = Color.FromArgb(255,
+            //                         Math.Max(0, Math.Min(255, pcolorsOriginal[iPolyIdx].R + iFactor)),
+            //                         Math.Max(0, Math.Min(255, pcolorsOriginal[iPolyIdx].G + iFactor)),
+            //                         Math.Max(0, Math.Min(255, pcolorsOriginal[iPolyIdx].B + iFactor)));
+            //}
         }
 
         public static void UpdateTranslationTable(ref PairIB[] translationTableVertex, 
