@@ -48,7 +48,7 @@ namespace KimeraCS
                 fileName = Path.GetFileName(strfileName).ToUpper();
 
                 // Let's read HRC file into memory.
-                string[] hrcString = System.IO.File.ReadAllLines(strfileName);
+                string[] hrcString = File.ReadAllLines(strfileName);
 
                 // Let's process the lines.
                 // Skeleton name
