@@ -1019,14 +1019,39 @@ namespace KimeraCS
 
                 for (iMeshIdx = 0; iMeshIdx < iNumMeshes; iMeshIdx++)
                 {
-                    ConvertMesh3DSToPModel(Model.meshesV[iMeshIdx], Model.materialsV, ref outModel);
-
-                    if (bAdjust3DSModel)
+                    // Let's check the max number of polys and vertices
+                    if (Model.meshesV[iMeshIdx].vertsV.Length > 0xFFFF)
                     {
-                        // Let's mirror and rotate to put the mesh in correct FF7 models position
-                        // Mirror model on Z plane
-                        MirrorGroupRelativeToPlane(ref outModel, outModel.Header.numGroups - 1,
-                                                   0, 0, 1, 0);
+                        MessageBox.Show("The mesh number: " + iMeshIdx.ToString() + " has " +
+                                        Model.meshesV[iMeshIdx].vertsV.Length.ToString() + " vertices.\n" +
+                                        "The max number of vertices allowed for a FF7 .P model is 65535.\n" +
+                                        "The process of importing this mesh is cancelled.", "Warning", 
+                                        MessageBoxButtons.OK);
+
+                    }
+                    else if (Model.meshesV[iMeshIdx].facesV.Length > 0xFFFF)
+                    {
+                        MessageBox.Show("The mesh number: " + iMeshIdx.ToString() + " has " +
+                                        Model.meshesV[iMeshIdx].facesV.Length.ToString() + " faces.\n" +
+                                        "The max number of faces allowed for a FF7 .P model is 65535.\n" +
+                                        "The process of importing this mesh is cancelled.", "Warning",
+                                        MessageBoxButtons.OK);
+                    }
+                    else
+                    {
+                        ConvertMesh3DSToPModel(Model.meshesV[iMeshIdx], Model.materialsV, ref outModel);
+
+                        if (bAdjust3DSModel)
+                        {
+                            // Let's mirror and rotate to put the mesh in correct FF7 models position
+                            // Mirror model on Z plane
+                            MirrorGroupRelativeToPlane(ref outModel, outModel.Header.numGroups - 1,
+                                                       0, 0, 1, 0);
+
+                            // Rotate 180º Y axis will do this here, after adding the group
+                            // when importing .3ds file
+                            outModel.Groups[outModel.Header.numGroups - 1].rotGroupGamma = 180;
+                        }
                     }
                 }
             }
@@ -1042,13 +1067,6 @@ namespace KimeraCS
             for (iModelIdx = 0; iModelIdx < iNumModels; iModelIdx++)
             {
                 ConvertModel3DSToPModel(modelsV[iModelIdx], ref outModel, bAdjust3DSModel);
-
-                // Rotate 180º Y axis will do this here, after adding the group
-                // when importing .3ds file
-                if (bAdjust3DSModel)
-                {
-                    outModel.Groups[outModel.Header.numGroups - 1].rotGroupGamma = 180;
-                }
             }
 
             outModel.Header.version = 1;
