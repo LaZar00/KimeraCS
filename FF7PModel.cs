@@ -25,8 +25,8 @@ namespace KimeraCS
     public class FF7PModel
     {
 
-        //public const int PPOLY_TAG2 = 0xCFCEA00;
-        public const int PPOLY_TAG2 = 15399948;
+        public const int PPOLY_TAG2 = 0xCFCEA00;  //217901568
+        public const int I_COMPUTENORMALS_VERTEXTHRESHOLD = 58;
 
         public struct PHeader
         {
@@ -260,7 +260,8 @@ namespace KimeraCS
             // Check numVerts
             if (Model.Header.numVerts <= 0)
             {
-                throw new ApplicationException("The num Vertices value of the P file " + Model.fileName + " is not correct.");
+                throw new ApplicationException("The number of vertices of the P Model: " + Model.fileName + 
+                                               " is not correct.");
             }
 
             // Verts
@@ -339,8 +340,9 @@ namespace KimeraCS
 
             Model.DListNum = 0;
 
+            RepairGroups(ref Model);
             AssignRealGID(ref Model);
-            CheckModelConsistency(ref Model);
+            //CheckModelConsistency(ref Model);
             RepairPolys(ref Model);
             KillUnusedVertices(ref Model);
             ComputeBoundingBox(ref Model);
@@ -719,7 +721,8 @@ namespace KimeraCS
                     if (iGroupIdx == 0)
                     {
                         iGroupIdxCheck = 0;
-                        while (Model.Groups[iGroupIdxCheck].offsetPoly != 0) iGroupIdxCheck++;
+                        while (Model.Groups[iGroupIdxCheck].offsetPoly != 0 &&
+                               Model.Groups[iGroupIdxCheck].numPoly > 0) iGroupIdxCheck++;
 
                         iGroupFound = iGroupIdxCheck;
                     }
@@ -1669,8 +1672,117 @@ namespace KimeraCS
         }
 
 
+        ////// COMPUTE NORMALS
+        public struct STVertexNormals
+        {
+            public int iVertexNormalsCounter;
+            public Point3D p3DVertex;
+            public Point3D p3DNormal;
+            public HashSet<int> hsActualVertex;
 
-        public static void ComputeNormals(ref PModel Model)
+        }
+
+        public static List<STVertexNormals> stVertexNormals;
+
+        public static void GenerateNormalsList(PModel Model)
+        {
+            int iGroupIdx, iPolyIdx, iVertIdx, iActualVertex, iVertexNormalsIdx;
+            STVertexNormals stTmpVertexNormals;
+            Point3D p3DNormal;
+
+            stVertexNormals = new List<STVertexNormals>();
+
+            for (iGroupIdx = 0; iGroupIdx < Model.Header.numGroups; iGroupIdx++)
+            {
+                for (iPolyIdx = Model.Groups[iGroupIdx].offsetPoly;
+                     iPolyIdx < Model.Groups[iGroupIdx].numPoly + Model.Groups[iGroupIdx].offsetPoly;
+                     iPolyIdx++)
+                {
+                    p3DNormal = CalculateNormal(Model.Verts[Model.Polys[iPolyIdx].Verts[0] +
+                                                            Model.Groups[iGroupIdx].offsetVert],
+                                                Model.Verts[Model.Polys[iPolyIdx].Verts[1] +
+                                                            Model.Groups[iGroupIdx].offsetVert],
+                                                Model.Verts[Model.Polys[iPolyIdx].Verts[2] +
+                                                            Model.Groups[iGroupIdx].offsetVert]);
+
+
+                    for (iVertIdx = 0; iVertIdx < 3; iVertIdx++)
+                    {
+                        iActualVertex = Model.Polys[iPolyIdx].Verts[iVertIdx] +
+                                        Model.Groups[iGroupIdx].offsetVert;
+
+                        Model.Polys[iPolyIdx].Normals[iVertIdx] = (ushort)iActualVertex;
+                        Model.NormalIndex[iActualVertex] = iActualVertex;
+
+                        iVertexNormalsIdx = stVertexNormals.
+                                FindIndex(x => x.p3DVertex.x == Model.Verts[iActualVertex].x &&
+                                               x.p3DVertex.y == Model.Verts[iActualVertex].y &&
+                                               x.p3DVertex.z == Model.Verts[iActualVertex].z);
+
+                        if (iVertexNormalsIdx == -1)
+                        {
+                            stTmpVertexNormals = new STVertexNormals();
+
+                            stTmpVertexNormals.p3DVertex = Model.Verts[iActualVertex];
+                            stTmpVertexNormals.p3DNormal = new Point3D(p3DNormal.x, p3DNormal.y, p3DNormal.z);
+
+                            stTmpVertexNormals.hsActualVertex = new HashSet<int>();
+                            stTmpVertexNormals.hsActualVertex.Add(iActualVertex);
+                            stTmpVertexNormals.iVertexNormalsCounter = 1;
+
+                            stVertexNormals.Add(stTmpVertexNormals);
+                        }
+                        else
+                        {
+                            stTmpVertexNormals = stVertexNormals[iVertexNormalsIdx];
+
+                            stTmpVertexNormals.p3DNormal = AddPoint3D(stTmpVertexNormals.p3DNormal, p3DNormal);
+                            stTmpVertexNormals.hsActualVertex.Add(iActualVertex);
+                            stTmpVertexNormals.iVertexNormalsCounter++;
+
+                            stVertexNormals[iVertexNormalsIdx] = stTmpVertexNormals;
+                        }
+                    }
+                }
+            }
+        }
+
+        public static void ComputeNormals4MoreVerticesThanPolys(ref PModel Model)
+        {
+            Point3D p3DTempNormal;
+            int iVertexNormalIdx;
+
+            Model.Normals = new Point3D[Model.Header.numVerts];
+            Model.NormalIndex = new int[Model.Header.numVerts];
+
+            Model.Header.numNormals = Model.Header.numVerts;
+            Model.Header.numNormIdx = Model.Header.numVerts;
+
+            GenerateNormalsList(Model);
+
+            for (iVertexNormalIdx = 0; iVertexNormalIdx < stVertexNormals.Count; iVertexNormalIdx++)
+            {
+                if (stVertexNormals[iVertexNormalIdx].iVertexNormalsCounter > 0)
+                {
+                    p3DTempNormal = Normalize(new Point3D(
+                        -stVertexNormals[iVertexNormalIdx].p3DNormal.x / stVertexNormals[iVertexNormalIdx].iVertexNormalsCounter,
+                        -stVertexNormals[iVertexNormalIdx].p3DNormal.y / stVertexNormals[iVertexNormalIdx].iVertexNormalsCounter,
+                        -stVertexNormals[iVertexNormalIdx].p3DNormal.z / stVertexNormals[iVertexNormalIdx].iVertexNormalsCounter));
+                }
+                else
+                {
+                    p3DTempNormal = new Point3D(0, 0, 0);
+                }
+
+                foreach (int itmInt in stVertexNormals[iVertexNormalIdx].hsActualVertex)
+                {
+                    Model.Normals[itmInt] = p3DTempNormal;
+                }
+            }
+
+        }
+
+        public static void ComputeNormals4MorePolysThanVertices(ref PModel Model)
         {
             int iGroupIdx, iPolyIdx, iVertIdx, iActualVertIdx, iVertIdxNext;
 
@@ -1684,7 +1796,6 @@ namespace KimeraCS
 
             Model.Header.numNormals = Model.Header.numVerts;
             Model.Header.numNormIdx = Model.Header.numVerts;
-
 
             for (iPolyIdx = 0; iPolyIdx < Model.Header.numPolys; iPolyIdx++)
             {
@@ -1775,6 +1886,26 @@ namespace KimeraCS
                 Model.Normals[iVertIdx] = Normalize(sumNorms[iVertIdx]);
                 Model.NormalIndex[iVertIdx] = iVertIdx;
             }
+        }
+
+        // I decided to use 2 different functions for ComputeNormals
+        // -the resulting normals are the same-
+        // The difference is that one is faster for one type of models (more vertices than polys)
+        // and the other for other type of models (more polys than vertices)
+        // Let's say that the percentage needed to choose one or other depends on the
+        // amount of vertices / polys. I use a threshold for the percentage (58).
+        public static void ComputeNormals(ref PModel Model)
+        {
+            float iNumVertsPercent;
+            float iNumVerts = Model.Verts.Length;
+
+            iNumVertsPercent = (iNumVerts / (Model.Verts.Length + Model.Polys.Length)) * 100;
+
+            if (iNumVertsPercent > I_COMPUTENORMALS_VERTEXTHRESHOLD)
+                ComputeNormals4MoreVerticesThanPolys(ref Model);
+            else
+                ComputeNormals4MorePolysThanVertices(ref Model);
+
         }
 
         public static void DisableNormals(ref PModel Model)
@@ -2003,11 +2134,11 @@ namespace KimeraCS
                     for (iVertIdx = 0; iVertIdx < 3; iVertIdx++)
                     {
                         iTmpR += Model.Vcolors[Model.Polys[iPolyIdx].Verts[iVertIdx] + 
-                                  Model.Groups[iGroupIdx].offsetVert].R;
+                                               Model.Groups[iGroupIdx].offsetVert].R;
                         iTmpG += Model.Vcolors[Model.Polys[iPolyIdx].Verts[iVertIdx] + 
-                                  Model.Groups[iGroupIdx].offsetVert].G;
+                                               Model.Groups[iGroupIdx].offsetVert].G;
                         iTmpB += Model.Vcolors[Model.Polys[iPolyIdx].Verts[iVertIdx] + 
-                                  Model.Groups[iGroupIdx].offsetVert].B;
+                                               Model.Groups[iGroupIdx].offsetVert].B;
                     }
 
                     Model.Pcolors[iPolyIdx] = Color.FromArgb(255,
@@ -2065,6 +2196,23 @@ namespace KimeraCS
             catch
             {
                 MessageBox.Show("Error applying PChange at " + Model.fileName + "!!!", "Error", MessageBoxButtons.OK);
+            }
+        }
+
+        // This procedure removes the Groups with numpolys = 0.
+        // This should never happen (but Kaldarasha reported models created with numpolys = 0).
+        public static void RepairGroups(ref PModel Model)
+        {
+            int iGroupIdx;
+
+            // Delete group if numpolys = 0
+            for (iGroupIdx = 0; iGroupIdx < Model.Groups.Length; iGroupIdx++)
+            {
+                if (Model.Groups[iGroupIdx].numPoly == 0)
+                {
+                    RemoveGroup(ref Model, iGroupIdx);
+                    iGroupIdx--;
+                }
             }
         }
 
@@ -2510,9 +2658,12 @@ namespace KimeraCS
                 iCounter++;
             }
 
-            modelOut.Normals = new Point3D[modelIn.Normals.Length];
-            for (iCounter = 0; iCounter < modelIn.Normals.Length; iCounter++)
-                modelOut.Normals[iCounter] = modelIn.Normals[iCounter];
+            if (modelIn.Normals != null)
+            {
+                modelOut.Normals = new Point3D[modelIn.Normals.Length];
+                for (iCounter = 0; iCounter < modelIn.Normals.Length; iCounter++)
+                    modelOut.Normals[iCounter] = modelIn.Normals[iCounter];
+            }
 
             if (modelIn.TexCoords != null)
             {
@@ -2532,14 +2683,6 @@ namespace KimeraCS
             for (iCounter = 0; iCounter < modelIn.Pcolors.Length; iCounter++)
                 modelOut.Pcolors[iCounter] = modelIn.Pcolors[iCounter];
 
-            modelOut.Edges = new PEdge[modelIn.Edges.Length];
-            iCounter = 0;
-            foreach (PEdge itmEdge in modelIn.Edges)
-            {
-                modelOut.Edges[iCounter] = new PEdge(itmEdge);
-                iCounter++;
-            }
-
             modelOut.Hundrets = new PHundret[modelIn.Hundrets.Length];
             for (iCounter = 0; iCounter < modelIn.Hundrets.Length; iCounter++)
                 modelOut.Hundrets[iCounter] = modelIn.Hundrets[iCounter];
@@ -2550,9 +2693,14 @@ namespace KimeraCS
 
             modelOut.BoundingBox = modelIn.BoundingBox;
 
-            modelOut.NormalIndex = new int[modelIn.NormalIndex.Length];
-            for (iCounter = 0; iCounter < modelIn.NormalIndex.Length; iCounter++)
-                modelOut.NormalIndex[iCounter] = modelIn.NormalIndex[iCounter];
+            if (modelIn.NormalIndex != null)
+            {
+                modelOut.NormalIndex = new int[modelIn.NormalIndex.Length];
+                for (iCounter = 0; iCounter < modelIn.NormalIndex.Length; iCounter++)
+                    modelOut.NormalIndex[iCounter] = modelIn.NormalIndex[iCounter];
+            }
+
+            ComputeEdges(ref modelOut);
 
             modelOut.repositionX = modelIn.repositionX;
             modelOut.repositionY = modelIn.repositionY;
@@ -4568,3 +4716,145 @@ namespace KimeraCS
 
     }
 }
+
+
+//public struct STVertexIndexData
+//{
+//    public int ActualVertex;
+//    public int GroupIdx;
+//    public int PolyIdx;
+//    public int VertexIdx;
+//}
+
+//public struct STVertexNormals
+//{
+//    public int iVertexNormalsCounter;
+//    public Point3D p3DVertex;
+//    public Point3D p3DNormal;
+//    public List<STVertexIndexData> lstVertexIndexData;
+//}
+
+//public static List<STVertexNormals> stVertexNormals;
+
+//public static void GenerateNormalsList(PModel Model)
+//{
+//    int iGroupIdx, iPolyIdx, iVertIdx, iActualVertex, iVertexNormalsIdx;
+//    STVertexNormals stTmpVertexNormals;
+//    STVertexIndexData stTmpVertexIndexData;
+//    Point3D p3DNormal;
+
+//    stVertexNormals = new List<STVertexNormals>();
+
+//    for (iGroupIdx = 0; iGroupIdx < Model.Header.numGroups; iGroupIdx++)
+//    {
+//        for (iPolyIdx = Model.Groups[iGroupIdx].offsetPoly;
+//             iPolyIdx < Model.Groups[iGroupIdx].numPoly + Model.Groups[iGroupIdx].offsetPoly;
+//             iPolyIdx++)
+//        {
+//            p3DNormal = CalculateNormal(Model.Verts[Model.Polys[iPolyIdx].Verts[0] +
+//                                                    Model.Groups[iGroupIdx].offsetVert],
+//                                        Model.Verts[Model.Polys[iPolyIdx].Verts[1] +
+//                                                    Model.Groups[iGroupIdx].offsetVert],
+//                                        Model.Verts[Model.Polys[iPolyIdx].Verts[2] +
+//                                                    Model.Groups[iGroupIdx].offsetVert]);
+
+//            for (iVertIdx = 0; iVertIdx < 3; iVertIdx++)
+//            {
+//                iActualVertex = Model.Polys[iPolyIdx].Verts[iVertIdx] +
+//                                Model.Groups[iGroupIdx].offsetVert;
+
+//                iVertexNormalsIdx = stVertexNormals.
+//                        FindIndex(x => x.p3DVertex.x == Model.Verts[iActualVertex].x &&
+//                                       x.p3DVertex.y == Model.Verts[iActualVertex].y &&
+//                                       x.p3DVertex.z == Model.Verts[iActualVertex].z);
+
+//                if (iVertexNormalsIdx == -1)
+//                {
+//                    stTmpVertexNormals = new STVertexNormals();
+
+
+//                    stTmpVertexNormals.p3DVertex = Model.Verts[iActualVertex];
+//                    stTmpVertexNormals.p3DNormal = new Point3D(p3DNormal.x, p3DNormal.y, p3DNormal.z);
+
+//                    stTmpVertexNormals.lstVertexIndexData = new List<STVertexIndexData>();
+
+//                    stTmpVertexIndexData = new STVertexIndexData()
+//                    {
+//                        ActualVertex = iActualVertex,
+//                        GroupIdx = iGroupIdx,
+//                        PolyIdx = iPolyIdx,
+//                        VertexIdx = iVertIdx,
+//                    };
+
+//                    stTmpVertexNormals.lstVertexIndexData.Add(stTmpVertexIndexData);
+
+
+//                    stVertexNormals.Add(stTmpVertexNormals);
+//                }
+//                else
+//                {
+//                    stTmpVertexNormals = stVertexNormals[iVertexNormalsIdx];
+
+
+//                    stTmpVertexNormals.p3DNormal = AddPoint3D(stTmpVertexNormals.p3DNormal, p3DNormal);
+
+//                    stTmpVertexIndexData = new STVertexIndexData()
+//                    {
+//                        ActualVertex = iActualVertex,
+//                        GroupIdx = iGroupIdx,
+//                        PolyIdx = iPolyIdx,
+//                        VertexIdx = iVertIdx,
+//                    };
+
+//                    stTmpVertexNormals.lstVertexIndexData.Add(stTmpVertexIndexData);
+
+
+//                    stVertexNormals[iVertexNormalsIdx] = stTmpVertexNormals;
+//                }
+//            }
+//        }
+//    }
+
+//}
+
+//public static void ComputeNormals(ref PModel Model)
+//{
+//    int iGroupIdx, iPolyIdx, iVertIdx, iActualVertIdx, iVertIdxNext;
+
+//    Point3D p3DTempNorm;
+
+//    Point3D[] sumNorms = new Point3D[Model.Header.numVerts];
+//    int[] polys_per_vert = new int[Model.Header.numVerts];
+
+//    Model.Normals = new Point3D[Model.Header.numVerts];
+//    Model.NormalIndex = new int[Model.Header.numVerts];
+
+//    Model.Header.numNormals = Model.Header.numVerts;
+//    Model.Header.numNormIdx = Model.Header.numVerts;
+
+//    GenerateNormalsList(Model);
+
+//    foreach (STVertexNormals itmVertexNormal in stVertexNormals)
+//    {
+//        foreach (STVertexIndexData itmVertexIndexData in itmVertexNormal.lstVertexIndexData)
+//        {
+//            Model.Polys[itmVertexIndexData.PolyIdx].Normals[itmVertexIndexData.VertexIdx] =
+//                                    (ushort)itmVertexIndexData.ActualVertex;
+
+//            Model.NormalIndex[itmVertexIndexData.ActualVertex] = itmVertexIndexData.ActualVertex;
+
+//            Model.Normals[itmVertexIndexData.ActualVertex].x =
+//                -itmVertexNormal.p3DNormal.x / itmVertexNormal.lstVertexIndexData.Count;
+//            Model.Normals[itmVertexIndexData.ActualVertex].y =
+//                -itmVertexNormal.p3DNormal.y / itmVertexNormal.lstVertexIndexData.Count;
+//            Model.Normals[itmVertexIndexData.ActualVertex].z =
+//                -itmVertexNormal.p3DNormal.z / itmVertexNormal.lstVertexIndexData.Count;
+
+//            Model.Normals[itmVertexIndexData.ActualVertex] =
+//                                Normalize(Model.Normals[itmVertexIndexData.ActualVertex]);
+
+//        }
+
+//    }
+
+//}
