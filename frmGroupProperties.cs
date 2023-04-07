@@ -79,6 +79,9 @@ namespace KimeraCS
             else if (EditedPModel.Groups[SelectedGroup].polyType == 2) rb2.Checked = true;
             else rb3.Checked = true;
 
+            if (EditedPModel.Hundrets[SelectedGroup].shademode == 1) rb1SM.Checked = true;
+            else if (EditedPModel.Hundrets[SelectedGroup].shademode == 2) rb2SM.Checked = true;
+
             changeRenderStateValues = EditedPModel.Hundrets[SelectedGroup].field_8;
             renderStateValues = EditedPModel.Hundrets[SelectedGroup].field_C;
 
@@ -113,10 +116,7 @@ namespace KimeraCS
         private void ChkV_TEXTURE_CheckedChanged(object sender, EventArgs e)
         {
             if (chkV_TEXTURE.Checked)
-            {
                 nudTextureID.Enabled = true;
-                rb2.Checked = true;
-            }
             else
             {
                 nudTextureID.Enabled = false;
@@ -158,6 +158,8 @@ namespace KimeraCS
 
         private void ChkV_SHADEMODE_CheckedChanged(object sender, EventArgs e)
         {
+            if (!chkV_SHADEMODE.Checked) rb1SM.Checked = true;
+
             SetRSValuesEnabled();
         }
 
@@ -179,6 +181,9 @@ namespace KimeraCS
             if (rb1.Checked) EditedPModel.Groups[SelectedGroup].polyType = 1;
             if (rb2.Checked) EditedPModel.Groups[SelectedGroup].polyType = 2;
             if (rb3.Checked) EditedPModel.Groups[SelectedGroup].polyType = 3;
+
+            if (rb1SM.Checked) EditedPModel.Hundrets[SelectedGroup].shademode = 1;
+            if (rb2SM.Checked) EditedPModel.Hundrets[SelectedGroup].shademode = 2;
 
             if (EditedPModel.Groups[SelectedGroup].polyType == 1) rb1.Checked = true;
             else if (EditedPModel.Groups[SelectedGroup].polyType == 2) rb2.Checked = true;

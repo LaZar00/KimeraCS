@@ -62,13 +62,17 @@ namespace KimeraCS
             this.btnClose = new System.Windows.Forms.Button();
             this.btnAccept = new System.Windows.Forms.Button();
             this.gbPolygonType = new System.Windows.Forms.GroupBox();
-            this.rb1 = new System.Windows.Forms.RadioButton();
-            this.rb2 = new System.Windows.Forms.RadioButton();
             this.rb3 = new System.Windows.Forms.RadioButton();
+            this.rb2 = new System.Windows.Forms.RadioButton();
+            this.rb1 = new System.Windows.Forms.RadioButton();
+            this.gbShadeMode = new System.Windows.Forms.GroupBox();
+            this.rb1SM = new System.Windows.Forms.RadioButton();
+            this.rb2SM = new System.Windows.Forms.RadioButton();
             this.gbBlending.SuspendLayout();
             this.gbRenderState.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudTextureID)).BeginInit();
             this.gbPolygonType.SuspendLayout();
+            this.gbShadeMode.SuspendLayout();
             this.SuspendLayout();
             // 
             // gbBlending
@@ -382,7 +386,7 @@ namespace KimeraCS
             // 
             this.lblTextureID.AutoSize = true;
             this.lblTextureID.ForeColor = System.Drawing.SystemColors.Control;
-            this.lblTextureID.Location = new System.Drawing.Point(17, 376);
+            this.lblTextureID.Location = new System.Drawing.Point(22, 363);
             this.lblTextureID.Name = "lblTextureID";
             this.lblTextureID.Size = new System.Drawing.Size(60, 13);
             this.lblTextureID.TabIndex = 2;
@@ -390,14 +394,14 @@ namespace KimeraCS
             // 
             // nudTextureID
             // 
-            this.nudTextureID.Location = new System.Drawing.Point(83, 374);
+            this.nudTextureID.Location = new System.Drawing.Point(22, 381);
             this.nudTextureID.Maximum = new decimal(new int[] {
             200,
             0,
             0,
             0});
             this.nudTextureID.Name = "nudTextureID";
-            this.nudTextureID.Size = new System.Drawing.Size(60, 20);
+            this.nudTextureID.Size = new System.Drawing.Size(57, 20);
             this.nudTextureID.TabIndex = 3;
             // 
             // btnClose
@@ -427,28 +431,28 @@ namespace KimeraCS
             this.gbPolygonType.Controls.Add(this.rb2);
             this.gbPolygonType.Controls.Add(this.rb1);
             this.gbPolygonType.ForeColor = System.Drawing.SystemColors.Control;
-            this.gbPolygonType.Location = new System.Drawing.Point(163, 357);
+            this.gbPolygonType.Location = new System.Drawing.Point(92, 358);
             this.gbPolygonType.Name = "gbPolygonType";
-            this.gbPolygonType.Size = new System.Drawing.Size(161, 48);
+            this.gbPolygonType.Size = new System.Drawing.Size(138, 48);
             this.gbPolygonType.TabIndex = 7;
             this.gbPolygonType.TabStop = false;
             this.gbPolygonType.Text = "Polygon Type";
             // 
-            // rb1
+            // rb3
             // 
-            this.rb1.AutoSize = true;
-            this.rb1.Location = new System.Drawing.Point(13, 20);
-            this.rb1.Name = "rb1";
-            this.rb1.Size = new System.Drawing.Size(31, 17);
-            this.rb1.TabIndex = 0;
-            this.rb1.TabStop = true;
-            this.rb1.Text = "1";
-            this.rb1.UseVisualStyleBackColor = true;
+            this.rb3.AutoSize = true;
+            this.rb3.Location = new System.Drawing.Point(101, 20);
+            this.rb3.Name = "rb3";
+            this.rb3.Size = new System.Drawing.Size(31, 17);
+            this.rb3.TabIndex = 2;
+            this.rb3.TabStop = true;
+            this.rb3.Text = "3";
+            this.rb3.UseVisualStyleBackColor = true;
             // 
             // rb2
             // 
             this.rb2.AutoSize = true;
-            this.rb2.Location = new System.Drawing.Point(67, 20);
+            this.rb2.Location = new System.Drawing.Point(56, 20);
             this.rb2.Name = "rb2";
             this.rb2.Size = new System.Drawing.Size(31, 17);
             this.rb2.TabIndex = 1;
@@ -456,16 +460,50 @@ namespace KimeraCS
             this.rb2.Text = "2";
             this.rb2.UseVisualStyleBackColor = true;
             // 
-            // rb3
+            // rb1
             // 
-            this.rb3.AutoSize = true;
-            this.rb3.Location = new System.Drawing.Point(121, 20);
-            this.rb3.Name = "rb3";
-            this.rb3.Size = new System.Drawing.Size(31, 17);
-            this.rb3.TabIndex = 2;
-            this.rb3.TabStop = true;
-            this.rb3.Text = "3";
-            this.rb3.UseVisualStyleBackColor = true;
+            this.rb1.AutoSize = true;
+            this.rb1.Location = new System.Drawing.Point(11, 20);
+            this.rb1.Name = "rb1";
+            this.rb1.Size = new System.Drawing.Size(31, 17);
+            this.rb1.TabIndex = 0;
+            this.rb1.TabStop = true;
+            this.rb1.Text = "1";
+            this.rb1.UseVisualStyleBackColor = true;
+            // 
+            // gbShadeMode
+            // 
+            this.gbShadeMode.Controls.Add(this.rb2SM);
+            this.gbShadeMode.Controls.Add(this.rb1SM);
+            this.gbShadeMode.ForeColor = System.Drawing.SystemColors.Control;
+            this.gbShadeMode.Location = new System.Drawing.Point(236, 358);
+            this.gbShadeMode.Name = "gbShadeMode";
+            this.gbShadeMode.Size = new System.Drawing.Size(88, 48);
+            this.gbShadeMode.TabIndex = 8;
+            this.gbShadeMode.TabStop = false;
+            this.gbShadeMode.Text = "Shade Mode";
+            // 
+            // rb1SM
+            // 
+            this.rb1SM.AutoSize = true;
+            this.rb1SM.Location = new System.Drawing.Point(10, 19);
+            this.rb1SM.Name = "rb1SM";
+            this.rb1SM.Size = new System.Drawing.Size(31, 17);
+            this.rb1SM.TabIndex = 0;
+            this.rb1SM.TabStop = true;
+            this.rb1SM.Text = "1";
+            this.rb1SM.UseVisualStyleBackColor = true;
+            // 
+            // rb2SM
+            // 
+            this.rb2SM.AutoSize = true;
+            this.rb2SM.Location = new System.Drawing.Point(52, 19);
+            this.rb2SM.Name = "rb2SM";
+            this.rb2SM.Size = new System.Drawing.Size(31, 17);
+            this.rb2SM.TabIndex = 1;
+            this.rb2SM.TabStop = true;
+            this.rb2SM.Text = "2";
+            this.rb2SM.UseVisualStyleBackColor = true;
             // 
             // FrmGroupProperties
             // 
@@ -475,6 +513,7 @@ namespace KimeraCS
             this.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.CancelButton = this.btnClose;
             this.ClientSize = new System.Drawing.Size(336, 442);
+            this.Controls.Add(this.gbShadeMode);
             this.Controls.Add(this.gbPolygonType);
             this.Controls.Add(this.btnAccept);
             this.Controls.Add(this.btnClose);
@@ -487,7 +526,7 @@ namespace KimeraCS
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
             this.MaximizeBox = false;
-            this.Name = "frmGroupProperties";
+            this.Name = "FrmGroupProperties";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Group Properties";
             this.gbBlending.ResumeLayout(false);
@@ -497,6 +536,8 @@ namespace KimeraCS
             ((System.ComponentModel.ISupportInitialize)(this.nudTextureID)).EndInit();
             this.gbPolygonType.ResumeLayout(false);
             this.gbPolygonType.PerformLayout();
+            this.gbShadeMode.ResumeLayout(false);
+            this.gbShadeMode.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -539,5 +580,8 @@ namespace KimeraCS
         private System.Windows.Forms.RadioButton rb3;
         private System.Windows.Forms.RadioButton rb2;
         private System.Windows.Forms.RadioButton rb1;
+        private System.Windows.Forms.GroupBox gbShadeMode;
+        private System.Windows.Forms.RadioButton rb2SM;
+        private System.Windows.Forms.RadioButton rb1SM;
     }
 }
