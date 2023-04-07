@@ -296,12 +296,12 @@ namespace KimeraCS
             }
                 
             // Do processing
-            if (chkEnableLighting.Checked && loadedPModel)
-            {
-                glEnable(GLCapability.GL_NORMALIZE);
-                ComputeNormals(ref EditedPModel);
-            }
-            else glDisable(GLCapability.GL_NORMALIZE);
+            //if (chkEnableLighting.Checked && loadedPModel)
+            //{
+            //    glEnable(GLCapability.GL_NORMALIZE);
+            //    ComputeNormals(ref EditedPModel);
+            //}
+            //else glDisable(GLCapability.GL_NORMALIZE);
 
             PanelEditorPModel_Paint(null, null);
         }
@@ -2276,7 +2276,8 @@ namespace KimeraCS
                 iBrightnessFactor += 5;
                 ChangeBrightness(ref EditedPModel, iBrightnessFactor, vcolorsOriginal, pcolorsOriginal);
 
-                CommitContextualizedPChanges(false);
+                //ApplyCurrentVColors(ref EditedPModel);
+                //CommitContextualizedPChanges(false);
 
                 PanelEditorPModel_Paint(null, null);
             }
@@ -2291,7 +2292,8 @@ namespace KimeraCS
                 iBrightnessFactor -= 5;
                 ChangeBrightness(ref EditedPModel, iBrightnessFactor, vcolorsOriginal, pcolorsOriginal);
 
-                CommitContextualizedPChanges(false);
+                //ApplyCurrentVColors(ref EditedPModel);
+                //CommitContextualizedPChanges(false);
 
                 PanelEditorPModel_Paint(null, null);
             }
@@ -2305,6 +2307,9 @@ namespace KimeraCS
 
                 iBrightnessFactor = 0;
                 ChangeBrightness(ref EditedPModel, iBrightnessFactor, vcolorsOriginal, pcolorsOriginal);
+
+                //ApplyCurrentVColors(ref EditedPModel);
+                //CommitContextualizedPChanges(false);
 
                 PanelEditorPModel_Paint(null, null);
             }
@@ -2905,9 +2910,6 @@ namespace KimeraCS
 
             float tmpDist, modelDiameterNormalized;
 
-            //ComputeNormals(ref EditedPModel);
-            //ComputeEdges(ref EditedPModel);
-
             AddStateToBufferPE(this);
 
             SetCameraModelViewQuat(repXPE, repYPE, repZPE,
@@ -2935,7 +2937,7 @@ namespace KimeraCS
                 glDisable(GLCapability.GL_LIGHT2);
                 glDisable(GLCapability.GL_LIGHT3);
 
-                ComputePModelBoundingBox(EditedPModel, ref p_min, ref p_max);
+                //ComputePModelBoundingBox(EditedPModel, ref p_min, ref p_max);
                 modelDiameterNormalized = (-2 * ComputeSceneRadius(p_min, p_max)) / LIGHT_STEPS;
 
                 SetLighting(GLCapability.GL_LIGHT0, modelDiameterNormalized * hsbLightX.Value,
