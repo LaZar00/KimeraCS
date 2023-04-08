@@ -26,9 +26,31 @@ namespace KimeraCS
             this.frmPEdit = frmPEdit;
             Owner = frmPEdit;
 
+            DefineToolTips();
+
             SelectedGroup = iGroupIdx;
             SetSelectedGroup();
         }
+
+
+        /////////////////////////////////////////////////////////////
+        // ToolTip Helpers:
+        // Create the ToolTip and associate with the Form container.
+        readonly ToolTip toolTip1 = new ToolTip();
+
+        public void DefineToolTips()
+        {
+            // Set up the delays for the ToolTip.
+            toolTip1.AutoPopDelay = 5000;
+            toolTip1.InitialDelay = 500;
+            toolTip1.ReshowDelay = 250;
+            // Force the ToolTip text to be displayed whether or not the form is active.
+            toolTip1.ShowAlways = true;
+
+            toolTip1.SetToolTip(gbPolygonType, "This tells which type of model you have. 1 - No texture, 2 - Textured with normals,  3 - Textured WITHOUT normals");
+            toolTip1.SetToolTip(gbShadeMode, "This tells the Shade Mode for rendering to OpenGL. 1 - FLAT, 2 - SMOOTH. Not very relevant if we have V_SHADEMODE checked -normally 2-");
+        }
+
 
         public void SetRSValuesEnabled()
         {
