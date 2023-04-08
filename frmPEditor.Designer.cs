@@ -45,6 +45,7 @@ namespace KimeraCS
             this.unselectGroupToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.mergeGroupsIntoOneToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.mergeGroupsIntoOnenotTexturedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.planeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mirrorModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.makeModelSimmetricToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -162,7 +163,6 @@ namespace KimeraCS
             this.saveFile = new System.Windows.Forms.SaveFileDialog();
             this.panelEditorPModel = new System.Windows.Forms.PictureBox();
             this.tmrRenderPModel = new System.Windows.Forms.Timer(this.components);
-            this.mergeGroupsIntoOnenotTexturedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
             this.gbColorEditor.SuspendLayout();
@@ -301,6 +301,13 @@ namespace KimeraCS
             this.mergeGroupsIntoOneToolStripMenuItem.Size = new System.Drawing.Size(277, 22);
             this.mergeGroupsIntoOneToolStripMenuItem.Text = "Merge Groups into One (All)";
             this.mergeGroupsIntoOneToolStripMenuItem.Click += new System.EventHandler(this.MergeGroupsIntoOneToolStripMenuItem_Click);
+            // 
+            // mergeGroupsIntoOnenotTexturedToolStripMenuItem
+            // 
+            this.mergeGroupsIntoOnenotTexturedToolStripMenuItem.Name = "mergeGroupsIntoOnenotTexturedToolStripMenuItem";
+            this.mergeGroupsIntoOnenotTexturedToolStripMenuItem.Size = new System.Drawing.Size(277, 22);
+            this.mergeGroupsIntoOnenotTexturedToolStripMenuItem.Text = "Merge Groups into One (Not Textured)";
+            this.mergeGroupsIntoOnenotTexturedToolStripMenuItem.Click += new System.EventHandler(this.MergeGroupsIntoOnenotTexturedToolStripMenuItem_Click);
             // 
             // planeToolStripMenuItem
             // 
@@ -980,9 +987,10 @@ namespace KimeraCS
             // 
             // txtRotateBeta
             // 
-            this.txtRotateBeta.Location = new System.Drawing.Point(100, 71);
+            this.txtRotateBeta.Location = new System.Drawing.Point(95, 71);
+            this.txtRotateBeta.MaxLength = 8;
             this.txtRotateBeta.Name = "txtRotateBeta";
-            this.txtRotateBeta.Size = new System.Drawing.Size(28, 20);
+            this.txtRotateBeta.Size = new System.Drawing.Size(32, 20);
             this.txtRotateBeta.TabIndex = 24;
             this.txtRotateBeta.Text = "0";
             this.txtRotateBeta.TextChanged += new System.EventHandler(this.TxtRotateBeta_TextChanged);
@@ -990,18 +998,19 @@ namespace KimeraCS
             // hsbRotateAlpha
             // 
             this.hsbRotateAlpha.LargeChange = 1;
-            this.hsbRotateAlpha.Location = new System.Drawing.Point(5, 34);
+            this.hsbRotateAlpha.Location = new System.Drawing.Point(6, 34);
             this.hsbRotateAlpha.Maximum = 360;
             this.hsbRotateAlpha.Name = "hsbRotateAlpha";
-            this.hsbRotateAlpha.Size = new System.Drawing.Size(90, 19);
+            this.hsbRotateAlpha.Size = new System.Drawing.Size(86, 19);
             this.hsbRotateAlpha.TabIndex = 21;
             this.hsbRotateAlpha.ValueChanged += new System.EventHandler(this.HsbRotateAlpha_ValueChanged);
             // 
             // txtRotateGamma
             // 
-            this.txtRotateGamma.Location = new System.Drawing.Point(99, 111);
+            this.txtRotateGamma.Location = new System.Drawing.Point(95, 110);
+            this.txtRotateGamma.MaxLength = 8;
             this.txtRotateGamma.Name = "txtRotateGamma";
-            this.txtRotateGamma.Size = new System.Drawing.Size(28, 20);
+            this.txtRotateGamma.Size = new System.Drawing.Size(32, 20);
             this.txtRotateGamma.TabIndex = 26;
             this.txtRotateGamma.Text = "0";
             this.txtRotateGamma.TextChanged += new System.EventHandler(this.TxtRotateGamma_TextChanged);
@@ -1009,10 +1018,10 @@ namespace KimeraCS
             // hsbRotateGamma
             // 
             this.hsbRotateGamma.LargeChange = 1;
-            this.hsbRotateGamma.Location = new System.Drawing.Point(5, 111);
+            this.hsbRotateGamma.Location = new System.Drawing.Point(6, 111);
             this.hsbRotateGamma.Maximum = 360;
             this.hsbRotateGamma.Name = "hsbRotateGamma";
-            this.hsbRotateGamma.Size = new System.Drawing.Size(90, 19);
+            this.hsbRotateGamma.Size = new System.Drawing.Size(86, 19);
             this.hsbRotateGamma.TabIndex = 25;
             this.hsbRotateGamma.ValueChanged += new System.EventHandler(this.HsbRotateGamma_ValueChanged);
             // 
@@ -1032,7 +1041,7 @@ namespace KimeraCS
             this.hsbRotateBeta.Location = new System.Drawing.Point(6, 72);
             this.hsbRotateBeta.Maximum = 360;
             this.hsbRotateBeta.Name = "hsbRotateBeta";
-            this.hsbRotateBeta.Size = new System.Drawing.Size(90, 19);
+            this.hsbRotateBeta.Size = new System.Drawing.Size(86, 19);
             this.hsbRotateBeta.TabIndex = 23;
             this.hsbRotateBeta.ValueChanged += new System.EventHandler(this.HsbRotateBeta_ValueChanged);
             // 
@@ -1058,9 +1067,10 @@ namespace KimeraCS
             // 
             // txtRotateAlpha
             // 
-            this.txtRotateAlpha.Location = new System.Drawing.Point(100, 33);
+            this.txtRotateAlpha.Location = new System.Drawing.Point(95, 33);
+            this.txtRotateAlpha.MaxLength = 8;
             this.txtRotateAlpha.Name = "txtRotateAlpha";
-            this.txtRotateAlpha.Size = new System.Drawing.Size(28, 20);
+            this.txtRotateAlpha.Size = new System.Drawing.Size(32, 20);
             this.txtRotateAlpha.TabIndex = 22;
             this.txtRotateAlpha.Text = "0";
             this.txtRotateAlpha.TextChanged += new System.EventHandler(this.TxtRotateAlpha_TextChanged);
@@ -1086,9 +1096,10 @@ namespace KimeraCS
             // 
             // txtRepositionZ
             // 
-            this.txtRepositionZ.Location = new System.Drawing.Point(99, 59);
+            this.txtRepositionZ.Location = new System.Drawing.Point(94, 59);
+            this.txtRepositionZ.MaxLength = 8;
             this.txtRepositionZ.Name = "txtRepositionZ";
-            this.txtRepositionZ.Size = new System.Drawing.Size(28, 20);
+            this.txtRepositionZ.Size = new System.Drawing.Size(34, 20);
             this.txtRepositionZ.TabIndex = 20;
             this.txtRepositionZ.Text = "0";
             this.txtRepositionZ.TextChanged += new System.EventHandler(this.TxtRepositionZ_TextChanged);
@@ -1100,7 +1111,7 @@ namespace KimeraCS
             this.hsbRepositionZ.Maximum = 500;
             this.hsbRepositionZ.Minimum = -500;
             this.hsbRepositionZ.Name = "hsbRepositionZ";
-            this.hsbRepositionZ.Size = new System.Drawing.Size(78, 19);
+            this.hsbRepositionZ.Size = new System.Drawing.Size(73, 19);
             this.hsbRepositionZ.TabIndex = 19;
             this.hsbRepositionZ.ValueChanged += new System.EventHandler(this.HsbRepositionZ_ValueChanged);
             // 
@@ -1116,9 +1127,10 @@ namespace KimeraCS
             // 
             // txtRepositionY
             // 
-            this.txtRepositionY.Location = new System.Drawing.Point(99, 39);
+            this.txtRepositionY.Location = new System.Drawing.Point(94, 39);
+            this.txtRepositionY.MaxLength = 8;
             this.txtRepositionY.Name = "txtRepositionY";
-            this.txtRepositionY.Size = new System.Drawing.Size(28, 20);
+            this.txtRepositionY.Size = new System.Drawing.Size(34, 20);
             this.txtRepositionY.TabIndex = 18;
             this.txtRepositionY.Text = "0";
             this.txtRepositionY.TextChanged += new System.EventHandler(this.TxtRepositionY_TextChanged);
@@ -1130,7 +1142,7 @@ namespace KimeraCS
             this.hsbRepositionY.Maximum = 500;
             this.hsbRepositionY.Minimum = -500;
             this.hsbRepositionY.Name = "hsbRepositionY";
-            this.hsbRepositionY.Size = new System.Drawing.Size(78, 19);
+            this.hsbRepositionY.Size = new System.Drawing.Size(73, 19);
             this.hsbRepositionY.TabIndex = 17;
             this.hsbRepositionY.ValueChanged += new System.EventHandler(this.HsbRepositionY_ValueChanged);
             // 
@@ -1156,9 +1168,10 @@ namespace KimeraCS
             // 
             // txtRepositionX
             // 
-            this.txtRepositionX.Location = new System.Drawing.Point(99, 19);
+            this.txtRepositionX.Location = new System.Drawing.Point(94, 19);
+            this.txtRepositionX.MaxLength = 8;
             this.txtRepositionX.Name = "txtRepositionX";
-            this.txtRepositionX.Size = new System.Drawing.Size(28, 20);
+            this.txtRepositionX.Size = new System.Drawing.Size(34, 20);
             this.txtRepositionX.TabIndex = 16;
             this.txtRepositionX.Text = "0";
             this.txtRepositionX.TextChanged += new System.EventHandler(this.TxtRepositionX_TextChanged);
@@ -1170,7 +1183,7 @@ namespace KimeraCS
             this.hsbRepositionX.Maximum = 500;
             this.hsbRepositionX.Minimum = -500;
             this.hsbRepositionX.Name = "hsbRepositionX";
-            this.hsbRepositionX.Size = new System.Drawing.Size(78, 19);
+            this.hsbRepositionX.Size = new System.Drawing.Size(73, 19);
             this.hsbRepositionX.TabIndex = 15;
             this.hsbRepositionX.ValueChanged += new System.EventHandler(this.HsbRepositionX_ValueChanged);
             // 
@@ -1197,6 +1210,7 @@ namespace KimeraCS
             // txtResizeZ
             // 
             this.txtResizeZ.Location = new System.Drawing.Point(99, 59);
+            this.txtResizeZ.MaxLength = 8;
             this.txtResizeZ.Name = "txtResizeZ";
             this.txtResizeZ.Size = new System.Drawing.Size(28, 20);
             this.txtResizeZ.TabIndex = 14;
@@ -1227,6 +1241,7 @@ namespace KimeraCS
             // txtResizeY
             // 
             this.txtResizeY.Location = new System.Drawing.Point(99, 39);
+            this.txtResizeY.MaxLength = 8;
             this.txtResizeY.Name = "txtResizeY";
             this.txtResizeY.Size = new System.Drawing.Size(28, 20);
             this.txtResizeY.TabIndex = 12;
@@ -1267,6 +1282,7 @@ namespace KimeraCS
             // txtResizeX
             // 
             this.txtResizeX.Location = new System.Drawing.Point(99, 19);
+            this.txtResizeX.MaxLength = 8;
             this.txtResizeX.Name = "txtResizeX";
             this.txtResizeX.Size = new System.Drawing.Size(28, 20);
             this.txtResizeX.TabIndex = 10;
@@ -1642,13 +1658,6 @@ namespace KimeraCS
             this.tmrRenderPModel.Interval = 500;
             this.tmrRenderPModel.Tick += new System.EventHandler(this.TmrRenderPModel_Tick);
             // 
-            // mergeGroupsIntoOnenotTexturedToolStripMenuItem
-            // 
-            this.mergeGroupsIntoOnenotTexturedToolStripMenuItem.Name = "mergeGroupsIntoOnenotTexturedToolStripMenuItem";
-            this.mergeGroupsIntoOnenotTexturedToolStripMenuItem.Size = new System.Drawing.Size(277, 22);
-            this.mergeGroupsIntoOnenotTexturedToolStripMenuItem.Text = "Merge Groups into One (Not Textured)";
-            this.mergeGroupsIntoOnenotTexturedToolStripMenuItem.Click += new System.EventHandler(this.MergeGroupsIntoOnenotTexturedToolStripMenuItem_Click);
-            // 
             // FrmPEditor
             // 
             this.AcceptButton = this.btnCommitChanges;
@@ -1668,7 +1677,7 @@ namespace KimeraCS
             this.MainMenuStrip = this.menuStrip1;
             this.Margin = new System.Windows.Forms.Padding(2);
             this.MinimumSize = new System.Drawing.Size(734, 575);
-            this.Name = "frmPEditor";
+            this.Name = "FrmPEditor";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "P Editor";
             this.Activated += new System.EventHandler(this.FrmPEditor_Activated);

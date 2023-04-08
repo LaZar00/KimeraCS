@@ -68,6 +68,9 @@ namespace KimeraCS
         public const int LIGHT_STEPS = 10;
 
 
+        private const int F_BATTLELOCATION_SCALE = 10;
+
+
         // Vars
         public static PModel EditedPModel;
         public uint[] tex_ids = new uint[1] { 0 };
@@ -106,7 +109,7 @@ namespace KimeraCS
 
         // PEditor drawing main DoFunction vars
         public static int VCountNewPoly;
-        public static short[] tmpVNewPoly = new short[3];
+        public static ushort[] tmpVNewPoly = new ushort[3];
         public static double dblPickedVertexZ;
         List<int> lstPickedVertices = new List<int>();
         int[] lstAdjacentPolys;
@@ -141,6 +144,7 @@ namespace KimeraCS
         public static float rszGroupXPE, rszGroupYPE, rszGroupZPE;
         public static float repGroupXPE, repGroupYPE, repGroupZPE;
         public static float alphaGroupPE, betaGroupPE, gammaGroupPE;
+        public static float fBattleLocationGroupScale;
         public static bool bGlobalChangeGroup;
 
         // GroupPropierties vars
@@ -405,7 +409,9 @@ namespace KimeraCS
                                     alphaPE, betaPE, gammaPE, 1, 1, 1);
 
                     ConcatenateCameraModelView(repXPE, repYPE, repZPE,
-                                               hsbRotateAlpha.Value, hsbRotateBeta.Value, hsbRotateGamma.Value,
+                                               (float)(hsbRotateAlpha.Value / fBattleLocationGroupScale),
+                                               (float)(hsbRotateBeta.Value / fBattleLocationGroupScale),
+                                               (float)(hsbRotateGamma.Value / fBattleLocationGroupScale),
                                                rszXPE, rszYPE, rszZPE);
 
                     switch (e.Button)
@@ -469,10 +475,6 @@ namespace KimeraCS
                     SetOGLContext(panelEditorPModelDC, OGLContextPEditor);
 
                 SetOGLEditorSettings();
-
-                //DrawPModelEditor(chkEnableLighting.Checked, 
-                //                 hsbRotateAlpha.Value, hsbRotateBeta.Value, hsbRotateGamma.Value,
-                //                 panelEditorPModel);
 
                 DrawPModelEditor(chkEnableLighting.Checked, panelEditorPModel);
 
@@ -740,13 +742,13 @@ namespace KimeraCS
 
             if (SelectedGroup != -1)
             {
-                repGroupXPE = (float)hsbRepositionX.Value / 100;
+                repGroupXPE = hsbRepositionX.Value / (100 / fBattleLocationGroupScale);
                 txtRepositionX.Text = hsbRepositionX.Value.ToString();
                 EditedPModel.Groups[SelectedGroup].repGroupX = repGroupXPE;
             }
             else
             {
-                repXPE = (float)hsbRepositionX.Value / 100;
+                repXPE = hsbRepositionX.Value / 100f;
                 txtRepositionX.Text = hsbRepositionX.Value.ToString();
                 EditedPModel.repositionX = repXPE;
             }
@@ -764,13 +766,13 @@ namespace KimeraCS
 
             if (SelectedGroup != -1)
             {
-                repGroupYPE = (float)hsbRepositionY.Value / 100;
+                repGroupYPE = hsbRepositionY.Value / (100 / fBattleLocationGroupScale);
                 txtRepositionY.Text = hsbRepositionY.Value.ToString();
                 EditedPModel.Groups[SelectedGroup].repGroupY = repGroupYPE;
             }
             else
             {
-                repYPE = (float)hsbRepositionY.Value / 100;
+                repYPE = hsbRepositionY.Value / 100f;
                 txtRepositionY.Text = hsbRepositionY.Value.ToString();
                 EditedPModel.repositionY = repYPE;
             }
@@ -788,13 +790,13 @@ namespace KimeraCS
 
             if (SelectedGroup != -1)
             {
-                repGroupZPE = (float)hsbRepositionZ.Value / 100;
+                repGroupZPE = hsbRepositionZ.Value / (100 / fBattleLocationGroupScale);
                 txtRepositionZ.Text = hsbRepositionZ.Value.ToString();
                 EditedPModel.Groups[SelectedGroup].repGroupZ = repGroupZPE;
             }
             else
             {
-                repZPE = (float)hsbRepositionZ.Value / 100;
+                repZPE = hsbRepositionZ.Value / 100f;
                 txtRepositionZ.Text = hsbRepositionZ.Value.ToString();
                 EditedPModel.repositionZ = repZPE;
             }
@@ -809,7 +811,8 @@ namespace KimeraCS
 
             if (Int32.TryParse(txtRepositionX.Text, out int iRepositionX))
             {
-                if (iRepositionX < -500 || iRepositionX > 500)
+                if (iRepositionX < -500 * fBattleLocationGroupScale || 
+                    iRepositionX > 500 * fBattleLocationGroupScale)
                 {
                     iRepositionX = 0;
                 }
@@ -829,7 +832,8 @@ namespace KimeraCS
 
             if (Int32.TryParse(txtRepositionY.Text, out int iRepositionY))
             {
-                if (iRepositionY < -500 || iRepositionY > 500)
+                if (iRepositionY < -500 * fBattleLocationGroupScale || 
+                    iRepositionY > 500 * fBattleLocationGroupScale)
                 {
                     iRepositionY = 0;
                 }
@@ -849,7 +853,8 @@ namespace KimeraCS
 
             if (Int32.TryParse(txtRepositionZ.Text, out int iRepositionZ))
             {
-                if (iRepositionZ < -500 || iRepositionZ > 500)
+                if (iRepositionZ < -500 * fBattleLocationGroupScale || 
+                    iRepositionZ > 500 * fBattleLocationGroupScale)
                 {
                     iRepositionZ = 0;
                 }
@@ -873,7 +878,9 @@ namespace KimeraCS
             if (SelectedGroup != -1)
             {
                 RotatePModelGroupModifiers(ref EditedPModel.Groups[SelectedGroup],
-                                           hsbRotateAlpha.Value, hsbRotateBeta.Value, hsbRotateGamma.Value);
+                                           (float)(hsbRotateAlpha.Value / fBattleLocationGroupScale), 
+                                           (float)(hsbRotateBeta.Value / fBattleLocationGroupScale),
+                                           (float)(hsbRotateGamma.Value / fBattleLocationGroupScale));
             }
             else
             {
@@ -911,7 +918,7 @@ namespace KimeraCS
 
             if (Int32.TryParse(txtRotateAlpha.Text, out int iRotateAlpha))
             {
-                if (iRotateAlpha < 0 || iRotateAlpha > 360)
+                if (iRotateAlpha < 0 || iRotateAlpha > 360 * fBattleLocationGroupScale)
                 {
                     iRotateAlpha = 0;
                 }
@@ -932,7 +939,7 @@ namespace KimeraCS
 
             if (Int32.TryParse(txtRotateBeta.Text, out int iRotateBeta))
             {
-                if (iRotateBeta < 0 || iRotateBeta > 360)
+                if (iRotateBeta < 0 || iRotateBeta > 360 * fBattleLocationGroupScale)
                 {
                     iRotateBeta = 0;
                 }
@@ -953,7 +960,7 @@ namespace KimeraCS
 
             if (Int32.TryParse(txtRotateGamma.Text, out int iRotateGamma))
             {
-                if (iRotateGamma < 0 || iRotateGamma > 360)
+                if (iRotateGamma < 0 || iRotateGamma > 360 * fBattleLocationGroupScale)
                 {
                     iRotateGamma = 0;
                 }
@@ -1811,43 +1818,80 @@ namespace KimeraCS
 
         private void DeleteAllPolysSelectedColorToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            int piTable, piModel;
+            int iTable, iPolyIdx;
 
-            AddStateToBufferPE(this);
-            piModel = 0;
-
-            for (piTable = 0; piTable < translationTablePolys.Length; piTable++)
+            if (iSelectedColor > -1)
             {
-                if (translationTablePolys[piTable].I == iSelectedColor) 
-                    RemovePolygon(ref EditedPModel, piModel);
-                else 
-                    piModel++;
+                AddStateToBufferPE(this);
+                iPolyIdx = 0;
+
+                for (iTable = 0; iTable < translationTablePolys.Length; iTable++)
+                {
+                    if (translationTablePolys[iTable].I == iSelectedColor)
+                    {
+                        if (EditedPModel.Header.numPolys > 1)
+                        {
+                            RemovePolygon(ref EditedPModel, iPolyIdx);
+                        }
+                    }
+                    else
+                        iPolyIdx++;
+                }
+
+                KillUnusedVertices(ref EditedPModel);
+
+                RepairGroups(ref EditedPModel);
+                FillGroupsList();
+
+                ComputeNormals(ref EditedPModel);
+                ComputeEdges(ref EditedPModel);
+
+                FillColorTable(EditedPModel, ref colorTable,
+                               ref translationTableVertex, ref translationTablePolys, (byte)iThreshold);
+
+                DrawPalette(K_CLICK);
+
+                PanelEditorPModel_Paint(null, null);
             }
-
-            FillColorTable(EditedPModel, ref colorTable,
-                           ref translationTableVertex, ref translationTablePolys, (byte)iThreshold);
-
-            PanelEditorPModel_Paint(null, null);
         }
 
         private void DeleteAllPolysnotSelectedColorToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            int piTable, piModel;
+            int iTable, iPolyIdx;
 
-            AddStateToBufferPE(this);
-            piModel = 0;
-
-            for (piTable = 0; piTable < translationTablePolys.Length; piTable++)
+            if (iSelectedColor > -1)
             {
-                if (translationTablePolys[piTable].I != iSelectedColor)
-                    RemovePolygon(ref EditedPModel, piModel);
-                else piModel++;
+                AddStateToBufferPE(this);
+                iPolyIdx = 0;
+
+                for (iTable = 0; iTable < translationTablePolys.Length; iTable++)
+                {
+                    if (translationTablePolys[iTable].I != iSelectedColor)
+                    {
+                        if (EditedPModel.Header.numPolys > 1)
+                        {
+                            RemovePolygon(ref EditedPModel, iPolyIdx);
+                        }
+                    }                       
+                    else
+                        iPolyIdx++;
+                }
+
+                KillUnusedVertices(ref EditedPModel);
+                
+                RepairGroups(ref EditedPModel);
+                FillGroupsList();
+
+                ComputeNormals(ref EditedPModel);
+                ComputeEdges(ref EditedPModel);
+
+                FillColorTable(EditedPModel, ref colorTable,
+                               ref translationTableVertex, ref translationTablePolys, (byte)iThreshold);
+
+                DrawPalette(K_CLICK);
+
+                PanelEditorPModel_Paint(null, null);
             }
-
-            FillColorTable(EditedPModel, ref colorTable,
-                           ref translationTableVertex, ref translationTablePolys, (byte)iThreshold);
-
-            PanelEditorPModel_Paint(null, null);
         }
 
         ////////////////////////////////////////////////////////////////////
@@ -1928,6 +1972,21 @@ namespace KimeraCS
             else this.Location = new Point(iwindowPosXPE, iwindowPosYPE);
 
             if (WindowState == FormWindowState.Minimized) WindowState = FormWindowState.Normal;
+
+            // Scale for different magnitudes when model is from battle location
+            if (bSkeleton.IsBattleLocation) fBattleLocationGroupScale = F_BATTLELOCATION_SCALE;
+            else fBattleLocationGroupScale = 1f;
+
+            hsbRotateAlpha.Maximum = (int)(360 * fBattleLocationGroupScale);
+            hsbRotateBeta.Maximum = (int)(360 * fBattleLocationGroupScale);
+            hsbRotateGamma.Maximum = (int)(360 * fBattleLocationGroupScale);
+
+            hsbRepositionX.Maximum = (int)(500 * fBattleLocationGroupScale);
+            hsbRepositionX.Minimum = (int)(-500 * fBattleLocationGroupScale);
+            hsbRepositionY.Maximum = (int)(500 * fBattleLocationGroupScale);
+            hsbRepositionY.Minimum = (int)(-500 * fBattleLocationGroupScale);
+            hsbRepositionZ.Maximum = (int)(500 * fBattleLocationGroupScale);
+            hsbRepositionZ.Minimum = (int)(-500 * fBattleLocationGroupScale);
 
             InitializeLoadPEditor();
 
@@ -2274,8 +2333,12 @@ namespace KimeraCS
                 AddStateToBufferPE(this);
 
                 iBrightnessFactor += 5;
-                ChangeBrightness(ref EditedPModel, iBrightnessFactor, vcolorsOriginal, pcolorsOriginal);
+                //ChangeBrightness(ref EditedPModel, iBrightnessFactor, vcolorsOriginal, pcolorsOriginal);
+                ChangeBrightness(ref EditedPModel, iBrightnessFactor, vcolorsOriginal);
 
+                FillColorTable(EditedPModel, ref colorTable,
+                               ref translationTableVertex, ref translationTablePolys, (byte)iThreshold);
+                ApplyColorTable(ref EditedPModel, colorTable, translationTableVertex, translationTablePolys);
                 //ApplyCurrentVColors(ref EditedPModel);
                 //CommitContextualizedPChanges(false);
 
@@ -2290,8 +2353,12 @@ namespace KimeraCS
                 AddStateToBufferPE(this);
 
                 iBrightnessFactor -= 5;
-                ChangeBrightness(ref EditedPModel, iBrightnessFactor, vcolorsOriginal, pcolorsOriginal);
+                //ChangeBrightness(ref EditedPModel, iBrightnessFactor, vcolorsOriginal, pcolorsOriginal);
+                ChangeBrightness(ref EditedPModel, iBrightnessFactor, vcolorsOriginal);
 
+                FillColorTable(EditedPModel, ref colorTable,
+                               ref translationTableVertex, ref translationTablePolys, (byte)iThreshold);
+                ApplyColorTable(ref EditedPModel, colorTable, translationTableVertex, translationTablePolys);
                 //ApplyCurrentVColors(ref EditedPModel);
                 //CommitContextualizedPChanges(false);
 
@@ -2306,8 +2373,12 @@ namespace KimeraCS
                 AddStateToBufferPE(this);
 
                 iBrightnessFactor = 0;
-                ChangeBrightness(ref EditedPModel, iBrightnessFactor, vcolorsOriginal, pcolorsOriginal);
+                //ChangeBrightness(ref EditedPModel, iBrightnessFactor, vcolorsOriginal, pcolorsOriginal);
+                ChangeBrightness(ref EditedPModel, iBrightnessFactor, vcolorsOriginal);
 
+                FillColorTable(EditedPModel, ref colorTable,
+                               ref translationTableVertex, ref translationTablePolys, (byte)iThreshold);
+                ApplyColorTable(ref EditedPModel, colorTable, translationTableVertex, translationTablePolys);
                 //ApplyCurrentVColors(ref EditedPModel);
                 //CommitContextualizedPChanges(false);
 
@@ -2735,17 +2806,17 @@ namespace KimeraCS
             rszZPE = EditedPModel.resizeZ;
 
             if (EditedPModel.repositionX != 0)
-                hsbRepositionX.Value = (int)(EditedPModel.repositionX / EditedPModel.diameter * 100);
+                hsbRepositionX.Value = (int)(EditedPModel.repositionX / EditedPModel.diameter * (100 / fBattleLocationGroupScale));
             else
                 hsbRepositionX.Value = 0;
 
             if (EditedPModel.repositionY != 0)
-                hsbRepositionY.Value = (int)(EditedPModel.repositionY / EditedPModel.diameter * 100);
+                hsbRepositionY.Value = (int)(EditedPModel.repositionY / EditedPModel.diameter * (100 / fBattleLocationGroupScale));
             else
                 hsbRepositionY.Value = 0;
 
             if (EditedPModel.repositionY != 0)
-                hsbRepositionZ.Value = (int)(EditedPModel.repositionZ / EditedPModel.diameter * 100);
+                hsbRepositionZ.Value = (int)(EditedPModel.repositionZ / EditedPModel.diameter * (100 / fBattleLocationGroupScale));
             else
                 hsbRepositionZ.Value = 0;
 
@@ -2756,9 +2827,9 @@ namespace KimeraCS
             repYPE = EditedPModel.repositionY;
             repZPE = EditedPModel.repositionZ;
 
-            hsbRotateAlpha.Value = (int)EditedPModel.rotateAlpha;
-            hsbRotateBeta.Value = (int)EditedPModel.rotateBeta;
-            hsbRotateGamma.Value = (int)EditedPModel.rotateGamma;
+            hsbRotateAlpha.Value = (int)(EditedPModel.rotateAlpha * fBattleLocationGroupScale);
+            hsbRotateBeta.Value = (int)(EditedPModel.rotateBeta * fBattleLocationGroupScale);
+            hsbRotateGamma.Value = (int)(EditedPModel.rotateGamma * fBattleLocationGroupScale);
             txtRotateAlpha.Text = hsbRotateAlpha.Value.ToString();
             txtRotateBeta.Text = hsbRotateBeta.Value.ToString();
             txtRotateGamma.Text = hsbRotateGamma.Value.ToString();
@@ -3364,9 +3435,9 @@ namespace KimeraCS
 
                 // We will work with the Group
                 // ///////// Reposition
-                hsbRepositionX.Value = Convert.ToInt32(EditedPModel.Groups[SelectedGroup].repGroupX * 100);
-                hsbRepositionY.Value = Convert.ToInt32(EditedPModel.Groups[SelectedGroup].repGroupY * 100);
-                hsbRepositionZ.Value = Convert.ToInt32(EditedPModel.Groups[SelectedGroup].repGroupZ * 100);
+                hsbRepositionX.Value = Convert.ToInt32(EditedPModel.Groups[SelectedGroup].repGroupX * (100 / fBattleLocationGroupScale));
+                hsbRepositionY.Value = Convert.ToInt32(EditedPModel.Groups[SelectedGroup].repGroupY * (100 / fBattleLocationGroupScale));
+                hsbRepositionZ.Value = Convert.ToInt32(EditedPModel.Groups[SelectedGroup].repGroupZ * (100 / fBattleLocationGroupScale));
 
                 // ///////// Resize
                 hsbResizeX.Value = Convert.ToInt32(EditedPModel.Groups[SelectedGroup].rszGroupX * 100);
@@ -3376,11 +3447,11 @@ namespace KimeraCS
                 // ///////// Rotation
                 bGlobalChangeGroup = true;               
                 //hsbRotateAlpha.Value = Convert.ToInt32(EditedPModel.Groups[SelectedGroup].rotGroupAlpha);
-                txtRotateAlpha.Text = Convert.ToInt32(EditedPModel.Groups[SelectedGroup].rotGroupAlpha).ToString();
+                txtRotateAlpha.Text = Convert.ToInt32(EditedPModel.Groups[SelectedGroup].rotGroupAlpha * fBattleLocationGroupScale).ToString();
                 //hsbRotateBeta.Value = Convert.ToInt32(EditedPModel.Groups[SelectedGroup].rotGroupBeta);
-                txtRotateBeta.Text = Convert.ToInt32(EditedPModel.Groups[SelectedGroup].rotGroupBeta).ToString();
+                txtRotateBeta.Text = Convert.ToInt32(EditedPModel.Groups[SelectedGroup].rotGroupBeta * fBattleLocationGroupScale).ToString();
                 //hsbRotateGamma.Value = Convert.ToInt32(EditedPModel.Groups[SelectedGroup].rotGroupGamma);
-                txtRotateGamma.Text = Convert.ToInt32(EditedPModel.Groups[SelectedGroup].rotGroupGamma).ToString();
+                txtRotateGamma.Text = Convert.ToInt32(EditedPModel.Groups[SelectedGroup].rotGroupGamma * fBattleLocationGroupScale).ToString();
                 bGlobalChangeGroup = false;
             }
             else
@@ -3392,9 +3463,9 @@ namespace KimeraCS
 
                 // We will work with the Model
                 // ///////// Reposition
-                hsbRepositionX.Value = Convert.ToInt32(EditedPModel.repositionX * 100);
-                hsbRepositionY.Value = Convert.ToInt32(EditedPModel.repositionY * 100);
-                hsbRepositionZ.Value = Convert.ToInt32(EditedPModel.repositionZ * 100);
+                hsbRepositionX.Value = Convert.ToInt32(EditedPModel.repositionX * (100 / fBattleLocationGroupScale));
+                hsbRepositionY.Value = Convert.ToInt32(EditedPModel.repositionY * (100 / fBattleLocationGroupScale));
+                hsbRepositionZ.Value = Convert.ToInt32(EditedPModel.repositionZ * (100 / fBattleLocationGroupScale));
 
                 // ///////// Resize
                 hsbResizeX.Value = Convert.ToInt32(EditedPModel.resizeX * 100);
@@ -3537,8 +3608,8 @@ namespace KimeraCS
             Point3D intersectionPoint;
             Point2D intersectionTexCoord;
 
-            int vi1, vi2, iGroupIdx, tmpGroupIdx;
-            int iPolyIdx, iVertIdx, iEdgeIdx;
+            int vi1, vi2; 
+            int iGroupIdx, tmpGroupIdx, iPolyIdx, iVertIdx, iEdgeIdx;
 
             switch (nFunc)
             {
@@ -3687,6 +3758,10 @@ namespace KimeraCS
                                                intersectionPoint, intersectionTexCoord);
                             }
 
+                            KillUnusedVertices(ref EditedPModel);
+                            ComputeNormals(ref EditedPModel);
+                            ComputeEdges(ref EditedPModel);
+
                             ComputePColors(ref EditedPModel);
 
                             // -- Commented in KimeraVB6
@@ -3716,6 +3791,10 @@ namespace KimeraCS
                             if (EditedPModel.Header.numPolys > 1)
                             {
                                 RemovePolygon(ref EditedPModel, iPolyIdx);
+
+                                KillUnusedVertices(ref EditedPModel);
+                                ComputeNormals(ref EditedPModel);
+                                ComputeEdges(ref EditedPModel);
                             }
                             else
                             {
@@ -3796,7 +3875,7 @@ namespace KimeraCS
                         if (iVertIdx > -1)
                         {
                             // We will check if vertex is legit (if it is not repeated for example)
-                            tmpVNewPoly[VCountNewPoly] = (short)iVertIdx;
+                            tmpVNewPoly[VCountNewPoly] = (ushort)iVertIdx;
                             VCountNewPoly++;
 
                             if (!ValidateAddPolygonVertices(EditedPModel, tmpVNewPoly, VCountNewPoly))
@@ -3817,10 +3896,16 @@ namespace KimeraCS
 
                             OrderVertices(EditedPModel.Verts, ref tmpVNewPoly);
 
-                            AddPolygon(ref EditedPModel, ref tmpVNewPoly);
+                            // Prepare the New Vertices
+                            iGroupIdx = GetVertexGroup(EditedPModel, tmpVNewPoly[0]);
+                            AddPolygon(ref EditedPModel, ref tmpVNewPoly, iGroupIdx);
 
                             VCountNewPoly = 0;
                             rbNewPolygon.Text = "0/3";
+
+                            KillUnusedVertices(ref EditedPModel);
+                            ComputeNormals(ref EditedPModel);
+                            ComputeEdges(ref EditedPModel);
 
                             ComputePColors(ref EditedPModel);
 
