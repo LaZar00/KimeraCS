@@ -1557,7 +1557,8 @@ namespace KimeraCS
 
         //}
 
-        public static void ChangeBrightness(ref PModel Model, int iFactor, Color[] vcolorsOriginal, Color[] pcolorsOriginal)
+        //public static void ChangeBrightness(ref PModel Model, int iFactor, Color[] vcolorsOriginal, Color[] pcolorsOriginal)
+        public static void ChangeBrightness(ref PModel Model, int iFactor, Color[] vcolorsOriginal)
         {
             int iVertIdx;
 
@@ -1642,7 +1643,7 @@ namespace KimeraCS
         // This function will check if there are any duplicated vertices or duplicated polys indexes
         // in Add Polygon feature of PEditor.
         // iArrayVNP = VertexNewPoly        iVCNP = VertexCountNewPoly
-        public static bool ValidateAddPolygonVertices(PModel Model, short[] iArrayVNP, int iVCNP)
+        public static bool ValidateAddPolygonVertices(PModel Model, ushort[] iArrayVNP, int iVCNP)
         {
             bool bValidateVerts = true;
             int iGrpv0, iGrpv1, iGrpv2;
