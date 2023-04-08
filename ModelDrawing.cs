@@ -1573,6 +1573,7 @@ namespace KimeraCS
             Point3D p4 = new Point3D();
 
             glEnable(GLCapability.GL_BLEND);
+            glDisable(GLCapability.GL_CULL_FACE);
             GLExt.glBlendEquation(GLBlendEquationMode.GL_FUNC_ADD);
             glBlendFunc(GLBlendFuncFactor.GL_SRC_ALPHA, GLBlendFuncFactor.GL_ONE_MINUS_SRC_ALPHA);
 
@@ -1585,12 +1586,12 @@ namespace KimeraCS
             glPolygonMode(GLFace.GL_BACK, GLPolygon.GL_LINE);
 
             glColor4f(1, 0, 0, 0.10f);
-            glEnable(GLCapability.GL_BLEND);
+
             glBegin(GLDrawMode.GL_QUADS);
-            glVertex3f(p1.x, p1.y, p1.z);
-            glVertex3f(p2.x, p2.y, p2.z);
-            glVertex3f(p3.x, p3.y, p3.z);
-            glVertex3f(p4.x, p4.y, p4.z);
+                glVertex3f(p1.x, p1.y, p1.z);
+                glVertex3f(p2.x, p2.y, p2.z);
+                glVertex3f(p3.x, p3.y, p3.z);
+                glVertex3f(p4.x, p4.y, p4.z);
             glEnd();
         }
 
