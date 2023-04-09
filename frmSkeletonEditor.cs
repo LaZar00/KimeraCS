@@ -26,6 +26,7 @@ namespace KimeraCS
     using Defines;
 
     using static FrmPEditor;
+    using static FrmStatistics;
 
     using static FF7Skeleton;
     using static FF7FieldSkeleton;
@@ -56,7 +57,7 @@ namespace KimeraCS
     public partial class FrmSkeletonEditor : Form
     {
 
-        public const string STR_APPNAME = "KimeraCS 1.8k";
+        public const string STR_APPNAME = "KimeraCS 1.8l";
 
         public static int modelWidth;
         public static int modelHeight;
@@ -143,6 +144,9 @@ namespace KimeraCS
         public FrmTextureViewer frmTexViewer;
         public bool bPaintGreen;
         public int iTexCoordViewerScale;
+
+        // Statistics vars
+        public FrmStatistics frmStats;
 
         // TMD Object List
         public FrmTMDObjList frmTMDOL;
@@ -646,6 +650,7 @@ namespace KimeraCS
             addJointToolStripMenuItem.Enabled = false;
             loadFieldAnimationToolStripMenuItem.Enabled = false;
             loadBattleMagicLimitsAnimationStripMenuItem.Enabled = false;
+            statisticsToolStripMenuItem.Enabled = false;
 
             saveAnimationToolStripMenuItem.Enabled = false;
             saveAnimationAsToolStripMenuItem.Enabled = false;
@@ -736,6 +741,7 @@ namespace KimeraCS
                     // Menu Strip
                     addJointToolStripMenuItem.Enabled = true;
                     loadFieldAnimationToolStripMenuItem.Enabled = true;
+                    statisticsToolStripMenuItem.Enabled = true;
 
                     saveAnimationToolStripMenuItem.Enabled = true;
                     saveAnimationAsToolStripMenuItem.Enabled = true;
@@ -843,6 +849,7 @@ namespace KimeraCS
                     // Menu Strip
                     saveSkeletonToolStripMenuItem.Enabled = true;
                     saveSkeletonAsToolStripMenuItem.Enabled = true;
+                    statisticsToolStripMenuItem.Enabled = true;
                     break;
 
                 case K_MAGIC_SKELETON:
@@ -900,6 +907,7 @@ namespace KimeraCS
 
                     // Menu Strip
                     loadBattleMagicLimitsAnimationStripMenuItem.Enabled = true;
+                    statisticsToolStripMenuItem.Enabled = true;
 
                     saveAnimationToolStripMenuItem.Enabled = true;
                     saveAnimationAsToolStripMenuItem.Enabled = true;
@@ -934,7 +942,7 @@ namespace KimeraCS
             UpdateMainSkeletonWindowTitle();
 
             // Close previous P Editor if any.
-            if (FindWindowOpened("frmPEditor")) frmPEdit.Close();
+            if (FindWindowOpened("FrmPEditor")) frmPEdit.Close();
 
             WriteCFGFile();
         }
@@ -1110,7 +1118,7 @@ namespace KimeraCS
                 if (SelectedBone > -1)
                 {
                     SetBoneModifiers();
-                    if (!FindWindowOpened("frmPEditor"))
+                    if (!FindWindowOpened("FrmPEditor"))
                     {
                         gbSelectedBoneFrame.Enabled = true;
 
@@ -1442,9 +1450,9 @@ namespace KimeraCS
 
             if (bLoaded)
             {
-                // We will block the MouseDown if frmPEditor is enabled and 
+                // We will block the MouseDown if FrmPEditor is enabled and 
                 // the user clicked in "empty" place
-                if (FindWindowOpened("frmPEditor")) bWindowPEOpened = true;
+                if (FindWindowOpened("FrmPEditor")) bWindowPEOpened = true;
                 else bWindowPEOpened = false;
 
                 //glClearColor(0.4f, 0.4f, 0.65f, 0);
@@ -1461,7 +1469,7 @@ namespace KimeraCS
                                              (float)alpha, (float)beta, (float)gamma, 1, 1, 1);
 
                         iBoneIdx = GetClosestFieldBone(fSkeleton, fAnimation.frames[tbCurrentFrameScroll.Value],
-                                                 e.X, e.Y);
+                                                       e.X, e.Y);
 
                         SelectedBone = iBoneIdx;
                         cbBoneSelector.SelectedIndex = iBoneIdx;
@@ -1561,6 +1569,15 @@ namespace KimeraCS
                         }
 
                         SetTextureEditorFields();
+                        break;
+
+                    default:
+                        SelectedBone = -1;
+                        SelectedBonePiece = -1;
+
+                        gbSelectedBoneFrame.Enabled = false;
+                        gbSelectedPieceFrame.Enabled = false;
+
                         break;
                 }
 
@@ -1754,22 +1771,25 @@ namespace KimeraCS
                 // This checks avoids a crash when we "unselect" or "click in
                 // any place outside the model" in skeleton main window.
                 // So, we restore to SelectedBone and SelectedBonePiece its values.
-                if (SelectedBone == -1 || SelectedBonePiece == -1)
+                if (modelType == K_HRC_SKELETON || modelType == K_AA_SKELETON || modelType == K_MAGIC_SKELETON)
                 {
-                    if (FindWindowOpened("frmPEditor"))
+                    if (SelectedBone == -1 || SelectedBonePiece == -1)
                     {
-                        SelectedBone = EditedBone;
-                        SelectedBonePiece = EditedBonePiece;
+                        if (FindWindowOpened("FrmPEditor"))
+                        {
+                            SelectedBone = EditedBone;
+                            SelectedBonePiece = EditedBonePiece;
+                            cbBoneSelector.SelectedIndex = SelectedBone;
+                        }
+
+                        return;
+                    }
+                    else
+                    {
+                        EditedBone = SelectedBone;
+                        EditedBonePiece = SelectedBonePiece;
                         cbBoneSelector.SelectedIndex = SelectedBone;
                     }
-
-                    return;
-                }
-                else
-                {
-                    EditedBone = SelectedBone;
-                    EditedBonePiece = SelectedBonePiece;
-                    cbBoneSelector.SelectedIndex = SelectedBone;
                 }
 
                 switch (modelType)
@@ -1802,7 +1822,7 @@ namespace KimeraCS
                 if (tmpPModel.Verts != null && tmpPModel.Verts.Length > 0)
                 {
                     // Close previous P Editor if any.
-                    if (FindWindowOpened("frmPEditor")) frmPEdit.Close();
+                    if (FindWindowOpened("FrmPEditor")) frmPEdit.Close();
 
                     // We will stop Play Animation if it is running
                     if (btnPlayStopAnim.Checked) btnPlayStopAnim.Checked = false;
@@ -1910,8 +1930,8 @@ namespace KimeraCS
                 {
                     if (File.Exists(openFile.FileName))
                     {
-                        // Close frmPEditor if opened
-                        if (FindWindowOpened("frmPEditor")) frmPEdit.Close();
+                        // Close FrmPEditor if opened
+                        if (FindWindowOpened("FrmPEditor")) frmPEdit.Close();
 
                         // Disable/Make Invisible in Forms Data controls
                         InitializeWinFormsDataControls();
@@ -1950,7 +1970,6 @@ namespace KimeraCS
 
                         // ComputeBoundingBoxes
                         ComputeFieldBoundingBox(fSkeleton, fAnimation.frames[0], ref p_min, ref p_max);
-
                         diameter = ComputeFieldDiameter(fSkeleton);
 
                         // Set frame values in frame editor groupbox...
@@ -2008,8 +2027,8 @@ namespace KimeraCS
                 {
                     if (File.Exists(openFile.FileName))
                     {
-                        // Close frmPEditor if opened
-                        if (FindWindowOpened("frmPEditor")) frmPEdit.Close();
+                        // Close FrmPEditor if opened
+                        if (FindWindowOpened("FrmPEditor")) frmPEdit.Close();
 
                         // Disable/Make Invisible in Forms Data controls
                         InitializeWinFormsDataControls();
@@ -2136,8 +2155,8 @@ namespace KimeraCS
                             }
                         }
 
-                        // Close frmPEditor if opened
-                        if (FindWindowOpened("frmPEditor")) frmPEdit.Close();
+                        // Close FrmPEditor if opened
+                        if (FindWindowOpened("FrmPEditor")) frmPEdit.Close();
 
                         // Disable/Make Invisible in Forms Data controls
                         InitializeWinFormsDataControls();
@@ -2213,8 +2232,8 @@ namespace KimeraCS
                 {
                     if (File.Exists(openFile.FileName))
                     {
-                        // Close frmPEditor if opened
-                        if (FindWindowOpened("frmPEditor")) frmPEdit.Close();
+                        // Close FrmPEditor if opened
+                        if (FindWindowOpened("FrmPEditor")) frmPEdit.Close();
 
                         // Disable/Make Invisible in Forms Data controls
                         InitializeWinFormsDataControls();
@@ -2315,8 +2334,8 @@ namespace KimeraCS
                 {
                     if (File.Exists(openFile.FileName))
                     {
-                        // Close frmPEditor if opened
-                        if (FindWindowOpened("frmPEditor")) frmPEdit.Close();
+                        // Close FrmPEditor if opened
+                        if (FindWindowOpened("FrmPEditor")) frmPEdit.Close();
 
                         // Disable/Make Invisible in Forms Data controls
                         InitializeWinFormsDataControls();
@@ -2414,8 +2433,8 @@ namespace KimeraCS
                 {
                     if (File.Exists(openFile.FileName))
                     {
-                        // Close frmPEditor if opened
-                        if (FindWindowOpened("frmPEditor")) frmPEdit.Close();
+                        // Close FrmPEditor if opened
+                        if (FindWindowOpened("FrmPEditor")) frmPEdit.Close();
 
                         // Disable/Make Invisible in Forms Data controls
                         InitializeWinFormsDataControls();
@@ -6364,8 +6383,8 @@ namespace KimeraCS
                 // Initialize OpenGL Context;
                 //InitOpenGLContext();
 
-                // Close frmPEditor if opened
-                if (FindWindowOpened("frmPEditor")) frmPEdit.Close();
+                // Close FrmPEditor if opened
+                if (FindWindowOpened("FrmPEditor")) frmPEdit.Close();
 
                 // Disable/Make Invisible in Forms Data controls
                 InitializeWinFormsDataControls();
@@ -6399,7 +6418,6 @@ namespace KimeraCS
 
                 // ComputeBoundingBoxes
                 ComputeFieldBoundingBox(fSkeleton, fAnimation.frames[0], ref p_min, ref p_max);
-
                 diameter = ComputeFieldDiameter(fSkeleton);
 
                 // Set frame values in frame editor groupbox...
@@ -6442,8 +6460,8 @@ namespace KimeraCS
                 // Initialize OpenGL Context;
                 //InitOpenGLContext();
 
-                // Close frmPEditor if opened
-                if (FindWindowOpened("frmPEditor")) frmPEdit.Close();
+                // Close FrmPEditor if opened
+                if (FindWindowOpened("FrmPEditor")) frmPEdit.Close();
 
                 // Disable/Make Invisible in Forms Data controls
                 InitializeWinFormsDataControls();
@@ -7064,7 +7082,11 @@ namespace KimeraCS
             loadingBonePieceModifiersQ = false;
         }
 
-
+        private void StatisticsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            frmStats = new FrmStatistics();
+            frmStats.Show();
+        }
 
 
     }
