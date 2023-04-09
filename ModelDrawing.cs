@@ -1926,7 +1926,7 @@ namespace KimeraCS
 
 
         // -- BACKUP ORIGINAL KIMERAVB6
-        //public static void DrawEditorPModel(frmPEditor frmPEdit)
+        //public static void DrawEditorPModel(FrmPEditor frmPEdit)
         //{
 
         //    //double[] rot_mat = new double[16];
@@ -1943,8 +1943,8 @@ namespace KimeraCS
         //    //                           hsbRotateAlpha.Value, hsbRotateBeta.Value, hsbRotateGamma.Value,
         //    //                           rszX, rszY, rszZ);
 
-        //    SetCameraPModel(EditedPModel, frmPEditor.panX, frmPEditor.panY, frmPEditor.panZ + frmPEditor.DIST,
-        //                    frmPEditor.alpha, frmPEditor.beta, frmPEditor.gamma, 1, 1, 1);
+        //    SetCameraPModel(EditedPModel, FrmPEditor.panX, FrmPEditor.panY, FrmPEditor.panZ + FrmPEditor.DIST,
+        //                    FrmPEditor.alpha, FrmPEditor.beta, FrmPEditor.gamma, 1, 1, 1);
 
         //    glMatrixMode(GLMatrixModeList.GL_MODELVIEW);
         //    glPushMatrix();
@@ -1965,7 +1965,7 @@ namespace KimeraCS
         //        glDisable(GLCapability.GL_LIGHT3);
 
         //        ComputePModelBoundingBox(EditedPModel, ref p_min, ref p_max);
-        //        modelDiameterNormalized = (-2 * ComputeSceneRadius(p_min, p_max)) / frmPEditor.LIGHT_STEPS;
+        //        modelDiameterNormalized = (-2 * ComputeSceneRadius(p_min, p_max)) / FrmPEditor.LIGHT_STEPS;
 
         //        SetLighting(GLCapability.GL_LIGHT0, modelDiameterNormalized * frmPEdit.hsbLightX.Value,
         //                                            modelDiameterNormalized * frmPEdit.hsbLightY.Value,

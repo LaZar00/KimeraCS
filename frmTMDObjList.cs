@@ -74,7 +74,7 @@ namespace KimeraCS
             if (lbTMDObjectList.SelectedIndex > -1)
             {
                 // Close previous P Editor if any.
-                if (FindWindowOpened("frmPEditor")) frmSkelEdit.frmPEdit.Close();
+                if (FindWindowOpened("FrmPEditor")) frmSkelEdit.frmPEdit.Close();
 
                 // Now let's convert the TMD model into P model.
                 DestroyPModelResources(ref fPModel);

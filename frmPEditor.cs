@@ -2614,7 +2614,7 @@ namespace KimeraCS
 
             //if (ActiveForm != this) return;
 
-            //MessageBox.Show("frmPEditor", "Test", MessageBoxButtons.OK);
+            //MessageBox.Show("FrmPEditor", "Test", MessageBoxButtons.OK);
 
             //panelEditorPModel_Paint(null, null);
         }
