@@ -39,8 +39,12 @@ namespace KimeraCS
             this.btnRemoveTexture = new System.Windows.Forms.Button();
             this.btnAddTexture = new System.Windows.Forms.Button();
             this.btnChangeTexture = new System.Windows.Forms.Button();
+            this.btnFlipHorizontal = new System.Windows.Forms.Button();
+            this.btnFlipVertical = new System.Windows.Forms.Button();
+            this.btnRotate = new System.Windows.Forms.Button();
             this.chkColorKeyFlag = new System.Windows.Forms.CheckBox();
             this.cbTextureSelect = new System.Windows.Forms.ComboBox();
+            this.pbTextureViewer = new System.Windows.Forms.PictureBox();
             this.gbAnimationOptionsFrame = new System.Windows.Forms.GroupBox();
             this.btnInterpolateFrame = new System.Windows.Forms.Button();
             this.btnDuplicateFrame = new System.Windows.Forms.Button();
@@ -123,9 +127,16 @@ namespace KimeraCS
             this.hsbResizePieceX = new System.Windows.Forms.HScrollBar();
             this.chkDListEnable = new System.Windows.Forms.CheckBox();
             this.panel3 = new System.Windows.Forms.Panel();
+            this.btnFramePrev = new System.Windows.Forms.Button();
+            this.btnFrameNext = new System.Windows.Forms.Button();
+            this.btnPlayStopAnim = new System.Windows.Forms.CheckBox();
+            this.btnFrameEnd = new System.Windows.Forms.Button();
+            this.btnFrameBegin = new System.Windows.Forms.Button();
             this.chkShowBones = new System.Windows.Forms.CheckBox();
             this.btnInterpolateAnimation = new System.Windows.Forms.Button();
             this.txtCopyPasteFrame = new System.Windows.Forms.TextBox();
+            this.btnPasteFrame = new System.Windows.Forms.Button();
+            this.btnCopyFrame = new System.Windows.Forms.Button();
             this.tbCurrentFrameScroll = new System.Windows.Forms.TrackBar();
             this.lblAnimationFrame = new System.Windows.Forms.Label();
             this.txtAnimationFrame = new System.Windows.Forms.TextBox();
@@ -148,6 +159,8 @@ namespace KimeraCS
             this.undoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.redoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
+            this.ShowAxesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
             this.resetCameraToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
             this.uIOpacityToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -172,6 +185,8 @@ namespace KimeraCS
             this.fiveftoolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.thirtyftoolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.thousandftoolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator11 = new System.Windows.Forms.ToolStripSeparator();
+            this.statisticsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.textureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.TEXToPNGBatchConversionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.animationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -196,23 +211,11 @@ namespace KimeraCS
             this.showBattlelgpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showMagiclgpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveFile = new System.Windows.Forms.SaveFileDialog();
-            this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
-            this.statisticsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panelModel = new System.Windows.Forms.PictureBox();
-            this.btnFramePrev = new System.Windows.Forms.Button();
-            this.btnFrameNext = new System.Windows.Forms.Button();
-            this.btnPlayStopAnim = new System.Windows.Forms.CheckBox();
-            this.btnFrameEnd = new System.Windows.Forms.Button();
-            this.btnFrameBegin = new System.Windows.Forms.Button();
-            this.btnPasteFrame = new System.Windows.Forms.Button();
-            this.btnCopyFrame = new System.Windows.Forms.Button();
-            this.btnFlipHorizontal = new System.Windows.Forms.Button();
-            this.btnFlipVertical = new System.Windows.Forms.Button();
-            this.btnRotate = new System.Windows.Forms.Button();
-            this.pbTextureViewer = new System.Windows.Forms.PictureBox();
             this.panel1.SuspendLayout();
             this.gbTexturesFrame.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUDMoveTextureUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbTextureViewer)).BeginInit();
             this.gbAnimationOptionsFrame.SuspendLayout();
             this.gbFrameDataPartOptions.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUDZAnimationFramePart)).BeginInit();
@@ -234,7 +237,6 @@ namespace KimeraCS
             ((System.ComponentModel.ISupportInitialize)(this.tbCurrentFrameScroll)).BeginInit();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.panelModel)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbTextureViewer)).BeginInit();
             this.SuspendLayout();
             // 
             // panel1
@@ -330,6 +332,42 @@ namespace KimeraCS
             this.btnChangeTexture.UseVisualStyleBackColor = true;
             this.btnChangeTexture.Click += new System.EventHandler(this.BtnChangeTexture_Click);
             // 
+            // btnFlipHorizontal
+            // 
+            this.btnFlipHorizontal.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btnFlipHorizontal.BackgroundImage")));
+            this.btnFlipHorizontal.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btnFlipHorizontal.Location = new System.Drawing.Point(113, 86);
+            this.btnFlipHorizontal.Margin = new System.Windows.Forms.Padding(2);
+            this.btnFlipHorizontal.Name = "btnFlipHorizontal";
+            this.btnFlipHorizontal.Size = new System.Drawing.Size(32, 32);
+            this.btnFlipHorizontal.TabIndex = 5;
+            this.btnFlipHorizontal.UseVisualStyleBackColor = true;
+            this.btnFlipHorizontal.Click += new System.EventHandler(this.BtnFlipHorizontal_Click);
+            // 
+            // btnFlipVertical
+            // 
+            this.btnFlipVertical.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btnFlipVertical.BackgroundImage")));
+            this.btnFlipVertical.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btnFlipVertical.Location = new System.Drawing.Point(113, 52);
+            this.btnFlipVertical.Margin = new System.Windows.Forms.Padding(2);
+            this.btnFlipVertical.Name = "btnFlipVertical";
+            this.btnFlipVertical.Size = new System.Drawing.Size(32, 32);
+            this.btnFlipVertical.TabIndex = 4;
+            this.btnFlipVertical.UseVisualStyleBackColor = true;
+            this.btnFlipVertical.Click += new System.EventHandler(this.BtnFlipVertical_Click);
+            // 
+            // btnRotate
+            // 
+            this.btnRotate.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btnRotate.BackgroundImage")));
+            this.btnRotate.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btnRotate.Location = new System.Drawing.Point(113, 18);
+            this.btnRotate.Margin = new System.Windows.Forms.Padding(2);
+            this.btnRotate.Name = "btnRotate";
+            this.btnRotate.Size = new System.Drawing.Size(32, 32);
+            this.btnRotate.TabIndex = 3;
+            this.btnRotate.UseVisualStyleBackColor = true;
+            this.btnRotate.Click += new System.EventHandler(this.BtnRotate_Click);
+            // 
             // chkColorKeyFlag
             // 
             this.chkColorKeyFlag.AutoSize = true;
@@ -353,6 +391,19 @@ namespace KimeraCS
             this.cbTextureSelect.Size = new System.Drawing.Size(115, 21);
             this.cbTextureSelect.TabIndex = 1;
             this.cbTextureSelect.SelectedIndexChanged += new System.EventHandler(this.CbTextureSelect_SelectedIndexChanged);
+            // 
+            // pbTextureViewer
+            // 
+            this.pbTextureViewer.BackColor = System.Drawing.Color.Transparent;
+            this.pbTextureViewer.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.pbTextureViewer.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.pbTextureViewer.Location = new System.Drawing.Point(8, 16);
+            this.pbTextureViewer.Margin = new System.Windows.Forms.Padding(2);
+            this.pbTextureViewer.Name = "pbTextureViewer";
+            this.pbTextureViewer.Size = new System.Drawing.Size(104, 104);
+            this.pbTextureViewer.TabIndex = 0;
+            this.pbTextureViewer.TabStop = false;
+            this.pbTextureViewer.DoubleClick += new System.EventHandler(this.PbTextureViewer_DoubleClick);
             // 
             // gbAnimationOptionsFrame
             // 
@@ -1385,6 +1436,67 @@ namespace KimeraCS
             this.panel3.Size = new System.Drawing.Size(416, 71);
             this.panel3.TabIndex = 8;
             // 
+            // btnFramePrev
+            // 
+            this.btnFramePrev.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btnFramePrev.BackgroundImage")));
+            this.btnFramePrev.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btnFramePrev.Location = new System.Drawing.Point(286, 7);
+            this.btnFramePrev.Name = "btnFramePrev";
+            this.btnFramePrev.Size = new System.Drawing.Size(32, 32);
+            this.btnFramePrev.TabIndex = 25;
+            this.btnFramePrev.UseVisualStyleBackColor = true;
+            this.btnFramePrev.Visible = false;
+            this.btnFramePrev.Click += new System.EventHandler(this.BtnFramePrev_Click);
+            // 
+            // btnFrameNext
+            // 
+            this.btnFrameNext.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btnFrameNext.BackgroundImage")));
+            this.btnFrameNext.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btnFrameNext.Location = new System.Drawing.Point(348, 7);
+            this.btnFrameNext.Name = "btnFrameNext";
+            this.btnFrameNext.Size = new System.Drawing.Size(32, 32);
+            this.btnFrameNext.TabIndex = 24;
+            this.btnFrameNext.UseVisualStyleBackColor = true;
+            this.btnFrameNext.Visible = false;
+            this.btnFrameNext.Click += new System.EventHandler(this.BtnFrameNext_Click);
+            // 
+            // btnPlayStopAnim
+            // 
+            this.btnPlayStopAnim.Appearance = System.Windows.Forms.Appearance.Button;
+            this.btnPlayStopAnim.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btnPlayStopAnim.BackgroundImage")));
+            this.btnPlayStopAnim.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btnPlayStopAnim.Location = new System.Drawing.Point(317, 7);
+            this.btnPlayStopAnim.Name = "btnPlayStopAnim";
+            this.btnPlayStopAnim.Size = new System.Drawing.Size(32, 32);
+            this.btnPlayStopAnim.TabIndex = 23;
+            this.btnPlayStopAnim.UseVisualStyleBackColor = true;
+            this.btnPlayStopAnim.Visible = false;
+            this.btnPlayStopAnim.CheckedChanged += new System.EventHandler(this.BtnPlayStopAnm_CheckedChanged);
+            // 
+            // btnFrameEnd
+            // 
+            this.btnFrameEnd.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btnFrameEnd.BackgroundImage")));
+            this.btnFrameEnd.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btnFrameEnd.Location = new System.Drawing.Point(379, 7);
+            this.btnFrameEnd.Name = "btnFrameEnd";
+            this.btnFrameEnd.Size = new System.Drawing.Size(32, 32);
+            this.btnFrameEnd.TabIndex = 22;
+            this.btnFrameEnd.UseVisualStyleBackColor = true;
+            this.btnFrameEnd.Visible = false;
+            this.btnFrameEnd.Click += new System.EventHandler(this.BtnFrameEnd_Click);
+            // 
+            // btnFrameBegin
+            // 
+            this.btnFrameBegin.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btnFrameBegin.BackgroundImage")));
+            this.btnFrameBegin.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btnFrameBegin.Location = new System.Drawing.Point(255, 7);
+            this.btnFrameBegin.Name = "btnFrameBegin";
+            this.btnFrameBegin.Size = new System.Drawing.Size(32, 32);
+            this.btnFrameBegin.TabIndex = 21;
+            this.btnFrameBegin.UseVisualStyleBackColor = true;
+            this.btnFrameBegin.Visible = false;
+            this.btnFrameBegin.Click += new System.EventHandler(this.BtnFrameBegin_Click);
+            // 
             // chkShowBones
             // 
             this.chkShowBones.AutoSize = true;
@@ -1424,6 +1536,33 @@ namespace KimeraCS
             this.txtCopyPasteFrame.TabIndex = 17;
             this.txtCopyPasteFrame.TabStop = false;
             this.txtCopyPasteFrame.Visible = false;
+            // 
+            // btnPasteFrame
+            // 
+            this.btnPasteFrame.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btnPasteFrame.BackgroundImage")));
+            this.btnPasteFrame.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btnPasteFrame.Enabled = false;
+            this.btnPasteFrame.Location = new System.Drawing.Point(38, 36);
+            this.btnPasteFrame.Margin = new System.Windows.Forms.Padding(2);
+            this.btnPasteFrame.Name = "btnPasteFrame";
+            this.btnPasteFrame.Size = new System.Drawing.Size(32, 32);
+            this.btnPasteFrame.TabIndex = 16;
+            this.btnPasteFrame.UseVisualStyleBackColor = true;
+            this.btnPasteFrame.Visible = false;
+            this.btnPasteFrame.Click += new System.EventHandler(this.BtnPasteFrame_Click);
+            // 
+            // btnCopyFrame
+            // 
+            this.btnCopyFrame.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btnCopyFrame.BackgroundImage")));
+            this.btnCopyFrame.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btnCopyFrame.Location = new System.Drawing.Point(7, 36);
+            this.btnCopyFrame.Margin = new System.Windows.Forms.Padding(2);
+            this.btnCopyFrame.Name = "btnCopyFrame";
+            this.btnCopyFrame.Size = new System.Drawing.Size(32, 32);
+            this.btnCopyFrame.TabIndex = 15;
+            this.btnCopyFrame.UseVisualStyleBackColor = true;
+            this.btnCopyFrame.Visible = false;
+            this.btnCopyFrame.Click += new System.EventHandler(this.BtnCopyFrame_Click);
             // 
             // tbCurrentFrameScroll
             // 
@@ -1593,6 +1732,8 @@ namespace KimeraCS
             this.undoToolStripMenuItem,
             this.redoToolStripMenuItem,
             this.toolStripSeparator6,
+            this.ShowAxesToolStripMenuItem,
+            this.toolStripSeparator10,
             this.resetCameraToolStripMenuItem,
             this.toolStripSeparator7,
             this.uIOpacityToolStripMenuItem});
@@ -1605,7 +1746,7 @@ namespace KimeraCS
             this.undoToolStripMenuItem.Enabled = false;
             this.undoToolStripMenuItem.Name = "undoToolStripMenuItem";
             this.undoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.U)));
-            this.undoToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.undoToolStripMenuItem.Size = new System.Drawing.Size(221, 22);
             this.undoToolStripMenuItem.Text = "Undo";
             this.undoToolStripMenuItem.Click += new System.EventHandler(this.UndoToolStripMenuItem_Click);
             // 
@@ -1614,26 +1755,40 @@ namespace KimeraCS
             this.redoToolStripMenuItem.Enabled = false;
             this.redoToolStripMenuItem.Name = "redoToolStripMenuItem";
             this.redoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R)));
-            this.redoToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.redoToolStripMenuItem.Size = new System.Drawing.Size(221, 22);
             this.redoToolStripMenuItem.Text = "Redo";
             this.redoToolStripMenuItem.Click += new System.EventHandler(this.RedoToolStripMenuItem_Click);
             // 
             // toolStripSeparator6
             // 
             this.toolStripSeparator6.Name = "toolStripSeparator6";
-            this.toolStripSeparator6.Size = new System.Drawing.Size(177, 6);
+            this.toolStripSeparator6.Size = new System.Drawing.Size(218, 6);
+            // 
+            // ShowAxesToolStripMenuItem
+            // 
+            this.ShowAxesToolStripMenuItem.CheckOnClick = true;
+            this.ShowAxesToolStripMenuItem.Name = "ShowAxesToolStripMenuItem";
+            this.ShowAxesToolStripMenuItem.Size = new System.Drawing.Size(221, 22);
+            this.ShowAxesToolStripMenuItem.Text = "Show Axes";
+            this.ShowAxesToolStripMenuItem.Click += new System.EventHandler(this.DrawAxesToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator10
+            // 
+            this.toolStripSeparator10.Name = "toolStripSeparator10";
+            this.toolStripSeparator10.Size = new System.Drawing.Size(218, 6);
             // 
             // resetCameraToolStripMenuItem
             // 
             this.resetCameraToolStripMenuItem.Name = "resetCameraToolStripMenuItem";
-            this.resetCameraToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.resetCameraToolStripMenuItem.Text = "Reset camera";
+            this.resetCameraToolStripMenuItem.ShortcutKeyDisplayString = "CTRL+Home";
+            this.resetCameraToolStripMenuItem.Size = new System.Drawing.Size(221, 22);
+            this.resetCameraToolStripMenuItem.Text = "Reset Camera";
             this.resetCameraToolStripMenuItem.Click += new System.EventHandler(this.ResetCameraToolStripMenuItem_Click);
             // 
             // toolStripSeparator7
             // 
             this.toolStripSeparator7.Name = "toolStripSeparator7";
-            this.toolStripSeparator7.Size = new System.Drawing.Size(177, 6);
+            this.toolStripSeparator7.Size = new System.Drawing.Size(218, 6);
             // 
             // uIOpacityToolStripMenuItem
             // 
@@ -1644,7 +1799,7 @@ namespace KimeraCS
             this.tsUIOpacity50,
             this.tsUIOpacity25});
             this.uIOpacityToolStripMenuItem.Name = "uIOpacityToolStripMenuItem";
-            this.uIOpacityToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.uIOpacityToolStripMenuItem.Size = new System.Drawing.Size(221, 22);
             this.uIOpacityToolStripMenuItem.Text = "UI Opacity";
             // 
             // tsUIOpacity100
@@ -1693,17 +1848,17 @@ namespace KimeraCS
             this.showNormalsToolStripMenuItem,
             this.normalsColorToolStripMenuItem,
             this.normalsScaleToolStripMenuItem,
-            this.toolStripSeparator10,
+            this.toolStripSeparator11,
             this.statisticsToolStripMenuItem});
             this.skeletonToolStripMenuItem.Name = "skeletonToolStripMenuItem";
             this.skeletonToolStripMenuItem.Size = new System.Drawing.Size(64, 20);
-            this.skeletonToolStripMenuItem.Text = "Skeleton";
+            this.skeletonToolStripMenuItem.Text = "&Skeleton";
             // 
             // addJointToolStripMenuItem
             // 
             this.addJointToolStripMenuItem.Enabled = false;
             this.addJointToolStripMenuItem.Name = "addJointToolStripMenuItem";
-            this.addJointToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.addJointToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
             this.addJointToolStripMenuItem.Text = "Add Joint";
             this.addJointToolStripMenuItem.Click += new System.EventHandler(this.AddJointToolStripMenuItem_Click);
             // 
@@ -1711,14 +1866,14 @@ namespace KimeraCS
             // 
             this.editJointToolStripMenuItem.Enabled = false;
             this.editJointToolStripMenuItem.Name = "editJointToolStripMenuItem";
-            this.editJointToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.editJointToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
             this.editJointToolStripMenuItem.Text = "Edit Joint";
             this.editJointToolStripMenuItem.Click += new System.EventHandler(this.EditJointToolStripMenuItem_Click);
             // 
             // toolStripSeparator8
             // 
             this.toolStripSeparator8.Name = "toolStripSeparator8";
-            this.toolStripSeparator8.Size = new System.Drawing.Size(177, 6);
+            this.toolStripSeparator8.Size = new System.Drawing.Size(148, 6);
             // 
             // showNormalsToolStripMenuItem
             // 
@@ -1727,7 +1882,7 @@ namespace KimeraCS
             this.showFaceNormalsToolStripMenuItem});
             this.showNormalsToolStripMenuItem.Enabled = false;
             this.showNormalsToolStripMenuItem.Name = "showNormalsToolStripMenuItem";
-            this.showNormalsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.showNormalsToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
             this.showNormalsToolStripMenuItem.Text = "Show Normals";
             // 
             // showVertexNormalsToolStripMenuItem
@@ -1755,7 +1910,7 @@ namespace KimeraCS
             this.greenToolStripMenuItem,
             this.blueToolStripMenuItem});
             this.normalsColorToolStripMenuItem.Name = "normalsColorToolStripMenuItem";
-            this.normalsColorToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.normalsColorToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
             this.normalsColorToolStripMenuItem.Text = "Normals Color";
             // 
             // redToolStripMenuItem
@@ -1792,7 +1947,7 @@ namespace KimeraCS
             this.thirtyftoolStripMenuItem,
             this.thousandftoolStripMenuItem});
             this.normalsScaleToolStripMenuItem.Name = "normalsScaleToolStripMenuItem";
-            this.normalsScaleToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.normalsScaleToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
             this.normalsScaleToolStripMenuItem.Text = "Normals Scale";
             // 
             // oneftoolStripMenuItem
@@ -1829,13 +1984,26 @@ namespace KimeraCS
             this.thousandftoolStripMenuItem.Text = "1000.0 (Locations)";
             this.thousandftoolStripMenuItem.Click += new System.EventHandler(this.ThousandftoolStripMenuItem_Click);
             // 
+            // toolStripSeparator11
+            // 
+            this.toolStripSeparator11.Name = "toolStripSeparator11";
+            this.toolStripSeparator11.Size = new System.Drawing.Size(148, 6);
+            // 
+            // statisticsToolStripMenuItem
+            // 
+            this.statisticsToolStripMenuItem.Enabled = false;
+            this.statisticsToolStripMenuItem.Name = "statisticsToolStripMenuItem";
+            this.statisticsToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
+            this.statisticsToolStripMenuItem.Text = "Statistics";
+            this.statisticsToolStripMenuItem.Click += new System.EventHandler(this.StatisticsToolStripMenuItem_Click);
+            // 
             // textureToolStripMenuItem
             // 
             this.textureToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.TEXToPNGBatchConversionToolStripMenuItem});
             this.textureToolStripMenuItem.Name = "textureToolStripMenuItem";
             this.textureToolStripMenuItem.Size = new System.Drawing.Size(57, 20);
-            this.textureToolStripMenuItem.Text = "Texture";
+            this.textureToolStripMenuItem.Text = "&Texture";
             // 
             // TEXToPNGBatchConversionToolStripMenuItem
             // 
@@ -2016,19 +2184,6 @@ namespace KimeraCS
             this.showMagiclgpToolStripMenuItem.Text = "Show MAGIC.LGP";
             this.showMagiclgpToolStripMenuItem.Click += new System.EventHandler(this.ShowMagiclgpToolStripMenuItem_Click);
             // 
-            // toolStripSeparator10
-            // 
-            this.toolStripSeparator10.Name = "toolStripSeparator10";
-            this.toolStripSeparator10.Size = new System.Drawing.Size(177, 6);
-            // 
-            // statisticsToolStripMenuItem
-            // 
-            this.statisticsToolStripMenuItem.Enabled = false;
-            this.statisticsToolStripMenuItem.Name = "statisticsToolStripMenuItem";
-            this.statisticsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.statisticsToolStripMenuItem.Text = "Statistics";
-            this.statisticsToolStripMenuItem.Click += new System.EventHandler(this.StatisticsToolStripMenuItem_Click);
-            // 
             // panelModel
             // 
             this.panelModel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -2045,143 +2200,6 @@ namespace KimeraCS
             this.panelModel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.PanelModel_MouseDown);
             this.panelModel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.PanelModel_MouseMove);
             this.panelModel.MouseUp += new System.Windows.Forms.MouseEventHandler(this.PanelModel_MouseUp);
-            // 
-            // btnFramePrev
-            // 
-            this.btnFramePrev.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btnFramePrev.BackgroundImage")));
-            this.btnFramePrev.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.btnFramePrev.Location = new System.Drawing.Point(286, 7);
-            this.btnFramePrev.Name = "btnFramePrev";
-            this.btnFramePrev.Size = new System.Drawing.Size(32, 32);
-            this.btnFramePrev.TabIndex = 25;
-            this.btnFramePrev.UseVisualStyleBackColor = true;
-            this.btnFramePrev.Visible = false;
-            this.btnFramePrev.Click += new System.EventHandler(this.BtnFramePrev_Click);
-            // 
-            // btnFrameNext
-            // 
-            this.btnFrameNext.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btnFrameNext.BackgroundImage")));
-            this.btnFrameNext.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.btnFrameNext.Location = new System.Drawing.Point(348, 7);
-            this.btnFrameNext.Name = "btnFrameNext";
-            this.btnFrameNext.Size = new System.Drawing.Size(32, 32);
-            this.btnFrameNext.TabIndex = 24;
-            this.btnFrameNext.UseVisualStyleBackColor = true;
-            this.btnFrameNext.Visible = false;
-            this.btnFrameNext.Click += new System.EventHandler(this.BtnFrameNext_Click);
-            // 
-            // btnPlayStopAnim
-            // 
-            this.btnPlayStopAnim.Appearance = System.Windows.Forms.Appearance.Button;
-            this.btnPlayStopAnim.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btnPlayStopAnim.BackgroundImage")));
-            this.btnPlayStopAnim.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.btnPlayStopAnim.Location = new System.Drawing.Point(317, 7);
-            this.btnPlayStopAnim.Name = "btnPlayStopAnim";
-            this.btnPlayStopAnim.Size = new System.Drawing.Size(32, 32);
-            this.btnPlayStopAnim.TabIndex = 23;
-            this.btnPlayStopAnim.UseVisualStyleBackColor = true;
-            this.btnPlayStopAnim.Visible = false;
-            this.btnPlayStopAnim.CheckedChanged += new System.EventHandler(this.BtnPlayStopAnm_CheckedChanged);
-            // 
-            // btnFrameEnd
-            // 
-            this.btnFrameEnd.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btnFrameEnd.BackgroundImage")));
-            this.btnFrameEnd.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.btnFrameEnd.Location = new System.Drawing.Point(379, 7);
-            this.btnFrameEnd.Name = "btnFrameEnd";
-            this.btnFrameEnd.Size = new System.Drawing.Size(32, 32);
-            this.btnFrameEnd.TabIndex = 22;
-            this.btnFrameEnd.UseVisualStyleBackColor = true;
-            this.btnFrameEnd.Visible = false;
-            this.btnFrameEnd.Click += new System.EventHandler(this.BtnFrameEnd_Click);
-            // 
-            // btnFrameBegin
-            // 
-            this.btnFrameBegin.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btnFrameBegin.BackgroundImage")));
-            this.btnFrameBegin.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.btnFrameBegin.Location = new System.Drawing.Point(255, 7);
-            this.btnFrameBegin.Name = "btnFrameBegin";
-            this.btnFrameBegin.Size = new System.Drawing.Size(32, 32);
-            this.btnFrameBegin.TabIndex = 21;
-            this.btnFrameBegin.UseVisualStyleBackColor = true;
-            this.btnFrameBegin.Visible = false;
-            this.btnFrameBegin.Click += new System.EventHandler(this.BtnFrameBegin_Click);
-            // 
-            // btnPasteFrame
-            // 
-            this.btnPasteFrame.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btnPasteFrame.BackgroundImage")));
-            this.btnPasteFrame.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.btnPasteFrame.Enabled = false;
-            this.btnPasteFrame.Location = new System.Drawing.Point(38, 36);
-            this.btnPasteFrame.Margin = new System.Windows.Forms.Padding(2);
-            this.btnPasteFrame.Name = "btnPasteFrame";
-            this.btnPasteFrame.Size = new System.Drawing.Size(32, 32);
-            this.btnPasteFrame.TabIndex = 16;
-            this.btnPasteFrame.UseVisualStyleBackColor = true;
-            this.btnPasteFrame.Visible = false;
-            this.btnPasteFrame.Click += new System.EventHandler(this.BtnPasteFrame_Click);
-            // 
-            // btnCopyFrame
-            // 
-            this.btnCopyFrame.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btnCopyFrame.BackgroundImage")));
-            this.btnCopyFrame.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.btnCopyFrame.Location = new System.Drawing.Point(7, 36);
-            this.btnCopyFrame.Margin = new System.Windows.Forms.Padding(2);
-            this.btnCopyFrame.Name = "btnCopyFrame";
-            this.btnCopyFrame.Size = new System.Drawing.Size(32, 32);
-            this.btnCopyFrame.TabIndex = 15;
-            this.btnCopyFrame.UseVisualStyleBackColor = true;
-            this.btnCopyFrame.Visible = false;
-            this.btnCopyFrame.Click += new System.EventHandler(this.BtnCopyFrame_Click);
-            // 
-            // btnFlipHorizontal
-            // 
-            this.btnFlipHorizontal.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btnFlipHorizontal.BackgroundImage")));
-            this.btnFlipHorizontal.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.btnFlipHorizontal.Location = new System.Drawing.Point(113, 86);
-            this.btnFlipHorizontal.Margin = new System.Windows.Forms.Padding(2);
-            this.btnFlipHorizontal.Name = "btnFlipHorizontal";
-            this.btnFlipHorizontal.Size = new System.Drawing.Size(32, 32);
-            this.btnFlipHorizontal.TabIndex = 5;
-            this.btnFlipHorizontal.UseVisualStyleBackColor = true;
-            this.btnFlipHorizontal.Click += new System.EventHandler(this.BtnFlipHorizontal_Click);
-            // 
-            // btnFlipVertical
-            // 
-            this.btnFlipVertical.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btnFlipVertical.BackgroundImage")));
-            this.btnFlipVertical.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.btnFlipVertical.Location = new System.Drawing.Point(113, 52);
-            this.btnFlipVertical.Margin = new System.Windows.Forms.Padding(2);
-            this.btnFlipVertical.Name = "btnFlipVertical";
-            this.btnFlipVertical.Size = new System.Drawing.Size(32, 32);
-            this.btnFlipVertical.TabIndex = 4;
-            this.btnFlipVertical.UseVisualStyleBackColor = true;
-            this.btnFlipVertical.Click += new System.EventHandler(this.BtnFlipVertical_Click);
-            // 
-            // btnRotate
-            // 
-            this.btnRotate.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btnRotate.BackgroundImage")));
-            this.btnRotate.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.btnRotate.Location = new System.Drawing.Point(113, 18);
-            this.btnRotate.Margin = new System.Windows.Forms.Padding(2);
-            this.btnRotate.Name = "btnRotate";
-            this.btnRotate.Size = new System.Drawing.Size(32, 32);
-            this.btnRotate.TabIndex = 3;
-            this.btnRotate.UseVisualStyleBackColor = true;
-            this.btnRotate.Click += new System.EventHandler(this.BtnRotate_Click);
-            // 
-            // pbTextureViewer
-            // 
-            this.pbTextureViewer.BackColor = System.Drawing.Color.Transparent;
-            this.pbTextureViewer.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.pbTextureViewer.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.pbTextureViewer.Location = new System.Drawing.Point(8, 16);
-            this.pbTextureViewer.Margin = new System.Windows.Forms.Padding(2);
-            this.pbTextureViewer.Name = "pbTextureViewer";
-            this.pbTextureViewer.Size = new System.Drawing.Size(104, 104);
-            this.pbTextureViewer.TabIndex = 0;
-            this.pbTextureViewer.TabStop = false;
-            this.pbTextureViewer.DoubleClick += new System.EventHandler(this.PbTextureViewer_DoubleClick);
             // 
             // FrmSkeletonEditor
             // 
@@ -2214,6 +2232,7 @@ namespace KimeraCS
             this.gbTexturesFrame.ResumeLayout(false);
             this.gbTexturesFrame.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUDMoveTextureUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbTextureViewer)).EndInit();
             this.gbAnimationOptionsFrame.ResumeLayout(false);
             this.gbAnimationOptionsFrame.PerformLayout();
             this.gbFrameDataPartOptions.ResumeLayout(false);
@@ -2245,7 +2264,6 @@ namespace KimeraCS
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.panelModel)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbTextureViewer)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -2428,8 +2446,10 @@ namespace KimeraCS
         private System.Windows.Forms.ToolStripMenuItem showFaceNormalsToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator9;
         private System.Windows.Forms.ToolStripMenuItem Import3DSFixingPositionToolStripMenuItem;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator10;
         private System.Windows.Forms.ToolStripMenuItem statisticsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator11;
+        private System.Windows.Forms.ToolStripMenuItem ShowAxesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator10;
     }
 }
 

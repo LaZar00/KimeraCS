@@ -57,7 +57,7 @@ namespace KimeraCS
     public partial class FrmSkeletonEditor : Form
     {
 
-        public const string STR_APPNAME = "KimeraCS 1.8l";
+        public const string STR_APPNAME = "KimeraCS 1.8s";
 
         public static int modelWidth;
         public static int modelHeight;
@@ -176,15 +176,20 @@ namespace KimeraCS
         // OpenGL methods:
         public void SetOGLSettings()
         {
+
             glClearDepth(1.0f);
-            glDepthFunc(GLFunc.GL_LEQUAL);
+
             glEnable(GLCapability.GL_DEPTH_TEST);
-            glEnable(GLCapability.GL_BLEND);
-            glEnable(GLCapability.GL_ALPHA_TEST);
-            glBlendFunc(GLBlendFuncFactor.GL_SRC_ALPHA, GLBlendFuncFactor.GL_ONE_MINUS_SRC_ALPHA);
-            glAlphaFunc(GLFunc.GL_GREATER, 0);
+            glDepthFunc(GLFunc.GL_LEQUAL);
+
+            SetBlendMode(BLEND_MODE.BLEND_NONE);
+
             glCullFace(GLFace.GL_FRONT);
             glEnable(GLCapability.GL_CULL_FACE);
+
+            glEnable(GLCapability.GL_ALPHA_TEST);
+            glAlphaFunc(GLFunc.GL_GREATER, 0);
+
         }
 
         public void InitOpenGLContext()
@@ -396,6 +401,7 @@ namespace KimeraCS
             else this.Location = new Point(iwindowPosX, iwindowPosY);
 
             Import3DSFixingPositionToolStripMenuItem.Checked = bAdjust3DSImport;
+            ShowAxesToolStripMenuItem.Checked = bShowAxesSkeletonWindow;
 
             // Undo/Redo feature
             DoNotAddStateQ = false;
@@ -432,7 +438,6 @@ namespace KimeraCS
 
             // Define CTRL+Home shortcut for reset camera feature ("Home" key is not present in my visual studio notebook? is a VS bug?
             resetCameraToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.Home;
-            resetCameraToolStripMenuItem.ShortcutKeyDisplayString = "CTRL+Home";
 
 
             // Show Normals vars
@@ -1017,14 +1022,9 @@ namespace KimeraCS
 
         public void PanelModel_Paint(object sender, PaintEventArgs e)
         {
+
             if (bLoaded)
             {
-                //if (Application.OpenForms.Count > 1 && bPEditorOpened() && !pbIsMinimized)
-                //{
-                //    // Render also PEditor. It seems is opened
-                //    frmPEdit.panelEditorPModel_Paint(null, null);
-                //}
-
                 if (GetOGLContext() != OGLContext)
                     SetOGLContext(panelModelDC, OGLContext);
 
@@ -1033,9 +1033,11 @@ namespace KimeraCS
                 glViewport(0, 0, panelModel.ClientRectangle.Width,
                                  panelModel.ClientRectangle.Height);
                 ClearPanel();
-                SetDefaultOGLRenderState();
+                //SetDefaultOGLRenderState();
 
                 DrawSkeletonModel(bDListsEnable);
+
+                if (bShowAxesSkeletonWindow) DrawAxes(panelModel, tbCurrentFrameScroll.Value);
 
                 glFlush();
                 SwapBuffers(panelModelDC);
@@ -6889,6 +6891,15 @@ namespace KimeraCS
                                 "Error");
                 return;
             }
+        }
+
+        private void DrawAxesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            bShowAxesSkeletonWindow = ShowAxesToolStripMenuItem.Checked;
+
+            WriteCFGFile();
+
+            PanelModel_Paint(null, null);
         }
 
         public void UpdateBones(string strBoneSelected)
