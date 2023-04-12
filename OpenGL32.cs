@@ -14,8 +14,11 @@ namespace KimeraCS
 {
     using Defines;
 
+    using static FF7PModel;
+
     using static Utils;
     using static GDI32;
+    using static GLExt;
 
     namespace Defines
     {
@@ -96,7 +99,7 @@ namespace KimeraCS
         }
 
         [Flags()]
-        public enum GL_Boolean : byte
+        public enum GL_Boolean : uint
         {
             GL_TRUE = 1,
             GL_FALSE = 0,
@@ -1439,6 +1442,16 @@ namespace KimeraCS
             VIEWPORT_BOUNDS_RANGE = 0x825D,
         }
         #endregion
+
+        public enum BLEND_MODE
+        {
+            BLEND_AVG = 0,
+            BLEND_ADD,
+            BLEND_SUB,
+            BLEND_25P,
+            BLEND_NONE,
+            BLEND_DISABLED = 999
+        };
     }
 
     public class OpenGL32
@@ -2450,7 +2463,7 @@ namespace KimeraCS
                         }
                         else
                         {
-                            GLExt.Load_Extensions();
+                            Load_Extensions();
 
                             //frmSkeletonEditor.OpenGLValid = true;
                         }
@@ -2473,18 +2486,23 @@ namespace KimeraCS
 
         public static void SetDefaultOGLRenderState()
         {
-            glPolygonMode(GLFace.GL_FRONT, GLPolygon.GL_FILL);
-            glPolygonMode(GLFace.GL_BACK, GLPolygon.GL_FILL);
 
-            glDisable(GLCapability.GL_CULL_FACE);
+            glPolygonMode(GLFace.GL_FRONT_AND_BACK, GLPolygon.GL_FILL);
+            glCullFace(GLFace.GL_FRONT);
+            glEnable(GLCapability.GL_CULL_FACE);
 
-            glEnable(GLCapability.GL_BLEND);
+            glDepthFunc(GLFunc.GL_LEQUAL);
+            glEnable(GLCapability.GL_DEPTH_TEST);
+            glDepthMask((byte)GL_Boolean.GL_TRUE);
 
-            GLExt.glBlendEquation(GLBlendEquationMode.GL_FUNC_ADD);
+            glTexParameterf(GLTextureTarget.GL_TEXTURE_2D, GLTextureParameter.GL_TEXTURE_MIN_FILTER,
+                            (float)GLTextureMagFilter.GL_LINEAR);
+            glTexParameterf(GLTextureTarget.GL_TEXTURE_2D, GLTextureParameter.GL_TEXTURE_MAG_FILTER,
+                            (float)GLTextureMagFilter.GL_LINEAR);
 
-            glBlendFunc(GLBlendFuncFactor.GL_SRC_ALPHA, GLBlendFuncFactor.GL_ONE_MINUS_SRC_ALPHA);
+            // BLEND NONE
+            SetBlendMode(BLEND_MODE.BLEND_DISABLED);
 
-            glDisable(GLCapability.GL_TEXTURE_2D);
         }
 
         public static void DisableOpenGL(HDC hRC)
@@ -2619,7 +2637,60 @@ namespace KimeraCS
             return colGetVertColorResult;
         }
 
+        public static void SetBlendMode(BLEND_MODE bmMode)
+        {
 
+            if (bmMode == BLEND_MODE.BLEND_DISABLED)
+            {
+                glDisable(GLCapability.GL_BLEND);
+            }
+            else
+            {
+                glEnable(GLCapability.GL_BLEND);
+                glBlendEquation(GLBlendEquationMode.GL_FUNC_ADD);
+
+                switch (bmMode)
+                {
+                    case BLEND_MODE.BLEND_AVG:
+                        glBlendFunc(GLBlendFuncFactor.GL_SRC_ALPHA, GLBlendFuncFactor.GL_ONE_MINUS_SRC_ALPHA);
+                        //glBlendFunc((GLBlendFuncFactor)Enum.GetValues(typeof(GLBlendFuncFactor)).GetValue(iSrcBlend),
+                        //            (GLBlendFuncFactor)Enum.GetValues(typeof(GLBlendFuncFactor)).GetValue(iDestBlend));
+
+                        break;
+
+                    case BLEND_MODE.BLEND_ADD:
+                        glBlendFunc(GLBlendFuncFactor.GL_ONE, GLBlendFuncFactor.GL_ONE);
+
+                        break;
+
+                    case BLEND_MODE.BLEND_SUB:
+                        glBlendFunc(GLBlendFuncFactor.GL_ONE, GLBlendFuncFactor.GL_ONE);
+                        glBlendEquation(GLBlendEquationMode.GL_FUNC_REVERSE_SUBTRACT);
+
+                        break;
+
+                    case BLEND_MODE.BLEND_25P:
+                        glBlendFunc(GLBlendFuncFactor.GL_SRC_ALPHA, GLBlendFuncFactor.GL_ONE);
+
+                        break;
+
+                    case BLEND_MODE.BLEND_NONE:
+                        // For internal (vanilla)
+                        // If needed we will change this to external
+                        //glBlendEquation(GLBlendEquationMode.GL_FUNC_ADD);
+                        glBlendFunc(GLBlendFuncFactor.GL_ONE, GLBlendFuncFactor.GL_ZERO);
+                        // For external (hd textures)
+                        //glBlendEquation(GLBlendEquationMode.GL_FUNC_ADD);
+                        //glBlendFunc(GLBlendFuncFactor.GL_SRC_ALPHA, GLBlendFuncFactor.GL_ONE_MINUS_SRC_ALPHA);
+
+                        break;
+
+                }
+            }
+
+
+
+        }
 
 
 
