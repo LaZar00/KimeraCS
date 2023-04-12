@@ -1696,7 +1696,7 @@ namespace KimeraCS
         {
             int iVertIdx;
 
-            glDisable(GLCapability.GL_BLEND);
+            SetBlendMode(BLEND_MODE.BLEND_DISABLED);
 
             for (iVertIdx = 0; iVertIdx < Model.Header.numVerts; iVertIdx++)
             {
