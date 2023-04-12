@@ -52,22 +52,22 @@ namespace KimeraCS
         }
 
 
-        public void SetRSValuesEnabled()
+        public void SetOptionsEnabled()
         {
-            chkTrueV_WIRE.Enabled = chkV_WIREFRAME.Checked;
+            //chkV_WIREFRAME_OPTION.Enabled = chkV_WIREFRAME.Checked;
             //chkTrueV_TEX.Enabled = chkV_TEXTURE.Checked;
-            chkTrueV_LINEAR.Enabled = chkV_LINEARFILTER.Checked;
-            chkTrueV_NOCULL.Enabled = chkV_NOCULL.Checked;
-            chkCullBackFacing.Enabled = chkV_CULLFACE.Checked;
-            chkTrueV_DEPTHTEST.Enabled = chkV_DEPTHTEST.Checked;
-            chkTrueV_DEPTHMASK.Enabled = chkV_DEPTHMASK.Checked;
-            chkTrueV_ALPHA.Enabled = chkV_ALPHABLEND.Checked;
-            chkLighted.Enabled = chkV_SHADEMODE.Checked;
+            //chkV_LINEARFILTER_OPTION.Enabled = chkV_LINEARFILTER.Checked;
+            //chkV_NOCULL_OPTION.Enabled = chkV_NOCULL.Checked;
+            //chkV_CULLFACE_CullFrontFace.Enabled = chkV_CULLFACE.Checked;
+            //chkV_DEPTHTEST_OPTION.Enabled = chkV_DEPTHTEST.Checked;
+            //chkV_DEPTHMASK_OPTION.Enabled = chkV_DEPTHMASK.Checked;
+            //chkV_ALPHABLEND_OPTION.Enabled = chkV_ALPHABLEND.Checked;
+            //chkV_SHADEMODE_Lighted.Enabled = chkV_SHADEMODE.Checked;
         }
 
         public void SetSelectedGroup()
         {
-            int changeRenderStateValues, renderStateValues;
+            int iFeatures, iOptions;
 
             Text = "Editing Group " + SelectedGroup.ToString("00");
 
@@ -89,7 +89,7 @@ namespace KimeraCS
                     break;
 
                 case 3:
-                    rbUnknown.Checked = true;
+                    rb25P.Checked = true;
                     break;
 
                 case 4:
@@ -104,35 +104,38 @@ namespace KimeraCS
             if (EditedPModel.Hundrets[SelectedGroup].shademode == 1) rb1SM.Checked = true;
             else if (EditedPModel.Hundrets[SelectedGroup].shademode == 2) rb2SM.Checked = true;
 
-            changeRenderStateValues = EditedPModel.Hundrets[SelectedGroup].field_8;
-            renderStateValues = EditedPModel.Hundrets[SelectedGroup].field_C;
+            cbSrcBlend.SelectedIndex = EditedPModel.Hundrets[SelectedGroup].srcblend;
+            cbDestBlend.SelectedIndex = EditedPModel.Hundrets[SelectedGroup].destblend;
 
-            chkV_WIREFRAME.Checked = (changeRenderStateValues & 0x01) != 0;
-            chkV_TEXTURE.Checked = (changeRenderStateValues & 0x02) != 0;
-            chkV_LINEARFILTER.Checked = (changeRenderStateValues & 0x04) != 0;
-            chkV_NOCULL.Checked = (changeRenderStateValues & 0x4000) != 0;
-            chkV_CULLFACE.Checked = (changeRenderStateValues & 0x2000) != 0;
-            chkV_DEPTHTEST.Checked = (changeRenderStateValues & 0x8000) != 0;
-            chkV_DEPTHMASK.Checked = (changeRenderStateValues & 0x10000) != 0;
-            chkV_ALPHABLEND.Checked = (changeRenderStateValues & 0x400) != 0;
-            chkV_SHADEMODE.Checked = (changeRenderStateValues & 0x020000) != 0;
+            iFeatures = EditedPModel.Hundrets[SelectedGroup].field_C;
+            iOptions = EditedPModel.Hundrets[SelectedGroup].field_8;
 
-            chkTrueV_WIRE.Checked = (renderStateValues & 0x1) != 0;
-            chkTrueV_TEX.Checked = (renderStateValues & 0x2) != 0;
-            chkTrueV_LINEAR.Checked = (renderStateValues & 0x4) != 0;
-            chkTrueV_NOCULL.Checked = (renderStateValues & 0x4000) != 0;
-            chkCullBackFacing.Checked = (renderStateValues & 0x2000) != 0;
-            chkTrueV_DEPTHTEST.Checked = (renderStateValues & 0x8000) != 0;
-            chkTrueV_DEPTHMASK.Checked = (renderStateValues & 0x10000) != 0;
-            chkTrueV_ALPHA.Checked = (renderStateValues & 0x400) != 0;
-            chkLighted.Checked = (renderStateValues & 0x20000) != 0;
+            chkV_WIREFRAME.Checked = (iFeatures & 0x01) != 0;
+            chkV_TEXTURE.Checked = (iFeatures & 0x02) != 0;
+            chkV_LINEARFILTER.Checked = (iFeatures & 0x04) != 0;
+            chkV_NOCULL.Checked = (iFeatures & 0x4000) != 0;
+            chkV_CULLFACE.Checked = (iFeatures & 0x2000) != 0;
+            chkV_DEPTHTEST.Checked = (iFeatures & 0x8000) != 0;
+            chkV_DEPTHMASK.Checked = (iFeatures & 0x10000) != 0;
+            chkV_ALPHABLEND.Checked = (iFeatures & 0x400) != 0;
+            chkV_SHADEMODE.Checked = (iFeatures & 0x020000) != 0;
 
-            SetRSValuesEnabled();
+            chkV_WIREFRAME_OPTION.Checked = (iOptions & 0x1) != 0;
+            chkV_TEXTURE_OPTION.Checked = (iOptions & 0x2) != 0;
+            chkV_LINEARFILTER_OPTION.Checked = (iOptions & 0x4) != 0;
+            chkV_NOCULL_OPTION.Checked = (iOptions & 0x4000) != 0;
+            chkV_CULLFACE_CullFrontFace.Checked = (iOptions & 0x2000) != 0;
+            chkV_DEPTHTEST_OPTION.Checked = (iOptions & 0x8000) != 0;
+            chkV_DEPTHMASK_OPTION.Checked = (iOptions & 0x10000) != 0;
+            chkV_ALPHABLEND_OPTION.Checked = (iOptions & 0x400) != 0;
+            chkV_SHADEMODE_Lighted.Checked = (iOptions & 0x20000) != 0;
+
+            SetOptionsEnabled();
         }
 
         private void ChkV_WIREFRAME_CheckedChanged(object sender, EventArgs e)
         {
-            SetRSValuesEnabled();
+            //SetOptionsEnabled();
         }
 
         private void ChkV_TEXTURE_CheckedChanged(object sender, EventArgs e)
@@ -145,44 +148,44 @@ namespace KimeraCS
                 rb1.Checked = true;
             }
 
-            SetRSValuesEnabled();
+            //SetOptionsEnabled();
         }
 
         private void ChkV_LINEARFILTER_CheckedChanged(object sender, EventArgs e)
         {
-            SetRSValuesEnabled();
+            //SetOptionsEnabled();
         }
 
         private void ChkV_NOCULL_CheckedChanged(object sender, EventArgs e)
         {
-            SetRSValuesEnabled();
+            //SetOptionsEnabled();
         }
 
         private void ChkV_CULLFACE_CheckedChanged(object sender, EventArgs e)
         {
-            SetRSValuesEnabled();
+            //SetOptionsEnabled();
         }
 
         private void ChkV_DEPTHTEST_CheckedChanged(object sender, EventArgs e)
         {
-            SetRSValuesEnabled();
+            //SetOptionsEnabled();
         }
 
         private void ChkV_DEPTHMASK_CheckedChanged(object sender, EventArgs e)
         {
-            SetRSValuesEnabled();
+            //SetOptionsEnabled();
         }
 
         private void ChkV_ALPHABLEND_CheckedChanged(object sender, EventArgs e)
         {
-            SetRSValuesEnabled();
+            //SetOptionsEnabled();
         }
 
         private void ChkV_SHADEMODE_CheckedChanged(object sender, EventArgs e)
         {
             if (!chkV_SHADEMODE.Checked) rb1SM.Checked = true;
 
-            SetRSValuesEnabled();
+            //SetOptionsEnabled();
         }
 
         private void BtnClose_Click(object sender, EventArgs e)
@@ -192,12 +195,12 @@ namespace KimeraCS
 
         private void BtnAccept_Click(object sender, EventArgs e)
         {
-            int changeRenderStateValues, renderStateValues, mask, invMaskFull;
+            int iFeatures, iOptions, mask, invMaskFull;
 
             if (rbAverage.Checked) EditedPModel.Hundrets[SelectedGroup].blend_mode = 0;
             if (rbAdditive.Checked) EditedPModel.Hundrets[SelectedGroup].blend_mode = 1;
             if (rbSubstractive.Checked) EditedPModel.Hundrets[SelectedGroup].blend_mode = 2;
-            if (rbUnknown.Checked) EditedPModel.Hundrets[SelectedGroup].blend_mode = 3;
+            if (rb25P.Checked) EditedPModel.Hundrets[SelectedGroup].blend_mode = 3;
             if (rbNone.Checked) EditedPModel.Hundrets[SelectedGroup].blend_mode = 4;
 
             if (rb1.Checked) EditedPModel.Groups[SelectedGroup].polyType = 1;
@@ -211,7 +214,10 @@ namespace KimeraCS
             else if (EditedPModel.Groups[SelectedGroup].polyType == 2) rb2.Checked = true;
             else rb3.Checked = true;
 
-            if (chkV_TEXTURE.Checked)
+            EditedPModel.Hundrets[SelectedGroup].srcblend = cbSrcBlend.SelectedIndex;
+            EditedPModel.Hundrets[SelectedGroup].destblend = cbDestBlend.SelectedIndex;
+
+            if (chkV_TEXTURE_OPTION.Checked)
             {
                 EditedPModel.Groups[SelectedGroup].texFlag = 1;
                 EditedPModel.Groups[SelectedGroup].texID = (int)nudTextureID.Value;
@@ -231,8 +237,8 @@ namespace KimeraCS
             //    EditedPModel.Hundrets[SelectedGroup].texID = (int)nudTextureID.Value;
             //}
 
-            changeRenderStateValues = EditedPModel.Hundrets[SelectedGroup].field_8;
-            renderStateValues = EditedPModel.Hundrets[SelectedGroup].field_C;
+            iFeatures = EditedPModel.Hundrets[SelectedGroup].field_C;
+            iOptions = EditedPModel.Hundrets[SelectedGroup].field_8;
 
             invMaskFull = ~(0x1 | 0x2 | 0x4 | 0x4000 | 0x2000 | 0x8000 | 0x10000 | 0x400 | 0x20000);
 
@@ -245,21 +251,21 @@ namespace KimeraCS
                    (chkV_DEPTHMASK.Checked ? 0x10000 : 0) |
                    (chkV_ALPHABLEND.Checked ? 0x400 : 0) |
                    (chkV_SHADEMODE.Checked ? 0x20000 : 0);
-            changeRenderStateValues = (changeRenderStateValues & invMaskFull) | mask;
+            iFeatures = (iFeatures & invMaskFull) | mask;
 
-            mask = (chkTrueV_WIRE.Checked ? 0x1 : 0) |
-                   (chkTrueV_TEX.Checked ? 0x2 : 0) |
-                   (chkTrueV_LINEAR.Checked ? 0x4 : 0) |
-                   (chkTrueV_NOCULL.Checked ? 0x4000 : 0) |
-                   (chkCullBackFacing.Checked ? 0x2000 : 0) |
-                   (chkTrueV_DEPTHTEST.Checked ? 0x8000 : 0) |
-                   (chkTrueV_DEPTHMASK.Checked ? 0x10000 : 0) |
-                   (chkTrueV_ALPHA.Checked ? 0x400 : 0) |
-                   (chkLighted.Checked ? 0x20000 : 0);
-            renderStateValues = (renderStateValues & invMaskFull) | mask;
-            
-            EditedPModel.Hundrets[SelectedGroup].field_8 = changeRenderStateValues;
-            EditedPModel.Hundrets[SelectedGroup].field_C = renderStateValues;
+            mask = (chkV_WIREFRAME_OPTION.Checked ? 0x1 : 0) |
+                   (chkV_TEXTURE_OPTION.Checked ? 0x2 : 0) |
+                   (chkV_LINEARFILTER_OPTION.Checked ? 0x4 : 0) |
+                   (chkV_NOCULL_OPTION.Checked ? 0x4000 : 0) |
+                   (chkV_CULLFACE_CullFrontFace.Checked ? 0x2000 : 0) |
+                   (chkV_DEPTHTEST_OPTION.Checked ? 0x8000 : 0) |
+                   (chkV_DEPTHMASK_OPTION.Checked ? 0x10000 : 0) |
+                   (chkV_ALPHABLEND_OPTION.Checked ? 0x400 : 0) |
+                   (chkV_SHADEMODE_Lighted.Checked ? 0x20000 : 0);
+            iOptions = (iOptions & invMaskFull) | mask;
+
+            EditedPModel.Hundrets[SelectedGroup].field_C = iFeatures;
+            EditedPModel.Hundrets[SelectedGroup].field_8 = iOptions;
 
             // We have to Refresh Group List (in case we changed some TexID)
             frmPEdit.FillGroupsList();
