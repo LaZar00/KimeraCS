@@ -739,11 +739,12 @@ namespace KimeraCS
                         break;
 
                     case K_AA_SKELETON:
-                        if (!bSkeleton.IsBattleLocation)
-                        {
-                            ComputeBattleBoundingBox(bSkeleton, bAnimationsPack.SkeletonAnimations[ianimIndex].frames[iCurrentFrameScroll],
-                                                     ref p_min, ref p_max);
-                        }
+                    case K_MAGIC_SKELETON:
+                        //if (!bSkeleton.IsBattleLocation)
+                        //{
+                        ComputeBattleBoundingBox(bSkeleton, bAnimationsPack.SkeletonAnimations[ianimIndex].frames[iCurrentFrameScroll],
+                                                 ref p_min, ref p_max);
+                        //}
                         break;
 
                     case K_P_FIELD_MODEL:
