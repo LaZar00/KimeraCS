@@ -43,6 +43,8 @@ namespace KimeraCS
             this.redoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.unselectGroupToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
+            this.ResetCameraToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.mergeGroupsIntoOneToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mergeGroupsIntoOnenotTexturedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -62,6 +64,7 @@ namespace KimeraCS
             this.deleteAllPolysnotSelectedColorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.killPrecalculatedLightningToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.chkVertexColor = new System.Windows.Forms.CheckBox();
             this.gbColorEditor = new System.Windows.Forms.GroupBox();
             this.pbPaletteColor = new System.Windows.Forms.PictureBox();
             this.btnResetBrightness = new System.Windows.Forms.Button();
@@ -253,6 +256,8 @@ namespace KimeraCS
             this.redoToolStripMenuItem,
             this.toolStripSeparator4,
             this.unselectGroupToolStripMenuItem,
+            this.toolStripSeparator6,
+            this.ResetCameraToolStripMenuItem,
             this.toolStripSeparator5,
             this.mergeGroupsIntoOneToolStripMenuItem,
             this.mergeGroupsIntoOnenotTexturedToolStripMenuItem});
@@ -286,9 +291,23 @@ namespace KimeraCS
             // unselectGroupToolStripMenuItem
             // 
             this.unselectGroupToolStripMenuItem.Name = "unselectGroupToolStripMenuItem";
+            this.unselectGroupToolStripMenuItem.ShortcutKeyDisplayString = "Q";
             this.unselectGroupToolStripMenuItem.Size = new System.Drawing.Size(277, 22);
             this.unselectGroupToolStripMenuItem.Text = "Unselect group";
             this.unselectGroupToolStripMenuItem.Click += new System.EventHandler(this.UnselectGroupToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator6
+            // 
+            this.toolStripSeparator6.Name = "toolStripSeparator6";
+            this.toolStripSeparator6.Size = new System.Drawing.Size(274, 6);
+            // 
+            // ResetCameraToolStripMenuItem
+            // 
+            this.ResetCameraToolStripMenuItem.Name = "ResetCameraToolStripMenuItem";
+            this.ResetCameraToolStripMenuItem.ShortcutKeyDisplayString = "CTRL+Home";
+            this.ResetCameraToolStripMenuItem.Size = new System.Drawing.Size(277, 22);
+            this.ResetCameraToolStripMenuItem.Text = "Reset Camera";
+            this.ResetCameraToolStripMenuItem.Click += new System.EventHandler(this.ResetCameraToolStripMenuItem_Click);
             // 
             // toolStripSeparator5
             // 
@@ -433,6 +452,7 @@ namespace KimeraCS
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.panel1.Controls.Add(this.chkVertexColor);
             this.panel1.Controls.Add(this.gbColorEditor);
             this.panel1.Controls.Add(this.btnCommitChanges);
             this.panel1.Controls.Add(this.chkShowAxes);
@@ -443,6 +463,17 @@ namespace KimeraCS
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(158, 523);
             this.panel1.TabIndex = 1;
+            // 
+            // chkVertexColor
+            // 
+            this.chkVertexColor.ForeColor = System.Drawing.SystemColors.Control;
+            this.chkVertexColor.Location = new System.Drawing.Point(88, 119);
+            this.chkVertexColor.Margin = new System.Windows.Forms.Padding(2);
+            this.chkVertexColor.Name = "chkVertexColor";
+            this.chkVertexColor.Size = new System.Drawing.Size(60, 32);
+            this.chkVertexColor.TabIndex = 29;
+            this.chkVertexColor.Text = "Vertex color";
+            this.chkVertexColor.UseVisualStyleBackColor = true;
             // 
             // gbColorEditor
             // 
@@ -705,7 +736,7 @@ namespace KimeraCS
             this.chkShowAxes.Checked = true;
             this.chkShowAxes.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkShowAxes.ForeColor = System.Drawing.SystemColors.Control;
-            this.chkShowAxes.Location = new System.Drawing.Point(40, 121);
+            this.chkShowAxes.Location = new System.Drawing.Point(8, 123);
             this.chkShowAxes.Margin = new System.Windows.Forms.Padding(2);
             this.chkShowAxes.Name = "chkShowAxes";
             this.chkShowAxes.Size = new System.Drawing.Size(93, 24);
@@ -1855,5 +1886,8 @@ namespace KimeraCS
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
         private System.Windows.Forms.ToolStripMenuItem mergeGroupsIntoOneToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem mergeGroupsIntoOnenotTexturedToolStripMenuItem;
+        public System.Windows.Forms.CheckBox chkVertexColor;
+        private System.Windows.Forms.ToolStripMenuItem ResetCameraToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
     }
 }

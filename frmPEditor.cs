@@ -167,11 +167,21 @@ namespace KimeraCS
         public void SetOGLEditorSettings()
         {
             glClearDepth(1.0f);
-            glDepthFunc(GLFunc.GL_LEQUAL);
+
             glEnable(GLCapability.GL_DEPTH_TEST);
-            glEnable(GLCapability.GL_BLEND);
+            glDepthFunc(GLFunc.GL_LEQUAL);
+
+            SetBlendMode(BLEND_MODE.BLEND_NONE);
+
+            glCullFace(GLFace.GL_FRONT);
+            glEnable(GLCapability.GL_CULL_FACE);
+
             glEnable(GLCapability.GL_ALPHA_TEST);
-            glBlendFunc(GLBlendFuncFactor.GL_SRC_ALPHA, GLBlendFuncFactor.GL_ONE_MINUS_SRC_ALPHA);
+            glAlphaFunc(GLFunc.GL_GREATER, 0);
+
+            //glEnable(GLCapability.GL_BLEND);
+            //glBlendFunc(GLBlendFuncFactor.GL_SRC_ALPHA, GLBlendFuncFactor.GL_ONE_MINUS_SRC_ALPHA);
+
         }
         /////////////////////////////////////////////////////////////
 
@@ -220,6 +230,7 @@ namespace KimeraCS
                 // Assign this if visible
                 isizeWindowWidthPE = this.Size.Width;
                 isizeWindowHeightPE = this.Size.Height;
+
                 WriteCFGFile();
             }
         }
@@ -476,16 +487,21 @@ namespace KimeraCS
 
                 SetOGLEditorSettings();
 
+                glViewport(0, 0, panelEditorPModel.ClientRectangle.Width,
+                                 panelEditorPModel.ClientRectangle.Height);
+                ClearPanel();
+                //SetDefaultOGLRenderState();
+
                 DrawPModelEditor(chkEnableLighting.Checked, panelEditorPModel);
 
-                SetOGLEditorSettings();
+                //SetDefaultOGLRenderState();
 
                 if (chkShowPlane.Checked) DrawPlane(ref planeTransformation, ref planeOriginalPoint1,
                                                                              ref planeOriginalPoint2,
                                                                              ref planeOriginalPoint3,
                                                                              ref planeOriginalPoint4);
 
-                if (chkShowAxes.Checked) DrawAxes(panelEditorPModel);
+                if (chkShowAxes.Checked) DrawAxesPE(panelEditorPModel);
 
                 glFlush();
                 SwapBuffers(panelEditorPModelDC);
@@ -1533,7 +1549,7 @@ namespace KimeraCS
 
                             CommitContextualizedPChanges(false);
 
-                            ResetCamera();
+                            ResetCameraPE();
                             ResetPlane();
 
                             PanelEditorPModel_Paint(null, null);
@@ -1972,6 +1988,9 @@ namespace KimeraCS
             else this.Location = new Point(iwindowPosXPE, iwindowPosYPE);
 
             if (WindowState == FormWindowState.Minimized) WindowState = FormWindowState.Normal;
+
+            // Define CTRL+Home shortcut for reset camera feature ("Home" key is not present in my visual studio notebook? is a VS bug?
+            ResetCameraToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.Home;
 
             // Scale for different magnitudes when model is from battle location
             if (bSkeleton.IsBattleLocation) fBattleLocationGroupScale = F_BATTLELOCATION_SCALE;
@@ -2455,6 +2474,13 @@ namespace KimeraCS
             }
         }
 
+        private void ResetCameraToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ResetCameraPE();
+
+            PanelEditorPModel_Paint(null, null);
+        }
+
         private void CutModelToolStripMenuItem_Click(object sender, EventArgs e)
         {
             List<Point3D> knownPlaneVPoints = new List<Point3D>();
@@ -2742,7 +2768,7 @@ namespace KimeraCS
             loadedPModel = true;
 
             // Reset global things of environment
-            ResetCamera();
+            ResetCameraPE();
             ResetPlane();
         }
 
@@ -2857,6 +2883,9 @@ namespace KimeraCS
             CopyModelColors2VP(EditedPModel, ref vcolorsOriginal, ref pcolorsOriginal);
             FillColorTable(EditedPModel, ref colorTable, 
                            ref translationTableVertex, ref translationTablePolys, iThreshold);
+
+            // Header flags
+            chkVertexColor.Checked = EditedPModel.Header.vertexColor == 1;
         }
 
         public void FillGroupsList()
@@ -2879,7 +2908,7 @@ namespace KimeraCS
             }
         }
 
-        public void ResetCamera()
+        public void ResetCameraPE()
         {
             Point3D p_min = new Point3D();
             Point3D p_max = new Point3D();
@@ -3069,6 +3098,9 @@ namespace KimeraCS
             repGroupYPE = 0;
             repGroupZPE = 0;
             loadingModifiersQ = false;
+
+            // Header flags
+            EditedPModel.Header.vertexColor = chkVertexColor.Checked ? 1 : 0;
 
             CopyModelColors2VP(EditedPModel, ref vcolorsOriginal, ref pcolorsOriginal);
             FillColorTable(EditedPModel, ref colorTable,
