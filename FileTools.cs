@@ -65,6 +65,7 @@ namespace KimeraCS
 
         public static bool bAdjust3DSImport;
         public static int iPEFilterIdx;
+        public static bool bShowAxesSkeletonWindow;
 
         public static List<STCharLGPRegister> lstCharLGPRegisters;
         public static List<STBattleLGPRegister> lstBattleEnemiesLGPRegisters;
@@ -159,6 +160,8 @@ namespace KimeraCS
 
             lstCFGKeys.Add("ADJUST_3DS_IMPORT", "");
             lstCFGKeys.Add("PELOAD_3DS_FILTER_INDEX", "");
+
+            lstCFGKeys.Add("SHOW_AXES_SKELETON_WINDOW", "");
         }
 
 
@@ -240,6 +243,8 @@ namespace KimeraCS
 
                 if (!bool.TryParse(lstCFGKeys["ADJUST_3DS_IMPORT"].ToString(), out bAdjust3DSImport)) bAdjust3DSImport = false;
                 if (!Int32.TryParse(lstCFGKeys["PELOAD_3DS_FILTER_INDEX"].ToString(), out iPEFilterIdx)) iPEFilterIdx = -1;
+
+                if (!bool.TryParse(lstCFGKeys["SHOW_AXES_SKELETON_WINDOW"].ToString(), out bShowAxesSkeletonWindow)) bShowAxesSkeletonWindow = false;
             }
         }
 
@@ -295,6 +300,8 @@ namespace KimeraCS
 
             lstCFGKeys["ADJUST_3DS_IMPORT"] = bAdjust3DSImport.ToString();
             lstCFGKeys["PELOAD_3DS_FILTER_INDEX"] = iPEFilterIdx.ToString();
+
+            lstCFGKeys["SHOW_AXES_SKELETON_WINDOW"] = bShowAxesSkeletonWindow.ToString();
 
             // Write Kimera.cfg
             var orderedCFGKeys = lstCFGKeys.Keys.Cast<string>().OrderBy(c => c);
