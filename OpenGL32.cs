@@ -99,7 +99,7 @@ namespace KimeraCS
         }
 
         [Flags()]
-        public enum GL_Boolean : uint
+        public enum GL_Boolean : byte
         {
             GL_TRUE = 1,
             GL_FALSE = 0,
@@ -1608,6 +1608,7 @@ namespace KimeraCS
         //[DllImport(DLLName)]
         //public static extern void glColorMask(byte red, byte green, byte blue, byte alpha);
         [DllImport(DLLName, EntryPoint = "glColorMask")]
+        //public static extern void glColorMask(byte red, byte green, byte blue, byte alpha);
         public static extern void glColorMask([MarshalAs(UnmanagedType.I1)] GL_Boolean red, [MarshalAs(UnmanagedType.I1)] GL_Boolean green,
                                               [MarshalAs(UnmanagedType.I1)] GL_Boolean blue, [MarshalAs(UnmanagedType.I1)] GL_Boolean alpha);
 

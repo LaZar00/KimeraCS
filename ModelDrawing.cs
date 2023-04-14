@@ -1524,6 +1524,8 @@ namespace KimeraCS
             ground_radius = CalculateDistance(p_min_aux, p_max_aux) / 2;
 
             // Draw Shadow
+            SetBlendMode(BLEND_MODE.BLEND_AVG);
+
             numSegments = 20;
             glBegin(GLDrawMode.GL_TRIANGLE_FAN);
                 glColor4f(0.1f, 0.1f, 0.1f, 0.5f);
