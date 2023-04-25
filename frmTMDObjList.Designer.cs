@@ -36,6 +36,7 @@ namespace KimeraCS
             this.btnCommitPModel = new System.Windows.Forms.Button();
             this.btnSaveTMD = new System.Windows.Forms.Button();
             this.saveFile = new System.Windows.Forms.SaveFileDialog();
+            this.cbConvertToFloat = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // lbTMDObjectList
@@ -44,13 +45,13 @@ namespace KimeraCS
             this.lbTMDObjectList.Location = new System.Drawing.Point(4, 3);
             this.lbTMDObjectList.Name = "lbTMDObjectList";
             this.lbTMDObjectList.Size = new System.Drawing.Size(98, 355);
-            this.lbTMDObjectList.TabIndex = 0;            
+            this.lbTMDObjectList.TabIndex = 0;
             this.lbTMDObjectList.DoubleClick += new System.EventHandler(this.LbTMDObjectList_DoubleClick);
             // 
             // btnClose
             // 
             this.btnClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnClose.Location = new System.Drawing.Point(4, 417);
+            this.btnClose.Location = new System.Drawing.Point(4, 438);
             this.btnClose.Name = "btnClose";
             this.btnClose.Size = new System.Drawing.Size(98, 20);
             this.btnClose.TabIndex = 4;
@@ -60,7 +61,7 @@ namespace KimeraCS
             // 
             // btnSaveLog
             // 
-            this.btnSaveLog.Location = new System.Drawing.Point(4, 398);
+            this.btnSaveLog.Location = new System.Drawing.Point(4, 419);
             this.btnSaveLog.Name = "btnSaveLog";
             this.btnSaveLog.Size = new System.Drawing.Size(98, 20);
             this.btnSaveLog.TabIndex = 3;
@@ -71,7 +72,7 @@ namespace KimeraCS
             // btnCommitPModel
             // 
             this.btnCommitPModel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCommitPModel.Location = new System.Drawing.Point(4, 360);
+            this.btnCommitPModel.Location = new System.Drawing.Point(4, 381);
             this.btnCommitPModel.Name = "btnCommitPModel";
             this.btnCommitPModel.Size = new System.Drawing.Size(98, 20);
             this.btnCommitPModel.TabIndex = 1;
@@ -81,7 +82,7 @@ namespace KimeraCS
             // 
             // btnSaveTMD
             // 
-            this.btnSaveTMD.Location = new System.Drawing.Point(4, 379);
+            this.btnSaveTMD.Location = new System.Drawing.Point(4, 400);
             this.btnSaveTMD.Name = "btnSaveTMD";
             this.btnSaveTMD.Size = new System.Drawing.Size(98, 20);
             this.btnSaveTMD.TabIndex = 2;
@@ -89,13 +90,26 @@ namespace KimeraCS
             this.btnSaveTMD.UseVisualStyleBackColor = true;
             this.btnSaveTMD.Click += new System.EventHandler(this.BtnSaveTMD_Click);
             // 
-            // frmTMDObjList
+            // cbConvertToFloat
+            // 
+            this.cbConvertToFloat.AutoSize = true;
+            this.cbConvertToFloat.ForeColor = System.Drawing.SystemColors.Control;
+            this.cbConvertToFloat.Location = new System.Drawing.Point(5, 362);
+            this.cbConvertToFloat.Name = "cbConvertToFloat";
+            this.cbConvertToFloat.Size = new System.Drawing.Size(101, 17);
+            this.cbConvertToFloat.TabIndex = 5;
+            this.cbConvertToFloat.Text = "Convert to Float";
+            this.cbConvertToFloat.UseVisualStyleBackColor = true;
+            this.cbConvertToFloat.CheckedChanged += new System.EventHandler(this.cbConvertToFloat_CheckedChanged);
+            // 
+            // FrmTMDObjList
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.CancelButton = this.btnClose;
-            this.ClientSize = new System.Drawing.Size(106, 441);
+            this.ClientSize = new System.Drawing.Size(106, 459);
+            this.Controls.Add(this.cbConvertToFloat);
             this.Controls.Add(this.btnSaveTMD);
             this.Controls.Add(this.btnCommitPModel);
             this.Controls.Add(this.btnSaveLog);
@@ -107,12 +121,13 @@ namespace KimeraCS
             this.Margin = new System.Windows.Forms.Padding(2);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "frmTMDObjList";
+            this.Name = "FrmTMDObjList";
             this.ShowInTaskbar = false;
             this.Text = "TMD Obj List";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FrmTMDObjList_FormClosing);
             this.Load += new System.EventHandler(this.FrmTMDObjList_Load);
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -124,5 +139,6 @@ namespace KimeraCS
         private System.Windows.Forms.Button btnCommitPModel;
         private System.Windows.Forms.Button btnSaveTMD;
         private System.Windows.Forms.SaveFileDialog saveFile;
+        private System.Windows.Forms.CheckBox cbConvertToFloat;
     }
 }

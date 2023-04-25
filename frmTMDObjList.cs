@@ -34,12 +34,20 @@ namespace KimeraCS
             Owner = frmSkelEdit;
         }
 
-        private void FrmTMDObjList_Load(object sender, EventArgs e)
+        public void RepositionTMD()
         {
             Location = new Point(Owner.Location.X + Owner.Width - Width,
                                  Owner.Location.Y + Owner.Height - Height);
+        }
+
+        private void FrmTMDObjList_Load(object sender, EventArgs e)
+        {
+            RepositionTMD();
 
             lbTMDObjectList.SelectedIndex = 0;
+
+            if (bConverted2Float) cbConvertToFloat.Checked = true;
+            else cbConvertToFloat.Checked = false;
         }
 
         private void BtnClose_Click(object sender, EventArgs e)
@@ -199,6 +207,16 @@ namespace KimeraCS
 
                 LbTMDObjectList_DoubleClick(lbTMDObjectList, EventArgs.Empty);
             }
+        }
+
+        private void cbConvertToFloat_CheckedChanged(object sender, EventArgs e)
+        {
+            bConverted2Float = cbConvertToFloat.Checked;
+
+            if (bConverted2Float) mTMDModel.TMDHeader.version = 0xFF;
+            else mTMDModel.TMDHeader.flags = 0x41;
+
+            RecalculateOffsets();
         }
     }
 }
