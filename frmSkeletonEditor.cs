@@ -57,7 +57,7 @@ namespace KimeraCS
     public partial class FrmSkeletonEditor : Form
     {
 
-        public const string STR_APPNAME = "KimeraCS 1.8t";
+        public const string STR_APPNAME = "KimeraCS 1.8w";
 
         public static int modelWidth;
         public static int modelHeight;
@@ -401,6 +401,8 @@ namespace KimeraCS
             else this.Location = new Point(iwindowPosX, iwindowPosY);
 
             Import3DSFixingPositionToolStripMenuItem.Checked = bAdjust3DSImport;
+            DontCheckDuplicatedPolysVertsToolStripMenuItem.Checked = bDontCheckRepairPolys;
+
             ShowAxesToolStripMenuItem.Checked = bShowAxesSkeletonWindow;
 
             // Undo/Redo feature
@@ -544,6 +546,9 @@ namespace KimeraCS
             if (Application.OpenForms.Count > 0)
             {
                 if (Application.OpenForms[0].WindowState == FormWindowState.Minimized) return;
+
+                // Reposition TMD Object Window List if it is opened
+                if (IsTMDModel) frmTMDOL.RepositionTMD();
 
                 // We can redraw the model in panel
                 panelModel.Update();
@@ -6900,6 +6905,13 @@ namespace KimeraCS
             WriteCFGFile();
 
             PanelModel_Paint(null, null);
+        }
+
+        private void DontCheckRepeatedPolysVertsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            bDontCheckRepairPolys = DontCheckDuplicatedPolysVertsToolStripMenuItem.Checked;
+
+            WriteCFGFile();
         }
 
         public void UpdateBones(string strBoneSelected)

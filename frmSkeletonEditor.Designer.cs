@@ -153,6 +153,7 @@ namespace KimeraCS
             this.saveSkeletonAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator9 = new System.Windows.Forms.ToolStripSeparator();
             this.Import3DSFixingPositionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.DontCheckDuplicatedPolysVertsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.extiToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
@@ -1631,6 +1632,7 @@ namespace KimeraCS
             this.saveSkeletonAsToolStripMenuItem,
             this.toolStripSeparator9,
             this.Import3DSFixingPositionToolStripMenuItem,
+            this.DontCheckDuplicatedPolysVertsToolStripMenuItem,
             this.toolStripSeparator2,
             this.extiToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
@@ -1640,56 +1642,56 @@ namespace KimeraCS
             // loadFieldSkeletonToolStripMenuItem
             // 
             this.loadFieldSkeletonToolStripMenuItem.Name = "loadFieldSkeletonToolStripMenuItem";
-            this.loadFieldSkeletonToolStripMenuItem.Size = new System.Drawing.Size(236, 22);
+            this.loadFieldSkeletonToolStripMenuItem.Size = new System.Drawing.Size(260, 22);
             this.loadFieldSkeletonToolStripMenuItem.Text = "Load Field/World Skeleton";
             this.loadFieldSkeletonToolStripMenuItem.Click += new System.EventHandler(this.LoadFieldSkeletonToolStripMenuItem_Click);
             // 
             // loadBattleMagicSkeletonToolStripMenuItem
             // 
             this.loadBattleMagicSkeletonToolStripMenuItem.Name = "loadBattleMagicSkeletonToolStripMenuItem";
-            this.loadBattleMagicSkeletonToolStripMenuItem.Size = new System.Drawing.Size(236, 22);
+            this.loadBattleMagicSkeletonToolStripMenuItem.Size = new System.Drawing.Size(260, 22);
             this.loadBattleMagicSkeletonToolStripMenuItem.Text = "Load Battle/Magic Skeleton";
             this.loadBattleMagicSkeletonToolStripMenuItem.Click += new System.EventHandler(this.LoadBattleMagicSkeletonToolStripMenuItem_Click);
             // 
             // loadRSDResourceToolStripMenuItem
             // 
             this.loadRSDResourceToolStripMenuItem.Name = "loadRSDResourceToolStripMenuItem";
-            this.loadRSDResourceToolStripMenuItem.Size = new System.Drawing.Size(236, 22);
+            this.loadRSDResourceToolStripMenuItem.Size = new System.Drawing.Size(260, 22);
             this.loadRSDResourceToolStripMenuItem.Text = "Load RSD Resource";
             this.loadRSDResourceToolStripMenuItem.Click += new System.EventHandler(this.LoadRSDResourceToolStripMenuItem_Click);
             // 
             // loadPModelToolStripMenuItem
             // 
             this.loadPModelToolStripMenuItem.Name = "loadPModelToolStripMenuItem";
-            this.loadPModelToolStripMenuItem.Size = new System.Drawing.Size(236, 22);
+            this.loadPModelToolStripMenuItem.Size = new System.Drawing.Size(260, 22);
             this.loadPModelToolStripMenuItem.Text = "Load P Model";
             this.loadPModelToolStripMenuItem.Click += new System.EventHandler(this.LoadPModelToolStripMenuItem_Click);
             // 
             // load3DSToolStripMenuItem
             // 
             this.load3DSToolStripMenuItem.Name = "load3DSToolStripMenuItem";
-            this.load3DSToolStripMenuItem.Size = new System.Drawing.Size(236, 22);
+            this.load3DSToolStripMenuItem.Size = new System.Drawing.Size(260, 22);
             this.load3DSToolStripMenuItem.Text = "Load 3DS";
             this.load3DSToolStripMenuItem.Click += new System.EventHandler(this.Load3DSToolStripMenuItem_Click);
             // 
             // loadTMDToolStripMenuItem
             // 
             this.loadTMDToolStripMenuItem.Name = "loadTMDToolStripMenuItem";
-            this.loadTMDToolStripMenuItem.Size = new System.Drawing.Size(236, 22);
+            this.loadTMDToolStripMenuItem.Size = new System.Drawing.Size(260, 22);
             this.loadTMDToolStripMenuItem.Text = "Load TMD";
             this.loadTMDToolStripMenuItem.Click += new System.EventHandler(this.LoadTMDToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(233, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(257, 6);
             // 
             // saveSkeletonToolStripMenuItem
             // 
             this.saveSkeletonToolStripMenuItem.Enabled = false;
             this.saveSkeletonToolStripMenuItem.Name = "saveSkeletonToolStripMenuItem";
             this.saveSkeletonToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.saveSkeletonToolStripMenuItem.Size = new System.Drawing.Size(236, 22);
+            this.saveSkeletonToolStripMenuItem.Size = new System.Drawing.Size(260, 22);
             this.saveSkeletonToolStripMenuItem.Text = "Save Skeleton";
             this.saveSkeletonToolStripMenuItem.Click += new System.EventHandler(this.SaveSkeletonToolStripMenuItem_Click);
             // 
@@ -1697,32 +1699,40 @@ namespace KimeraCS
             // 
             this.saveSkeletonAsToolStripMenuItem.Enabled = false;
             this.saveSkeletonAsToolStripMenuItem.Name = "saveSkeletonAsToolStripMenuItem";
-            this.saveSkeletonAsToolStripMenuItem.Size = new System.Drawing.Size(236, 22);
+            this.saveSkeletonAsToolStripMenuItem.Size = new System.Drawing.Size(260, 22);
             this.saveSkeletonAsToolStripMenuItem.Text = "Save Skeleton/RSD/Model As...";
             this.saveSkeletonAsToolStripMenuItem.Click += new System.EventHandler(this.SaveSkeletonAsToolStripMenuItem_Click);
             // 
             // toolStripSeparator9
             // 
             this.toolStripSeparator9.Name = "toolStripSeparator9";
-            this.toolStripSeparator9.Size = new System.Drawing.Size(233, 6);
+            this.toolStripSeparator9.Size = new System.Drawing.Size(257, 6);
             // 
             // Import3DSFixingPositionToolStripMenuItem
             // 
             this.Import3DSFixingPositionToolStripMenuItem.CheckOnClick = true;
             this.Import3DSFixingPositionToolStripMenuItem.Name = "Import3DSFixingPositionToolStripMenuItem";
-            this.Import3DSFixingPositionToolStripMenuItem.Size = new System.Drawing.Size(236, 22);
+            this.Import3DSFixingPositionToolStripMenuItem.Size = new System.Drawing.Size(260, 22);
             this.Import3DSFixingPositionToolStripMenuItem.Text = "Fix position of .3DS on import";
             this.Import3DSFixingPositionToolStripMenuItem.Click += new System.EventHandler(this.Import3DSFixingPositionToolStripMenuItem_Click);
+            // 
+            // DontCheckDuplicatedPolysVertsToolStripMenuItem
+            // 
+            this.DontCheckDuplicatedPolysVertsToolStripMenuItem.CheckOnClick = true;
+            this.DontCheckDuplicatedPolysVertsToolStripMenuItem.Name = "DontCheckDuplicatedPolysVertsToolStripMenuItem";
+            this.DontCheckDuplicatedPolysVertsToolStripMenuItem.Size = new System.Drawing.Size(260, 22);
+            this.DontCheckDuplicatedPolysVertsToolStripMenuItem.Text = "Don\'t Check Duplicated Polys/Verts";
+            this.DontCheckDuplicatedPolysVertsToolStripMenuItem.Click += new System.EventHandler(this.DontCheckRepeatedPolysVertsToolStripMenuItem_Click);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(233, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(257, 6);
             // 
             // extiToolStripMenuItem
             // 
             this.extiToolStripMenuItem.Name = "extiToolStripMenuItem";
-            this.extiToolStripMenuItem.Size = new System.Drawing.Size(236, 22);
+            this.extiToolStripMenuItem.Size = new System.Drawing.Size(260, 22);
             this.extiToolStripMenuItem.Text = "Exit";
             this.extiToolStripMenuItem.Click += new System.EventHandler(this.ExitToolStripMenuItem_Click);
             // 
@@ -2450,6 +2460,7 @@ namespace KimeraCS
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator11;
         private System.Windows.Forms.ToolStripMenuItem ShowAxesToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator10;
+        private System.Windows.Forms.ToolStripMenuItem DontCheckDuplicatedPolysVertsToolStripMenuItem;
     }
 }
 
