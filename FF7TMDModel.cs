@@ -269,7 +269,7 @@ namespace KimeraCS
         // TMD Main structs
         public struct TMD_HEADER
         {
-            public int id;                 //  version of TMD. Always 0x00000041
+            public int version;                 //  version of TMD. Always 0x00000041
             public int flags;              //  Indicates when addresses are relative or explicit
             public int nObjects;           //  number of objects in the TMD
         }
@@ -288,6 +288,10 @@ namespace KimeraCS
             public short vy;               //  y value of the vertex
             public short vz;               //  z value of the vertex
             public short pad;              //  ignore
+
+            public float fvx;              //  x value (float) of the vertex
+            public float fvy;              //  y value (float) of the vertex
+            public float fvz;              //  z value (float) of the vertex
         }
 
         public struct TMD_NORMAL
@@ -333,6 +337,8 @@ namespace KimeraCS
             public TMD_HEADER TMDHeader;
             public TMD_OBJECT[] TMDObjectList;
         }
+
+        public static bool bConverted2Float;
 
         public static void LoadTMDModel(ref TMDModel mTMDModel, string strTMDFolder, string strTMDFileName)
         {
@@ -419,14 +425,20 @@ namespace KimeraCS
             {
                 using (var memReader = new BinaryReader(fileMemory))
                 {
-                    TMDHeader.id = memReader.ReadInt32();
+                    TMDHeader.version = memReader.ReadInt32();
 
-                    if (TMDHeader.id != 0x41)
+                    // Let's use for our own purposes the version variable:
+                    // 0x41 - vanilla model (with vertex coordinates as shorts)
+                    // 0xFF - converted 2 float model (with vertex coordinates as floats)
+                    if (TMDHeader.version != 0x41 && TMDHeader.version != 0xFF)
                     {
                         MessageBox.Show("The file header of the TMD file " + fileName + " is not correct.",
                                         "Error");
                         return 0;
                     }
+
+                    if (TMDHeader.version == 0xFF) bConverted2Float = true;
+                    else bConverted2Float = false;
 
                     TMDHeader.flags = memReader.ReadInt32();
                     TMDHeader.nObjects = memReader.ReadInt32();
@@ -557,13 +569,34 @@ namespace KimeraCS
                 {
                     memReader.BaseStream.Position = pos;
 
-                    for (i = 0; i < numVerts; i++)
+                    if (bConverted2Float)
                     {
-                        TMDVertexList[i].vx = memReader.ReadInt16();
-                        TMDVertexList[i].vy = memReader.ReadInt16();
-                        TMDVertexList[i].vz = memReader.ReadInt16();
-                        TMDVertexList[i].pad = memReader.ReadInt16();
-                    }    
+                        for (i = 0; i < numVerts; i++)
+                        {
+                            TMDVertexList[i].fvx = memReader.ReadSingle();
+                            TMDVertexList[i].fvy = memReader.ReadSingle();
+                            TMDVertexList[i].fvz = memReader.ReadSingle();
+                            TMDVertexList[i].pad = memReader.ReadInt16();
+
+                            TMDVertexList[i].vx = (short)TMDVertexList[i].fvx;
+                            TMDVertexList[i].vy = (short)TMDVertexList[i].fvy;
+                            TMDVertexList[i].vz = (short)TMDVertexList[i].fvz;
+                        }
+                    }
+                    else
+                    {
+                        for (i = 0; i < numVerts; i++)
+                        {
+                            TMDVertexList[i].vx = memReader.ReadInt16();
+                            TMDVertexList[i].vy = memReader.ReadInt16();
+                            TMDVertexList[i].vz = memReader.ReadInt16();
+                            TMDVertexList[i].pad = memReader.ReadInt16();
+
+                            TMDVertexList[i].fvx = (float)Math.Round((double)TMDVertexList[i].vx, 6);
+                            TMDVertexList[i].fvy = (float)Math.Round((double)TMDVertexList[i].vy, 6);
+                            TMDVertexList[i].fvz = (float)Math.Round((double)TMDVertexList[i].vz, 6);
+                        }
+                    }
                 }
             }
         }
@@ -634,6 +667,43 @@ namespace KimeraCS
             return iVertexIdx;
         }
 
+        private static int FindVertexIdxByColorVArrayf(byte inR, byte inG, byte inB, Color[] vcolorsV,
+                                                       float inX, float inY, float inZ,
+                                                       Point3D[] vertsV, int mode)
+        {
+            int iVertexIdx = -1, iCountColor;
+            bool bFound = false;
+
+            // We have to find the vertex + RGB Index
+            iCountColor = 0;
+            while (iCountColor < vcolorsV.Length && !bFound)
+            {
+                switch (mode)
+                {
+                    case 0x31:
+                        if (inR == vcolorsV[iCountColor].R &&
+                            inG == vcolorsV[iCountColor].G &&
+                            inB == vcolorsV[iCountColor].B &&
+                            vertsV[iCountColor].x == inX &&
+                            vertsV[iCountColor].y == inY &&
+                            vertsV[iCountColor].z == inZ)
+                        {
+                            bFound = true;
+                            iVertexIdx = iCountColor;
+                        }
+                        else iCountColor++;
+
+                        break;
+
+                    default:
+
+                        break;
+                }
+            }
+
+            return iVertexIdx;
+        }
+
         public static bool TMDHasTextureUVs(TMD_PRIMITIVE_HEADER inPrimHdr)
         {
             bool bHasTexture = false;
@@ -662,12 +732,25 @@ namespace KimeraCS
             vertsV = new Point3D[TMDVertices.Length];
             vcolorsV = new Color[TMDVertices.Length];
 
-            for (iVertIdx = 0; iVertIdx < TMDVertices.Length; iVertIdx++)
+            if (bConverted2Float)
             {
-                vertsV[iVertIdx].x = TMDVertices[iVertIdx].vx;
-                vertsV[iVertIdx].y = TMDVertices[iVertIdx].vy;
-                vertsV[iVertIdx].z = TMDVertices[iVertIdx].vz;
+                for (iVertIdx = 0; iVertIdx < TMDVertices.Length; iVertIdx++)
+                {
+                    vertsV[iVertIdx].x = TMDVertices[iVertIdx].fvx;
+                    vertsV[iVertIdx].y = TMDVertices[iVertIdx].fvy;
+                    vertsV[iVertIdx].z = TMDVertices[iVertIdx].fvz;
+                }
             }
+            else
+            {
+                for (iVertIdx = 0; iVertIdx < TMDVertices.Length; iVertIdx++)
+                {
+                    vertsV[iVertIdx].x = TMDVertices[iVertIdx].vx;
+                    vertsV[iVertIdx].y = TMDVertices[iVertIdx].vy;
+                    vertsV[iVertIdx].z = TMDVertices[iVertIdx].vz;
+                }
+            }
+
 
             for (iVColorIdx = 0; iVColorIdx < TMDVertices.Length; iVColorIdx++)
                 vcolorsV[iVColorIdx] = Color.FromArgb(128, 255, 255, 255);
@@ -770,16 +853,33 @@ namespace KimeraCS
                             }
                             else
                             {
-                                iFoundColorVArray = 
-                                    FindVertexIdxByColorVArray(TMDPrimitivePackets[iPolyIdx].tmd3nsgp.R0,
-                                                               TMDPrimitivePackets[iPolyIdx].tmd3nsgp.G0,
-                                                               TMDPrimitivePackets[iPolyIdx].tmd3nsgp.B0,
-                                                               vcolorsV,
-                                                               TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex0].vx,
-                                                               TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex0].vy,
-                                                               TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex0].vz,
-                                                               vertsV,
-                                                               TMDPrimitiveHeaders[iPolyIdx].mode);
+                                if (bConverted2Float)
+                                {
+                                    iFoundColorVArray =
+                                        FindVertexIdxByColorVArrayf(TMDPrimitivePackets[iPolyIdx].tmd3nsgp.R0,
+                                                                    TMDPrimitivePackets[iPolyIdx].tmd3nsgp.G0,
+                                                                    TMDPrimitivePackets[iPolyIdx].tmd3nsgp.B0,
+                                                                    vcolorsV,
+                                                                    TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex0].fvx,
+                                                                    TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex0].fvy,
+                                                                    TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex0].fvz,
+                                                                    vertsV,
+                                                                    TMDPrimitiveHeaders[iPolyIdx].mode);
+                                }
+                                else
+                                {
+                                    iFoundColorVArray =
+                                        FindVertexIdxByColorVArray(TMDPrimitivePackets[iPolyIdx].tmd3nsgp.R0,
+                                                                   TMDPrimitivePackets[iPolyIdx].tmd3nsgp.G0,
+                                                                   TMDPrimitivePackets[iPolyIdx].tmd3nsgp.B0,
+                                                                   vcolorsV,
+                                                                   TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex0].vx,
+                                                                   TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex0].vy,
+                                                                   TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex0].vz,
+                                                                   vertsV,
+                                                                   TMDPrimitiveHeaders[iPolyIdx].mode);
+                                }
+
 
                                 if (iFoundColorVArray == -1)
                                 {
@@ -788,12 +888,25 @@ namespace KimeraCS
 
                                     // Add vertex to P Model vertex array
                                     Array.Resize(ref vertsV, vertsV.Length + 1);
-                                    vertsV[vertsV.Length - 1].x = 
-                                        TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex0].vx;
-                                    vertsV[vertsV.Length - 1].y = 
-                                        TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex0].vy;
-                                    vertsV[vertsV.Length - 1].z = 
-                                        TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex0].vz;
+
+                                    if (bConverted2Float)
+                                    {
+                                        vertsV[vertsV.Length - 1].x =
+                                            TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex0].fvx;
+                                        vertsV[vertsV.Length - 1].y =
+                                            TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex0].fvy;
+                                        vertsV[vertsV.Length - 1].z =
+                                            TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex0].fvz;
+                                    }
+                                    else
+                                    {
+                                        vertsV[vertsV.Length - 1].x =
+                                            TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex0].vx;
+                                        vertsV[vertsV.Length - 1].y =
+                                            TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex0].vy;
+                                        vertsV[vertsV.Length - 1].z =
+                                            TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex0].vz;
+                                    }
 
                                     // Add color to P Model vertices color array
                                     Array.Resize(ref vcolorsV, vcolorsV.Length + 1);
@@ -836,15 +949,33 @@ namespace KimeraCS
                             }
                             else
                             {
-                                iFoundColorVArray = 
-                                    FindVertexIdxByColorVArray(TMDPrimitivePackets[iPolyIdx].tmd3nsgp.R1,
-                                                               TMDPrimitivePackets[iPolyIdx].tmd3nsgp.G1,
-                                                               TMDPrimitivePackets[iPolyIdx].tmd3nsgp.B1,
-                                                               vcolorsV,
-                                                               TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex1].vx,
-                                                               TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex1].vy,
-                                                               TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex1].vz,
-                                                               vertsV, TMDPrimitiveHeaders[iPolyIdx].mode);
+                                if (bConverted2Float)
+                                {
+                                    iFoundColorVArray =
+                                        FindVertexIdxByColorVArrayf(TMDPrimitivePackets[iPolyIdx].tmd3nsgp.R0,
+                                                                    TMDPrimitivePackets[iPolyIdx].tmd3nsgp.G0,
+                                                                    TMDPrimitivePackets[iPolyIdx].tmd3nsgp.B0,
+                                                                    vcolorsV,
+                                                                    TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex1].fvx,
+                                                                    TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex1].fvy,
+                                                                    TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex1].fvz,
+                                                                    vertsV,
+                                                                    TMDPrimitiveHeaders[iPolyIdx].mode);
+                                }
+                                else
+                                {
+                                    iFoundColorVArray =
+                                        FindVertexIdxByColorVArray(TMDPrimitivePackets[iPolyIdx].tmd3nsgp.R0,
+                                                                   TMDPrimitivePackets[iPolyIdx].tmd3nsgp.G0,
+                                                                   TMDPrimitivePackets[iPolyIdx].tmd3nsgp.B0,
+                                                                   vcolorsV,
+                                                                   TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex1].vx,
+                                                                   TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex1].vy,
+                                                                   TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex1].vz,
+                                                                   vertsV,
+                                                                   TMDPrimitiveHeaders[iPolyIdx].mode);
+                                }
+
 
                                 if (iFoundColorVArray == -1)
                                 {
@@ -853,12 +984,25 @@ namespace KimeraCS
 
                                     // Add vertex to P Model vertex array
                                     Array.Resize(ref vertsV, vertsV.Length + 1);
-                                    vertsV[vertsV.Length - 1].x = 
-                                        TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex1].vx;
-                                    vertsV[vertsV.Length - 1].y = 
-                                        TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex1].vy;
-                                    vertsV[vertsV.Length - 1].z = 
-                                        TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex1].vz;
+                                    if (bConverted2Float)
+                                    {
+                                        vertsV[vertsV.Length - 1].x =
+                                            TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex1].fvx;
+                                        vertsV[vertsV.Length - 1].y =
+                                            TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex1].fvy;
+                                        vertsV[vertsV.Length - 1].z =
+                                            TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex1].fvz;
+                                    }
+                                    else
+                                    {
+                                        vertsV[vertsV.Length - 1].x =
+                                            TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex1].vx;
+                                        vertsV[vertsV.Length - 1].y =
+                                            TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex1].vy;
+                                        vertsV[vertsV.Length - 1].z =
+                                            TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex1].vz;
+                                    }
+
 
                                     // Add color to P Model vertices color array
                                     Array.Resize(ref vcolorsV, vcolorsV.Length + 1);
@@ -901,15 +1045,32 @@ namespace KimeraCS
                             }
                             else
                             {
-                                iFoundColorVArray = 
-                                    FindVertexIdxByColorVArray(TMDPrimitivePackets[iPolyIdx].tmd3nsgp.R2,
-                                                               TMDPrimitivePackets[iPolyIdx].tmd3nsgp.G2,
-                                                               TMDPrimitivePackets[iPolyIdx].tmd3nsgp.B2,
-                                                               vcolorsV,
-                                                               TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex2].vx,
-                                                               TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex2].vy,
-                                                               TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex2].vz,
-                                                               vertsV, TMDPrimitiveHeaders[iPolyIdx].mode);
+                                if (bConverted2Float)
+                                {
+                                    iFoundColorVArray =
+                                        FindVertexIdxByColorVArrayf(TMDPrimitivePackets[iPolyIdx].tmd3nsgp.R0,
+                                                                    TMDPrimitivePackets[iPolyIdx].tmd3nsgp.G0,
+                                                                    TMDPrimitivePackets[iPolyIdx].tmd3nsgp.B0,
+                                                                    vcolorsV,
+                                                                    TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex2].fvx,
+                                                                    TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex2].fvy,
+                                                                    TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex2].fvz,
+                                                                    vertsV,
+                                                                    TMDPrimitiveHeaders[iPolyIdx].mode);
+                                }
+                                else
+                                {
+                                    iFoundColorVArray =
+                                        FindVertexIdxByColorVArray(TMDPrimitivePackets[iPolyIdx].tmd3nsgp.R0,
+                                                                   TMDPrimitivePackets[iPolyIdx].tmd3nsgp.G0,
+                                                                   TMDPrimitivePackets[iPolyIdx].tmd3nsgp.B0,
+                                                                   vcolorsV,
+                                                                   TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex2].vx,
+                                                                   TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex2].vy,
+                                                                   TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex2].vz,
+                                                                   vertsV,
+                                                                   TMDPrimitiveHeaders[iPolyIdx].mode);
+                                }
 
                                 if (iFoundColorVArray == -1)
                                 {
@@ -918,12 +1079,25 @@ namespace KimeraCS
 
                                     // Add vertex to P Model vertex array
                                     Array.Resize(ref vertsV, vertsV.Length + 1);
-                                    vertsV[vertsV.Length - 1].x = 
-                                        TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex2].vx;
-                                    vertsV[vertsV.Length - 1].y = 
-                                        TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex2].vy;
-                                    vertsV[vertsV.Length - 1].z = 
-                                        TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex2].vz;
+                                    if (bConverted2Float)
+                                    {
+                                        vertsV[vertsV.Length - 1].x =
+                                            TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex2].fvx;
+                                        vertsV[vertsV.Length - 1].y =
+                                            TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex2].fvy;
+                                        vertsV[vertsV.Length - 1].z =
+                                            TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex2].fvz;
+                                    }
+                                    else
+                                    {
+                                        vertsV[vertsV.Length - 1].x =
+                                            TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex2].vx;
+                                        vertsV[vertsV.Length - 1].y =
+                                            TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex2].vy;
+                                        vertsV[vertsV.Length - 1].z =
+                                            TMDVertices[TMDPrimitivePackets[iPolyIdx].tmd3nsgp.Vertex2].vz;
+                                    }
+
 
                                     // Add color to P Model vertices color array
                                     Array.Resize(ref vcolorsV, vcolorsV.Length + 1);
@@ -940,7 +1114,6 @@ namespace KimeraCS
                         }
 
                         facesV[iPolyIdx].Verts[2] = usVertex;
-
 
                         pcolorsV[iPolyIdx] = Color.FromArgb(255,
                                                       (TMDPrimitivePackets[iPolyIdx].tmd3nsgp.R0 + 
@@ -1008,14 +1181,28 @@ namespace KimeraCS
         {
             bool bIsVertexDuplicated = false;
             int iCounter = 0;
-            
-            while (iCounter < inVertex.Length && !bIsVertexDuplicated)
+
+            if (bConverted2Float)
             {
-                if (inVertex[iCounter].vx == (short)Math.Round(tmpP3D.x) &&
-                    inVertex[iCounter].vy == (short)Math.Round(tmpP3D.y) &&
-                    inVertex[iCounter].vz == (short)Math.Round(tmpP3D.z))
-                    bIsVertexDuplicated = true;
-                else iCounter++;
+                while (iCounter < inVertex.Length && !bIsVertexDuplicated)
+                {
+                    if (inVertex[iCounter].fvx == tmpP3D.x &&
+                        inVertex[iCounter].fvy == tmpP3D.y &&
+                        inVertex[iCounter].fvz == tmpP3D.z)
+                        bIsVertexDuplicated = true;
+                    else iCounter++;
+                }
+            }
+            else
+            {
+                while (iCounter < inVertex.Length && !bIsVertexDuplicated)
+                {
+                    if (inVertex[iCounter].vx == (short)Math.Round(tmpP3D.x) &&
+                        inVertex[iCounter].vy == (short)Math.Round(tmpP3D.y) &&
+                        inVertex[iCounter].vz == (short)Math.Round(tmpP3D.z))
+                        bIsVertexDuplicated = true;
+                    else iCounter++;
+                }
             }
 
             if (!bIsVertexDuplicated) iCounter = -1;
@@ -1027,14 +1214,29 @@ namespace KimeraCS
             ushort iGetVertexIndexResult = 0;
             bool bFound = false;
 
-            while (iGetVertexIndexResult < inVertex.Length && !bFound)
+            if (bConverted2Float)
             {
-                if (inVertex[iGetVertexIndexResult].vx == (short)Math.Round(inP3D.x) &&
-                    inVertex[iGetVertexIndexResult].vy == (short)Math.Round(inP3D.y) &&
-                    inVertex[iGetVertexIndexResult].vz == (short)Math.Round(inP3D.z))
-                    bFound = true;
-                else iGetVertexIndexResult++;
+                while (iGetVertexIndexResult < inVertex.Length && !bFound)
+                {
+                    if (inVertex[iGetVertexIndexResult].fvx == inP3D.x &&
+                        inVertex[iGetVertexIndexResult].fvy == inP3D.y &&
+                        inVertex[iGetVertexIndexResult].fvz == inP3D.z)
+                        bFound = true;
+                    else iGetVertexIndexResult++;
+                }
             }
+            else
+            {
+                while (iGetVertexIndexResult < inVertex.Length && !bFound)
+                {
+                    if (inVertex[iGetVertexIndexResult].vx == (short)Math.Round(inP3D.x) &&
+                        inVertex[iGetVertexIndexResult].vy == (short)Math.Round(inP3D.y) &&
+                        inVertex[iGetVertexIndexResult].vz == (short)Math.Round(inP3D.z))
+                        bFound = true;
+                    else iGetVertexIndexResult++;
+                }
+            }
+
 
             // This should not happen
             if (iGetVertexIndexResult >= inVertex.Length)
@@ -1042,6 +1244,7 @@ namespace KimeraCS
 
             return iGetVertexIndexResult;
         }
+
 
         public static void ConvertPModel2TMD(PModel inPModel, int iModelIdx)
         {
@@ -1086,8 +1289,12 @@ namespace KimeraCS
 
                     newTMDObj.TMDVertexList[newTMDObj.TMDVertexList.Length - 1].vx = (short)Math.Round(itmP3D.x);
                     newTMDObj.TMDVertexList[newTMDObj.TMDVertexList.Length - 1].vy = (short)Math.Round(itmP3D.y);
-                    newTMDObj.TMDVertexList[newTMDObj.TMDVertexList.Length - 1].vz = (short)Math.Round(itmP3D.z);
+                    newTMDObj.TMDVertexList[newTMDObj.TMDVertexList.Length - 1].vz = (short)Math.Round(itmP3D.z);                   
                     newTMDObj.TMDVertexList[newTMDObj.TMDVertexList.Length - 1].pad = 0;
+
+                    newTMDObj.TMDVertexList[newTMDObj.TMDVertexList.Length - 1].fvx = itmP3D.x;
+                    newTMDObj.TMDVertexList[newTMDObj.TMDVertexList.Length - 1].fvy = itmP3D.y;
+                    newTMDObj.TMDVertexList[newTMDObj.TMDVertexList.Length - 1].fvz = itmP3D.z;
                 }
                 //else
                 //{
@@ -1206,7 +1413,10 @@ namespace KimeraCS
                 mTMDModel.TMDObjectList[iCounter].offsetVerts = iSizeAccum;
 
                 // Accumulate the Primitive Header + Packet sizes for next Primitive
-                iSizeAccum += mTMDModel.TMDObjectList[iCounter].nVerts * 8;
+                if (bConverted2Float)
+                    iSizeAccum += mTMDModel.TMDObjectList[iCounter].nVerts * 14;
+                else
+                    iSizeAccum += mTMDModel.TMDObjectList[iCounter].nVerts * 8;
             }
 
             // Recalculate Normals offsets
@@ -1221,6 +1431,56 @@ namespace KimeraCS
             // Check vertex winding of the object polys
             MessageBox.Show("The P Model has been converted to TMD Object.", "Info");
         }
+
+        public static void RecalculateOffsets()
+        {
+            int iCounter, iSizeAccum;
+
+            // Recalculate Primitives offsets
+            iSizeAccum = mTMDModel.TMDHeader.nObjects * 28;      // Offset for: Objects Table
+
+            for (iCounter = 0; iCounter < mTMDModel.TMDHeader.nObjects; iCounter++)
+            {
+
+                mTMDModel.TMDObjectList[iCounter].offsetPrimitives = iSizeAccum;
+
+                iSizeAccum += mTMDModel.TMDObjectList[iCounter].TMDPrimitiveList.Length * 4;
+
+                switch (mTMDModel.TMDObjectList[iCounter].TMDPrimitiveList[0].mode)
+                {
+                    case 0x25:
+                        iSizeAccum += mTMDModel.TMDObjectList[iCounter].TMDPrimitiveListPacket.Length * 24;
+                        break;
+
+                    case 0x31:
+                        iSizeAccum += mTMDModel.TMDObjectList[iCounter].TMDPrimitiveListPacket.Length * 20;
+                        break;
+                }
+
+            }
+
+            // Recalculate Vertex offsets
+            for (iCounter = 0; iCounter < mTMDModel.TMDHeader.nObjects; iCounter++)
+            {
+                mTMDModel.TMDObjectList[iCounter].offsetVerts = iSizeAccum;
+
+                // Accumulate the Primitive Header + Packet sizes for next Primitive
+                if (bConverted2Float)
+                    iSizeAccum += mTMDModel.TMDObjectList[iCounter].nVerts * 14;
+                else
+                    iSizeAccum += mTMDModel.TMDObjectList[iCounter].nVerts * 8;
+            }
+
+            // Recalculate Normals offsets
+            for (iCounter = 0; iCounter < mTMDModel.TMDHeader.nObjects; iCounter++)
+            {
+                mTMDModel.TMDObjectList[iCounter].offsetNormals = iSizeAccum;
+
+                // Accumulate the Primitive Header + Packet sizes for next Primitive
+                iSizeAccum += mTMDModel.TMDObjectList[iCounter].nNormals * 8;
+            }
+        }
+
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////
@@ -1239,7 +1499,7 @@ namespace KimeraCS
                     using (BinaryWriter binWriter = new BinaryWriter(memWriteStream))
                     {
                         // Write Header
-                        binWriter.Write(mTMDModel.TMDHeader.id);
+                        binWriter.Write(mTMDModel.TMDHeader.version);
                         binWriter.Write(mTMDModel.TMDHeader.flags);
                         binWriter.Write(mTMDModel.TMDHeader.nObjects);
 
@@ -1335,14 +1595,29 @@ namespace KimeraCS
                         {
                             if (itmTMDObj.TMDVertexList.Length > 0)
                             {
-                                foreach (TMD_VERTEX itmTMDVert in itmTMDObj.TMDVertexList)
+                                if (bConverted2Float)
                                 {
-                                    binWriter.Write(itmTMDVert.vx);
-                                    binWriter.Write(itmTMDVert.vy);
-                                    binWriter.Write(itmTMDVert.vz);
-                                    binWriter.Write(itmTMDVert.pad);
+                                    foreach (TMD_VERTEX itmTMDVert in itmTMDObj.TMDVertexList)
+                                    {
+                                        binWriter.Write(itmTMDVert.fvx);
+                                        binWriter.Write(itmTMDVert.fvy);
+                                        binWriter.Write(itmTMDVert.fvz);
+                                        binWriter.Write(itmTMDVert.pad);
 
-                                    iStreamSize += 8;
+                                        iStreamSize += 14;
+                                    }
+                                }
+                                else
+                                {
+                                    foreach (TMD_VERTEX itmTMDVert in itmTMDObj.TMDVertexList)
+                                    {
+                                        binWriter.Write(itmTMDVert.vx);
+                                        binWriter.Write(itmTMDVert.vy);
+                                        binWriter.Write(itmTMDVert.vz);
+                                        binWriter.Write(itmTMDVert.pad);
+
+                                        iStreamSize += 8;
+                                    }
                                 }
                             }
                         }
@@ -1394,7 +1669,7 @@ namespace KimeraCS
             try
             {
                 // Write TMD header
-                strTMDLOG.AppendLine("ID: 0x" + String.Format("{0:X}", mTMDModel.TMDHeader.id) + "    " +
+                strTMDLOG.AppendLine("Version: 0x" + String.Format("{0:X}", mTMDModel.TMDHeader.version) + "    " +
                                      "Flag: " + mTMDModel.TMDHeader.flags.ToString() + "    " +
                                      "Num. Objects: " + mTMDModel.TMDHeader.nObjects.ToString("000"));
                 strTMDLOG.AppendLine("");
@@ -1475,15 +1750,30 @@ namespace KimeraCS
                                                      "V1: " + mTMDModel.TMDObjectList[iCountObj].TMDPrimitiveListPacket[iCountPrim].tmd3txnsfp.Vertex1.ToString("00000") + "   " +
                                                      "V2: " + mTMDModel.TMDObjectList[iCountObj].TMDPrimitiveListPacket[iCountPrim].tmd3txnsfp.Vertex2.ToString("00000"));
 
-                                strTMDLOG.AppendLine("Vertex0->   X: " + mTMDModel.TMDObjectList[iCountObj].TMDVertexList[mTMDModel.TMDObjectList[iCountObj].TMDPrimitiveListPacket[iCountPrim].tmd3txnsfp.Vertex0].vx.ToString(CultureInfo.InvariantCulture.NumberFormat) + "   " +
-                                                     "Y: " + mTMDModel.TMDObjectList[iCountObj].TMDVertexList[mTMDModel.TMDObjectList[iCountObj].TMDPrimitiveListPacket[iCountPrim].tmd3txnsfp.Vertex0].vy.ToString(CultureInfo.InvariantCulture.NumberFormat) + "   " +
-                                                     "Z: " + mTMDModel.TMDObjectList[iCountObj].TMDVertexList[mTMDModel.TMDObjectList[iCountObj].TMDPrimitiveListPacket[iCountPrim].tmd3txnsfp.Vertex0].vz.ToString(CultureInfo.InvariantCulture.NumberFormat));
-                                strTMDLOG.AppendLine("Vertex1->   X: " + mTMDModel.TMDObjectList[iCountObj].TMDVertexList[mTMDModel.TMDObjectList[iCountObj].TMDPrimitiveListPacket[iCountPrim].tmd3txnsfp.Vertex1].vx.ToString(CultureInfo.InvariantCulture.NumberFormat) + "   " +
-                                                     "Y: " + mTMDModel.TMDObjectList[iCountObj].TMDVertexList[mTMDModel.TMDObjectList[iCountObj].TMDPrimitiveListPacket[iCountPrim].tmd3txnsfp.Vertex1].vy.ToString(CultureInfo.InvariantCulture.NumberFormat) + "   " +
-                                                     "Z: " + mTMDModel.TMDObjectList[iCountObj].TMDVertexList[mTMDModel.TMDObjectList[iCountObj].TMDPrimitiveListPacket[iCountPrim].tmd3txnsfp.Vertex1].vz.ToString(CultureInfo.InvariantCulture.NumberFormat));
-                                strTMDLOG.AppendLine("Vertex2->   X: " + mTMDModel.TMDObjectList[iCountObj].TMDVertexList[mTMDModel.TMDObjectList[iCountObj].TMDPrimitiveListPacket[iCountPrim].tmd3txnsfp.Vertex2].vx.ToString(CultureInfo.InvariantCulture.NumberFormat) + "   " +
-                                                     "Y: " + mTMDModel.TMDObjectList[iCountObj].TMDVertexList[mTMDModel.TMDObjectList[iCountObj].TMDPrimitiveListPacket[iCountPrim].tmd3txnsfp.Vertex2].vy.ToString(CultureInfo.InvariantCulture.NumberFormat) + "   " +
-                                                     "Z: " + mTMDModel.TMDObjectList[iCountObj].TMDVertexList[mTMDModel.TMDObjectList[iCountObj].TMDPrimitiveListPacket[iCountPrim].tmd3txnsfp.Vertex2].vz.ToString(CultureInfo.InvariantCulture.NumberFormat));
+                                if (bConverted2Float)
+                                {
+                                    strTMDLOG.AppendLine("Vertex0->   X: " + mTMDModel.TMDObjectList[iCountObj].TMDVertexList[mTMDModel.TMDObjectList[iCountObj].TMDPrimitiveListPacket[iCountPrim].tmd3txnsfp.Vertex0].fvx.ToString(CultureInfo.InvariantCulture.NumberFormat) + "   " +
+                                                         "Y: " + mTMDModel.TMDObjectList[iCountObj].TMDVertexList[mTMDModel.TMDObjectList[iCountObj].TMDPrimitiveListPacket[iCountPrim].tmd3txnsfp.Vertex0].fvy.ToString(CultureInfo.InvariantCulture.NumberFormat) + "   " +
+                                                         "Z: " + mTMDModel.TMDObjectList[iCountObj].TMDVertexList[mTMDModel.TMDObjectList[iCountObj].TMDPrimitiveListPacket[iCountPrim].tmd3txnsfp.Vertex0].fvz.ToString(CultureInfo.InvariantCulture.NumberFormat));
+                                    strTMDLOG.AppendLine("Vertex1->   X: " + mTMDModel.TMDObjectList[iCountObj].TMDVertexList[mTMDModel.TMDObjectList[iCountObj].TMDPrimitiveListPacket[iCountPrim].tmd3txnsfp.Vertex1].fvx.ToString(CultureInfo.InvariantCulture.NumberFormat) + "   " +
+                                                         "Y: " + mTMDModel.TMDObjectList[iCountObj].TMDVertexList[mTMDModel.TMDObjectList[iCountObj].TMDPrimitiveListPacket[iCountPrim].tmd3txnsfp.Vertex1].fvy.ToString(CultureInfo.InvariantCulture.NumberFormat) + "   " +
+                                                         "Z: " + mTMDModel.TMDObjectList[iCountObj].TMDVertexList[mTMDModel.TMDObjectList[iCountObj].TMDPrimitiveListPacket[iCountPrim].tmd3txnsfp.Vertex1].fvz.ToString(CultureInfo.InvariantCulture.NumberFormat));
+                                    strTMDLOG.AppendLine("Vertex2->   X: " + mTMDModel.TMDObjectList[iCountObj].TMDVertexList[mTMDModel.TMDObjectList[iCountObj].TMDPrimitiveListPacket[iCountPrim].tmd3txnsfp.Vertex2].fvx.ToString(CultureInfo.InvariantCulture.NumberFormat) + "   " +
+                                                         "Y: " + mTMDModel.TMDObjectList[iCountObj].TMDVertexList[mTMDModel.TMDObjectList[iCountObj].TMDPrimitiveListPacket[iCountPrim].tmd3txnsfp.Vertex2].fvy.ToString(CultureInfo.InvariantCulture.NumberFormat) + "   " +
+                                                         "Z: " + mTMDModel.TMDObjectList[iCountObj].TMDVertexList[mTMDModel.TMDObjectList[iCountObj].TMDPrimitiveListPacket[iCountPrim].tmd3txnsfp.Vertex2].fvz.ToString(CultureInfo.InvariantCulture.NumberFormat));
+                                }
+                                else
+                                {
+                                    strTMDLOG.AppendLine("Vertex0->   X: " + mTMDModel.TMDObjectList[iCountObj].TMDVertexList[mTMDModel.TMDObjectList[iCountObj].TMDPrimitiveListPacket[iCountPrim].tmd3txnsfp.Vertex0].vx.ToString(CultureInfo.InvariantCulture.NumberFormat) + "   " +
+                                                         "Y: " + mTMDModel.TMDObjectList[iCountObj].TMDVertexList[mTMDModel.TMDObjectList[iCountObj].TMDPrimitiveListPacket[iCountPrim].tmd3txnsfp.Vertex0].vy.ToString(CultureInfo.InvariantCulture.NumberFormat) + "   " +
+                                                         "Z: " + mTMDModel.TMDObjectList[iCountObj].TMDVertexList[mTMDModel.TMDObjectList[iCountObj].TMDPrimitiveListPacket[iCountPrim].tmd3txnsfp.Vertex0].vz.ToString(CultureInfo.InvariantCulture.NumberFormat));
+                                    strTMDLOG.AppendLine("Vertex1->   X: " + mTMDModel.TMDObjectList[iCountObj].TMDVertexList[mTMDModel.TMDObjectList[iCountObj].TMDPrimitiveListPacket[iCountPrim].tmd3txnsfp.Vertex1].vx.ToString(CultureInfo.InvariantCulture.NumberFormat) + "   " +
+                                                         "Y: " + mTMDModel.TMDObjectList[iCountObj].TMDVertexList[mTMDModel.TMDObjectList[iCountObj].TMDPrimitiveListPacket[iCountPrim].tmd3txnsfp.Vertex1].vy.ToString(CultureInfo.InvariantCulture.NumberFormat) + "   " +
+                                                         "Z: " + mTMDModel.TMDObjectList[iCountObj].TMDVertexList[mTMDModel.TMDObjectList[iCountObj].TMDPrimitiveListPacket[iCountPrim].tmd3txnsfp.Vertex1].vz.ToString(CultureInfo.InvariantCulture.NumberFormat));
+                                    strTMDLOG.AppendLine("Vertex2->   X: " + mTMDModel.TMDObjectList[iCountObj].TMDVertexList[mTMDModel.TMDObjectList[iCountObj].TMDPrimitiveListPacket[iCountPrim].tmd3txnsfp.Vertex2].vx.ToString(CultureInfo.InvariantCulture.NumberFormat) + "   " +
+                                                         "Y: " + mTMDModel.TMDObjectList[iCountObj].TMDVertexList[mTMDModel.TMDObjectList[iCountObj].TMDPrimitiveListPacket[iCountPrim].tmd3txnsfp.Vertex2].vy.ToString(CultureInfo.InvariantCulture.NumberFormat) + "   " +
+                                                         "Z: " + mTMDModel.TMDObjectList[iCountObj].TMDVertexList[mTMDModel.TMDObjectList[iCountObj].TMDPrimitiveListPacket[iCountPrim].tmd3txnsfp.Vertex2].vz.ToString(CultureInfo.InvariantCulture.NumberFormat));
+                                }
 
                                 strTMDLOG.AppendLine("TexCoord0->   U: " + mTMDModel.TMDObjectList[iCountObj].TMDPrimitiveListPacket[iCountPrim].tmd3txnsfp.U0.ToString("00000") + "   " +
                                                      "V: " + mTMDModel.TMDObjectList[iCountObj].TMDPrimitiveListPacket[iCountPrim].tmd3txnsfp.V0.ToString("00000"));
@@ -1511,15 +1801,30 @@ namespace KimeraCS
                                                      "V1: " + mTMDModel.TMDObjectList[iCountObj].TMDPrimitiveListPacket[iCountPrim].tmd3nsgp.Vertex1.ToString("00000") + "   " +
                                                      "V2: " + mTMDModel.TMDObjectList[iCountObj].TMDPrimitiveListPacket[iCountPrim].tmd3nsgp.Vertex2.ToString("00000"));
 
-                                strTMDLOG.AppendLine("Vertex0->   X: " + mTMDModel.TMDObjectList[iCountObj].TMDVertexList[mTMDModel.TMDObjectList[iCountObj].TMDPrimitiveListPacket[iCountPrim].tmd3nsgp.Vertex0].vx.ToString(CultureInfo.InvariantCulture.NumberFormat) + "   " +
-                                                     "Y: " + mTMDModel.TMDObjectList[iCountObj].TMDVertexList[mTMDModel.TMDObjectList[iCountObj].TMDPrimitiveListPacket[iCountPrim].tmd3nsgp.Vertex0].vy.ToString(CultureInfo.InvariantCulture.NumberFormat) + "   " +
-                                                     "Z: " + mTMDModel.TMDObjectList[iCountObj].TMDVertexList[mTMDModel.TMDObjectList[iCountObj].TMDPrimitiveListPacket[iCountPrim].tmd3nsgp.Vertex0].vz.ToString(CultureInfo.InvariantCulture.NumberFormat));
-                                strTMDLOG.AppendLine("Vertex1->   X: " + mTMDModel.TMDObjectList[iCountObj].TMDVertexList[mTMDModel.TMDObjectList[iCountObj].TMDPrimitiveListPacket[iCountPrim].tmd3nsgp.Vertex1].vx.ToString(CultureInfo.InvariantCulture.NumberFormat) + "   " +
-                                                     "Y: " + mTMDModel.TMDObjectList[iCountObj].TMDVertexList[mTMDModel.TMDObjectList[iCountObj].TMDPrimitiveListPacket[iCountPrim].tmd3nsgp.Vertex1].vy.ToString(CultureInfo.InvariantCulture.NumberFormat) + "   " +
-                                                     "Z: " + mTMDModel.TMDObjectList[iCountObj].TMDVertexList[mTMDModel.TMDObjectList[iCountObj].TMDPrimitiveListPacket[iCountPrim].tmd3nsgp.Vertex1].vz.ToString(CultureInfo.InvariantCulture.NumberFormat));
-                                strTMDLOG.AppendLine("Vertex2->   X: " + mTMDModel.TMDObjectList[iCountObj].TMDVertexList[mTMDModel.TMDObjectList[iCountObj].TMDPrimitiveListPacket[iCountPrim].tmd3nsgp.Vertex2].vx.ToString(CultureInfo.InvariantCulture.NumberFormat) + "   " +
-                                                     "Y: " + mTMDModel.TMDObjectList[iCountObj].TMDVertexList[mTMDModel.TMDObjectList[iCountObj].TMDPrimitiveListPacket[iCountPrim].tmd3nsgp.Vertex2].vy.ToString(CultureInfo.InvariantCulture.NumberFormat) + "   " +
-                                                     "Z: " + mTMDModel.TMDObjectList[iCountObj].TMDVertexList[mTMDModel.TMDObjectList[iCountObj].TMDPrimitiveListPacket[iCountPrim].tmd3nsgp.Vertex2].vz.ToString(CultureInfo.InvariantCulture.NumberFormat));
+                                if (bConverted2Float) 
+                                {
+                                    strTMDLOG.AppendLine("Vertex0->   X: " + mTMDModel.TMDObjectList[iCountObj].TMDVertexList[mTMDModel.TMDObjectList[iCountObj].TMDPrimitiveListPacket[iCountPrim].tmd3nsgp.Vertex0].fvx.ToString(CultureInfo.InvariantCulture.NumberFormat) + "   " +
+                                                         "Y: " + mTMDModel.TMDObjectList[iCountObj].TMDVertexList[mTMDModel.TMDObjectList[iCountObj].TMDPrimitiveListPacket[iCountPrim].tmd3nsgp.Vertex0].fvy.ToString(CultureInfo.InvariantCulture.NumberFormat) + "   " +
+                                                         "Z: " + mTMDModel.TMDObjectList[iCountObj].TMDVertexList[mTMDModel.TMDObjectList[iCountObj].TMDPrimitiveListPacket[iCountPrim].tmd3nsgp.Vertex0].fvz.ToString(CultureInfo.InvariantCulture.NumberFormat));
+                                    strTMDLOG.AppendLine("Vertex1->   X: " + mTMDModel.TMDObjectList[iCountObj].TMDVertexList[mTMDModel.TMDObjectList[iCountObj].TMDPrimitiveListPacket[iCountPrim].tmd3nsgp.Vertex1].fvx.ToString(CultureInfo.InvariantCulture.NumberFormat) + "   " +
+                                                         "Y: " + mTMDModel.TMDObjectList[iCountObj].TMDVertexList[mTMDModel.TMDObjectList[iCountObj].TMDPrimitiveListPacket[iCountPrim].tmd3nsgp.Vertex1].fvy.ToString(CultureInfo.InvariantCulture.NumberFormat) + "   " +
+                                                         "Z: " + mTMDModel.TMDObjectList[iCountObj].TMDVertexList[mTMDModel.TMDObjectList[iCountObj].TMDPrimitiveListPacket[iCountPrim].tmd3nsgp.Vertex1].fvz.ToString(CultureInfo.InvariantCulture.NumberFormat));
+                                    strTMDLOG.AppendLine("Vertex2->   X: " + mTMDModel.TMDObjectList[iCountObj].TMDVertexList[mTMDModel.TMDObjectList[iCountObj].TMDPrimitiveListPacket[iCountPrim].tmd3nsgp.Vertex2].fvx.ToString(CultureInfo.InvariantCulture.NumberFormat) + "   " +
+                                                         "Y: " + mTMDModel.TMDObjectList[iCountObj].TMDVertexList[mTMDModel.TMDObjectList[iCountObj].TMDPrimitiveListPacket[iCountPrim].tmd3nsgp.Vertex2].fvy.ToString(CultureInfo.InvariantCulture.NumberFormat) + "   " +
+                                                         "Z: " + mTMDModel.TMDObjectList[iCountObj].TMDVertexList[mTMDModel.TMDObjectList[iCountObj].TMDPrimitiveListPacket[iCountPrim].tmd3nsgp.Vertex2].fvz.ToString(CultureInfo.InvariantCulture.NumberFormat));
+                                }
+                                else
+                                {
+                                    strTMDLOG.AppendLine("Vertex0->   X: " + mTMDModel.TMDObjectList[iCountObj].TMDVertexList[mTMDModel.TMDObjectList[iCountObj].TMDPrimitiveListPacket[iCountPrim].tmd3nsgp.Vertex0].vx.ToString(CultureInfo.InvariantCulture.NumberFormat) + "   " +
+                                                         "Y: " + mTMDModel.TMDObjectList[iCountObj].TMDVertexList[mTMDModel.TMDObjectList[iCountObj].TMDPrimitiveListPacket[iCountPrim].tmd3nsgp.Vertex0].vy.ToString(CultureInfo.InvariantCulture.NumberFormat) + "   " +
+                                                         "Z: " + mTMDModel.TMDObjectList[iCountObj].TMDVertexList[mTMDModel.TMDObjectList[iCountObj].TMDPrimitiveListPacket[iCountPrim].tmd3nsgp.Vertex0].vz.ToString(CultureInfo.InvariantCulture.NumberFormat));
+                                    strTMDLOG.AppendLine("Vertex1->   X: " + mTMDModel.TMDObjectList[iCountObj].TMDVertexList[mTMDModel.TMDObjectList[iCountObj].TMDPrimitiveListPacket[iCountPrim].tmd3nsgp.Vertex1].vx.ToString(CultureInfo.InvariantCulture.NumberFormat) + "   " +
+                                                         "Y: " + mTMDModel.TMDObjectList[iCountObj].TMDVertexList[mTMDModel.TMDObjectList[iCountObj].TMDPrimitiveListPacket[iCountPrim].tmd3nsgp.Vertex1].vy.ToString(CultureInfo.InvariantCulture.NumberFormat) + "   " +
+                                                         "Z: " + mTMDModel.TMDObjectList[iCountObj].TMDVertexList[mTMDModel.TMDObjectList[iCountObj].TMDPrimitiveListPacket[iCountPrim].tmd3nsgp.Vertex1].vz.ToString(CultureInfo.InvariantCulture.NumberFormat));
+                                    strTMDLOG.AppendLine("Vertex2->   X: " + mTMDModel.TMDObjectList[iCountObj].TMDVertexList[mTMDModel.TMDObjectList[iCountObj].TMDPrimitiveListPacket[iCountPrim].tmd3nsgp.Vertex2].vx.ToString(CultureInfo.InvariantCulture.NumberFormat) + "   " +
+                                                         "Y: " + mTMDModel.TMDObjectList[iCountObj].TMDVertexList[mTMDModel.TMDObjectList[iCountObj].TMDPrimitiveListPacket[iCountPrim].tmd3nsgp.Vertex2].vy.ToString(CultureInfo.InvariantCulture.NumberFormat) + "   " +
+                                                         "Z: " + mTMDModel.TMDObjectList[iCountObj].TMDVertexList[mTMDModel.TMDObjectList[iCountObj].TMDPrimitiveListPacket[iCountPrim].tmd3nsgp.Vertex2].vz.ToString(CultureInfo.InvariantCulture.NumberFormat));
+                                }
 
                                 break;
 
@@ -1548,6 +1853,7 @@ namespace KimeraCS
                 MessageBox.Show("Error saving the log for TMD file " + strGlobalTMDModelName + ".", "Error", MessageBoxButtons.OK);
             }
         }
+
 
 
 
