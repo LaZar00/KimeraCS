@@ -259,6 +259,7 @@ namespace KimeraCS
 
                 }
 
+
                 ////  V_NOCULL
                 if (!((Model.Hundrets[iGroupIdx].field_C & 0x4000) == 0))
                 {
@@ -272,6 +273,7 @@ namespace KimeraCS
                         glCullFace(GLFace.GL_FRONT);
                     }
                 }
+
 
                 //// V_DEPTH_TEST
                 if ((Model.Hundrets[iGroupIdx].field_C & 0x8000) != 0)
@@ -298,6 +300,7 @@ namespace KimeraCS
                         glDepthMask((byte)GL_Boolean.GL_FALSE);
                     }
                 }
+
 
                 //// V_SHADEMODE
                 if ((Model.Hundrets[iGroupIdx].field_C & 0x020000) != 0)
@@ -329,6 +332,7 @@ namespace KimeraCS
                     }
                 }
 
+
                 //// V_ALPHABLEND
                 if ((Model.Hundrets[iGroupIdx].field_C & 0x400) != 0)
                 {
@@ -349,6 +353,7 @@ namespace KimeraCS
                     else
                         SetBlendMode(BLEND_MODE.BLEND_DISABLED);
                 }
+
 
                 // This option enables somehow some few zSort order for specific Battle Stage model.
                 // So, it is possible to know if the model is well rendered or it has any flaws,
