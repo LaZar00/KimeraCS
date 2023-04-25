@@ -21,6 +21,7 @@ namespace KimeraCS
 
     using static Utils;
     using static OpenGL32;
+    using static FileTools;
 
     public class FF7PModel
     {
@@ -343,7 +344,9 @@ namespace KimeraCS
             RepairGroups(ref Model);
             AssignRealGID(ref Model);
             //CheckModelConsistency(ref Model);
-            RepairPolys(ref Model);
+
+            if (!bDontCheckRepairPolys) RepairPolys(ref Model);
+
             KillUnusedVertices(ref Model);
             ComputeBoundingBox(ref Model);
 

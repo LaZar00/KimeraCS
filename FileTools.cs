@@ -34,7 +34,7 @@ namespace KimeraCS
         //public const string YUFFIE_BATTLE_SKELETON = "RXAA";
         //public const string VINCENT_BATTLE_SKELETON = "SGAA";
 
-        //public const string FROG_BATTLE_SKELETON = "rsaa";
+        //public const string FROG_BATTLE_SKELETON = "RSAA";
         //public const string CLOUD_BATTLE_SKELETON2 = "SIAA";
         //public const string SEPHIROTH_BATTLE_SKELETON = "SAAA";
 
@@ -63,7 +63,7 @@ namespace KimeraCS
         public static bool bDBLoaded, bDBEnemiesLoaded, bDBLocationsLoaded, bDBMainPCsLoaded, 
                            bDBMagicLoaded;
 
-        public static bool bAdjust3DSImport;
+        public static bool bAdjust3DSImport, bDontCheckRepairPolys;
         public static int iPEFilterIdx;
         public static bool bShowAxesSkeletonWindow;
 
@@ -162,6 +162,7 @@ namespace KimeraCS
             lstCFGKeys.Add("PELOAD_3DS_FILTER_INDEX", "");
 
             lstCFGKeys.Add("SHOW_AXES_SKELETON_WINDOW", "");
+            lstCFGKeys.Add("DONT_CHECK_REPAIR_POLYS", "");
         }
 
 
@@ -245,6 +246,7 @@ namespace KimeraCS
                 if (!Int32.TryParse(lstCFGKeys["PELOAD_3DS_FILTER_INDEX"].ToString(), out iPEFilterIdx)) iPEFilterIdx = -1;
 
                 if (!bool.TryParse(lstCFGKeys["SHOW_AXES_SKELETON_WINDOW"].ToString(), out bShowAxesSkeletonWindow)) bShowAxesSkeletonWindow = false;
+                if (!bool.TryParse(lstCFGKeys["DONT_CHECK_REPAIR_POLYS"].ToString(), out bDontCheckRepairPolys)) bDontCheckRepairPolys = false;
             }
         }
 
@@ -302,6 +304,7 @@ namespace KimeraCS
             lstCFGKeys["PELOAD_3DS_FILTER_INDEX"] = iPEFilterIdx.ToString();
 
             lstCFGKeys["SHOW_AXES_SKELETON_WINDOW"] = bShowAxesSkeletonWindow.ToString();
+            lstCFGKeys["DONT_CHECK_REPAIR_POLYS"] = bDontCheckRepairPolys.ToString();
 
             // Write Kimera.cfg
             var orderedCFGKeys = lstCFGKeys.Keys.Cast<string>().OrderBy(c => c);
