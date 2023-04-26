@@ -60,7 +60,6 @@ namespace KimeraCS
             this.nUDFrameDataPart = new System.Windows.Forms.NumericUpDown();
             this.lblFrameOptionsPart = new System.Windows.Forms.Label();
             this.gbSelectedBoneFrame = new System.Windows.Forms.GroupBox();
-            this.txtBoneOptionsLength = new System.Windows.Forms.TextBox();
             this.btnRemovePiece = new System.Windows.Forms.Button();
             this.btnAddPiece = new System.Windows.Forms.Button();
             this.nUDBoneOptionsLength = new System.Windows.Forms.NumericUpDown();
@@ -614,7 +613,6 @@ namespace KimeraCS
             // 
             // gbSelectedBoneFrame
             // 
-            this.gbSelectedBoneFrame.Controls.Add(this.txtBoneOptionsLength);
             this.gbSelectedBoneFrame.Controls.Add(this.btnRemovePiece);
             this.gbSelectedBoneFrame.Controls.Add(this.btnAddPiece);
             this.gbSelectedBoneFrame.Controls.Add(this.nUDBoneOptionsLength);
@@ -636,15 +634,6 @@ namespace KimeraCS
             this.gbSelectedBoneFrame.TabStop = false;
             this.gbSelectedBoneFrame.Text = "Joint options";
             this.gbSelectedBoneFrame.Visible = false;
-            // 
-            // txtBoneOptionsLength
-            // 
-            this.txtBoneOptionsLength.Location = new System.Drawing.Point(46, 84);
-            this.txtBoneOptionsLength.Name = "txtBoneOptionsLength";
-            this.txtBoneOptionsLength.Size = new System.Drawing.Size(84, 20);
-            this.txtBoneOptionsLength.TabIndex = 10;
-            this.txtBoneOptionsLength.Text = "0";
-            this.txtBoneOptionsLength.TextChanged += new System.EventHandler(this.TxtBoneLength_TextChanged);
             // 
             // btnRemovePiece
             // 
@@ -675,21 +664,22 @@ namespace KimeraCS
             // nUDBoneOptionsLength
             // 
             this.nUDBoneOptionsLength.DecimalPlaces = 6;
-            this.nUDBoneOptionsLength.Location = new System.Drawing.Point(131, 84);
+            this.nUDBoneOptionsLength.Location = new System.Drawing.Point(47, 84);
             this.nUDBoneOptionsLength.Margin = new System.Windows.Forms.Padding(2);
             this.nUDBoneOptionsLength.Maximum = new decimal(new int[] {
-            999999999,
+            65536,
             0,
             0,
             0});
             this.nUDBoneOptionsLength.Minimum = new decimal(new int[] {
-            999999999,
+            65536,
             0,
             0,
             -2147483648});
             this.nUDBoneOptionsLength.Name = "nUDBoneOptionsLength";
-            this.nUDBoneOptionsLength.Size = new System.Drawing.Size(18, 20);
+            this.nUDBoneOptionsLength.Size = new System.Drawing.Size(102, 20);
             this.nUDBoneOptionsLength.TabIndex = 7;
+            this.nUDBoneOptionsLength.TextChanged += new System.EventHandler(this.NudBoneLength_TextChanged);
             this.nUDBoneOptionsLength.ValueChanged += new System.EventHandler(this.NudBoneLength_ValueChanged);
             // 
             // lblBoneOptionsLength
@@ -2399,7 +2389,6 @@ namespace KimeraCS
         private System.Windows.Forms.Button btnFrameEnd;
         private System.Windows.Forms.Button btnFrameBegin;
         private System.Windows.Forms.CheckBox btnPlayStopAnim;
-        private System.Windows.Forms.TextBox txtBoneOptionsLength;
         private System.Windows.Forms.Button btnFramePrev;
         private System.Windows.Forms.Button btnFrameNext;
         public System.Windows.Forms.TrackBar tbCurrentFrameScroll;

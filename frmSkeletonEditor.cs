@@ -57,7 +57,7 @@ namespace KimeraCS
     public partial class FrmSkeletonEditor : Form
     {
 
-        public const string STR_APPNAME = "KimeraCS 1.8w";
+        public const string STR_APPNAME = "KimeraCS 1.8y";
 
         public static int modelWidth;
         public static int modelHeight;
@@ -360,6 +360,7 @@ namespace KimeraCS
 
         private void FrmSkeletonEditor_Load(object sender, EventArgs e)
         {
+
             ReadCFGFile();
             Text = STR_APPNAME;
 
@@ -423,7 +424,9 @@ namespace KimeraCS
 
             cbBoneSelector.Items.Add("None");
 
+            // Some nUD initialization
             nUDTexUpDown = (int)nUDMoveTextureUpDown.Value;
+
 
             // Timer Play Animations
             swPlayAnimation = new Stopwatch();
@@ -478,7 +481,7 @@ namespace KimeraCS
 
             if (e.KeyCode == Keys.Escape) selectBoneForWeaponAttachmentQ = false;
 
-            if (e.KeyCode == Keys.Delete && SelectedBone > -1)
+            if (e.KeyCode == Keys.D && SelectedBone > -1)
                 btnRemovePiece.PerformClick();
 
             if (e.KeyCode == Keys.V)
@@ -631,19 +634,23 @@ namespace KimeraCS
             hsbRotateBeta.Value = 0;
             hsbRotateGamma.Value = 0;
 
+            nUDBoneOptionsLength.Value = 0;
+
             loadingBonePieceModifiersQ = false;
 
             lblBoneSelector.Visible = false;
             cbBoneSelector.Visible = false;
             cbBoneSelector.SelectedIndex = -1;
             cbBoneSelector.Items.Clear();
+            nUDBoneOptionsLength.Enabled = true;
+
             addJointToolStripMenuItem.Enabled = false;
             editJointToolStripMenuItem.Enabled = false;
+
             showNormalsToolStripMenuItem.Enabled = false;
 
             gbSelectedBoneFrame.Visible = false;
             gbTexturesFrame.Visible = false;
-            //gbTexturesFrame.Location = new Point(gbTexturesFrame.Location.X, 193);
             gbAnimationOptionsFrame.Visible = false;
 
             btnComputeGroundHeight.Visible = false;
@@ -692,7 +699,7 @@ namespace KimeraCS
 
         public void EnableWinFormsDataControls()
         {
-            int wi, ai;
+            int iWeaponIdx, iAnimIdx;
 
             // Visual controls
             switch (modelType)
@@ -778,10 +785,10 @@ namespace KimeraCS
                     gbTexturesFrame.Text = "Textures (Model)";
 
                     // Battle Weapons
-                    for (wi = 0; wi < bSkeleton.nWeapons; wi++)
+                    for (iWeaponIdx = 0; iWeaponIdx < bSkeleton.nWeapons; iWeaponIdx++)
                     {
-                        if (bSkeleton.wpModels[wi].Polys != null)
-                            cbWeapon.Items.Add(wi.ToString());
+                        if (bSkeleton.wpModels[iWeaponIdx].Polys != null)
+                            cbWeapon.Items.Add(iWeaponIdx.ToString());
                         else
                             cbWeapon.Items.Add("EMPTY");
                     }
@@ -805,11 +812,11 @@ namespace KimeraCS
                         chkShowBones.Visible = true;
 
                         // Battle Animations
-                        for (ai = 0; ai < bAnimationsPack.nbSkeletonAnims; ai++)
+                        for (iAnimIdx = 0; iAnimIdx < bAnimationsPack.nbSkeletonAnims; iAnimIdx++)
                         {
-                            if (bAnimationsPack.SkeletonAnimations[ai].numFramesShort > 0)
+                            if (bAnimationsPack.SkeletonAnimations[iAnimIdx].numFramesShort > 0)
                             {
-                                cbBattleAnimation.Items.Add(ai.ToString());
+                                cbBattleAnimation.Items.Add(iAnimIdx.ToString());
                             }
                         }
 
@@ -843,6 +850,9 @@ namespace KimeraCS
                     }
                     else
                     {
+                        // Disable Bone Length Numeric Up/Down
+                        nUDBoneOptionsLength.Enabled = false;
+
                         // Show Normals vars
                         thousandftoolStripMenuItem.PerformClick();
                     }
@@ -889,11 +899,11 @@ namespace KimeraCS
                     chkShowBones.Visible = true;
 
                     // Battle Animations
-                    for (ai = 0; ai < bAnimationsPack.nbSkeletonAnims; ai++)
+                    for (iAnimIdx = 0; iAnimIdx < bAnimationsPack.nbSkeletonAnims; iAnimIdx++)
                     {
-                        if (bAnimationsPack.SkeletonAnimations[ai].numFramesShort > 0)
+                        if (bAnimationsPack.SkeletonAnimations[iAnimIdx].numFramesShort > 0)
                         {
-                            cbBattleAnimation.Items.Add(ai.ToString());
+                            cbBattleAnimation.Items.Add(iAnimIdx.ToString());
                         }
                     }
 
@@ -1204,42 +1214,55 @@ namespace KimeraCS
                     nUDResizeBoneY.Value = (decimal)fSkeleton.bones[SelectedBone].resizeY * 100;
                     nUDResizeBoneZ.Value = (decimal)fSkeleton.bones[SelectedBone].resizeZ * 100;
 
-                    txtBoneOptionsLength.Text = fSkeleton.bones[SelectedBone].len.ToString("F7");
-                    nUDBoneOptionsLength.Value = (decimal)fSkeleton.bones[SelectedBone].len * 10000;
-                    nUDBoneOptionsLength.Increment = Math.Abs(nUDBoneOptionsLength.Value / 100);
+                    nUDBoneOptionsLength.Value = (decimal)fSkeleton.bones[SelectedBone].len;
+                    nUDBoneOptionsLength.Increment = 0.05m;
 
                     SetFrameEditorFields();
                     break;
 
                 case K_AA_SKELETON:
                 case K_MAGIC_SKELETON:
-                    if (SelectedBone == bSkeleton.nBones)
-                    {
-                        nUDResizeBoneX.Value = (decimal)bSkeleton.wpModels[cbWeapon.SelectedIndex].resizeX * 100;
-                        nUDResizeBoneY.Value = (decimal)bSkeleton.wpModels[cbWeapon.SelectedIndex].resizeY * 100;
-                        nUDResizeBoneZ.Value = (decimal)bSkeleton.wpModels[cbWeapon.SelectedIndex].resizeZ * 100;
-
-                        lblBoneOptionsLength.Visible = false;
-                        txtBoneOptionsLength.Visible = false;
-                        nUDBoneOptionsLength.Visible = false;
-                        btnAddPiece.Visible = false;
-                        btnRemovePiece.Visible = false;
-                    }
-                    else
+                    if (bSkeleton.IsBattleLocation)
                     {
                         nUDResizeBoneX.Value = (decimal)bSkeleton.bones[SelectedBone].resizeX * 100;
                         nUDResizeBoneY.Value = (decimal)bSkeleton.bones[SelectedBone].resizeY * 100;
                         nUDResizeBoneZ.Value = (decimal)bSkeleton.bones[SelectedBone].resizeZ * 100;
 
-                        txtBoneOptionsLength.Text = bSkeleton.bones[SelectedBone].len.ToString("F7");
-                        nUDBoneOptionsLength.Value = (decimal)bSkeleton.bones[SelectedBone].len * 10000;
-                        nUDBoneOptionsLength.Increment = Math.Abs(nUDBoneOptionsLength.Value / 100);
+                        nUDBoneOptionsLength.Value = (decimal)bSkeleton.bones[SelectedBone].len;
+                        nUDBoneOptionsLength.Increment = 100.0m;
 
                         lblBoneOptionsLength.Visible = true;
-                        txtBoneOptionsLength.Visible = true;
                         nUDBoneOptionsLength.Visible = true;
                         btnAddPiece.Visible = true;
                         btnRemovePiece.Visible = true;
+                    }
+                    else
+                    {
+                        if (SelectedBone == bSkeleton.nBones)
+                        {
+                            nUDResizeBoneX.Value = (decimal)bSkeleton.wpModels[cbWeapon.SelectedIndex].resizeX * 100;
+                            nUDResizeBoneY.Value = (decimal)bSkeleton.wpModels[cbWeapon.SelectedIndex].resizeY * 100;
+                            nUDResizeBoneZ.Value = (decimal)bSkeleton.wpModels[cbWeapon.SelectedIndex].resizeZ * 100;
+
+                            lblBoneOptionsLength.Visible = false;
+                            nUDBoneOptionsLength.Visible = false;
+                            btnAddPiece.Visible = false;
+                            btnRemovePiece.Visible = false;
+                        }
+                        else
+                        {
+                            nUDResizeBoneX.Value = (decimal)bSkeleton.bones[SelectedBone].resizeX * 100;
+                            nUDResizeBoneY.Value = (decimal)bSkeleton.bones[SelectedBone].resizeY * 100;
+                            nUDResizeBoneZ.Value = (decimal)bSkeleton.bones[SelectedBone].resizeZ * 100;
+
+                            nUDBoneOptionsLength.Value = (decimal)bSkeleton.bones[SelectedBone].len;
+                            nUDBoneOptionsLength.Increment = 1.0m;
+
+                            lblBoneOptionsLength.Visible = true;
+                            nUDBoneOptionsLength.Visible = true;
+                            btnAddPiece.Visible = true;
+                            btnRemovePiece.Visible = true;
+                        }
                     }
 
                     SetFrameEditorFields();
@@ -4297,9 +4320,43 @@ namespace KimeraCS
             DoNotAddStateQ = false;
         }
 
+        private void NudBoneLength_TextChanged(object sender, EventArgs e)
+        {
+
+            if (bLoaded && !loadingBonePieceModifiersQ)
+            {
+                float fOldValue = 0.0f;
+                float.TryParse(((UpDownBase)sender).Text, out float fNudBoneLengthValue);
+
+                switch (modelType)
+                {
+                    case K_HRC_SKELETON:
+                        fOldValue = (float)fSkeleton.bones[SelectedBone].len;
+                        break;
+
+                    case K_AA_SKELETON:
+                    case K_MAGIC_SKELETON:
+                        fOldValue = bSkeleton.bones[SelectedBone].len;
+                        break;
+
+                }
+
+                if (fNudBoneLengthValue > (float)nUDBoneOptionsLength.Maximum ||
+                    fNudBoneLengthValue < (float)nUDBoneOptionsLength.Minimum)
+                {
+                    ((UpDownBase)sender).Text = fOldValue.ToString("F6");
+                    return;
+                }
+                else
+                    NudBoneLength_ValueChanged(sender, e);
+
+            }
+
+        }
+
         private void NudBoneLength_ValueChanged(object sender, EventArgs e)
         {
-            if (loadingBoneModifiersQ) return;
+            if (loadingBoneModifiersQ || loadingBonePieceModifiersQ) return;
 
             if (!DoNotAddStateQ) AddStateToBuffer(this);
             DoNotAddStateQ = true;
@@ -4310,10 +4367,9 @@ namespace KimeraCS
                     FieldBone tmpfBone;
 
                     tmpfBone = fSkeleton.bones[SelectedBone];
-                    tmpfBone.len = (float)nUDBoneOptionsLength.Value / 10000;
+                    tmpfBone.len = (float)nUDBoneOptionsLength.Value;
                     fSkeleton.bones[SelectedBone] = tmpfBone;
 
-                    txtBoneOptionsLength.Text = tmpfBone.len.ToString("F7");
                     break;
 
                 case K_AA_SKELETON:
@@ -4321,24 +4377,14 @@ namespace KimeraCS
                     BattleBone bBone;
 
                     bBone = bSkeleton.bones[SelectedBone];
-                    bBone.len = (float)nUDBoneOptionsLength.Value / 10000;
+                    bBone.len = (float)nUDBoneOptionsLength.Value;
                     bSkeleton.bones[SelectedBone] = bBone;
-                    txtBoneOptionsLength.Text = bBone.len.ToString("F7");
+
                     break;
             }
 
             PanelModel_Paint(null, null);
             DoNotAddStateQ = false;
-        }
-
-        private void TxtBoneLength_TextChanged(object sender, EventArgs e)
-        {
-            if (loadingBoneModifiersQ) return;
-
-            if (float.TryParse(txtBoneOptionsLength.Text, out float fBoneLength))
-            {
-                nUDBoneOptionsLength.Value = (decimal)fBoneLength * 10000;
-            }
         }
 
         private void BtnAddPiece_Click(object sender, EventArgs e)
