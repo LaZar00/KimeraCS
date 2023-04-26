@@ -1064,7 +1064,7 @@ namespace KimeraCS
 
         public static void WriteBattleSkeleton(ref BattleSkeleton bSkeleton, string strFileName)
         {
-            int bi, wi, ti;
+            int iBoneIdx, iWeaponIdx, iTextureIdx;
             int pSuffix1, pSuffix2;
             string strBaseFileName, strFullDirectoryName;
             byte[] fileBuffer = new byte[(13 * 4) + (bSkeleton.nBones * 12)];
@@ -1099,11 +1099,11 @@ namespace KimeraCS
                     memWriter.Write(bSkeleton.unk5);
                     memWriter.Write(bSkeleton.unk6);
 
-                    for (bi = 0; bi < bSkeleton.nBones; bi++)
+                    for (iBoneIdx = 0; iBoneIdx < bSkeleton.nBones; iBoneIdx++)
                     {
-                        memWriter.Write(bSkeleton.bones[bi].parentBone);
-                        memWriter.Write(bSkeleton.bones[bi].len);
-                        memWriter.Write(bSkeleton.bones[bi].hasModel);
+                        memWriter.Write(bSkeleton.bones[iBoneIdx].parentBone);
+                        memWriter.Write(bSkeleton.bones[iBoneIdx].len);
+                        memWriter.Write(bSkeleton.bones[iBoneIdx].hasModel);
                     }
                 }
             }
@@ -1114,7 +1114,7 @@ namespace KimeraCS
             pSuffix1 = 'A';
             pSuffix2 = 'M';
 
-            for (bi = 0; bi < bSkeleton.nBones; bi++)
+            for (iBoneIdx = 0; iBoneIdx < bSkeleton.nBones; iBoneIdx++)
             {
                 if (pSuffix2 > 'Z')
                 {
@@ -1122,10 +1122,11 @@ namespace KimeraCS
                     pSuffix2 = 'A';
                 }
 
-                tmpbBone = bSkeleton.bones[bi];
-                WriteBattleBone(ref tmpbBone, strFullDirectoryName + "\\" + strBaseFileName + Convert.ToChar(pSuffix1) + 
-                                                                                              Convert.ToChar(pSuffix2));
-                bSkeleton.bones[bi] = tmpbBone;
+                tmpbBone = bSkeleton.bones[iBoneIdx];
+                WriteBattleBone(ref tmpbBone, strFullDirectoryName + "\\" + 
+                                              strBaseFileName + Convert.ToChar(pSuffix1) + 
+                                              Convert.ToChar(pSuffix2));
+                bSkeleton.bones[iBoneIdx] = tmpbBone;
 
                 pSuffix2++;
             }
@@ -1135,14 +1136,15 @@ namespace KimeraCS
             pSuffix1 = 'C';
             pSuffix2 = 'K';
 
-            for (wi = 0; wi < bSkeleton.nWeapons; wi++)
+            for (iWeaponIdx = 0; iWeaponIdx < bSkeleton.nWeapons; iWeaponIdx++)
             {
-                if (bSkeleton.wpModels[wi].Polys != null)
+                if (bSkeleton.wpModels[iWeaponIdx].Polys != null)
                 {
-                    tmpModel = bSkeleton.wpModels[wi];
-                    WriteGlobalPModel(ref tmpModel, strFullDirectoryName + "\\" + strBaseFileName + Convert.ToChar(pSuffix1) +
-                                                                                                    Convert.ToChar(pSuffix2 + wi));
-                    bSkeleton.wpModels[wi] = tmpModel;
+                    tmpModel = bSkeleton.wpModels[iWeaponIdx];
+                    WriteGlobalPModel(ref tmpModel, strFullDirectoryName + "\\" + 
+                                                    strBaseFileName + Convert.ToChar(pSuffix1) +
+                                                    Convert.ToChar(pSuffix2 + iWeaponIdx));
+                    bSkeleton.wpModels[iWeaponIdx] = tmpModel;
                 }
             }
 
@@ -1151,16 +1153,18 @@ namespace KimeraCS
             pSuffix1 = 'A';
             pSuffix2 = 'C';
 
-            for (ti = 0; ti < bSkeleton.nTextures; ti++)
+            for (iTextureIdx = 0; iTextureIdx < bSkeleton.nTextures; iTextureIdx++)
             {
-                WriteTEXTexture(bSkeleton.textures[ti], strFullDirectoryName + "\\" + strBaseFileName + Convert.ToChar(pSuffix1) + 
-                                                                                                        Convert.ToChar(pSuffix2 + ti));
+                WriteTEXTexture(bSkeleton.textures[iTextureIdx], strFullDirectoryName + "\\" + 
+                                                                 strBaseFileName + 
+                                                                 Convert.ToChar(pSuffix1) + 
+                                                                 Convert.ToChar(pSuffix2 + iTextureIdx));
             }
         }
 
         public static void WriteMagicSkeleton(ref BattleSkeleton bSkeleton, string strFileName)
         {
-            int bi, ti;
+            int iBoneIdx, iTextureIdx;
             string pSuffix, tSuffix, strBaseFileName, strFullDirectoryName;
             byte[] fileBuffer = new byte[(13 * 4) + (bSkeleton.nBones * 12)];
             BattleBone tmpbBone;
@@ -1189,11 +1193,11 @@ namespace KimeraCS
                     memWriter.Write(bSkeleton.unk5);
                     memWriter.Write(bSkeleton.unk6);
 
-                    for (bi = 0; bi < bSkeleton.nBones; bi++)
+                    for (iBoneIdx = 0; iBoneIdx < bSkeleton.nBones; iBoneIdx++)
                     {
-                        memWriter.Write(bSkeleton.bones[bi].parentBone);
-                        memWriter.Write(bSkeleton.bones[bi].len);
-                        memWriter.Write(bSkeleton.bones[bi].hasModel);
+                        memWriter.Write(bSkeleton.bones[iBoneIdx].parentBone);
+                        memWriter.Write(bSkeleton.bones[iBoneIdx].len);
+                        memWriter.Write(bSkeleton.bones[iBoneIdx].hasModel);
                     }
                 }
             }
@@ -1201,21 +1205,22 @@ namespace KimeraCS
 
 
             // Write Battle Bones files (.P??)
-            for (bi = 0; bi < bSkeleton.nBones; bi++)
+            for (iBoneIdx = 0; iBoneIdx < bSkeleton.nBones; iBoneIdx++)
             {
-                pSuffix = ".P" + bi.ToString("00");
+                pSuffix = ".P" + iBoneIdx.ToString("00");
 
-                tmpbBone = bSkeleton.bones[bi];
+                tmpbBone = bSkeleton.bones[iBoneIdx];
                 WriteBattleBone(ref tmpbBone, strFullDirectoryName + "\\" + strBaseFileName + pSuffix);
-                bSkeleton.bones[bi] = tmpbBone;
+                bSkeleton.bones[iBoneIdx] = tmpbBone;
             }
 
 
             // Write Battle Texture files (.T??)
-            for (ti = 0; ti < bSkeleton.nTextures; ti++)
+            for (iTextureIdx = 0; iTextureIdx < bSkeleton.nTextures; iTextureIdx++)
             {
-                tSuffix = ".T" + ti.ToString("00");
-                WriteTEXTexture(bSkeleton.textures[ti], strFullDirectoryName + "\\" + strBaseFileName + tSuffix);
+                tSuffix = ".T" + iTextureIdx.ToString("00");
+                WriteTEXTexture(bSkeleton.textures[iTextureIdx], strFullDirectoryName + "\\" + 
+                                                                 strBaseFileName + tSuffix);
             }
         }
 
@@ -1226,14 +1231,14 @@ namespace KimeraCS
         //  ---------------------------------------------------------------------------------------------------
         public static void DestroyBattleBoneResources(ref BattleBone bBone)
         {
-            int ri;
+            int iResourceIdx;
             PModel tmpModel;
 
-            for (ri = 0; ri < bBone.nModels; ri++)
+            for (iResourceIdx = 0; iResourceIdx < bBone.nModels; iResourceIdx++)
             {
-                tmpModel = bBone.Models[ri];
+                tmpModel = bBone.Models[iResourceIdx];
                 DestroyPModelResources(ref tmpModel);
-                bBone.Models[ri] = tmpModel;
+                bBone.Models[iResourceIdx] = tmpModel;
             }
 
             if (bBone.Models != null) bBone.Models.Clear();
@@ -1241,30 +1246,30 @@ namespace KimeraCS
 
         public static void DestroyBattleSkeleton(BattleSkeleton bSkeleton)
         {
-            int bi, ti, wi;
+            int iBoneIdx, iWeaponIdx, iTextureIdxbi;
             BattleBone tmpbBone;
             PModel tmpModel;
 
             if (bSkeleton.nBones > 0)
             {
                 // Free skeleton models
-                for (bi = 0; bi < bSkeleton.nBones; bi++)
+                for (iBoneIdx = 0; iBoneIdx < bSkeleton.nBones; iBoneIdx++)
                 {
-                    tmpbBone = bSkeleton.bones[bi];
+                    tmpbBone = bSkeleton.bones[iBoneIdx];
                     DestroyBattleBoneResources(ref tmpbBone);
-                    bSkeleton.bones[bi] = tmpbBone;
+                    bSkeleton.bones[iBoneIdx] = tmpbBone;
                 }
 
                 if (bSkeleton.bones != null) bSkeleton.bones.Clear();
 
                 // Free weapon models
-                for (wi = 0; wi < bSkeleton.wpModels.Count; wi++)
+                for (iWeaponIdx = 0; iWeaponIdx < bSkeleton.wpModels.Count; iWeaponIdx++)
                 {
-                    if (bSkeleton.wpModels[wi].Polys != null)
+                    if (bSkeleton.wpModels[iWeaponIdx].Polys != null)
                     {
-                        tmpModel = bSkeleton.wpModels[wi];
+                        tmpModel = bSkeleton.wpModels[iWeaponIdx];
                         DestroyPModelResources(ref tmpModel);
-                        bSkeleton.wpModels[wi] = tmpModel;
+                        bSkeleton.wpModels[iWeaponIdx] = tmpModel;
                     }
                 }
 
@@ -1272,12 +1277,12 @@ namespace KimeraCS
 
                 // Free textures
                 uint[] lsttexID = new uint[1];
-                for (ti = 0; ti < bSkeleton.textures.Count; ti++)
+                for (iTextureIdxbi = 0; iTextureIdxbi < bSkeleton.textures.Count; iTextureIdxbi++)
                 {
-                    lsttexID[0] = bSkeleton.textures[ti].texID;
+                    lsttexID[0] = bSkeleton.textures[iTextureIdxbi].texID;
                     glDeleteTextures(1, lsttexID);
-                    DeleteDC(bSkeleton.textures[ti].HDC);
-                    DeleteObject(bSkeleton.textures[ti].HBMP);
+                    DeleteDC(bSkeleton.textures[iTextureIdxbi].HDC);
+                    DeleteObject(bSkeleton.textures[iTextureIdxbi].HBMP);
                 }
 
                 if (bSkeleton.textures != null) bSkeleton.textures.Clear();
