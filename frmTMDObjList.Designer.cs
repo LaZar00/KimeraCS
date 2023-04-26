@@ -100,7 +100,7 @@ namespace KimeraCS
             this.cbConvertToFloat.TabIndex = 5;
             this.cbConvertToFloat.Text = "Convert to Float";
             this.cbConvertToFloat.UseVisualStyleBackColor = true;
-            this.cbConvertToFloat.CheckedChanged += new System.EventHandler(this.cbConvertToFloat_CheckedChanged);
+            this.cbConvertToFloat.CheckedChanged += new System.EventHandler(this.CbConvertToFloat_CheckedChanged);
             // 
             // FrmTMDObjList
             // 

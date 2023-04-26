@@ -209,7 +209,7 @@ namespace KimeraCS
             }
         }
 
-        private void cbConvertToFloat_CheckedChanged(object sender, EventArgs e)
+        private void CbConvertToFloat_CheckedChanged(object sender, EventArgs e)
         {
             bConverted2Float = cbConvertToFloat.Checked;
 
