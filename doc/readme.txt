@@ -23,7 +23,7 @@ CTRL+D			->	Open Char.LGP Database Window (if path found and set)
 CTRL+Home		->	Reset Camera
 CTRL+Up/Down	->	Rotate alpha with keyboard
 CTRL+Left/Right	->	Rotate beta with keyboard
-DELETE			->	Remove selected bone/piece
+D				->	Remove selected bone/piece
 SPACE    		->  Open PEditor if any joint with bone is selected in Bones Selector list
 F2				->	Open TMD Object List if we have closed (Hide) it
 F				->  Enable/Disable Face Normals
