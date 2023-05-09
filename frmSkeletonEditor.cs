@@ -57,7 +57,7 @@ namespace KimeraCS
     public partial class FrmSkeletonEditor : Form
     {
 
-        public const string STR_APPNAME = "KimeraCS 1.8y";
+        public const string STR_APPNAME = "KimeraCS 1.8z";
 
         public static int modelWidth;
         public static int modelHeight;
@@ -635,6 +635,8 @@ namespace KimeraCS
             hsbRotateGamma.Value = 0;
 
             nUDBoneOptionsLength.Value = 0;
+            nUDBoneOptionsLength.Maximum = 65536;
+            nUDBoneOptionsLength.Minimum = -65536;
 
             loadingBonePieceModifiersQ = false;
 
@@ -851,6 +853,8 @@ namespace KimeraCS
                     else
                     {
                         // Disable Bone Length Numeric Up/Down
+                        nUDBoneOptionsLength.Maximum = 999999999;
+                        nUDBoneOptionsLength.Minimum = -999999999;
                         nUDBoneOptionsLength.Enabled = false;
 
                         // Show Normals vars
@@ -2641,6 +2645,8 @@ namespace KimeraCS
                         bChangesDone = false;
                         UpdateMainSkeletonWindowTitle();
 
+                        SetBoneModifiers();
+
                         PanelModel_Paint(null, null);
                     }
                     else
@@ -2813,6 +2819,8 @@ namespace KimeraCS
 
                     bChangesDone = false;
                     UpdateMainSkeletonWindowTitle();
+
+                    SetBoneModifiers();
 
                     PanelModel_Paint(null, null);
                 }
