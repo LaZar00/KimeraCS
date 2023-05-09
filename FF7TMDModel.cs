@@ -292,6 +292,7 @@ namespace KimeraCS
             public float fvx;              //  x value (float) of the vertex
             public float fvy;              //  y value (float) of the vertex
             public float fvz;              //  z value (float) of the vertex
+            public float fpad;             //  ignore
         }
 
         public struct TMD_NORMAL
@@ -576,11 +577,12 @@ namespace KimeraCS
                             TMDVertexList[i].fvx = memReader.ReadSingle();
                             TMDVertexList[i].fvy = memReader.ReadSingle();
                             TMDVertexList[i].fvz = memReader.ReadSingle();
-                            TMDVertexList[i].pad = memReader.ReadInt16();
+                            TMDVertexList[i].fpad = memReader.ReadSingle();
 
                             TMDVertexList[i].vx = (short)TMDVertexList[i].fvx;
                             TMDVertexList[i].vy = (short)TMDVertexList[i].fvy;
                             TMDVertexList[i].vz = (short)TMDVertexList[i].fvz;
+                            TMDVertexList[i].pad = (short)TMDVertexList[i].fpad;
                         }
                     }
                     else
@@ -595,6 +597,7 @@ namespace KimeraCS
                             TMDVertexList[i].fvx = (float)Math.Round((double)TMDVertexList[i].vx, 6);
                             TMDVertexList[i].fvy = (float)Math.Round((double)TMDVertexList[i].vy, 6);
                             TMDVertexList[i].fvz = (float)Math.Round((double)TMDVertexList[i].vz, 6);
+                            TMDVertexList[i].fpad = (float)Math.Round((double)TMDVertexList[i].pad, 6);
                         }
                     }
                 }
@@ -1295,6 +1298,7 @@ namespace KimeraCS
                     newTMDObj.TMDVertexList[newTMDObj.TMDVertexList.Length - 1].fvx = itmP3D.x;
                     newTMDObj.TMDVertexList[newTMDObj.TMDVertexList.Length - 1].fvy = itmP3D.y;
                     newTMDObj.TMDVertexList[newTMDObj.TMDVertexList.Length - 1].fvz = itmP3D.z;
+                    newTMDObj.TMDVertexList[newTMDObj.TMDVertexList.Length - 1].fpad = 0;
                 }
                 //else
                 //{
@@ -1414,7 +1418,7 @@ namespace KimeraCS
 
                 // Accumulate the Primitive Header + Packet sizes for next Primitive
                 if (bConverted2Float)
-                    iSizeAccum += mTMDModel.TMDObjectList[iCounter].nVerts * 14;
+                    iSizeAccum += mTMDModel.TMDObjectList[iCounter].nVerts * 16;
                 else
                     iSizeAccum += mTMDModel.TMDObjectList[iCounter].nVerts * 8;
             }
@@ -1466,7 +1470,7 @@ namespace KimeraCS
 
                 // Accumulate the Primitive Header + Packet sizes for next Primitive
                 if (bConverted2Float)
-                    iSizeAccum += mTMDModel.TMDObjectList[iCounter].nVerts * 14;
+                    iSizeAccum += mTMDModel.TMDObjectList[iCounter].nVerts * 16;
                 else
                     iSizeAccum += mTMDModel.TMDObjectList[iCounter].nVerts * 8;
             }
@@ -1602,9 +1606,9 @@ namespace KimeraCS
                                         binWriter.Write(itmTMDVert.fvx);
                                         binWriter.Write(itmTMDVert.fvy);
                                         binWriter.Write(itmTMDVert.fvz);
-                                        binWriter.Write(itmTMDVert.pad);
+                                        binWriter.Write(itmTMDVert.fpad);
 
-                                        iStreamSize += 14;
+                                        iStreamSize += 16;
                                     }
                                 }
                                 else
